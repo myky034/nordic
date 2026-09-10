@@ -1,0 +1,37 @@
+// =============================================================================
+// Prisma Schema — Europe Study & Career Intelligence Portal
+// =============================================================================
+//
+// IMPORTANT — Prisma 7 project configuration:
+//
+//   - The database connection URL is NOT defined here.
+//     It is defined in prisma.config.ts, which the Prisma CLI reads.
+//
+//   - At runtime, the application connects via @prisma/adapter-pg (see lib/db.ts),
+//     which uses the pooled DATABASE_URL environment variable directly.
+//
+//   - The datasource block here only declares the provider so the schema
+//     parser knows this is a PostgreSQL schema.
+//
+// Generator:
+//   - provider = "prisma-client" is the Prisma 7 Rust-free, ESM client.
+//     (The legacy "prisma-client-js" is still supported but deprecated.)
+//   - output points to a project-local directory so generated types are
+//     visible to file watchers and dev tools without restarting.
+//
+// Schema evolution:
+//   - No domain tables are defined in Slice 1.
+//   - Tables are added in subsequent slices via prisma migrate dev.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../prisma/generated/client"
+}
+
+datasource db {
+  // Provider declared here for schema validation.
+  // The actual connection URL is supplied by prisma.config.ts (CLI)
+  // or by the driver adapter in lib/db.ts (runtime).
+  provider = "postgresql"
+}
