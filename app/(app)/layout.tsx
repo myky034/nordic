@@ -37,7 +37,7 @@ async function signOut() {
 
 export default async function AppLayout({
   children,
-}: LayoutProps<"/dashboard">) {
+}: { children: React.ReactNode }) {
   // requireAuth() redirects to /login if the user is not authenticated.
   // It returns the verified JWT claims when the user is signed in.
   await requireAuth();

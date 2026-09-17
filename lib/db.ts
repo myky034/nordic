@@ -11,8 +11,8 @@
 //   Supabase runs PgBouncer in transaction pooling mode (port 6543). In this
 //   mode each statement may use a different underlying connection, which is
 //   incompatible with the prepared statements Prisma uses by default.
-//   @prisma/adapter-pg uses the `pg` Node.js driver which correctly handles
-//   the pgbouncer=true connection string and disables prepared statements.
+//   @prisma/adapter-pg uses unnamed statements by default. Do not configure
+//   statementNameGenerator when connecting through a transaction pooler.
 //
 // WHY DATABASE_URL and not DIRECT_URL?
 //   DATABASE_URL points to the pooled connection (port 6543 with pgbouncer=true).
@@ -32,21 +32,21 @@
 
 import "server-only";
 
-import { PrismaClient } from "@/prisma/generated/client";
+import { PrismaClient } from "@/prisma/generated/client/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 
 // Extend the global type to include our Prisma singleton in development.
 declare global {
-  // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
 }
 
 function createPrismaClient(): PrismaClient {
-  // PrismaPg wraps the standard `pg` driver and configures it for use with
-  // PgBouncer. The `pgbouncer=true` query param in DATABASE_URL disables
-  // prepared statements, which are not supported in transaction pooling mode.
+  // Bound pool size and connection waits for serverless instances. Session
+  // pooling is also supported for local development.
   const adapter = new PrismaPg({
     connectionString: process.env.DATABASE_URL!,
+    max: 3,
+    connectionTimeoutMillis: 10_000,
   });
 
   return new PrismaClient({ adapter });

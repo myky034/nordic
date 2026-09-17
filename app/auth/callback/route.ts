@@ -1,11 +1,11 @@
 // =============================================================================
-// OAuth Callback Route Handler — app/auth/callback/route.ts  →  /auth/callback
+// PKCE Callback Route Handler — app/auth/callback/route.ts  →  /auth/callback
 // =============================================================================
 //
 // IMPORTANT — route placement:
 //   This file is at app/auth/callback/route.ts (plain directory, NOT a route
 //   group). The URL is /auth/callback, which matches exactly the redirectTo
-//   value in the signInWithOAuth() call in app/(auth)/login/page.tsx.
+//   value used by OAuth and email signup in app/(auth)/actions.ts.
 //
 //   The (auth) route group used for the login page layout is a UI-only
 //   grouping and maps /login — it does NOT affect this route.
@@ -29,6 +29,7 @@
 
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { logAuthFailure } from "@/lib/auth/credentials";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -40,11 +41,16 @@ export async function GET(request: Request) {
     return NextResponse.redirect(`${origin}/login?error=no_code`);
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase.auth.exchangeCodeForSession(code);
-
-  if (error) {
-    // Exchange failed — the code may be expired or already used.
+  try {
+    // Both Google OAuth and email signup confirmations use this PKCE exchange.
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+    if (error) {
+      logAuthFailure("confirmation", error);
+      return NextResponse.redirect(`${origin}/login?error=auth_failed`);
+    }
+  } catch {
+    logAuthFailure("confirmation", null);
     return NextResponse.redirect(`${origin}/login?error=auth_failed`);
   }
 

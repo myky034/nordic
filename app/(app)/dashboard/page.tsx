@@ -17,6 +17,7 @@
 
 import { requireAuth } from "@/lib/auth/session";
 import { getCurrentUser } from "@/lib/auth/session";
+import Link from "next/link";
 
 export default async function DashboardPage() {
   // Verify identity via JWT claims — fast, no network call.
@@ -38,9 +39,10 @@ export default async function DashboardPage() {
         </span>
       </p>
 
-      <p className="mt-6 text-sm text-zinc-500 dark:text-zinc-500">
-        Content will be added in Slice 2 (countries &amp; sources).
-      </p>
+      <div className="mt-8 flex flex-wrap gap-4">
+        <Link href="/countries" className="rounded-xl border px-5 py-3">Explore countries →</Link>
+        <Link href="/sources" className="rounded-xl border px-5 py-3">Browse source registry →</Link>
+      </div>
     </div>
   );
 }

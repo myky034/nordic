@@ -22,8 +22,12 @@
 //   in lib/db.ts — that file is never involved here.
 // =============================================================================
 
-import "dotenv/config";
+import { config } from "dotenv";
 import { defineConfig } from "prisma/config";
+
+// Match Next.js local configuration without overriding exported CI variables.
+config({ path: ".env.local", quiet: true });
+config({ quiet: true });
 
 export default defineConfig({
   // Path to the Prisma schema file, relative to this config file.

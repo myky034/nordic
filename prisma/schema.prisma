@@ -20,8 +20,8 @@
 //     visible to file watchers and dev tools without restarting.
 //
 // Schema evolution:
-//   - No domain tables are defined in Slice 1.
-//   - Tables are added in subsequent slices via prisma migrate dev.
+//   - Slice 2 adds public country/source metadata.
+//   - SQL migrations additionally enforce CHECK constraints and RLS policies.
 // =============================================================================
 
 generator client {
@@ -34,4 +34,45 @@ datasource db {
   // The actual connection URL is supplied by prisma.config.ts (CLI)
   // or by the driver adapter in lib/db.ts (runtime).
   provider = "postgresql"
+}
+
+// Scope entries, not researched country profiles. Unknown metadata stays null.
+model Country {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  slug      String   @unique
+  name      String   @unique
+  isoCode   String?  @unique @map("iso_code")
+  region    String?
+  status    String   @default("needs_research")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  sources   Source[]
+
+  @@map("countries")
+}
+
+model Source {
+  id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name           String
+  canonicalUrl   String    @unique @map("canonical_url")
+  countryId      String?   @map("country_id") @db.Uuid
+  country        Country?  @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  sourceTier     String?   @map("source_tier")
+  sourceType     String?   @map("source_type")
+  topics         String[]  @default([])
+  language       String?
+  authorityNotes String?   @map("authority_notes")
+  status         String    @default("needs_verification")
+  crawlEnabled   Boolean   @default(false) @map("crawl_enabled")
+  crawlFrequency String?   @map("crawl_frequency")
+  crawlPolicy    String    @default("not_reviewed") @map("crawl_policy")
+  lastCrawledAt  DateTime? @map("last_crawled_at") @db.Timestamptz(6)
+  lastVerifiedAt DateTime? @map("last_verified_at") @db.Timestamptz(6)
+  notes          String?
+  createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@index([countryId])
+  @@index([sourceTier, status])
+  @@map("sources")
 }

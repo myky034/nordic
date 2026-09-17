@@ -25,7 +25,9 @@ export default function LandingPage() {
           research into an actionable study-to-career plan.
         </p>
 
-        <div className="mt-8">
+        <div className="mt-8 flex flex-wrap justify-center gap-4">
+          <Link href="/countries" className="inline-flex h-10 items-center rounded-full border px-6 text-sm">Explore countries</Link>
+          <Link href="/sources" className="inline-flex h-10 items-center rounded-full border px-6 text-sm">Source registry</Link>
           <Link
             href="/login"
             className="inline-flex h-10 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition-colors hover:bg-zinc-700 dark:bg-zinc-50 dark:text-zinc-900 dark:hover:bg-zinc-200"
