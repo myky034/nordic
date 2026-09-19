@@ -23,10 +23,13 @@
 //   run unnecessarily on files that never need an auth session.
 // =============================================================================
 
-import type { NextRequest } from "next/server";
+import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
 export async function proxy(request: NextRequest) {
+  // This service endpoint authenticates its own bearer token, independently of
+  // browser sessions. An Auth outage must not block internal ingestion.
+  if (request.nextUrl.pathname === "/api/ingestion/documents") return NextResponse.next();
   return await updateSession(request);
 }
 

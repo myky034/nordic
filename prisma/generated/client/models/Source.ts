@@ -282,6 +282,7 @@ export type SourceWhereInput = {
   notes?: Prisma.StringNullableFilter<"Source"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Source"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Source"> | Date | string
+  documents?: Prisma.DocumentListRelationFilter
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
 }
 
@@ -304,6 +305,7 @@ export type SourceOrderByWithRelationInput = {
   notes?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  documents?: Prisma.DocumentOrderByRelationAggregateInput
   country?: Prisma.CountryOrderByWithRelationInput
 }
 
@@ -329,6 +331,7 @@ export type SourceWhereUniqueInput = Prisma.AtLeast<{
   notes?: Prisma.StringNullableFilter<"Source"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Source"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Source"> | Date | string
+  documents?: Prisma.DocumentListRelationFilter
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
 }, "id" | "canonicalUrl">
 
@@ -398,6 +401,7 @@ export type SourceCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
   country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
 }
 
@@ -420,6 +424,7 @@ export type SourceUncheckedCreateInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUpdateInput = {
@@ -440,6 +445,7 @@ export type SourceUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
   country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
 }
 
@@ -462,6 +468,7 @@ export type SourceUncheckedUpdateInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceCreateManyInput = {
@@ -605,6 +612,11 @@ export type SourceMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type SourceScalarRelationFilter = {
+  is?: Prisma.SourceWhereInput
+  isNot?: Prisma.SourceWhereInput
+}
+
 export type SourceCreateNestedManyWithoutCountryInput = {
   create?: Prisma.XOR<Prisma.SourceCreateWithoutCountryInput, Prisma.SourceUncheckedCreateWithoutCountryInput> | Prisma.SourceCreateWithoutCountryInput[] | Prisma.SourceUncheckedCreateWithoutCountryInput[]
   connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCountryInput | Prisma.SourceCreateOrConnectWithoutCountryInput[]
@@ -664,6 +676,20 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
   set?: Date | string | null
 }
 
+export type SourceCreateNestedOneWithoutDocumentsInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutDocumentsInput, Prisma.SourceUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutDocumentsInput
+  connect?: Prisma.SourceWhereUniqueInput
+}
+
+export type SourceUpdateOneRequiredWithoutDocumentsNestedInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutDocumentsInput, Prisma.SourceUncheckedCreateWithoutDocumentsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutDocumentsInput
+  upsert?: Prisma.SourceUpsertWithoutDocumentsInput
+  connect?: Prisma.SourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutDocumentsInput, Prisma.SourceUpdateWithoutDocumentsInput>, Prisma.SourceUncheckedUpdateWithoutDocumentsInput>
+}
+
 export type SourceCreateWithoutCountryInput = {
   id?: string
   name: string
@@ -682,6 +708,7 @@ export type SourceCreateWithoutCountryInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUncheckedCreateWithoutCountryInput = {
@@ -702,6 +729,7 @@ export type SourceUncheckedCreateWithoutCountryInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
 }
 
 export type SourceCreateOrConnectWithoutCountryInput = {
@@ -754,6 +782,106 @@ export type SourceScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Source"> | Date | string
 }
 
+export type SourceCreateWithoutDocumentsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+}
+
+export type SourceUncheckedCreateWithoutDocumentsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  countryId?: string | null
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type SourceCreateOrConnectWithoutDocumentsInput = {
+  where: Prisma.SourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SourceCreateWithoutDocumentsInput, Prisma.SourceUncheckedCreateWithoutDocumentsInput>
+}
+
+export type SourceUpsertWithoutDocumentsInput = {
+  update: Prisma.XOR<Prisma.SourceUpdateWithoutDocumentsInput, Prisma.SourceUncheckedUpdateWithoutDocumentsInput>
+  create: Prisma.XOR<Prisma.SourceCreateWithoutDocumentsInput, Prisma.SourceUncheckedCreateWithoutDocumentsInput>
+  where?: Prisma.SourceWhereInput
+}
+
+export type SourceUpdateToOneWithWhereWithoutDocumentsInput = {
+  where?: Prisma.SourceWhereInput
+  data: Prisma.XOR<Prisma.SourceUpdateWithoutDocumentsInput, Prisma.SourceUncheckedUpdateWithoutDocumentsInput>
+}
+
+export type SourceUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+}
+
+export type SourceUncheckedUpdateWithoutDocumentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type SourceCreateManyCountryInput = {
   id?: string
   name: string
@@ -792,6 +920,7 @@ export type SourceUpdateWithoutCountryInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateWithoutCountryInput = {
@@ -812,6 +941,7 @@ export type SourceUncheckedUpdateWithoutCountryInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateManyWithoutCountryInput = {
@@ -835,6 +965,35 @@ export type SourceUncheckedUpdateManyWithoutCountryInput = {
 }
 
 
+/**
+ * Count Type SourceCountOutputType
+ */
+
+export type SourceCountOutputType = {
+  documents: number
+}
+
+export type SourceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  documents?: boolean | SourceCountOutputTypeCountDocumentsArgs
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SourceCountOutputType
+   */
+  select?: Prisma.SourceCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.DocumentWhereInput
+}
+
 
 export type SourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -855,7 +1014,9 @@ export type SourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   notes?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  documents?: boolean | Prisma.Source$documentsArgs<ExtArgs>
   country?: boolean | Prisma.Source$countryArgs<ExtArgs>
+  _count?: boolean | Prisma.SourceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["source"]>
 
 export type SourceSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -925,7 +1086,9 @@ export type SourceSelectScalar = {
 
 export type SourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "canonicalUrl" | "countryId" | "sourceTier" | "sourceType" | "topics" | "language" | "authorityNotes" | "status" | "crawlEnabled" | "crawlFrequency" | "crawlPolicy" | "lastCrawledAt" | "lastVerifiedAt" | "notes" | "createdAt" | "updatedAt", ExtArgs["result"]["source"]>
 export type SourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  documents?: boolean | Prisma.Source$documentsArgs<ExtArgs>
   country?: boolean | Prisma.Source$countryArgs<ExtArgs>
+  _count?: boolean | Prisma.SourceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SourceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   country?: boolean | Prisma.Source$countryArgs<ExtArgs>
@@ -937,6 +1100,7 @@ export type SourceIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
 export type $SourcePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Source"
   objects: {
+    documents: Prisma.$DocumentPayload<ExtArgs>[]
     country: Prisma.$CountryPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1352,6 +1516,7 @@ readonly fields: SourceFieldRefs;
  */
 export interface Prisma__SourceClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  documents<T extends Prisma.Source$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   country<T extends Prisma.Source$countryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$countryArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1798,6 +1963,30 @@ export type SourceDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Intern
    * Limit how many Sources to delete.
    */
   limit?: number
+}
+
+/**
+ * Source.documents
+ */
+export type Source$documentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Document
+   */
+  select?: Prisma.DocumentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Document
+   */
+  omit?: Prisma.DocumentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentInclude<ExtArgs> | null
+  where?: Prisma.DocumentWhereInput
+  orderBy?: Prisma.DocumentOrderByWithRelationInput | Prisma.DocumentOrderByWithRelationInput[]
+  cursor?: Prisma.DocumentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.DocumentScalarFieldEnum | Prisma.DocumentScalarFieldEnum[]
 }
 
 /**

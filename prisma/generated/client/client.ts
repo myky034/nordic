@@ -51,3 +51,48 @@ export type Country = Prisma.CountryModel
  *
  */
 export type Source = Prisma.SourceModel
+/**
+ * Model Document
+ *
+ */
+export type Document = Prisma.DocumentModel
+/**
+ * Model Role
+ *
+ */
+export type Role = Prisma.RoleModel
+/**
+ * Model Permission
+ *
+ */
+export type Permission = Prisma.PermissionModel
+/**
+ * Model RolePermission
+ *
+ */
+export type RolePermission = Prisma.RolePermissionModel
+/**
+ * Model UserRole
+ *
+ */
+export type UserRole = Prisma.UserRoleModel
+/**
+ * Model AccessAudit
+ *
+ */
+export type AccessAudit = Prisma.AccessAuditModel
+/**
+ * Model Fact
+ *
+ */
+export type Fact = Prisma.FactModel
+/**
+ * Model Evidence
+ *
+ */
+export type Evidence = Prisma.EvidenceModel
+/**
+ * Model FactReview
+ *
+ */
+export type FactReview = Prisma.FactReviewModel

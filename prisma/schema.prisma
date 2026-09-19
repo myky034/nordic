@@ -46,12 +46,14 @@ model Country {
   status    String   @default("needs_research")
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
+  facts     Fact[]
   sources   Source[]
 
   @@map("countries")
 }
 
 model Source {
+  documents      Document[]
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name           String
   canonicalUrl   String    @unique @map("canonical_url")
@@ -75,4 +77,130 @@ model Source {
   @@index([countryId])
   @@index([sourceTier, status])
   @@map("sources")
+}
+
+
+// One immutable observation per source + URL + content hash. Changed content
+// creates another row, preserving earlier metadata for later evidence links.
+model Document {
+  facts Fact[]
+  evidence Evidence[]
+  id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sourceId         String   @map("source_id") @db.Uuid
+  source           Source   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  canonicalUrl     String   @map("canonical_url")
+  title            String?
+  documentType     String   @default("unknown") @map("document_type")
+  contentHash      String   @map("content_hash") @db.VarChar(64)
+  hashMethod       String   @default("sha256-raw-v1") @map("hash_method")
+  metadataHash     String   @map("metadata_hash") @db.VarChar(64)
+  excerpt          String?
+  publishedAt      DateTime? @map("published_at") @db.Timestamptz(6)
+  sourceUpdatedAt  DateTime? @map("source_updated_at") @db.Timestamptz(6)
+  retrievedAt      DateTime @map("retrieved_at") @db.Timestamptz(6)
+  ingestionMethod  String   @map("ingestion_method")
+  processingStatus String   @default("stored") @map("processing_status")
+  extractionStatus String   @default("not_started") @map("extraction_status")
+  createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([sourceId, canonicalUrl, contentHash])
+  @@index([sourceId, retrievedAt])
+  @@index([createdAt, id])
+  @@map("documents")
+}
+
+model Role {
+  id          String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name        String @unique
+  description String @default("")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  permissions RolePermission[]
+  users       UserRole[]
+  @@map("roles")
+}
+model Permission {
+  key         String @id
+  description String
+  roles       RolePermission[]
+  @@map("permissions")
+}
+model RolePermission {
+  roleId        String @map("role_id") @db.Uuid
+  permissionKey String @map("permission_key")
+  role          Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission    Permission @relation(fields: [permissionKey], references: [key], onDelete: Restrict)
+  @@id([roleId, permissionKey])
+  @@map("role_permissions")
+}
+model UserRole {
+  // The SQL migration adds the FK to Supabase-owned auth.users. Prisma must not
+  // generate or migrate Supabase's auth schema.
+  userId    String @map("user_id") @db.Uuid
+  roleId    String @map("role_id") @db.Uuid
+  role      Role @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@id([userId, roleId])
+  @@map("user_roles")
+}
+model AccessAudit {
+  id        String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  actorId   String? @map("actor_id") @db.Uuid
+  action    String
+  targetId  String? @map("target_id") @db.Uuid
+  // Variable audit snapshots, not the authoritative relational permission store.
+  details   Json
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@index([createdAt])
+  @@map("access_audit")
+}
+
+
+model Fact {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId String @map("document_id") @db.Uuid
+  document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  topic String
+  subject String
+  predicate String
+  value String
+  unit String?
+  countryId String? @map("country_id") @db.Uuid
+  country Country? @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  validFrom DateTime? @map("valid_from") @db.Date
+  validUntil DateTime? @map("valid_until") @db.Date
+  status String @default("proposed")
+  createdBy String @map("created_by") @db.Uuid
+  reviewedAt DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  evidence Evidence?
+  reviews FactReview[] @relation("ReviewedFact")
+  conflicts FactReview[] @relation("RelatedFact")
+  @@index([status, createdAt])
+  @@index([documentId])
+  @@map("facts")
+}
+model Evidence {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  factId String @unique @map("fact_id") @db.Uuid
+  fact Fact @relation(fields: [factId], references: [id], onDelete: Restrict)
+  documentId String @map("document_id") @db.Uuid
+  document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  sourceUrl String @map("source_url")
+  excerpt String
+  retrievedAt DateTime @map("retrieved_at") @db.Timestamptz(6)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@map("evidence")
+}
+model FactReview {
+  id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  factId String @map("fact_id") @db.Uuid
+  fact Fact @relation("ReviewedFact",fields: [factId], references: [id], onDelete: Restrict)
+  actorId String @map("actor_id") @db.Uuid
+  decision String
+  note String
+  relatedFactId String? @map("related_fact_id") @db.Uuid
+  relatedFact Fact? @relation("RelatedFact",fields: [relatedFactId], references: [id], onDelete: Restrict)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@index([factId])
+  @@map("fact_reviews")
 }

@@ -3,7 +3,7 @@ import { prisma } from "../db";
 import type { Prisma } from "../../prisma/generated/client/client";
 import { registryFilters } from "./domain";
 
-async function readPublic<T>(operation: string, read: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
+export async function readPublic<T>(operation: string, read: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
   try {
     // Direct Prisma connections do not inherit Supabase JWT/RLS context.
     // A transaction-local role prevents owner credentials from bypassing public RLS

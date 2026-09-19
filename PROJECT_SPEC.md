@@ -300,18 +300,40 @@ Use:
 
 ### ORM
 
-- Prisma or Drizzle.
-- Pick one and remain consistent.
-- If project already has one selected, do not replace it without explicit approval.
+- Recommended: Drizzle.
+- Rationale: lighter runtime footprint and faster cold starts than Prisma
+  on Vercel serverless/edge functions, and pairs naturally with
+  `postgres.js`/Supabase connection pooling. Prisma remains an acceptable
+  alternative if the team later prefers its migration tooling/DX.
+- Pick one and remain consistent across web app, admin dashboard, and
+  crawler.
+- If project already has one selected, do not replace it without explicit
+  approval.
 
 ### Crawler
 
-- Python
-- Scrapy
+- Node.js / TypeScript
+- Crawlee (functional equivalent to Scrapy: native robots.txt compliance,
+  auto-throttle, retries with backoff, sitemap support, per-domain
+  concurrency limits, and native Playwright integration)
 - Playwright only where dynamic rendering is actually required
 - RSS/sitemap support where available
 
-Crawler must be separated from the Next.js web application.
+Rationale: for a solo-maintained, long-horizon project, a single language
+across web app, admin dashboard, and crawler reduces cognitive overhead and
+allows sharing Supabase-generated TypeScript types between the ingestion
+pipeline and the application layer, reducing schema-drift bugs. Crawlee
+matches Scrapy's coverage of the Crawler Rules in Section 8 closely enough
+that the language-consistency benefit outweighs Scrapy's larger ecosystem.
+
+Crawler must be separated from the Next.js web application (separate
+package/workspace in the monorepo, executed by its own scheduled job — see
+Section 4).
+
+Incremental crawl state (ETag/Last-Modified, content hash, last_crawled_at)
+must be persisted in Supabase (`sources`, `documents` tables), not in local
+job files — the crawler's execution environment (see Section 4) is
+ephemeral and cannot be relied on to retain state between runs.
 
 ### AI
 
@@ -352,7 +374,10 @@ Supabase:
 
 Crawler:
 
-- separate worker/runtime
+- separate worker/runtime: Node.js/TypeScript (Crawlee), scheduled via
+  GitHub Actions (cron trigger)
+- writes to Supabase using a service-role key, never exposed to the
+  browser/Next.js client bundle
 - fetches approved sources
 - extracts content
 - detects changes
@@ -944,6 +969,14 @@ Use as a secondary education discovery source.
 These are seed sources only. Do not infer that they cover every required country/topic.
 
 Official source discovery must be performed carefully and source-by-source.
+
+Gap flagged for action before Slice 2/3: these 2 sources are not sufficient
+coverage for 5 countries × 4 topic areas (education, immigration, labour
+market, cost of living). Before Source Registry UI (Slice 2) is meaningfully
+testable, build a per-country checklist of T1 (government) sources at
+minimum for: immigration/residence authority, national statistics/labour
+agency, and the primary official study-in-<country> portal. Treat this as a
+manual research task, not something the crawler or AI should infer.
 
 ---
 

@@ -10,4 +10,13 @@
  */
 export type * from './models/Country'
 export type * from './models/Source'
+export type * from './models/Document'
+export type * from './models/Role'
+export type * from './models/Permission'
+export type * from './models/RolePermission'
+export type * from './models/UserRole'
+export type * from './models/AccessAudit'
+export type * from './models/Fact'
+export type * from './models/Evidence'
+export type * from './models/FactReview'
 export type * from './commonInputTypes'

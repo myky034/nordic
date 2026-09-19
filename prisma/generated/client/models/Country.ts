@@ -206,6 +206,7 @@ export type CountryWhereInput = {
   status?: Prisma.StringFilter<"Country"> | string
   createdAt?: Prisma.DateTimeFilter<"Country"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Country"> | Date | string
+  facts?: Prisma.FactListRelationFilter
   sources?: Prisma.SourceListRelationFilter
 }
 
@@ -218,6 +219,7 @@ export type CountryOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  facts?: Prisma.FactOrderByRelationAggregateInput
   sources?: Prisma.SourceOrderByRelationAggregateInput
 }
 
@@ -233,6 +235,7 @@ export type CountryWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.StringFilter<"Country"> | string
   createdAt?: Prisma.DateTimeFilter<"Country"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Country"> | Date | string
+  facts?: Prisma.FactListRelationFilter
   sources?: Prisma.SourceListRelationFilter
 }, "id" | "slug" | "name" | "isoCode">
 
@@ -273,6 +276,7 @@ export type CountryCreateInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
 }
 
@@ -285,6 +289,7 @@ export type CountryUncheckedCreateInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
 }
 
@@ -297,6 +302,7 @@ export type CountryUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
 }
 
@@ -309,6 +315,7 @@ export type CountryUncheckedUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
 }
 
@@ -411,6 +418,22 @@ export type CountryUpdateOneWithoutSourcesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutSourcesInput, Prisma.CountryUpdateWithoutSourcesInput>, Prisma.CountryUncheckedUpdateWithoutSourcesInput>
 }
 
+export type CountryCreateNestedOneWithoutFactsInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutFactsInput, Prisma.CountryUncheckedCreateWithoutFactsInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutFactsInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneWithoutFactsNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutFactsInput, Prisma.CountryUncheckedCreateWithoutFactsInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutFactsInput
+  upsert?: Prisma.CountryUpsertWithoutFactsInput
+  disconnect?: Prisma.CountryWhereInput | boolean
+  delete?: Prisma.CountryWhereInput | boolean
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutFactsInput, Prisma.CountryUpdateWithoutFactsInput>, Prisma.CountryUncheckedUpdateWithoutFactsInput>
+}
+
 export type CountryCreateWithoutSourcesInput = {
   id?: string
   slug: string
@@ -420,6 +443,7 @@ export type CountryCreateWithoutSourcesInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutSourcesInput = {
@@ -431,6 +455,7 @@ export type CountryUncheckedCreateWithoutSourcesInput = {
   status?: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutSourcesInput = {
@@ -458,6 +483,7 @@ export type CountryUpdateWithoutSourcesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutSourcesInput = {
@@ -469,6 +495,71 @@ export type CountryUncheckedUpdateWithoutSourcesInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutFactsInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutFactsInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutFactsInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutFactsInput, Prisma.CountryUncheckedCreateWithoutFactsInput>
+}
+
+export type CountryUpsertWithoutFactsInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutFactsInput, Prisma.CountryUncheckedUpdateWithoutFactsInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutFactsInput, Prisma.CountryUncheckedCreateWithoutFactsInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutFactsInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutFactsInput, Prisma.CountryUncheckedUpdateWithoutFactsInput>
+}
+
+export type CountryUpdateWithoutFactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutFactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 
@@ -477,10 +568,12 @@ export type CountryUncheckedUpdateWithoutSourcesInput = {
  */
 
 export type CountryCountOutputType = {
+  facts: number
   sources: number
 }
 
 export type CountryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  facts?: boolean | CountryCountOutputTypeCountFactsArgs
   sources?: boolean | CountryCountOutputTypeCountSourcesArgs
 }
 
@@ -492,6 +585,13 @@ export type CountryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exte
    * Select specific fields to fetch from the CountryCountOutputType
    */
   select?: Prisma.CountryCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountFactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactWhereInput
 }
 
 /**
@@ -511,6 +611,7 @@ export type CountrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  facts?: boolean | Prisma.Country$factsArgs<ExtArgs>
   sources?: boolean | Prisma.Country$sourcesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["country"]>
@@ -550,6 +651,7 @@ export type CountrySelectScalar = {
 
 export type CountryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "name" | "isoCode" | "region" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["country"]>
 export type CountryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  facts?: boolean | Prisma.Country$factsArgs<ExtArgs>
   sources?: boolean | Prisma.Country$sourcesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -559,6 +661,7 @@ export type CountryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $CountryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Country"
   objects: {
+    facts: Prisma.$FactPayload<ExtArgs>[]
     sources: Prisma.$SourcePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -964,6 +1067,7 @@ readonly fields: CountryFieldRefs;
  */
 export interface Prisma__CountryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  facts<T extends Prisma.Country$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sources<T extends Prisma.Country$sourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1392,6 +1496,30 @@ export type CountryDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Inter
    * Limit how many Countries to delete.
    */
   limit?: number
+}
+
+/**
+ * Country.facts
+ */
+export type Country$factsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Fact
+   */
+  select?: Prisma.FactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Fact
+   */
+  omit?: Prisma.FactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactInclude<ExtArgs> | null
+  where?: Prisma.FactWhereInput
+  orderBy?: Prisma.FactOrderByWithRelationInput | Prisma.FactOrderByWithRelationInput[]
+  cursor?: Prisma.FactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactScalarFieldEnum | Prisma.FactScalarFieldEnum[]
 }
 
 /**

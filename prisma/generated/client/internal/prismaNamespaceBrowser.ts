@@ -52,7 +52,16 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   Country: 'Country',
-  Source: 'Source'
+  Source: 'Source',
+  Document: 'Document',
+  Role: 'Role',
+  Permission: 'Permission',
+  RolePermission: 'RolePermission',
+  UserRole: 'UserRole',
+  AccessAudit: 'AccessAudit',
+  Fact: 'Fact',
+  Evidence: 'Evidence',
+  FactReview: 'FactReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -109,12 +118,134 @@ export const SourceScalarFieldEnum = {
 export type SourceScalarFieldEnum = (typeof SourceScalarFieldEnum)[keyof typeof SourceScalarFieldEnum]
 
 
+export const DocumentScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  canonicalUrl: 'canonicalUrl',
+  title: 'title',
+  documentType: 'documentType',
+  contentHash: 'contentHash',
+  hashMethod: 'hashMethod',
+  metadataHash: 'metadataHash',
+  excerpt: 'excerpt',
+  publishedAt: 'publishedAt',
+  sourceUpdatedAt: 'sourceUpdatedAt',
+  retrievedAt: 'retrievedAt',
+  ingestionMethod: 'ingestionMethod',
+  processingStatus: 'processingStatus',
+  extractionStatus: 'extractionStatus',
+  createdAt: 'createdAt'
+} as const
+
+export type DocumentScalarFieldEnum = (typeof DocumentScalarFieldEnum)[keyof typeof DocumentScalarFieldEnum]
+
+
+export const RoleScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  createdAt: 'createdAt'
+} as const
+
+export type RoleScalarFieldEnum = (typeof RoleScalarFieldEnum)[keyof typeof RoleScalarFieldEnum]
+
+
+export const PermissionScalarFieldEnum = {
+  key: 'key',
+  description: 'description'
+} as const
+
+export type PermissionScalarFieldEnum = (typeof PermissionScalarFieldEnum)[keyof typeof PermissionScalarFieldEnum]
+
+
+export const RolePermissionScalarFieldEnum = {
+  roleId: 'roleId',
+  permissionKey: 'permissionKey'
+} as const
+
+export type RolePermissionScalarFieldEnum = (typeof RolePermissionScalarFieldEnum)[keyof typeof RolePermissionScalarFieldEnum]
+
+
+export const UserRoleScalarFieldEnum = {
+  userId: 'userId',
+  roleId: 'roleId',
+  createdAt: 'createdAt'
+} as const
+
+export type UserRoleScalarFieldEnum = (typeof UserRoleScalarFieldEnum)[keyof typeof UserRoleScalarFieldEnum]
+
+
+export const AccessAuditScalarFieldEnum = {
+  id: 'id',
+  actorId: 'actorId',
+  action: 'action',
+  targetId: 'targetId',
+  details: 'details',
+  createdAt: 'createdAt'
+} as const
+
+export type AccessAuditScalarFieldEnum = (typeof AccessAuditScalarFieldEnum)[keyof typeof AccessAuditScalarFieldEnum]
+
+
+export const FactScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  topic: 'topic',
+  subject: 'subject',
+  predicate: 'predicate',
+  value: 'value',
+  unit: 'unit',
+  countryId: 'countryId',
+  validFrom: 'validFrom',
+  validUntil: 'validUntil',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
+
+
+export const EvidenceScalarFieldEnum = {
+  id: 'id',
+  factId: 'factId',
+  documentId: 'documentId',
+  sourceUrl: 'sourceUrl',
+  excerpt: 'excerpt',
+  retrievedAt: 'retrievedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EvidenceScalarFieldEnum = (typeof EvidenceScalarFieldEnum)[keyof typeof EvidenceScalarFieldEnum]
+
+
+export const FactReviewScalarFieldEnum = {
+  id: 'id',
+  factId: 'factId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  relatedFactId: 'relatedFactId',
+  createdAt: 'createdAt'
+} as const
+
+export type FactReviewScalarFieldEnum = (typeof FactReviewScalarFieldEnum)[keyof typeof FactReviewScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
 } as const
 
 export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
 
 
 export const QueryMode = {
@@ -131,4 +262,13 @@ export const NullsOrder = {
 } as const
 
 export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
+
+
+export const JsonNullValueFilter = {
+  DbNull: DbNull,
+  JsonNull: JsonNull,
+  AnyNull: AnyNull
+} as const
+
+export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
 

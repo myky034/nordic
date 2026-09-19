@@ -18,6 +18,7 @@
 import { requireAuth } from "@/lib/auth/session";
 import { getCurrentUser } from "@/lib/auth/session";
 import Link from "next/link";
+import { accessContext } from "@/lib/rbac/access";
 
 export default async function DashboardPage() {
   // Verify identity via JWT claims — fast, no network call.
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
 
   // Fetch the user record to display their email.
   const user = await getCurrentUser();
+  const { permissions } = await accessContext();
 
   return (
     <div>
@@ -40,7 +42,11 @@ export default async function DashboardPage() {
       </p>
 
       <div className="mt-8 flex flex-wrap gap-4">
+        {(permissions.includes("facts.propose") || permissions.includes("facts.review")) && <Link href="/facts/workspace" className="rounded-xl border px-5 py-3">Thông tin & bằng chứng →</Link>}
+        {permissions.includes("documents.ingest") && <Link href="/documents/import" className="rounded-xl border px-5 py-3">Nhập tài liệu →</Link>}
+        {(permissions.includes("roles.manage") || permissions.includes("users.assign_roles")) && <Link href="/admin/access" className="rounded-xl border px-5 py-3">Người dùng & phân quyền →</Link>}
         <Link href="/countries" className="rounded-xl border px-5 py-3">Explore countries →</Link>
+        <Link href="/documents" className="rounded-xl border px-5 py-3">Browse documents →</Link>
         <Link href="/sources" className="rounded-xl border px-5 py-3">Browse source registry →</Link>
       </div>
     </div>
