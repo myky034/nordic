@@ -27,6 +27,7 @@ export async function saveSource(_state: ActionState, form: FormData): Promise<A
       p_language: get("language") || null, p_authority_notes: get("authorityNotes") || null, p_status: status,
       p_crawl_policy: policy, p_crawl_enabled: form.get("crawlEnabled") === "on",
       p_crawl_frequency: get("crawlFrequency") || null, p_notes: get("notes") || null,
+      p_reverify: form.get("reverify") === "on",
     });
     if (error) {
       logAccessError("save_source");

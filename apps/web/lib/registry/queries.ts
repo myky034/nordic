@@ -2,6 +2,8 @@ import "server-only";
 import { prisma } from "../db";
 import type { Prisma } from "@nordic/db";
 import { registryFilters } from "./domain";
+import { pageWindow, searchParam } from "../pagination";
+import { uuidPattern } from "../documents/domain";
 
 export async function readPublic<T>(operation: string, read: (tx: Prisma.TransactionClient) => Promise<T>): Promise<T> {
   try {
@@ -29,16 +31,55 @@ export function getCountry(slug: string) {
   return readPublic("get_country", (tx) => tx.country.findUnique({ where: { slug }, include: { sources: { orderBy: { name: "asc" } } } }));
 }
 
-export function listSources(query: Record<string, string | string[] | undefined>) {
+type Query = Record<string, string | string[] | undefined>;
+function sourceWhere(query: Query): Prisma.SourceWhereInput {
   const filters = registryFilters(query);
+  const q = searchParam(query);
+  return {
+    ...(filters.country === "unassigned" ? { countryId: null } : filters.country ? { country: { slug: filters.country } } : {}),
+    ...(filters.tier ? { sourceTier: filters.tier === "unknown" ? null : filters.tier } : {}),
+    ...(filters.status ? { status: filters.status } : {}),
+    // Prisma parameterises `contains`, and escapes %/_ itself.
+    ...(q ? { OR: [{ name: { contains: q, mode: "insensitive" as const } }, { canonicalUrl: { contains: q, mode: "insensitive" as const } }] } : {}),
+  };
+}
+
+/** Unpaginated, capped list for pickers (e.g. the document import form). */
+export function listSources(query: Query) {
   return readPublic("list_sources", (tx) => tx.source.findMany({
-    where: {
-      ...(filters.country === "unassigned" ? { countryId: null } : filters.country ? { country: { slug: filters.country } } : {}),
-      ...(filters.tier ? { sourceTier: filters.tier === "unknown" ? null : filters.tier } : {}),
-      ...(filters.status ? { status: filters.status } : {}),
-    },
+    where: sourceWhere(query),
     include: { country: { select: { name: true, slug: true } } },
     orderBy: [{ name: "asc" }, { id: "asc" }],
     take: 101,
+  }));
+}
+
+/** One page of sources plus the total, for browsable lists. */
+export function searchSources(query: Query, page: number) {
+  const { skip, take } = pageWindow(page);
+  const where = sourceWhere(query);
+  return readPublic("search_sources", async (tx) => {
+    const [rows, total] = await Promise.all([
+      tx.source.findMany({ where, include: { country: { select: { name: true, slug: true } } }, orderBy: [{ name: "asc" }, { id: "asc" }], skip, take }),
+      tx.source.count({ where }),
+    ]);
+    return { rows, total };
+  });
+}
+
+/** Counts per verification status, for the admin segmented control. */
+export function sourceStatusCounts() {
+  return readPublic("source_status_counts", (tx) => tx.source.groupBy({ by: ["status"], _count: { _all: true } }));
+}
+
+export function getSource(id: string) {
+  if (!uuidPattern.test(id)) return Promise.resolve(null);
+  return readPublic("get_source", (tx) => tx.source.findUnique({
+    where: { id },
+    include: {
+      country: { select: { name: true, slug: true } },
+      documents: { select: { id: true, title: true, retrievedAt: true }, orderBy: [{ retrievedAt: "desc" }, { id: "desc" }], take: 10 },
+      _count: { select: { documents: true } },
+    },
   }));
 }

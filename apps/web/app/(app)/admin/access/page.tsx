@@ -1,12 +1,14 @@
 import Link from "next/link";
 import { accessContext, logAccessError, type RoleRow, type UserRow, type AuditRow } from "@/lib/rbac/access";
 import { RoleForm, AssignmentForm } from "./forms";
+import { Badge, Card, Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Section } from "@/components/ui";
+import { buttonSecondary, control, textLink } from "@/components/ui/styles";
 
 export default async function AccessPage({ searchParams }: PageProps<"/admin/access">) {
   const context = await accessContext();
   const manage = context.permissions.includes("roles.manage");
   const assign = context.permissions.includes("users.assign_roles");
-  if (!manage && !assign) return <section><h1 className="text-2xl font-semibold">Không có quyền quản lý phân quyền</h1><p className="mt-4">Nếu hệ thống chưa có quản trị viên, người vận hành cần chạy lệnh bootstrap một lần. Việc đăng nhập không tự cấp quyền quản trị.</p><Link href="/dashboard" className="mt-4 inline-block underline">Về workspace</Link></section>;
+  if (!manage && !assign) return <NoAccess title="Không có quyền quản lý phân quyền">Nếu hệ thống chưa có quản trị viên, người vận hành cần chạy lệnh bootstrap một lần. Việc đăng nhập không tự cấp quyền quản trị.</NoAccess>;
   const params = await searchParams;
   const query = typeof params.q === "string" ? params.q.slice(0, 200) : "";
   const offset = typeof params.offset === "string" && /^\d{1,5}$/.test(params.offset) ? Math.min(10000, Number(params.offset)) : 0;
@@ -21,14 +23,29 @@ export default async function AccessPage({ searchParams }: PageProps<"/admin/acc
   const permissions = results[1].data as { key: string; description: string }[];
   const audit = results[2].data as AuditRow[];
   const users = results[3].data as UserRow[];
-  return <div className="mx-auto max-w-6xl space-y-10">
-    <header><h1 className="text-3xl font-semibold">Người dùng & phân quyền</h1><p className="mt-3 text-zinc-500">Cấu hình vai trò và quyền tại đây. Thay đổi có hiệu lực ở yêu cầu tiếp theo và được ghi nhật ký.</p></header>
-    {manage && <section><h2 className="mb-5 text-2xl font-medium">Vai trò</h2><div className="grid gap-5 md:grid-cols-2"><RoleForm permissions={permissions} own={context.permissions} />{roles.map((role) => <RoleForm key={JSON.stringify(role)} role={role} permissions={permissions} own={context.permissions} />)}</div></section>}
-    {assign && <section><h2 className="text-2xl font-medium">Người dùng</h2><form className="my-5 flex gap-3"><label className="sr-only" htmlFor="user-search">Tìm theo email</label><input id="user-search" name="q" placeholder="Tìm theo email" defaultValue={query} maxLength={200} className="w-full max-w-md rounded-lg border bg-transparent p-3" /><button className="rounded-lg border px-5">Tìm</button></form>
-      <div className="divide-y">{users.map((user) => <article key={user.user_id} className="py-5"><h3 className="font-medium">{user.email ?? "Email chưa có"}</h3><p className="mt-1 break-all text-xs text-zinc-500">{user.user_id}</p><AssignmentForm user={user.user_id} roles={roles} current={user.role_ids} own={context.permissions} self={user.user_id === context.userId} /></article>)}</div>
-      {!users.length && <p>Không tìm thấy người dùng.</p>}
-      <div className="mt-4 flex gap-6">{offset>0 && <Link className="underline" href={`/admin/access?q=${encodeURIComponent(query)}&offset=${Math.max(0, offset-20)}`}>Trang trước</Link>}{users.length===20 && offset<10000 && <Link className="underline" href={`/admin/access?q=${encodeURIComponent(query)}&offset=${offset+20}`}>Trang sau</Link>}</div>
-    </section>}
-    <section><h2 className="text-2xl font-medium">Nhật ký thay đổi</h2><p className="mt-2 text-sm text-zinc-500">50 thao tác gần nhất. Người thực hiện và đối tượng được nhận diện bằng UUID.</p><div className="mt-4 space-y-3">{audit.map((entry) => <details key={entry.id} className="rounded-lg border p-4"><summary className="cursor-pointer text-sm">{new Date(entry.created_at).toISOString()} · {entry.action}</summary><p className="mt-3 break-all text-sm">Người thực hiện: {entry.actor_id ?? "Database operator (bootstrap)"}<br />Đối tượng: {entry.target_id}</p><pre className="mt-3 whitespace-pre-wrap break-all text-xs">{JSON.stringify(entry.details, null, 2)}</pre></details>)}</div></section>
-  </div>;
+  return <>
+    <PageHeader eyebrow="Quản trị" title="Người dùng & phân quyền" description="Cấu hình vai trò và quyền tại đây. Thay đổi có hiệu lực ở yêu cầu tiếp theo và được ghi nhật ký." />
+    {manage && <Section title="Vai trò">
+      <List>{roles.map((role) => <ListRow key={JSON.stringify(role)} title={role.name}
+        badges={<Badge>{role.role_permissions.length} quyền</Badge>} subtitle={role.description || undefined}>
+        <Disclosure small summary="Chỉnh sửa"><RoleForm role={role} permissions={permissions} own={context.permissions} /></Disclosure>
+      </ListRow>)}</List>
+      <div className="mt-4 px-1"><Disclosure summary="Tạo vai trò mới"><Card><RoleForm permissions={permissions} own={context.permissions} /></Card></Disclosure></div>
+    </Section>}
+    {assign && <Section title="Người dùng">
+      <form className="mb-4 flex gap-3"><label className="sr-only" htmlFor="user-search">Tìm theo email</label><input id="user-search" name="q" placeholder="Tìm theo email" defaultValue={query} maxLength={200} className={`${control} mt-0 max-w-md`} /><button className={buttonSecondary}>Tìm</button></form>
+      {users.length ? <List>{users.map((user) => <ListRow key={user.user_id} title={user.email ?? "Email chưa có"} meta={<span className="break-all font-mono">{user.user_id}</span>}>
+        <AssignmentForm user={user.user_id} roles={roles} current={user.role_ids} own={context.permissions} self={user.user_id === context.userId} />
+      </ListRow>)}</List> : <EmptyState>Không tìm thấy người dùng.</EmptyState>}
+      <div className="mt-4 flex gap-6 px-1 text-[15px]">{offset>0 && <Link className={textLink} href={`/admin/access?q=${encodeURIComponent(query)}&offset=${Math.max(0, offset-20)}`}>Trang trước</Link>}{users.length===20 && offset<10000 && <Link className={textLink} href={`/admin/access?q=${encodeURIComponent(query)}&offset=${offset+20}`}>Trang sau</Link>}</div>
+    </Section>}
+    <Section>
+      <Disclosure summary="Nhật ký thay đổi (50 thao tác gần nhất)">
+      <p className="mb-3 px-1 text-[15px] text-ink-2">Người thực hiện và đối tượng được nhận diện bằng UUID.</p>
+      {audit.length ? <List>{audit.map((entry) => <ListRow key={entry.id} title={entry.action} meta={new Date(entry.created_at).toISOString().replace("T", " ").slice(0, 19)}>
+        <Disclosure small summary="Chi tiết"><p className="break-all text-[13px] text-ink-2">Người thực hiện: {entry.actor_id ?? "Database operator (bootstrap)"}<br />Đối tượng: {entry.target_id}</p><pre className="mt-3 overflow-x-auto whitespace-pre-wrap break-all rounded-xl bg-fill/50 p-3 font-mono text-[12px] text-ink">{JSON.stringify(entry.details, null, 2)}</pre></Disclosure>
+      </ListRow>)}</List> : <EmptyState>Chưa có thay đổi nào.</EmptyState>}
+      </Disclosure>
+    </Section>
+  </>;
 }

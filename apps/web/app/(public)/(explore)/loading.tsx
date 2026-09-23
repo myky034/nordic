@@ -1,3 +1,4 @@
+import { LoadingState } from "@/components/ui/loading";
 export default function Loading() {
-  return <p role="status" className="py-12 text-zinc-500">Loading the registry…</p>;
+  return <LoadingState label="Loading the registry…" />;
 }

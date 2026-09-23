@@ -1,26 +1,120 @@
 @import "tailwindcss";
 
+/*
+ * Nordic design tokens.
+ *
+ * Inspired by Apple's Human Interface Guidelines (clarity, deference, depth)
+ * and the Visual Design Direction in PROJECT_SPEC.md: a calm neutral canvas,
+ * content on white "grouped" surfaces, hairline separators, one accent colour
+ * for interaction, and semantic colours used only for meaning (status, risk).
+ * These are original tokens, not Apple assets.
+ *
+ * Every colour is a CSS variable so light/dark mode swaps in one place, and
+ * Tailwind utilities (bg-surface, text-ink-2, border-hairline, bg-accent/10...)
+ * are generated from them via @theme inline.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --canvas: #f5f5f7;
+  --surface: #ffffff;
+  --surface-2: #fafafc;
+  --ink: #1d1d1f;
+  --ink-2: #6e6e73;
+  --ink-3: #86868b;
+  --hairline: rgb(0 0 0 / 0.09);
+  --fill: rgb(118 118 128 / 0.12);
+  --fill-strong: rgb(118 118 128 / 0.2);
+  --accent: #0071e3;
+  --accent-hover: #0077ed;
+  --positive: #1f7a38;
+  --caution: #a35200;
+  --critical: #c9001a;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --canvas: #000000;
+    --surface: #1c1c1e;
+    --surface-2: #242426;
+    --ink: #f5f5f7;
+    --ink-2: #a1a1a6;
+    --ink-3: #7c7c80;
+    --hairline: rgb(255 255 255 / 0.12);
+    --fill: rgb(118 118 128 / 0.24);
+    --fill-strong: rgb(118 118 128 / 0.36);
+    --accent: #2997ff;
+    --accent-hover: #47a6ff;
+    --positive: #30d158;
+    --caution: #ff9f0a;
+    --critical: #ff453a;
   }
 }
 
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-hairline: var(--hairline);
+  --color-fill: var(--fill);
+  --color-fill-strong: var(--fill-strong);
+  --color-accent: var(--accent);
+  --color-accent-hover: var(--accent-hover);
+  --color-positive: var(--positive);
+  --color-caution: var(--caution);
+  --color-critical: var(--critical);
+  /* Legacy aliases still used by a few controls. */
+  --color-background: var(--surface);
+  --color-foreground: var(--ink);
+  /* System font stack: SF Pro on Apple devices, the platform UI font elsewhere.
+     No web-font download, so no layout shift and no third-party request. */
+  --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", "Segoe UI", system-ui, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  letter-spacing: -0.003em;
+}
+
+/* One consistent, clearly visible keyboard focus ring (accessibility). */
+:focus-visible {
+  outline: 3px solid color-mix(in oklab, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Native disclosure triangles are replaced by our own chevron. */
+summary::-webkit-details-marker {
+  display: none;
+}
+summary {
+  list-style: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+/* Selects share the text-field look: native menu, custom chevron, same height. */
+select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2386868b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  background-size: 0.7rem;
+  padding-right: 2.25rem !important;
 }

@@ -18,6 +18,7 @@ const messages: Record<string, string> = {
   sources_invalid: "Dữ liệu nguồn không hợp lệ. Kiểm tra tên và URL (phải là http/https).",
   sources_verification_requires_notes: "Đánh dấu 'verified' cần ghi rõ authority notes: bạn đã xác minh nguồn này như thế nào.",
   sources_crawl_requires_approval: "Chỉ bật crawl khi crawl policy = approved và status = verified.",
+  sources_reverify_required: "Đổi URL hoặc tier của nguồn đã xác minh cần tick 'xác minh lại hôm nay' sau khi kiểm tra lại.",
   sources_not_found: "Nguồn không còn tồn tại. Hãy tải lại trang.",
 };
 export function accessMessage(code: string) { return messages[code] ?? "Không thể hoàn tất thao tác. Kiểm tra dữ liệu hoặc thử lại sau."; }

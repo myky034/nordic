@@ -1,30 +1,25 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
+// No web-font download: the system font stack in globals.css renders SF Pro on
+// Apple devices and the native UI font elsewhere (see docs/learning/ui-design-system.md).
 export const metadata: Metadata = {
-  title: "Europe Study & Career Intelligence Portal",
+  title: { default: "Nordic — Europe Study & Career Intelligence", template: "%s · Nordic" },
   description:
     "Research European countries, universities, and career paths with evidence-backed information.",
 };
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f5f5f7" },
+    { media: "(prefers-color-scheme: dark)", color: "#000000" },
+  ],
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className="h-full antialiased">
+      <body className="flex min-h-full flex-col">{children}</body>
     </html>
   );
 }

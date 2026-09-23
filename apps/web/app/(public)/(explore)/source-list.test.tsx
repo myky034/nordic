@@ -10,10 +10,10 @@ const source: Source = {
   crawlFrequency: null, lastCrawledAt: null, lastVerifiedAt: null, notes: null,
   createdAt: new Date(), updatedAt: new Date(),
 };
-it("renders source attribution and unknown metadata truthfully", () => {
+it("renders compact rows that link to the source page, with unknowns stated", () => {
   const html = renderToStaticMarkup(<SourceList sources={[source]} />);
-  expect(html).toContain('href="https://example.com/"');
-  for (const text of ["Unclassified", "Not available", "Needs verification", "Disabled", "Not assigned"]) expect(html).toContain(text);
+  expect(html).toContain('href="/sources/test"');
+  for (const text of ["Test fixture", "example.com", "Unclassified", "Needs verification", "Not assigned"]) expect(html).toContain(text);
 });
 it("renders empty states and rejects unsafe source links", () => {
   expect(renderToStaticMarkup(<SourceList sources={[]} />)).toContain("No sources found");

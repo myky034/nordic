@@ -24,9 +24,11 @@
 //   need for a client component just for the sign-out button.
 // =============================================================================
 
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { requireAuth } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
+import { SiteFooter, SiteHeader } from "@/components/site-header";
 
 async function signOut() {
   "use server";
@@ -42,24 +44,23 @@ export default async function AppLayout({
   // It returns the verified JWT claims when the user is signed in.
   await requireAuth();
 
+  // Same global navigation as public pages, with workspace + sign-out actions.
   return (
-    <div className="flex min-h-screen flex-col">
-      <nav className="flex items-center justify-between border-b border-zinc-200 px-6 py-3 dark:border-zinc-800">
-        <span className="text-sm font-medium text-zinc-900 dark:text-zinc-50">
-          Europe Portal
-        </span>
-
-        <form action={signOut}>
-          <button
-            type="submit"
-            className="text-sm text-zinc-600 transition-colors hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-50"
-          >
-            Sign out
-          </button>
-        </form>
-      </nav>
-
-      <main className="flex-1 p-6">{children}</main>
-    </div>
+    <>
+      <SiteHeader
+        right={
+          <div className="flex items-center gap-2">
+            <Link href="/dashboard" className="rounded-full px-3 py-1.5 text-[13px] text-ink-2 hover:text-ink">Workspace</Link>
+            <form action={signOut}>
+              <button type="submit" className="rounded-full bg-fill px-3.5 py-1.5 text-[13px] font-medium text-ink transition hover:bg-fill-strong">
+                Sign out
+              </button>
+            </form>
+          </div>
+        }
+      />
+      <main className="mx-auto w-full max-w-5xl flex-1 px-5 py-12 sm:px-8 sm:py-16">{children}</main>
+      <SiteFooter />
+    </>
   );
 }
