@@ -64,3 +64,14 @@ pagination, per-fact permalink and multi-evidence editing are future extensions.
 An out-of-range validity date is visibly flagged. An in-range date does not prove
 freshness; the UI always says current validity is unverified. No legal advice,
 official badge, inferred dates or synthetic seed facts.
+
+## Update 2026-09-23 — conflicts require reviewed claims; education links
+
+- Migration `20260923090000_fact_conflict_requires_review`: `review_fact` only
+  pairs claims already `reviewed` or `conflicted` (error
+  `facts_conflict_requires_review`). Previously two `proposed` claims could become
+  public via `conflicted` without an evidence review. "A reviewer can mark a
+  non-rejected pair conflicted" above now reads "a reviewed/conflicted pair".
+- Migration `20260923100000_education` (Slice 5) recreates `propose_fact` with three
+  optional trailing parameters: `p_university`, `p_programme`, `p_deadline_type`.
+  Existing 10-argument callers are unaffected. See `slice-05.md`.

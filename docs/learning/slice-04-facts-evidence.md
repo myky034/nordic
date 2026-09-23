@@ -106,3 +106,15 @@ Luồng browser với nội dung thật cần được người dùng nhập và
 - Chưa thực hiện thao tác browser đăng nhập/tạo/duyệt với nội dung nguồn thật;
   cần người vận hành chọn câu và đối chiếu bằng chứng. Các luồng mutation và
   bảo vệ quyền đã được kiểm thử trong database tạm và action tests.
+
+## Cập nhật 2026-09-23
+
+- Bước 9 ở trên nay chỉ áp dụng cho hai thông tin **đã được duyệt**. Nếu một đề
+  xuất mới mâu thuẫn với thông tin đã công bố: duyệt (nếu bằng chứng đúng) hoặc từ
+  chối đề xuất đó trước, rồi mới đánh dấu mâu thuẫn. Lý do: trạng thái
+  `conflicted` hiển thị công khai, nên nếu không chặn thì đề xuất chưa kiểm tra sẽ
+  lọt ra ngoài.
+- Form đề xuất có thêm hai ô tùy chọn (Slice 5): gắn với trường/chương trình và
+  loại deadline. Xem `slice-05-universities-programmes.md`.
+- Kiểm thử: `lib/facts/database.test.ts` có test hồi quy
+  "refuses to publish an unreviewed proposal by flagging it as a conflict".

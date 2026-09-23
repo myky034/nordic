@@ -167,3 +167,15 @@ since the monorepo restructure ahead of Slice 9, or `npm run db:migrate:deploy`
 / `npm run db:generate` from the repo root). No reset or db push is
 needed. If tables already exist without Prisma history, inspect/baseline deliberately;
 never overwrite them. Verify public SELECT and denied writes on deployed Supabase.
+
+## Update 2026-09-23 — verification date semantics
+
+Migration `20260923091000_source_reverification` replaces `save_source` (the old
+14-argument signature is dropped; a 15th argument `p_reverify boolean DEFAULT false`
+is added). `last_verified_at` is still only ever `now()` from the database, but it
+is now stamped only when a row becomes `verified` or the operator ticks
+"re-verified today". Other edits keep the previous date, and leaving `verified`
+keeps the historical date (the status says it is no longer verified). Changing
+`canonical_url` or `source_tier` of a verified row raises
+`sources_reverify_required` unless re-verified. The audit entry records
+`reverified` and the resulting `last_verified_at`. The text above is unchanged.

@@ -549,6 +549,13 @@ Optional if a source has multiple crawlable URLs.
 - created_at
 - updated_at
 
+> Update 2026-09-23 (Slice 5, Option A — see Section 21): `tuition` and
+> `application_deadline` above are NOT implemented as columns. They are
+> evidence-backed facts linked by `facts.programme_id` (plus
+> `facts.deadline_type`). `universities`/`programmes` store identity only and
+> require a document + excerpt as evidence of existence. The field list above
+> is kept unchanged as the original suggestion.
+
 ### occupations
 
 - id
@@ -579,6 +586,12 @@ Optional if a source has multiple crawlable URLs.
 - valid_from
 - valid_until
 - evidence relation
+
+> Update 2026-09-23 (Slice 6a — see Section 21): implemented without `summary`,
+> `valid_from` or `valid_until` columns. The rule stores identity only and must
+> be proven by a T1 document from the same country; requirements and their
+> validity dates are facts linked by `facts.immigration_rule_id`. The field list
+> above is kept unchanged as the original suggestion.
 
 ### research_projects
 
@@ -1091,3 +1104,102 @@ Do not copy Apple's UI, assets, branding, or layouts directly.
 
 Use Apple and Scandinavian design principles as visual inspiration while
 building an original Nordic design system.
+
+---
+
+## 21. Decision Log
+
+Additive record of decisions that refine or deviate from the sections above.
+Earlier text is intentionally left unchanged; where they differ, the newest
+dated entry here is the current decision.
+
+### 2026-09-23 — Slice 5 education model: Option A
+
+Chosen by the project owner over "Option B" (tuition/deadline as columns).
+
+- `universities` and `programmes` hold identity only: name, country (via
+  university), degree type, field, language of instruction, official URL,
+  application URL. Unknown values stay null; degree type has an explicit
+  `unknown` value instead of a guess.
+- Each university/programme requires a `document_id` and a short
+  `evidence_excerpt` proving the entity exists (SRS FR-ED-02). Source URL and
+  retrieval date are read from the immutable document, never typed in.
+- Tuition, application deadlines, duration and scholarships are facts linked
+  via `facts.programme_id` or `facts.university_id` (at most one). They reuse
+  the Slice 4 evidence, review, conflict and history rules instead of a second
+  mechanism. A fact linked to an entity inherits the entity's country; a
+  different explicit country is refused.
+- `facts.deadline_type` (`fixed` / `rolling` / `year_round`) records the
+  deadline kind; rolling / year-round deadlines have no invented date.
+- Entities follow `proposed -> reviewed | rejected`, append-only, with the log
+  in `education_reviews`. Only reviewed entities are public; a programme is
+  public only while its university is reviewed. Corrections are new proposals.
+- New permission `education.manage` (propose). Reviewing uses the existing
+  `facts.review`. Complete administrator roles receive `education.manage` via
+  the migration, the same rule used for `facts.*` and `sources.manage`.
+- Not in this slice: funding-type filter (no evidence-backed funding model
+  yet), editing an entity in place, pagination beyond 100 rows.
+- Details: `docs/architecture/slice-05.md`,
+  `docs/learning/slice-05-universities-programmes.md`.
+
+### 2026-09-23 — Integrity fixes from the Slice 1-4 review
+
+- Conflicts: `review_fact` only pairs facts that are already `reviewed` or
+  `conflicted`. Previously a `proposed` fact could become public by being
+  marked `conflicted` without its own evidence review (AGENTS.md 1.3).
+- Source verification date: `save_source` stamps `last_verified_at` only when a
+  source becomes `verified` or the operator explicitly re-verifies
+  (`p_reverify`). Other edits keep the previous date; leaving `verified` keeps
+  the historical date. Changing the canonical URL or tier of a verified source
+  requires re-verification (AGENTS.md Section 12).
+- Documentation note: SRS/Product Backlog v0.1 mention Drizzle; the ORM is
+  Prisma per Section 3. The .docx files in `documents/` carry an appended
+  update section recording this and the decisions above.
+
+### 2026-09-23 — Slice 6a immigration model (recommendations accepted)
+
+Slice 6 is split into 6a (immigration: S6-01, S6-02, S6-05) and 6b (labour
+market: S6-03, S6-04, not started).
+
+- `immigration_rules` holds identity only: country, rule type
+  (student_residence_permit / work_permit / post_study / permanent_residence /
+  citizenship / other), official title, official URL, document + excerpt. No
+  free-text `summary`: requirements are facts linked by
+  `facts.immigration_rule_id` (at most one linked entity per fact).
+- The evidence document for a rule must belong to a `T1` source registered for
+  the same country, and the rule's official URL must share that source's
+  origin. Requirement facts may come from any tier; non-T1 evidence is labelled
+  "not an official (T1) source" in the UI.
+- Public visibility: a rule needs `reviewed` status AND a currently `verified`,
+  currently `T1` evidence source; a requirement fact additionally needs its own
+  evidence source `verified`. Evaluated on every read (RLS), so un-verifying a
+  source hides the content immediately.
+- `/immigration` and `/immigration/[id]` always show the disclaimer
+  "Thông tin nghiên cứu, không phải tư vấn di trú" (research information, not
+  immigration advice) and links to the registered T1 immigration authorities.
+  A conflict banner is shown when any requirement is `conflicted`.
+- New permission `immigration.manage` (propose); reviewing uses `facts.review`.
+- Details: `docs/architecture/slice-06-immigration.md`,
+  `docs/learning/slice-06-immigration.md`.
+
+### 2026-09-23 — UI design system (Apple-HIG-inspired)
+
+Implements the "UI / Visual Design Direction" section above; no rule there is
+changed.
+
+- Design tokens (canvas, surface, ink levels, hairline, one accent, semantic
+  positive/caution/critical) in `apps/web/app/globals.css`, with light and dark
+  mode. System font stack (SF Pro on Apple devices) replaces the Geist Google
+  Font, so no web-font download.
+- Shared components in `apps/web/components/ui/` (large-title page header,
+  inset grouped list rows, badges, notices, disclosure, form fields). Lists use
+  one grouped surface with hairline separators, three text levels, a chevron
+  for navigable rows, and details behind disclosures.
+- "Reviewed" evidence uses the accent colour, never green, so it is not read as
+  verified truth (AGENTS.md Section 15).
+- No new dependency. Details: `docs/learning/ui-design-system.md`.
+- Update (same day): lists are server-paginated (25 per page) with a name/title
+  search box and URL-held state; workspace lists open on the "needs action" tab
+  of an iOS-style segmented control; list rows are compact and link to detail
+  pages (`/sources/[id]`, `/universities/[id]` added). Search is substring
+  matching only; PostgreSQL full-text search remains Slice 7.

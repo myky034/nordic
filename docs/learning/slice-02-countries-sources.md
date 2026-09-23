@@ -157,3 +157,14 @@ later slices; those features have not been implemented here.
 - Production build remains unverified: Google Fonts downloads failed with
   ENOTFOUND in the sandbox. Browser interaction/responsive checks are still manual;
   static render tests do not replace browser tests.
+
+## Cập nhật 2026-09-23 — ngày xác minh nguồn
+
+- Trước đây, mỗi lần lưu một nguồn đang `verified` (kể cả chỉ sửa ghi chú) đều làm
+  mới "Last registry verification". Đây là thông tin cũ bị trình bày như mới
+  (AGENTS.md mục 12).
+- Nay form nguồn đã verified có ô "Tôi vừa xác minh lại nguồn này hôm nay". Chỉ ô
+  này, hoặc việc chuyển sang verified lần đầu, mới cập nhật ngày. Đổi URL hoặc tier
+  bắt buộc tick ô này.
+- Kiểm thử: `lib/registry/manage.test.ts` (hai test cuối). Đọc migration
+  `20260923091000_source_reverification`.
