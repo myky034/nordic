@@ -1,0 +1,6 @@
+{
+  "name": "@nordic/crawler",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Reserved for Slice 9. See PROJECT_SPEC.md Section 3 (Crawler) and Section 8 (Crawler Rules) before adding code here."
+}

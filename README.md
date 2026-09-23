@@ -1,36 +1,46 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nordic — Europe Study & Career Intelligence Portal
 
-## Getting Started
+Read `AGENTS.md` and `PROJECT_SPEC.md` before making changes — they define
+the product, architecture and hard data-integrity/security rules this
+repository must follow.
 
-First, run the development server:
+## Monorepo layout
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+apps/web/       Next.js app (routes, UI, server actions, API routes).
+packages/db/     Prisma schema, migrations, generated client — shared
+                 between apps/web and, from Slice 9 onward, crawler/.
+crawler/         Empty placeholder reserved for Slice 9.
+scripts/         Operational scripts (bootstrap, manual ingestion,
+                 registry/document smoke checks). Run from the repo root.
+docs/            Architecture and learning notes, one file per slice.
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+This is an npm workspaces project — install once from the repo root:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Getting started
 
-## Learn More
+```bash
+npm run dev             # apps/web on http://localhost:3000
+npm test                # vitest, from apps/web
+npm run lint             # eslint, from apps/web
+npm run build            # next build
 
-To learn more about Next.js, take a look at the following resources:
+npm run db:generate      # regenerate the Prisma client in packages/db
+npm run db:migrate:dev    # apply/create a migration against DIRECT_URL
+npm run db:studio        # Prisma Studio
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Copy `.env.example` to `.env.local` at the repo root — `apps/web/.env.local`
+and `packages/db/.env.local` are symlinks to it, so Next.js, the Prisma CLI
+and the scripts in `scripts/` all read the same values without duplication.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Learning documentation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Each implemented slice has a matching write-up in `docs/learning/` and, for
+non-trivial architecture, `docs/architecture/` — read these before touching
+the corresponding code.

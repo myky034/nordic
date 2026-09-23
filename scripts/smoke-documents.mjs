@@ -1,10 +1,13 @@
 // Start the existing production build on loopback and test HTTP without adding data.
 import { spawn } from 'node:child_process';
 import { setTimeout as sleep } from 'node:timers/promises';
+import path from 'node:path';
 import { config } from 'dotenv';
 config({ path: '.env.local', quiet: true });
 const origin = 'http://127.0.0.1:3137';
-const child = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', '3137'], { stdio: 'ignore' });
+// Binary is hoisted to the repo-root node_modules; the app (and its built .next) lives in apps/web.
+const nextBin = path.resolve('node_modules/next/dist/bin/next');
+const child = spawn(process.execPath, [nextBin, 'start', '--hostname', '127.0.0.1', '--port', '3137'], { stdio: 'ignore', cwd: path.resolve('apps/web') });
 let spawnFailed = false;
 child.on('error', () => { spawnFailed = true; });
 async function check(path, options, expected, text) {

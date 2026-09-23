@@ -15,10 +15,12 @@ not pick an admin account. No new dependency or authentication provider was adde
 
 ## First-time setup
 
-1. Apply `npx prisma migrate deploy` and `npx prisma generate` against development.
+1. Apply `npx prisma migrate deploy` and `npx prisma generate` against development
+   (run from `packages/db/` since the monorepo restructure ahead of Slice 9, or use
+   `npm run db:migrate:deploy` / `npm run db:generate` from the repo root).
 2. In Supabase Authentication → Users, select a confirmed user you want to administer
    the app and copy their UUID. Do not send passwords or keys to anyone.
-3. Run once from the project directory:
+3. Run once from the repo root (`scripts/` did not move):
 
 ```sh
 node scripts/bootstrap-admin.mjs <user-UUID>
@@ -96,6 +98,10 @@ when returning to edit, so a prior successful import does not describe a new dra
 
 ## Tests
 
+Since the monorepo restructure ahead of Slice 9, run `prisma validate` from
+`packages/db/` and the rest from `apps/web/` (or `npm run lint`/`npm run build`/
+`npm test` from the repo root, which delegate unchanged).
+
 Run `npx prisma validate`, `npx next typegen`, `npx tsc --noEmit`, `npx vitest run`,
 `npm run lint`, and `npm run build -- --webpack`.
 
@@ -117,7 +123,7 @@ static render and SQL tests.
 
 - RBAC migration deployed successfully to the development/test database.
 - Full local suite: 81 passed; 3 opt-in live tests skipped in the default run.
-- Separate `RBAC_LIVE_TEST=1 npx vitest run lib/rbac/live.test.ts`: passed against
+- Separate `RBAC_LIVE_TEST=1 npx vitest run lib/rbac/live.test.ts` (from `apps/web/`): passed against
   the development database, checking catalogue, denied bootstrap/direct writes,
   and RLS without creating users or assigning memberships.
 - TypeScript, ESLint, Prisma validation and production webpack build passed.

@@ -90,6 +90,11 @@ this feature does not set/reset the password on an existing Google-only account.
 
 ## Verification
 
+Since the monorepo restructure (done ahead of Slice 9, see `PROJECT_SPEC.md`
+Section 4), run `npx` commands from `apps/web/` (the repo root's
+`npm run lint`/`npm run build`/`npm test` still work unchanged — they
+delegate to `apps/web` via npm workspaces).
+
 Automated checks: `npx next typegen`, `npx tsc --noEmit`, `npx vitest run`,
 `npm run lint`, `npm run build`. Tests mock Supabase; they do not create real users
 or prove email delivery or deployed RLS behavior.

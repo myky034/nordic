@@ -300,15 +300,23 @@ Use:
 
 ### ORM
 
-- Recommended: Drizzle.
-- Rationale: lighter runtime footprint and faster cold starts than Prisma
-  on Vercel serverless/edge functions, and pairs naturally with
-  `postgres.js`/Supabase connection pooling. Prisma remains an acceptable
-  alternative if the team later prefers its migration tooling/DX.
-- Pick one and remain consistent across web app, admin dashboard, and
-  crawler.
-- If project already has one selected, do not replace it without explicit
-  approval.
+- Decision: Prisma. Confirmed by the project owner after Slices 1-4 were
+  already built on it; do not revisit without explicit approval
+  (AGENTS.md Section 3).
+- Rationale: `@prisma/adapter-pg` runs cleanly through Supabase's
+  transaction pooler (PgBouncer/Supavisor) from serverless functions.
+  The registry/documents/facts read and write paths already rely on a
+  working pattern of scoping every query to a transaction-local Postgres
+  role (`SET LOCAL ROLE anon` / `authenticated` / `nordic_ingestor`, with
+  `set_config('request.jwt.claim.sub', ...)` to impersonate a specific
+  user) so that RLS policies apply identically whether the caller is
+  Prisma or PostgREST. Prisma's generated types are also shared as-is
+  between the web app and, from Slice 9 onward, the crawler package.
+  Drizzle was the original recommendation before implementation started;
+  it is no longer under consideration.
+- Prisma schema/migrations/generated client live in `packages/db` (see
+  Section 4) and are consumed by the web app and crawler as a workspace
+  package.
 
 ### Crawler
 
@@ -353,13 +361,36 @@ AI is not the authority for government/legal facts.
 - Git
 - GitHub
 - clear environment separation
+- npm workspaces monorepo (see Section 4): `apps/web` (Next.js),
+  `packages/db` (Prisma schema/migrations/generated client, shared),
+  `crawler` (Slice 9, empty placeholder until then).
 
 ---
 
 ## 4. High-Level Architecture
 
+### Monorepo layout
+
+```
+apps/web/       Next.js app (routes, UI, server actions, API routes).
+                 Owns next.config.ts, proxy.ts, tsconfig.json, its own
+                 .env.local (Next.js only reads env files from the app
+                 directory it is run from).
+packages/db/     Prisma schema, migrations, generated client. Published
+                 internally as a workspace package (e.g. "@nordic/db")
+                 consumed by apps/web and, from Slice 9, crawler/.
+                 Owns prisma.config.ts and DIRECT_URL usage for the CLI.
+crawler/         Empty placeholder until Slice 9. Will depend on
+                 packages/db for types and write to Supabase with a
+                 service-role key, never importing anything from apps/web.
+```
+
+Root `package.json` only declares the `workspaces` array and thin
+scripts that delegate into `apps/web` (`npm run dev` etc.) — it holds no
+application code itself.
+
 User
--> Vercel
+-> Vercel (root directory: apps/web)
 -> Next.js
 -> Supabase
 

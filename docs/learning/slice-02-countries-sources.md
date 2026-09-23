@@ -9,10 +9,18 @@
 - Links from the landing page and authenticated dashboard.
 - Two Prisma models, migration, safe initial seeds and SELECT-only RLS policies.
 
-This is a public, read-only registry. No admin editing, crawling or factual country
-profiles are included. Sources start unclassified, unverified, unassigned to a
-country and disabled for crawling. No profile content, authority or freshness is
-invented. See `docs/architecture/slice-02.md` for plan, ERD and security rationale.
+This started as a public, read-only registry. No profile content, authority or
+freshness is invented. See `docs/architecture/slice-02.md` for plan, ERD and
+security rationale.
+
+**Update (2026-09-19):** admin editing was added. `/admin/sources`
+(`app/(app)/admin/sources/`) lets a user holding the `sources.manage`
+permission create and edit sources and toggle `crawl_enabled` — through the
+`save_source` RPC only, never a direct table write. See the "Update" section
+of `docs/architecture/slice-02.md` for the RPC's validation rules and why
+`last_verified_at` is server-stamped rather than client-supplied. Sources
+still start unclassified, unverified, unassigned to a country and disabled
+for crawling by default — registering one still does not verify it.
 
 ## Why this design
 
@@ -80,11 +88,15 @@ a disposable test database, not an application datastore. An explicit dev-depend
 installation was declined, so this test currently relies on Prisma's locked dependency
 tree; review this dependency when upgrading Prisma or changing package managers.
 
-Commands:
+Commands (since the monorepo restructure ahead of Slice 9: `prisma` from
+`packages/db/`, everything else from `apps/web/`; `npm run lint`/`build`/
+`test` at the repo root still work unchanged via workspace delegation):
 
 ```sh
+# from packages/db
 npx prisma validate
 npx prisma generate
+# from apps/web
 npx next typegen
 npx tsc --noEmit
 npx vitest run
@@ -106,7 +118,8 @@ later slices; those features have not been implemented here.
 4. Replace the password placeholder with the database password; URL-encode reserved
    characters in the password. Never paste credentials into chat or commit them.
 5. Confirm this is the intended development database before applying migration:
-   `npx prisma migrate deploy`, then `npx prisma generate`.
+   `npx prisma migrate deploy`, then `npx prisma generate` (from `packages/db/`,
+   or `npm run db:migrate:deploy` / `npm run db:generate` from the repo root).
 6. Restart `npm run dev`. Visit `/countries`, `/countries/sweden`, `/sources` and
    `/sources?country=unassigned&tier=unknown&status=needs_verification` signed out.
 7. Filter to Sweden: no source coverage should be invented. Unknown slugs return 404.
@@ -132,7 +145,7 @@ later slices; those features have not been implemented here.
 - `node scripts/verify-registry.mjs` passed on that project: both anon and
   authenticated read 5 countries/2 sources and all attempted writes were denied.
   Every write probe is wrapped in a savepoint and rolled back.
-- `REGISTRY_LIVE_TEST=1 npx vitest run lib/registry/live.test.ts` passed against the
+- `REGISTRY_LIVE_TEST=1 npx vitest run lib/registry/live.test.ts` (from `apps/web/`) passed against the
   deployed database through the real Prisma service. It tests list/detail/filter
   queries and does not modify data. Run it only against the seeded development DB.
 - Cold Prisma transaction acquisition exceeded its default two-second maxWait.

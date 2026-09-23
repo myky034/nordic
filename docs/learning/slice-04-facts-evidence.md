@@ -12,8 +12,10 @@ UI /facts/workspace; trang công khai /facts. Không thêm dependency.
 
 ## Cách chạy và kiểm thử trên browser
 
-1. Áp dụng migration bằng npx prisma migrate deploy, rồi npx prisma generate.
-2. Chạy npm run dev, đăng nhập tài khoản quản trị.
+1. Áp dụng migration bằng npx prisma migrate deploy, rồi npx prisma generate
+   (chạy trong packages/db/ kể từ khi tách monorepo chuẩn bị Slice 9, hoặc dùng
+   npm run db:migrate:deploy / npm run db:generate từ thư mục gốc repo).
+2. Chạy npm run dev (từ thư mục gốc, hoặc apps/web/), đăng nhập tài khoản quản trị.
 3. Tại /admin/access, kiểm tra role có facts.propose và facts.review. Các role
    có đủ hai quyền quản lý RBAC được bổ sung cả hai khi migration chạy.
    Cấp facts.propose cho người nhập; facts.review cho người duyệt khi cần.
@@ -77,6 +79,11 @@ là lớp bảo vệ đầu vào trực tiếp. React escape nội dung, không 
 
 ## Kiểm thử
 
+Kể từ khi tách monorepo (chuẩn bị Slice 9): npx prisma validate chạy trong
+packages/db/; các lệnh còn lại (vitest, tsc, lint, build) chạy trong apps/web/
+hoặc dùng npm run lint / npm run build / npm test từ thư mục gốc (giữ nguyên
+hành vi cũ, chỉ chuyển tiếp vào workspace).
+
 npx vitest run: tests SQL trên PGlite dùng dữ liệu giả trong DB tạm, không insert
 facts giả lên Supabase. Bao phủ evidence bắt buộc/rollback, RLS public-editor,
 cấm ghi trực tiếp, review có lịch sử, giữ hai phía mâu thuẫn, ngày hiệu lực,
@@ -84,7 +91,7 @@ thu hồi quyền, action actor spoofing và HTML escaping.
 Chạy thêm npx prisma validate, npx tsc --noEmit, npm run lint,
 npm run build -- --webpack.
 
-FACTS_LIVE_TEST=1 npx vitest run lib/facts/live.test.ts chạy kiểm tra chỉ đọc
+FACTS_LIVE_TEST=1 npx vitest run lib/facts/live.test.ts (trong apps/web/) chạy kiểm tra chỉ đọc
 trên development (schema, grants và PostgREST projection); không tự tạo fact.
 Luồng browser với nội dung thật cần được người dùng nhập và đối chiếu nguồn.
 

@@ -96,8 +96,11 @@ environments generate a random secret of at least 32 characters and configure th
 same value in the server and trusted operator environment. `.env.example` has a blank
 INGESTION_API_TOKEN entry. Keep the existing Supabase and database configuration.
 
-Apply schema with `npx prisma migrate deploy`, regenerate with `npx prisma generate`,
-then restart `npm run dev`. Prisma loads `.env.local`. Use development first.
+Apply schema with `npx prisma migrate deploy`, regenerate with `npx prisma generate`
+(run from `packages/db/` since the monorepo restructure ahead of Slice 9, or use
+`npm run db:migrate:deploy` / `npm run db:generate` from the repo root), then restart
+`npm run dev`. Prisma loads `.env.local` via the `packages/db/.env.local` symlink to
+the repo-root file. Use development first.
 
 Prepare `metadata.json` containing the actual required/optional metadata above,
 except contentHash: the helper adds it from the local source file. Obtain sourceId
@@ -135,8 +138,9 @@ SQL tests change session identity (not only current role) when checking that pub
 users cannot SET ROLE to the ingestor: a superuser session could otherwise assume
 any role and make the test misleading.
 
-Run `npx prisma validate`, `npx next typegen`, `npx tsc --noEmit`, `npx vitest run`,
-`npm run lint` and `npm run build`. Tests cover authorization before work, schema
+Run `npx prisma validate` from `packages/db/`; run `npx next typegen`, `npx tsc --noEmit`,
+`npx vitest run`, `npm run lint` and `npm run build` from `apps/web/` (or the repo-root
+`npm run lint`/`npm run build`/`npm test`, which delegate unchanged). Tests cover authorization before work, schema
 rejection, hashes/conflicts, source/crawler boundaries, retry idempotency, version
 history, FK/CHECK constraints, public reads and denied writes, and safe logging.
 
@@ -152,7 +156,7 @@ content 201 with both versions retained. Do not use made-up data for this check.
 - Prisma validation, TypeScript, ESLint and production `next build --webpack` passed.
   The first sandbox build could not resolve Google Fonts; the permitted network retry
   completed successfully without changing fonts or product behavior.
-- `DOCUMENTS_LIVE_TEST=1 npx vitest run lib/documents/live.test.ts` passed using real
+- `DOCUMENTS_LIVE_TEST=1 npx vitest run lib/documents/live.test.ts` (from `apps/web/`) passed using real
   Prisma queries: no documents, public users cannot insert or assume the ingestor
   role, internal role can insert but not update and can read sources/documents.
 - `node scripts/smoke-documents.mjs` passed against a temporary production server:
