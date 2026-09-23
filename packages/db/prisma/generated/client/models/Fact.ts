@@ -39,6 +39,10 @@ export type FactMinAggregateOutputType = {
   createdBy: string | null
   reviewedAt: Date | null
   createdAt: Date | null
+  universityId: string | null
+  programmeId: string | null
+  deadlineType: string | null
+  immigrationRuleId: string | null
 }
 
 export type FactMaxAggregateOutputType = {
@@ -56,6 +60,10 @@ export type FactMaxAggregateOutputType = {
   createdBy: string | null
   reviewedAt: Date | null
   createdAt: Date | null
+  universityId: string | null
+  programmeId: string | null
+  deadlineType: string | null
+  immigrationRuleId: string | null
 }
 
 export type FactCountAggregateOutputType = {
@@ -73,6 +81,10 @@ export type FactCountAggregateOutputType = {
   createdBy: number
   reviewedAt: number
   createdAt: number
+  universityId: number
+  programmeId: number
+  deadlineType: number
+  immigrationRuleId: number
   _all: number
 }
 
@@ -92,6 +104,10 @@ export type FactMinAggregateInputType = {
   createdBy?: true
   reviewedAt?: true
   createdAt?: true
+  universityId?: true
+  programmeId?: true
+  deadlineType?: true
+  immigrationRuleId?: true
 }
 
 export type FactMaxAggregateInputType = {
@@ -109,6 +125,10 @@ export type FactMaxAggregateInputType = {
   createdBy?: true
   reviewedAt?: true
   createdAt?: true
+  universityId?: true
+  programmeId?: true
+  deadlineType?: true
+  immigrationRuleId?: true
 }
 
 export type FactCountAggregateInputType = {
@@ -126,6 +146,10 @@ export type FactCountAggregateInputType = {
   createdBy?: true
   reviewedAt?: true
   createdAt?: true
+  universityId?: true
+  programmeId?: true
+  deadlineType?: true
+  immigrationRuleId?: true
   _all?: true
 }
 
@@ -216,6 +240,10 @@ export type FactGroupByOutputType = {
   createdBy: string
   reviewedAt: Date | null
   createdAt: Date
+  universityId: string | null
+  programmeId: string | null
+  deadlineType: string | null
+  immigrationRuleId: string | null
   _count: FactCountAggregateOutputType | null
   _min: FactMinAggregateOutputType | null
   _max: FactMaxAggregateOutputType | null
@@ -254,8 +282,15 @@ export type FactWhereInput = {
   createdBy?: Prisma.UuidFilter<"Fact"> | string
   reviewedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Fact"> | Date | string
+  universityId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  programmeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  deadlineType?: Prisma.StringNullableFilter<"Fact"> | string | null
+  immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  university?: Prisma.XOR<Prisma.UniversityNullableScalarRelationFilter, Prisma.UniversityWhereInput> | null
+  programme?: Prisma.XOR<Prisma.ProgrammeNullableScalarRelationFilter, Prisma.ProgrammeWhereInput> | null
+  immigrationRule?: Prisma.XOR<Prisma.ImmigrationRuleNullableScalarRelationFilter, Prisma.ImmigrationRuleWhereInput> | null
   evidence?: Prisma.XOR<Prisma.EvidenceNullableScalarRelationFilter, Prisma.EvidenceWhereInput> | null
   reviews?: Prisma.FactReviewListRelationFilter
   conflicts?: Prisma.FactReviewListRelationFilter
@@ -276,8 +311,15 @@ export type FactOrderByWithRelationInput = {
   createdBy?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  universityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  programmeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineType?: Prisma.SortOrderInput | Prisma.SortOrder
+  immigrationRuleId?: Prisma.SortOrderInput | Prisma.SortOrder
   document?: Prisma.DocumentOrderByWithRelationInput
   country?: Prisma.CountryOrderByWithRelationInput
+  university?: Prisma.UniversityOrderByWithRelationInput
+  programme?: Prisma.ProgrammeOrderByWithRelationInput
+  immigrationRule?: Prisma.ImmigrationRuleOrderByWithRelationInput
   evidence?: Prisma.EvidenceOrderByWithRelationInput
   reviews?: Prisma.FactReviewOrderByRelationAggregateInput
   conflicts?: Prisma.FactReviewOrderByRelationAggregateInput
@@ -301,8 +343,15 @@ export type FactWhereUniqueInput = Prisma.AtLeast<{
   createdBy?: Prisma.UuidFilter<"Fact"> | string
   reviewedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Fact"> | Date | string
+  universityId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  programmeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  deadlineType?: Prisma.StringNullableFilter<"Fact"> | string | null
+  immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  university?: Prisma.XOR<Prisma.UniversityNullableScalarRelationFilter, Prisma.UniversityWhereInput> | null
+  programme?: Prisma.XOR<Prisma.ProgrammeNullableScalarRelationFilter, Prisma.ProgrammeWhereInput> | null
+  immigrationRule?: Prisma.XOR<Prisma.ImmigrationRuleNullableScalarRelationFilter, Prisma.ImmigrationRuleWhereInput> | null
   evidence?: Prisma.XOR<Prisma.EvidenceNullableScalarRelationFilter, Prisma.EvidenceWhereInput> | null
   reviews?: Prisma.FactReviewListRelationFilter
   conflicts?: Prisma.FactReviewListRelationFilter
@@ -323,6 +372,10 @@ export type FactOrderByWithAggregationInput = {
   createdBy?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  universityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  programmeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  deadlineType?: Prisma.SortOrderInput | Prisma.SortOrder
+  immigrationRuleId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.FactCountOrderByAggregateInput
   _max?: Prisma.FactMaxOrderByAggregateInput
   _min?: Prisma.FactMinOrderByAggregateInput
@@ -346,6 +399,10 @@ export type FactScalarWhereWithAggregatesInput = {
   createdBy?: Prisma.UuidWithAggregatesFilter<"Fact"> | string
   reviewedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Fact"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Fact"> | Date | string
+  universityId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
+  programmeId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
+  deadlineType?: Prisma.StringNullableWithAggregatesFilter<"Fact"> | string | null
+  immigrationRuleId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
 }
 
 export type FactCreateInput = {
@@ -361,8 +418,12 @@ export type FactCreateInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   document: Prisma.DocumentCreateNestedOneWithoutFactsInput
   country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
@@ -383,6 +444,10 @@ export type FactUncheckedCreateInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
@@ -401,8 +466,12 @@ export type FactUpdateInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
   country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
@@ -423,6 +492,10 @@ export type FactUncheckedUpdateInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
@@ -443,6 +516,10 @@ export type FactCreateManyInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
 }
 
 export type FactUpdateManyMutationInput = {
@@ -458,6 +535,7 @@ export type FactUpdateManyMutationInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type FactUncheckedUpdateManyInput = {
@@ -475,6 +553,10 @@ export type FactUncheckedUpdateManyInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type FactListRelationFilter = {
@@ -502,6 +584,10 @@ export type FactCountOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  universityId?: Prisma.SortOrder
+  programmeId?: Prisma.SortOrder
+  deadlineType?: Prisma.SortOrder
+  immigrationRuleId?: Prisma.SortOrder
 }
 
 export type FactMaxOrderByAggregateInput = {
@@ -519,6 +605,10 @@ export type FactMaxOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  universityId?: Prisma.SortOrder
+  programmeId?: Prisma.SortOrder
+  deadlineType?: Prisma.SortOrder
+  immigrationRuleId?: Prisma.SortOrder
 }
 
 export type FactMinOrderByAggregateInput = {
@@ -536,6 +626,10 @@ export type FactMinOrderByAggregateInput = {
   createdBy?: Prisma.SortOrder
   reviewedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  universityId?: Prisma.SortOrder
+  programmeId?: Prisma.SortOrder
+  deadlineType?: Prisma.SortOrder
+  immigrationRuleId?: Prisma.SortOrder
 }
 
 export type FactScalarRelationFilter = {
@@ -676,6 +770,132 @@ export type FactUpdateOneWithoutConflictsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.FactUpdateToOneWithWhereWithoutConflictsInput, Prisma.FactUpdateWithoutConflictsInput>, Prisma.FactUncheckedUpdateWithoutConflictsInput>
 }
 
+export type FactCreateNestedManyWithoutUniversityInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput> | Prisma.FactCreateWithoutUniversityInput[] | Prisma.FactUncheckedCreateWithoutUniversityInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutUniversityInput | Prisma.FactCreateOrConnectWithoutUniversityInput[]
+  createMany?: Prisma.FactCreateManyUniversityInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUncheckedCreateNestedManyWithoutUniversityInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput> | Prisma.FactCreateWithoutUniversityInput[] | Prisma.FactUncheckedCreateWithoutUniversityInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutUniversityInput | Prisma.FactCreateOrConnectWithoutUniversityInput[]
+  createMany?: Prisma.FactCreateManyUniversityInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUpdateManyWithoutUniversityNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput> | Prisma.FactCreateWithoutUniversityInput[] | Prisma.FactUncheckedCreateWithoutUniversityInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutUniversityInput | Prisma.FactCreateOrConnectWithoutUniversityInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutUniversityInput | Prisma.FactUpsertWithWhereUniqueWithoutUniversityInput[]
+  createMany?: Prisma.FactCreateManyUniversityInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutUniversityInput | Prisma.FactUpdateWithWhereUniqueWithoutUniversityInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutUniversityInput | Prisma.FactUpdateManyWithWhereWithoutUniversityInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
+export type FactUncheckedUpdateManyWithoutUniversityNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput> | Prisma.FactCreateWithoutUniversityInput[] | Prisma.FactUncheckedCreateWithoutUniversityInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutUniversityInput | Prisma.FactCreateOrConnectWithoutUniversityInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutUniversityInput | Prisma.FactUpsertWithWhereUniqueWithoutUniversityInput[]
+  createMany?: Prisma.FactCreateManyUniversityInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutUniversityInput | Prisma.FactUpdateWithWhereUniqueWithoutUniversityInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutUniversityInput | Prisma.FactUpdateManyWithWhereWithoutUniversityInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
+export type FactCreateNestedManyWithoutProgrammeInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput> | Prisma.FactCreateWithoutProgrammeInput[] | Prisma.FactUncheckedCreateWithoutProgrammeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutProgrammeInput | Prisma.FactCreateOrConnectWithoutProgrammeInput[]
+  createMany?: Prisma.FactCreateManyProgrammeInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUncheckedCreateNestedManyWithoutProgrammeInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput> | Prisma.FactCreateWithoutProgrammeInput[] | Prisma.FactUncheckedCreateWithoutProgrammeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutProgrammeInput | Prisma.FactCreateOrConnectWithoutProgrammeInput[]
+  createMany?: Prisma.FactCreateManyProgrammeInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUpdateManyWithoutProgrammeNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput> | Prisma.FactCreateWithoutProgrammeInput[] | Prisma.FactUncheckedCreateWithoutProgrammeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutProgrammeInput | Prisma.FactCreateOrConnectWithoutProgrammeInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutProgrammeInput | Prisma.FactUpsertWithWhereUniqueWithoutProgrammeInput[]
+  createMany?: Prisma.FactCreateManyProgrammeInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutProgrammeInput | Prisma.FactUpdateWithWhereUniqueWithoutProgrammeInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutProgrammeInput | Prisma.FactUpdateManyWithWhereWithoutProgrammeInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
+export type FactUncheckedUpdateManyWithoutProgrammeNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput> | Prisma.FactCreateWithoutProgrammeInput[] | Prisma.FactUncheckedCreateWithoutProgrammeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutProgrammeInput | Prisma.FactCreateOrConnectWithoutProgrammeInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutProgrammeInput | Prisma.FactUpsertWithWhereUniqueWithoutProgrammeInput[]
+  createMany?: Prisma.FactCreateManyProgrammeInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutProgrammeInput | Prisma.FactUpdateWithWhereUniqueWithoutProgrammeInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutProgrammeInput | Prisma.FactUpdateManyWithWhereWithoutProgrammeInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
+export type FactCreateNestedManyWithoutImmigrationRuleInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput> | Prisma.FactCreateWithoutImmigrationRuleInput[] | Prisma.FactUncheckedCreateWithoutImmigrationRuleInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutImmigrationRuleInput | Prisma.FactCreateOrConnectWithoutImmigrationRuleInput[]
+  createMany?: Prisma.FactCreateManyImmigrationRuleInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUncheckedCreateNestedManyWithoutImmigrationRuleInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput> | Prisma.FactCreateWithoutImmigrationRuleInput[] | Prisma.FactUncheckedCreateWithoutImmigrationRuleInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutImmigrationRuleInput | Prisma.FactCreateOrConnectWithoutImmigrationRuleInput[]
+  createMany?: Prisma.FactCreateManyImmigrationRuleInputEnvelope
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+}
+
+export type FactUpdateManyWithoutImmigrationRuleNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput> | Prisma.FactCreateWithoutImmigrationRuleInput[] | Prisma.FactUncheckedCreateWithoutImmigrationRuleInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutImmigrationRuleInput | Prisma.FactCreateOrConnectWithoutImmigrationRuleInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutImmigrationRuleInput | Prisma.FactUpsertWithWhereUniqueWithoutImmigrationRuleInput[]
+  createMany?: Prisma.FactCreateManyImmigrationRuleInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutImmigrationRuleInput | Prisma.FactUpdateWithWhereUniqueWithoutImmigrationRuleInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutImmigrationRuleInput | Prisma.FactUpdateManyWithWhereWithoutImmigrationRuleInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
+export type FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput> | Prisma.FactCreateWithoutImmigrationRuleInput[] | Prisma.FactUncheckedCreateWithoutImmigrationRuleInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutImmigrationRuleInput | Prisma.FactCreateOrConnectWithoutImmigrationRuleInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutImmigrationRuleInput | Prisma.FactUpsertWithWhereUniqueWithoutImmigrationRuleInput[]
+  createMany?: Prisma.FactCreateManyImmigrationRuleInputEnvelope
+  set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutImmigrationRuleInput | Prisma.FactUpdateWithWhereUniqueWithoutImmigrationRuleInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutImmigrationRuleInput | Prisma.FactUpdateManyWithWhereWithoutImmigrationRuleInput[]
+  deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
+}
+
 export type FactCreateWithoutCountryInput = {
   id?: string
   topic: string
@@ -689,7 +909,11 @@ export type FactCreateWithoutCountryInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   document: Prisma.DocumentCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
@@ -709,6 +933,10 @@ export type FactUncheckedCreateWithoutCountryInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
@@ -758,6 +986,10 @@ export type FactScalarWhereInput = {
   createdBy?: Prisma.UuidFilter<"Fact"> | string
   reviewedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Fact"> | Date | string
+  universityId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  programmeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  deadlineType?: Prisma.StringNullableFilter<"Fact"> | string | null
+  immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
 }
 
 export type FactCreateWithoutDocumentInput = {
@@ -773,7 +1005,11 @@ export type FactCreateWithoutDocumentInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
@@ -793,6 +1029,10 @@ export type FactUncheckedCreateWithoutDocumentInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
@@ -837,8 +1077,12 @@ export type FactCreateWithoutEvidenceInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   document: Prisma.DocumentCreateNestedOneWithoutFactsInput
   country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
 }
@@ -858,6 +1102,10 @@ export type FactUncheckedCreateWithoutEvidenceInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
 }
@@ -891,8 +1139,12 @@ export type FactUpdateWithoutEvidenceInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
   country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
 }
@@ -912,6 +1164,10 @@ export type FactUncheckedUpdateWithoutEvidenceInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
 }
@@ -929,8 +1185,12 @@ export type FactCreateWithoutReviewsInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   document: Prisma.DocumentCreateNestedOneWithoutFactsInput
   country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
 }
@@ -950,6 +1210,10 @@ export type FactUncheckedCreateWithoutReviewsInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
 }
@@ -972,8 +1236,12 @@ export type FactCreateWithoutConflictsInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  deadlineType?: string | null
   document: Prisma.DocumentCreateNestedOneWithoutFactsInput
   country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
 }
@@ -993,6 +1261,10 @@ export type FactUncheckedCreateWithoutConflictsInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
   evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
 }
@@ -1026,8 +1298,12 @@ export type FactUpdateWithoutReviewsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
   country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
 }
@@ -1047,6 +1323,10 @@ export type FactUncheckedUpdateWithoutReviewsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
 }
@@ -1075,8 +1355,12 @@ export type FactUpdateWithoutConflictsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
   country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
 }
@@ -1096,8 +1380,228 @@ export type FactUncheckedUpdateWithoutConflictsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
+}
+
+export type FactCreateWithoutUniversityInput = {
+  id?: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  deadlineType?: string | null
+  document: Prisma.DocumentCreateNestedOneWithoutFactsInput
+  country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
+  evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactUncheckedCreateWithoutUniversityInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
+  evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactCreateOrConnectWithoutUniversityInput = {
+  where: Prisma.FactWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput>
+}
+
+export type FactCreateManyUniversityInputEnvelope = {
+  data: Prisma.FactCreateManyUniversityInput | Prisma.FactCreateManyUniversityInput[]
+  skipDuplicates?: boolean
+}
+
+export type FactUpsertWithWhereUniqueWithoutUniversityInput = {
+  where: Prisma.FactWhereUniqueInput
+  update: Prisma.XOR<Prisma.FactUpdateWithoutUniversityInput, Prisma.FactUncheckedUpdateWithoutUniversityInput>
+  create: Prisma.XOR<Prisma.FactCreateWithoutUniversityInput, Prisma.FactUncheckedCreateWithoutUniversityInput>
+}
+
+export type FactUpdateWithWhereUniqueWithoutUniversityInput = {
+  where: Prisma.FactWhereUniqueInput
+  data: Prisma.XOR<Prisma.FactUpdateWithoutUniversityInput, Prisma.FactUncheckedUpdateWithoutUniversityInput>
+}
+
+export type FactUpdateManyWithWhereWithoutUniversityInput = {
+  where: Prisma.FactScalarWhereInput
+  data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutUniversityInput>
+}
+
+export type FactCreateWithoutProgrammeInput = {
+  id?: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  deadlineType?: string | null
+  document: Prisma.DocumentCreateNestedOneWithoutFactsInput
+  country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
+  evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactUncheckedCreateWithoutProgrammeInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  universityId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
+  evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactCreateOrConnectWithoutProgrammeInput = {
+  where: Prisma.FactWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput>
+}
+
+export type FactCreateManyProgrammeInputEnvelope = {
+  data: Prisma.FactCreateManyProgrammeInput | Prisma.FactCreateManyProgrammeInput[]
+  skipDuplicates?: boolean
+}
+
+export type FactUpsertWithWhereUniqueWithoutProgrammeInput = {
+  where: Prisma.FactWhereUniqueInput
+  update: Prisma.XOR<Prisma.FactUpdateWithoutProgrammeInput, Prisma.FactUncheckedUpdateWithoutProgrammeInput>
+  create: Prisma.XOR<Prisma.FactCreateWithoutProgrammeInput, Prisma.FactUncheckedCreateWithoutProgrammeInput>
+}
+
+export type FactUpdateWithWhereUniqueWithoutProgrammeInput = {
+  where: Prisma.FactWhereUniqueInput
+  data: Prisma.XOR<Prisma.FactUpdateWithoutProgrammeInput, Prisma.FactUncheckedUpdateWithoutProgrammeInput>
+}
+
+export type FactUpdateManyWithWhereWithoutProgrammeInput = {
+  where: Prisma.FactScalarWhereInput
+  data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutProgrammeInput>
+}
+
+export type FactCreateWithoutImmigrationRuleInput = {
+  id?: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  deadlineType?: string | null
+  document: Prisma.DocumentCreateNestedOneWithoutFactsInput
+  country?: Prisma.CountryCreateNestedOneWithoutFactsInput
+  university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
+  programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
+  evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactUncheckedCreateWithoutImmigrationRuleInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  evidence?: Prisma.EvidenceUncheckedCreateNestedOneWithoutFactInput
+  reviews?: Prisma.FactReviewUncheckedCreateNestedManyWithoutFactInput
+  conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
+}
+
+export type FactCreateOrConnectWithoutImmigrationRuleInput = {
+  where: Prisma.FactWhereUniqueInput
+  create: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput>
+}
+
+export type FactCreateManyImmigrationRuleInputEnvelope = {
+  data: Prisma.FactCreateManyImmigrationRuleInput | Prisma.FactCreateManyImmigrationRuleInput[]
+  skipDuplicates?: boolean
+}
+
+export type FactUpsertWithWhereUniqueWithoutImmigrationRuleInput = {
+  where: Prisma.FactWhereUniqueInput
+  update: Prisma.XOR<Prisma.FactUpdateWithoutImmigrationRuleInput, Prisma.FactUncheckedUpdateWithoutImmigrationRuleInput>
+  create: Prisma.XOR<Prisma.FactCreateWithoutImmigrationRuleInput, Prisma.FactUncheckedCreateWithoutImmigrationRuleInput>
+}
+
+export type FactUpdateWithWhereUniqueWithoutImmigrationRuleInput = {
+  where: Prisma.FactWhereUniqueInput
+  data: Prisma.XOR<Prisma.FactUpdateWithoutImmigrationRuleInput, Prisma.FactUncheckedUpdateWithoutImmigrationRuleInput>
+}
+
+export type FactUpdateManyWithWhereWithoutImmigrationRuleInput = {
+  where: Prisma.FactScalarWhereInput
+  data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleInput>
 }
 
 export type FactCreateManyCountryInput = {
@@ -1114,6 +1618,10 @@ export type FactCreateManyCountryInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
 }
 
 export type FactUpdateWithoutCountryInput = {
@@ -1129,7 +1637,11 @@ export type FactUpdateWithoutCountryInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
@@ -1149,6 +1661,10 @@ export type FactUncheckedUpdateWithoutCountryInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
@@ -1168,6 +1684,10 @@ export type FactUncheckedUpdateManyWithoutCountryInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type FactCreateManyDocumentInput = {
@@ -1184,6 +1704,10 @@ export type FactCreateManyDocumentInput = {
   createdBy: string
   reviewedAt?: Date | string | null
   createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
 }
 
 export type FactUpdateWithoutDocumentInput = {
@@ -1199,7 +1723,11 @@ export type FactUpdateWithoutDocumentInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
@@ -1219,6 +1747,10 @@ export type FactUncheckedUpdateWithoutDocumentInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
@@ -1238,6 +1770,268 @@ export type FactUncheckedUpdateManyWithoutDocumentInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type FactCreateManyUniversityInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  programmeId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
+}
+
+export type FactUpdateWithoutUniversityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
+  country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
+  evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateWithoutUniversityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateManyWithoutUniversityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type FactCreateManyProgrammeInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  universityId?: string | null
+  deadlineType?: string | null
+  immigrationRuleId?: string | null
+}
+
+export type FactUpdateWithoutProgrammeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
+  country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
+  evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateWithoutProgrammeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateManyWithoutProgrammeInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type FactCreateManyImmigrationRuleInput = {
+  id?: string
+  documentId: string
+  topic: string
+  subject: string
+  predicate: string
+  value: string
+  unit?: string | null
+  countryId?: string | null
+  validFrom?: Date | string | null
+  validUntil?: Date | string | null
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  universityId?: string | null
+  programmeId?: string | null
+  deadlineType?: string | null
+}
+
+export type FactUpdateWithoutImmigrationRuleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  document?: Prisma.DocumentUpdateOneRequiredWithoutFactsNestedInput
+  country?: Prisma.CountryUpdateOneWithoutFactsNestedInput
+  university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
+  programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
+  evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateWithoutImmigrationRuleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidence?: Prisma.EvidenceUncheckedUpdateOneWithoutFactNestedInput
+  reviews?: Prisma.FactReviewUncheckedUpdateManyWithoutFactNestedInput
+  conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
+}
+
+export type FactUncheckedUpdateManyWithoutImmigrationRuleInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  topic?: Prisma.StringFieldUpdateOperationsInput | string
+  subject?: Prisma.StringFieldUpdateOperationsInput | string
+  predicate?: Prisma.StringFieldUpdateOperationsInput | string
+  value?: Prisma.StringFieldUpdateOperationsInput | string
+  unit?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validFrom?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  validUntil?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  universityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  programmeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1295,8 +2089,15 @@ export type FactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   createdBy?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
+  universityId?: boolean
+  programmeId?: boolean
+  deadlineType?: boolean
+  immigrationRuleId?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   evidence?: boolean | Prisma.Fact$evidenceArgs<ExtArgs>
   reviews?: boolean | Prisma.Fact$reviewsArgs<ExtArgs>
   conflicts?: boolean | Prisma.Fact$conflictsArgs<ExtArgs>
@@ -1318,8 +2119,15 @@ export type FactSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdBy?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
+  universityId?: boolean
+  programmeId?: boolean
+  deadlineType?: boolean
+  immigrationRuleId?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
 }, ExtArgs["result"]["fact"]>
 
 export type FactSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1337,8 +2145,15 @@ export type FactSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   createdBy?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
+  universityId?: boolean
+  programmeId?: boolean
+  deadlineType?: boolean
+  immigrationRuleId?: boolean
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
 }, ExtArgs["result"]["fact"]>
 
 export type FactSelectScalar = {
@@ -1356,12 +2171,19 @@ export type FactSelectScalar = {
   createdBy?: boolean
   reviewedAt?: boolean
   createdAt?: boolean
+  universityId?: boolean
+  programmeId?: boolean
+  deadlineType?: boolean
+  immigrationRuleId?: boolean
 }
 
-export type FactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "topic" | "subject" | "predicate" | "value" | "unit" | "countryId" | "validFrom" | "validUntil" | "status" | "createdBy" | "reviewedAt" | "createdAt", ExtArgs["result"]["fact"]>
+export type FactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "topic" | "subject" | "predicate" | "value" | "unit" | "countryId" | "validFrom" | "validUntil" | "status" | "createdBy" | "reviewedAt" | "createdAt" | "universityId" | "programmeId" | "deadlineType" | "immigrationRuleId", ExtArgs["result"]["fact"]>
 export type FactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   evidence?: boolean | Prisma.Fact$evidenceArgs<ExtArgs>
   reviews?: boolean | Prisma.Fact$reviewsArgs<ExtArgs>
   conflicts?: boolean | Prisma.Fact$conflictsArgs<ExtArgs>
@@ -1370,10 +2192,16 @@ export type FactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type FactIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
 }
 export type FactIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
+  university?: boolean | Prisma.Fact$universityArgs<ExtArgs>
+  programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
+  immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
 }
 
 export type $FactPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1381,6 +2209,9 @@ export type $FactPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   objects: {
     document: Prisma.$DocumentPayload<ExtArgs>
     country: Prisma.$CountryPayload<ExtArgs> | null
+    university: Prisma.$UniversityPayload<ExtArgs> | null
+    programme: Prisma.$ProgrammePayload<ExtArgs> | null
+    immigrationRule: Prisma.$ImmigrationRulePayload<ExtArgs> | null
     evidence: Prisma.$EvidencePayload<ExtArgs> | null
     reviews: Prisma.$FactReviewPayload<ExtArgs>[]
     conflicts: Prisma.$FactReviewPayload<ExtArgs>[]
@@ -1400,6 +2231,10 @@ export type $FactPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     createdBy: string
     reviewedAt: Date | null
     createdAt: Date
+    universityId: string | null
+    programmeId: string | null
+    deadlineType: string | null
+    immigrationRuleId: string | null
   }, ExtArgs["result"]["fact"]>
   composites: {}
 }
@@ -1796,6 +2631,9 @@ export interface Prisma__FactClient<T, Null = never, ExtArgs extends runtime.Typ
   readonly [Symbol.toStringTag]: "PrismaPromise"
   document<T extends Prisma.DocumentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   country<T extends Prisma.Fact$countryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$countryArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  university<T extends Prisma.Fact$universityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$universityArgs<ExtArgs>>): Prisma.Prisma__UniversityClient<runtime.Types.Result.GetResult<Prisma.$UniversityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  programme<T extends Prisma.Fact$programmeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$programmeArgs<ExtArgs>>): Prisma.Prisma__ProgrammeClient<runtime.Types.Result.GetResult<Prisma.$ProgrammePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  immigrationRule<T extends Prisma.Fact$immigrationRuleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$immigrationRuleArgs<ExtArgs>>): Prisma.Prisma__ImmigrationRuleClient<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   evidence<T extends Prisma.Fact$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$evidenceArgs<ExtArgs>>): Prisma.Prisma__EvidenceClient<runtime.Types.Result.GetResult<Prisma.$EvidencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   reviews<T extends Prisma.Fact$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   conflicts<T extends Prisma.Fact$conflictsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$conflictsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -1842,6 +2680,10 @@ export interface FactFieldRefs {
   readonly createdBy: Prisma.FieldRef<"Fact", 'String'>
   readonly reviewedAt: Prisma.FieldRef<"Fact", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Fact", 'DateTime'>
+  readonly universityId: Prisma.FieldRef<"Fact", 'String'>
+  readonly programmeId: Prisma.FieldRef<"Fact", 'String'>
+  readonly deadlineType: Prisma.FieldRef<"Fact", 'String'>
+  readonly immigrationRuleId: Prisma.FieldRef<"Fact", 'String'>
 }
     
 
@@ -2259,6 +3101,63 @@ export type Fact$countryArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
    */
   include?: Prisma.CountryInclude<ExtArgs> | null
   where?: Prisma.CountryWhereInput
+}
+
+/**
+ * Fact.university
+ */
+export type Fact$universityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the University
+   */
+  select?: Prisma.UniversitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the University
+   */
+  omit?: Prisma.UniversityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UniversityInclude<ExtArgs> | null
+  where?: Prisma.UniversityWhereInput
+}
+
+/**
+ * Fact.programme
+ */
+export type Fact$programmeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Programme
+   */
+  select?: Prisma.ProgrammeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Programme
+   */
+  omit?: Prisma.ProgrammeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgrammeInclude<ExtArgs> | null
+  where?: Prisma.ProgrammeWhereInput
+}
+
+/**
+ * Fact.immigrationRule
+ */
+export type Fact$immigrationRuleArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmigrationRule
+   */
+  select?: Prisma.ImmigrationRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmigrationRule
+   */
+  omit?: Prisma.ImmigrationRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmigrationRuleInclude<ExtArgs> | null
+  where?: Prisma.ImmigrationRuleWhereInput
 }
 
 /**

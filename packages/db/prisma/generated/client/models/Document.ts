@@ -272,6 +272,9 @@ export type DocumentWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   facts?: Prisma.FactListRelationFilter
   evidence?: Prisma.EvidenceListRelationFilter
+  universities?: Prisma.UniversityListRelationFilter
+  programmes?: Prisma.ProgrammeListRelationFilter
+  immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   source?: Prisma.XOR<Prisma.SourceScalarRelationFilter, Prisma.SourceWhereInput>
 }
 
@@ -294,6 +297,9 @@ export type DocumentOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   facts?: Prisma.FactOrderByRelationAggregateInput
   evidence?: Prisma.EvidenceOrderByRelationAggregateInput
+  universities?: Prisma.UniversityOrderByRelationAggregateInput
+  programmes?: Prisma.ProgrammeOrderByRelationAggregateInput
+  immigrationRules?: Prisma.ImmigrationRuleOrderByRelationAggregateInput
   source?: Prisma.SourceOrderByWithRelationInput
 }
 
@@ -320,6 +326,9 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Document"> | Date | string
   facts?: Prisma.FactListRelationFilter
   evidence?: Prisma.EvidenceListRelationFilter
+  universities?: Prisma.UniversityListRelationFilter
+  programmes?: Prisma.ProgrammeListRelationFilter
+  immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   source?: Prisma.XOR<Prisma.SourceScalarRelationFilter, Prisma.SourceWhereInput>
 }, "id" | "sourceId_canonicalUrl_contentHash">
 
@@ -385,6 +394,9 @@ export type DocumentCreateInput = {
   createdAt?: Date | string
   facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
 }
 
@@ -407,6 +419,9 @@ export type DocumentUncheckedCreateInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUpdateInput = {
@@ -427,6 +442,9 @@ export type DocumentUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
 }
 
@@ -449,6 +467,9 @@ export type DocumentUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -655,6 +676,48 @@ export type DocumentUpdateOneRequiredWithoutEvidenceNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutEvidenceInput, Prisma.DocumentUpdateWithoutEvidenceInput>, Prisma.DocumentUncheckedUpdateWithoutEvidenceInput>
 }
 
+export type DocumentCreateNestedOneWithoutUniversitiesInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutUniversitiesInput, Prisma.DocumentUncheckedCreateWithoutUniversitiesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutUniversitiesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutUniversitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutUniversitiesInput, Prisma.DocumentUncheckedCreateWithoutUniversitiesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutUniversitiesInput
+  upsert?: Prisma.DocumentUpsertWithoutUniversitiesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutUniversitiesInput, Prisma.DocumentUpdateWithoutUniversitiesInput>, Prisma.DocumentUncheckedUpdateWithoutUniversitiesInput>
+}
+
+export type DocumentCreateNestedOneWithoutProgrammesInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutProgrammesInput, Prisma.DocumentUncheckedCreateWithoutProgrammesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutProgrammesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutProgrammesNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutProgrammesInput, Prisma.DocumentUncheckedCreateWithoutProgrammesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutProgrammesInput
+  upsert?: Prisma.DocumentUpsertWithoutProgrammesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutProgrammesInput, Prisma.DocumentUpdateWithoutProgrammesInput>, Prisma.DocumentUncheckedUpdateWithoutProgrammesInput>
+}
+
+export type DocumentCreateNestedOneWithoutImmigrationRulesInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedCreateWithoutImmigrationRulesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutImmigrationRulesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedCreateWithoutImmigrationRulesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutImmigrationRulesInput
+  upsert?: Prisma.DocumentUpsertWithoutImmigrationRulesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutImmigrationRulesInput, Prisma.DocumentUpdateWithoutImmigrationRulesInput>, Prisma.DocumentUncheckedUpdateWithoutImmigrationRulesInput>
+}
+
 export type DocumentCreateWithoutSourceInput = {
   id?: string
   canonicalUrl: string
@@ -673,6 +736,9 @@ export type DocumentCreateWithoutSourceInput = {
   createdAt?: Date | string
   facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutSourceInput = {
@@ -693,6 +759,9 @@ export type DocumentUncheckedCreateWithoutSourceInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
   evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutSourceInput = {
@@ -760,6 +829,9 @@ export type DocumentCreateWithoutFactsInput = {
   extractionStatus?: string
   createdAt?: Date | string
   evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
 }
 
@@ -781,6 +853,9 @@ export type DocumentUncheckedCreateWithoutFactsInput = {
   extractionStatus?: string
   createdAt?: Date | string
   evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutFactsInput = {
@@ -816,6 +891,9 @@ export type DocumentUpdateWithoutFactsInput = {
   extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
 }
 
@@ -837,6 +915,9 @@ export type DocumentUncheckedUpdateWithoutFactsInput = {
   extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutEvidenceInput = {
@@ -856,6 +937,9 @@ export type DocumentCreateWithoutEvidenceInput = {
   extractionStatus?: string
   createdAt?: Date | string
   facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
 }
 
@@ -877,6 +961,9 @@ export type DocumentUncheckedCreateWithoutEvidenceInput = {
   extractionStatus?: string
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEvidenceInput = {
@@ -912,6 +999,9 @@ export type DocumentUpdateWithoutEvidenceInput = {
   extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
 }
 
@@ -933,6 +1023,333 @@ export type DocumentUncheckedUpdateWithoutEvidenceInput = {
   extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutUniversitiesInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+}
+
+export type DocumentUncheckedCreateWithoutUniversitiesInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutUniversitiesInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutUniversitiesInput, Prisma.DocumentUncheckedCreateWithoutUniversitiesInput>
+}
+
+export type DocumentUpsertWithoutUniversitiesInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutUniversitiesInput, Prisma.DocumentUncheckedUpdateWithoutUniversitiesInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutUniversitiesInput, Prisma.DocumentUncheckedCreateWithoutUniversitiesInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutUniversitiesInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutUniversitiesInput, Prisma.DocumentUncheckedUpdateWithoutUniversitiesInput>
+}
+
+export type DocumentUpdateWithoutUniversitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutUniversitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutProgrammesInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+}
+
+export type DocumentUncheckedCreateWithoutProgrammesInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutProgrammesInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutProgrammesInput, Prisma.DocumentUncheckedCreateWithoutProgrammesInput>
+}
+
+export type DocumentUpsertWithoutProgrammesInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutProgrammesInput, Prisma.DocumentUncheckedUpdateWithoutProgrammesInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutProgrammesInput, Prisma.DocumentUncheckedCreateWithoutProgrammesInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutProgrammesInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutProgrammesInput, Prisma.DocumentUncheckedUpdateWithoutProgrammesInput>
+}
+
+export type DocumentUpdateWithoutProgrammesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutProgrammesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutImmigrationRulesInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+}
+
+export type DocumentUncheckedCreateWithoutImmigrationRulesInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutImmigrationRulesInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedCreateWithoutImmigrationRulesInput>
+}
+
+export type DocumentUpsertWithoutImmigrationRulesInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedUpdateWithoutImmigrationRulesInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedCreateWithoutImmigrationRulesInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutImmigrationRulesInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutImmigrationRulesInput, Prisma.DocumentUncheckedUpdateWithoutImmigrationRulesInput>
+}
+
+export type DocumentUpdateWithoutImmigrationRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutImmigrationRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManySourceInput = {
@@ -971,6 +1388,9 @@ export type DocumentUpdateWithoutSourceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutSourceInput = {
@@ -991,6 +1411,9 @@ export type DocumentUncheckedUpdateWithoutSourceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
   evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutSourceInput = {
@@ -1019,11 +1442,17 @@ export type DocumentUncheckedUpdateManyWithoutSourceInput = {
 export type DocumentCountOutputType = {
   facts: number
   evidence: number
+  universities: number
+  programmes: number
+  immigrationRules: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | DocumentCountOutputTypeCountFactsArgs
   evidence?: boolean | DocumentCountOutputTypeCountEvidenceArgs
+  universities?: boolean | DocumentCountOutputTypeCountUniversitiesArgs
+  programmes?: boolean | DocumentCountOutputTypeCountProgrammesArgs
+  immigrationRules?: boolean | DocumentCountOutputTypeCountImmigrationRulesArgs
 }
 
 /**
@@ -1050,6 +1479,27 @@ export type DocumentCountOutputTypeCountEvidenceArgs<ExtArgs extends runtime.Typ
   where?: Prisma.EvidenceWhereInput
 }
 
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountUniversitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UniversityWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountProgrammesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgrammeWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountImmigrationRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmigrationRuleWhereInput
+}
+
 
 export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1070,6 +1520,9 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   createdAt?: boolean
   facts?: boolean | Prisma.Document$factsArgs<ExtArgs>
   evidence?: boolean | Prisma.Document$evidenceArgs<ExtArgs>
+  universities?: boolean | Prisma.Document$universitiesArgs<ExtArgs>
+  programmes?: boolean | Prisma.Document$programmesArgs<ExtArgs>
+  immigrationRules?: boolean | Prisma.Document$immigrationRulesArgs<ExtArgs>
   source?: boolean | Prisma.SourceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
@@ -1137,6 +1590,9 @@ export type DocumentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | Prisma.Document$factsArgs<ExtArgs>
   evidence?: boolean | Prisma.Document$evidenceArgs<ExtArgs>
+  universities?: boolean | Prisma.Document$universitiesArgs<ExtArgs>
+  programmes?: boolean | Prisma.Document$programmesArgs<ExtArgs>
+  immigrationRules?: boolean | Prisma.Document$immigrationRulesArgs<ExtArgs>
   source?: boolean | Prisma.SourceDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1152,6 +1608,9 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     facts: Prisma.$FactPayload<ExtArgs>[]
     evidence: Prisma.$EvidencePayload<ExtArgs>[]
+    universities: Prisma.$UniversityPayload<ExtArgs>[]
+    programmes: Prisma.$ProgrammePayload<ExtArgs>[]
+    immigrationRules: Prisma.$ImmigrationRulePayload<ExtArgs>[]
     source: Prisma.$SourcePayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1567,6 +2026,9 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   facts<T extends Prisma.Document$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidence<T extends Prisma.Document$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$evidenceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EvidencePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  universities<T extends Prisma.Document$universitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$universitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UniversityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  programmes<T extends Prisma.Document$programmesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$programmesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgrammePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immigrationRules<T extends Prisma.Document$immigrationRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$immigrationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   source<T extends Prisma.SourceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SourceDefaultArgs<ExtArgs>>): Prisma.Prisma__SourceClient<runtime.Types.Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2059,6 +2521,78 @@ export type Document$evidenceArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.EvidenceScalarFieldEnum | Prisma.EvidenceScalarFieldEnum[]
+}
+
+/**
+ * Document.universities
+ */
+export type Document$universitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the University
+   */
+  select?: Prisma.UniversitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the University
+   */
+  omit?: Prisma.UniversityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UniversityInclude<ExtArgs> | null
+  where?: Prisma.UniversityWhereInput
+  orderBy?: Prisma.UniversityOrderByWithRelationInput | Prisma.UniversityOrderByWithRelationInput[]
+  cursor?: Prisma.UniversityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UniversityScalarFieldEnum | Prisma.UniversityScalarFieldEnum[]
+}
+
+/**
+ * Document.programmes
+ */
+export type Document$programmesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Programme
+   */
+  select?: Prisma.ProgrammeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Programme
+   */
+  omit?: Prisma.ProgrammeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgrammeInclude<ExtArgs> | null
+  where?: Prisma.ProgrammeWhereInput
+  orderBy?: Prisma.ProgrammeOrderByWithRelationInput | Prisma.ProgrammeOrderByWithRelationInput[]
+  cursor?: Prisma.ProgrammeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgrammeScalarFieldEnum | Prisma.ProgrammeScalarFieldEnum[]
+}
+
+/**
+ * Document.immigrationRules
+ */
+export type Document$immigrationRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmigrationRule
+   */
+  select?: Prisma.ImmigrationRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmigrationRule
+   */
+  omit?: Prisma.ImmigrationRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmigrationRuleInclude<ExtArgs> | null
+  where?: Prisma.ImmigrationRuleWhereInput
+  orderBy?: Prisma.ImmigrationRuleOrderByWithRelationInput | Prisma.ImmigrationRuleOrderByWithRelationInput[]
+  cursor?: Prisma.ImmigrationRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmigrationRuleScalarFieldEnum | Prisma.ImmigrationRuleScalarFieldEnum[]
 }
 
 /**

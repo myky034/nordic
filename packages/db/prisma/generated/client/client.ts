@@ -96,3 +96,28 @@ export type Evidence = Prisma.EvidenceModel
  * 
  */
 export type FactReview = Prisma.FactReviewModel
+/**
+ * Model University
+ * 
+ */
+export type University = Prisma.UniversityModel
+/**
+ * Model Programme
+ * 
+ */
+export type Programme = Prisma.ProgrammeModel
+/**
+ * Model EducationReview
+ * 
+ */
+export type EducationReview = Prisma.EducationReviewModel
+/**
+ * Model ImmigrationRule
+ * 
+ */
+export type ImmigrationRule = Prisma.ImmigrationRuleModel
+/**
+ * Model ImmigrationRuleReview
+ * 
+ */
+export type ImmigrationRuleReview = Prisma.ImmigrationRuleReviewModel

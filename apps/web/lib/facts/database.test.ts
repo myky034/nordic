@@ -9,7 +9,7 @@ beforeAll(async()=>{
  CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY,email text,created_at timestamptz DEFAULT now(),email_confirmed_at timestamptz,deleted_at timestamptz,banned_until timestamptz);
  CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
  GRANT USAGE ON SCHEMA public,auth TO anon,authenticated;`);
- for(const name of ["20260917090000_countries_sources","20260918090000_documents","20260918100000_rbac","20260919090000_facts"]) await db.exec(readFileSync(`../../packages/db/prisma/migrations/${name}/migration.sql`,"utf8"));
+ for(const name of ["20260917090000_countries_sources","20260918090000_documents","20260918100000_rbac","20260919090000_facts","20260923090000_fact_conflict_requires_review"]) await db.exec(readFileSync(`../../packages/db/prisma/migrations/${name}/migration.sql`,"utf8"));
  await db.query("INSERT INTO auth.users(id,email_confirmed_at) VALUES($1,now())",[actor]);
  await db.query("SELECT bootstrap_administrator($1)",[actor]);
  // Synthetic metadata is confined to this disposable database.
@@ -55,11 +55,20 @@ it("publishes a reviewed claim and preserves an immutable decision",async()=>{
  await role("anon",async()=>{expect((await db.query("SELECT * FROM facts")).rows).toHaveLength(1);expect((await db.query("SELECT * FROM evidence")).rows).toHaveLength(1);});
  await expect(role("authenticated",()=>db.query("SELECT review_fact($1,'rejected','overwrite',null)",[first]))).rejects.toThrow("facts_already_decided");
 });
+it("refuses to publish an unreviewed proposal by flagging it as a conflict",async()=>{
+ // Regression for the 2026-09-23 fix: 'conflicted' is publicly visible, so a
+ // still-proposed claim must not reach it without its own evidence review.
+ await expect(role("authenticated",()=>db.query("SELECT review_fact($1,'conflicted','Contradictory test claims',$2)",[first,second]))).rejects.toThrow("facts_conflict_requires_review");
+ await expect(role("authenticated",()=>db.query("SELECT review_fact($1,'conflicted','Contradictory test claims',$2)",[second,first]))).rejects.toThrow("facts_conflict_requires_review");
+ expect((await db.query("SELECT * FROM facts WHERE status='conflicted'")).rows).toHaveLength(0);
+ await role("anon",async()=>{expect((await db.query("SELECT * FROM facts")).rows).toHaveLength(1);});
+});
 it("marks both sides of conflict and retains evidence and decision history",async()=>{
+ await role("authenticated",()=>db.query("SELECT review_fact($1,'reviewed','Checked second test evidence',null)",[second]));
  await role("authenticated",()=>db.query("SELECT review_fact($1,'conflicted','Contradictory test claims',$2)",[first,second]));
  expect((await db.query("SELECT * FROM facts WHERE status='conflicted'")).rows).toHaveLength(2);
  expect((await db.query("SELECT * FROM evidence")).rows).toHaveLength(2);
- expect((await db.query("SELECT * FROM fact_reviews")).rows).toHaveLength(3);
+ expect((await db.query("SELECT * FROM fact_reviews")).rows).toHaveLength(4);
  await expect(role("authenticated",()=>db.query("SELECT review_fact($1,'reviewed','cannot erase conflict',null)",[second]))).rejects.toThrow("facts_already_decided");
 });
 it("rejects invalid validity ranges and honors immediate revocation",async()=>{

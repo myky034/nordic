@@ -208,6 +208,8 @@ export type CountryWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Country"> | Date | string
   facts?: Prisma.FactListRelationFilter
   sources?: Prisma.SourceListRelationFilter
+  universities?: Prisma.UniversityListRelationFilter
+  immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
 }
 
 export type CountryOrderByWithRelationInput = {
@@ -221,6 +223,8 @@ export type CountryOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   facts?: Prisma.FactOrderByRelationAggregateInput
   sources?: Prisma.SourceOrderByRelationAggregateInput
+  universities?: Prisma.UniversityOrderByRelationAggregateInput
+  immigrationRules?: Prisma.ImmigrationRuleOrderByRelationAggregateInput
 }
 
 export type CountryWhereUniqueInput = Prisma.AtLeast<{
@@ -237,6 +241,8 @@ export type CountryWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Country"> | Date | string
   facts?: Prisma.FactListRelationFilter
   sources?: Prisma.SourceListRelationFilter
+  universities?: Prisma.UniversityListRelationFilter
+  immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
 }, "id" | "slug" | "name" | "isoCode">
 
 export type CountryOrderByWithAggregationInput = {
@@ -278,6 +284,8 @@ export type CountryCreateInput = {
   updatedAt?: Date | string
   facts?: Prisma.FactCreateNestedManyWithoutCountryInput
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateInput = {
@@ -291,6 +299,8 @@ export type CountryUncheckedCreateInput = {
   updatedAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUpdateInput = {
@@ -304,6 +314,8 @@ export type CountryUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateInput = {
@@ -317,6 +329,8 @@ export type CountryUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateManyInput = {
@@ -390,6 +404,11 @@ export type CountryNullableScalarRelationFilter = {
   isNot?: Prisma.CountryWhereInput | null
 }
 
+export type CountryScalarRelationFilter = {
+  is?: Prisma.CountryWhereInput
+  isNot?: Prisma.CountryWhereInput
+}
+
 export type StringFieldUpdateOperationsInput = {
   set?: string
 }
@@ -434,6 +453,34 @@ export type CountryUpdateOneWithoutFactsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutFactsInput, Prisma.CountryUpdateWithoutFactsInput>, Prisma.CountryUncheckedUpdateWithoutFactsInput>
 }
 
+export type CountryCreateNestedOneWithoutUniversitiesInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutUniversitiesInput, Prisma.CountryUncheckedCreateWithoutUniversitiesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutUniversitiesInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneRequiredWithoutUniversitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutUniversitiesInput, Prisma.CountryUncheckedCreateWithoutUniversitiesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutUniversitiesInput
+  upsert?: Prisma.CountryUpsertWithoutUniversitiesInput
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutUniversitiesInput, Prisma.CountryUpdateWithoutUniversitiesInput>, Prisma.CountryUncheckedUpdateWithoutUniversitiesInput>
+}
+
+export type CountryCreateNestedOneWithoutImmigrationRulesInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutImmigrationRulesInput, Prisma.CountryUncheckedCreateWithoutImmigrationRulesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutImmigrationRulesInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutImmigrationRulesInput, Prisma.CountryUncheckedCreateWithoutImmigrationRulesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutImmigrationRulesInput
+  upsert?: Prisma.CountryUpsertWithoutImmigrationRulesInput
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutImmigrationRulesInput, Prisma.CountryUpdateWithoutImmigrationRulesInput>, Prisma.CountryUncheckedUpdateWithoutImmigrationRulesInput>
+}
+
 export type CountryCreateWithoutSourcesInput = {
   id?: string
   slug: string
@@ -444,6 +491,8 @@ export type CountryCreateWithoutSourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutSourcesInput = {
@@ -456,6 +505,8 @@ export type CountryUncheckedCreateWithoutSourcesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutSourcesInput = {
@@ -484,6 +535,8 @@ export type CountryUpdateWithoutSourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutSourcesInput = {
@@ -496,6 +549,8 @@ export type CountryUncheckedUpdateWithoutSourcesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateWithoutFactsInput = {
@@ -508,6 +563,8 @@ export type CountryCreateWithoutFactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutFactsInput = {
@@ -520,6 +577,8 @@ export type CountryUncheckedCreateWithoutFactsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutFactsInput = {
@@ -548,6 +607,8 @@ export type CountryUpdateWithoutFactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutFactsInput = {
@@ -560,6 +621,152 @@ export type CountryUncheckedUpdateWithoutFactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutUniversitiesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutUniversitiesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutUniversitiesInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutUniversitiesInput, Prisma.CountryUncheckedCreateWithoutUniversitiesInput>
+}
+
+export type CountryUpsertWithoutUniversitiesInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutUniversitiesInput, Prisma.CountryUncheckedUpdateWithoutUniversitiesInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutUniversitiesInput, Prisma.CountryUncheckedCreateWithoutUniversitiesInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutUniversitiesInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutUniversitiesInput, Prisma.CountryUncheckedUpdateWithoutUniversitiesInput>
+}
+
+export type CountryUpdateWithoutUniversitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutUniversitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutImmigrationRulesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutImmigrationRulesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutImmigrationRulesInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutImmigrationRulesInput, Prisma.CountryUncheckedCreateWithoutImmigrationRulesInput>
+}
+
+export type CountryUpsertWithoutImmigrationRulesInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutImmigrationRulesInput, Prisma.CountryUncheckedUpdateWithoutImmigrationRulesInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutImmigrationRulesInput, Prisma.CountryUncheckedCreateWithoutImmigrationRulesInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutImmigrationRulesInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutImmigrationRulesInput, Prisma.CountryUncheckedUpdateWithoutImmigrationRulesInput>
+}
+
+export type CountryUpdateWithoutImmigrationRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutImmigrationRulesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 
@@ -570,11 +777,15 @@ export type CountryUncheckedUpdateWithoutFactsInput = {
 export type CountryCountOutputType = {
   facts: number
   sources: number
+  universities: number
+  immigrationRules: number
 }
 
 export type CountryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | CountryCountOutputTypeCountFactsArgs
   sources?: boolean | CountryCountOutputTypeCountSourcesArgs
+  universities?: boolean | CountryCountOutputTypeCountUniversitiesArgs
+  immigrationRules?: boolean | CountryCountOutputTypeCountImmigrationRulesArgs
 }
 
 /**
@@ -601,6 +812,20 @@ export type CountryCountOutputTypeCountSourcesArgs<ExtArgs extends runtime.Types
   where?: Prisma.SourceWhereInput
 }
 
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountUniversitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UniversityWhereInput
+}
+
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountImmigrationRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ImmigrationRuleWhereInput
+}
+
 
 export type CountrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -613,6 +838,8 @@ export type CountrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   facts?: boolean | Prisma.Country$factsArgs<ExtArgs>
   sources?: boolean | Prisma.Country$sourcesArgs<ExtArgs>
+  universities?: boolean | Prisma.Country$universitiesArgs<ExtArgs>
+  immigrationRules?: boolean | Prisma.Country$immigrationRulesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["country"]>
 
@@ -653,6 +880,8 @@ export type CountryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type CountryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | Prisma.Country$factsArgs<ExtArgs>
   sources?: boolean | Prisma.Country$sourcesArgs<ExtArgs>
+  universities?: boolean | Prisma.Country$universitiesArgs<ExtArgs>
+  immigrationRules?: boolean | Prisma.Country$immigrationRulesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CountryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -663,6 +892,8 @@ export type $CountryPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     facts: Prisma.$FactPayload<ExtArgs>[]
     sources: Prisma.$SourcePayload<ExtArgs>[]
+    universities: Prisma.$UniversityPayload<ExtArgs>[]
+    immigrationRules: Prisma.$ImmigrationRulePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1069,6 +1300,8 @@ export interface Prisma__CountryClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   facts<T extends Prisma.Country$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   sources<T extends Prisma.Country$sourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$sourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  universities<T extends Prisma.Country$universitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$universitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UniversityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  immigrationRules<T extends Prisma.Country$immigrationRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$immigrationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1544,6 +1777,54 @@ export type Country$sourcesArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.SourceScalarFieldEnum | Prisma.SourceScalarFieldEnum[]
+}
+
+/**
+ * Country.universities
+ */
+export type Country$universitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the University
+   */
+  select?: Prisma.UniversitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the University
+   */
+  omit?: Prisma.UniversityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UniversityInclude<ExtArgs> | null
+  where?: Prisma.UniversityWhereInput
+  orderBy?: Prisma.UniversityOrderByWithRelationInput | Prisma.UniversityOrderByWithRelationInput[]
+  cursor?: Prisma.UniversityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UniversityScalarFieldEnum | Prisma.UniversityScalarFieldEnum[]
+}
+
+/**
+ * Country.immigrationRules
+ */
+export type Country$immigrationRulesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ImmigrationRule
+   */
+  select?: Prisma.ImmigrationRuleSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ImmigrationRule
+   */
+  omit?: Prisma.ImmigrationRuleOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ImmigrationRuleInclude<ExtArgs> | null
+  where?: Prisma.ImmigrationRuleWhereInput
+  orderBy?: Prisma.ImmigrationRuleOrderByWithRelationInput | Prisma.ImmigrationRuleOrderByWithRelationInput[]
+  cursor?: Prisma.ImmigrationRuleWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ImmigrationRuleScalarFieldEnum | Prisma.ImmigrationRuleScalarFieldEnum[]
 }
 
 /**

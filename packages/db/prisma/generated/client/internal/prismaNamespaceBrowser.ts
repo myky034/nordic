@@ -61,7 +61,12 @@ export const ModelName = {
   AccessAudit: 'AccessAudit',
   Fact: 'Fact',
   Evidence: 'Evidence',
-  FactReview: 'FactReview'
+  FactReview: 'FactReview',
+  University: 'University',
+  Programme: 'Programme',
+  EducationReview: 'EducationReview',
+  ImmigrationRule: 'ImmigrationRule',
+  ImmigrationRuleReview: 'ImmigrationRuleReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -201,7 +206,11 @@ export const FactScalarFieldEnum = {
   status: 'status',
   createdBy: 'createdBy',
   reviewedAt: 'reviewedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  deadlineType: 'deadlineType',
+  immigrationRuleId: 'immigrationRuleId'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -231,6 +240,84 @@ export const FactReviewScalarFieldEnum = {
 } as const
 
 export type FactReviewScalarFieldEnum = (typeof FactReviewScalarFieldEnum)[keyof typeof FactReviewScalarFieldEnum]
+
+
+export const UniversityScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  name: 'name',
+  officialUrl: 'officialUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type UniversityScalarFieldEnum = (typeof UniversityScalarFieldEnum)[keyof typeof UniversityScalarFieldEnum]
+
+
+export const ProgrammeScalarFieldEnum = {
+  id: 'id',
+  universityId: 'universityId',
+  name: 'name',
+  degreeType: 'degreeType',
+  field: 'field',
+  language: 'language',
+  officialUrl: 'officialUrl',
+  applicationUrl: 'applicationUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ProgrammeScalarFieldEnum = (typeof ProgrammeScalarFieldEnum)[keyof typeof ProgrammeScalarFieldEnum]
+
+
+export const EducationReviewScalarFieldEnum = {
+  id: 'id',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type EducationReviewScalarFieldEnum = (typeof EducationReviewScalarFieldEnum)[keyof typeof EducationReviewScalarFieldEnum]
+
+
+export const ImmigrationRuleScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  ruleType: 'ruleType',
+  title: 'title',
+  officialUrl: 'officialUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ImmigrationRuleScalarFieldEnum = (typeof ImmigrationRuleScalarFieldEnum)[keyof typeof ImmigrationRuleScalarFieldEnum]
+
+
+export const ImmigrationRuleReviewScalarFieldEnum = {
+  id: 'id',
+  immigrationRuleId: 'immigrationRuleId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type ImmigrationRuleReviewScalarFieldEnum = (typeof ImmigrationRuleReviewScalarFieldEnum)[keyof typeof ImmigrationRuleReviewScalarFieldEnum]
 
 
 export const SortOrder = {

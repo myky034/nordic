@@ -407,7 +407,12 @@ export const ModelName = {
   AccessAudit: 'AccessAudit',
   Fact: 'Fact',
   Evidence: 'Evidence',
-  FactReview: 'FactReview'
+  FactReview: 'FactReview',
+  University: 'University',
+  Programme: 'Programme',
+  EducationReview: 'EducationReview',
+  ImmigrationRule: 'ImmigrationRule',
+  ImmigrationRuleReview: 'ImmigrationRuleReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -423,7 +428,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1241,6 +1246,376 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    University: {
+      payload: Prisma.$UniversityPayload<ExtArgs>
+      fields: Prisma.UniversityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UniversityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UniversityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        findFirst: {
+          args: Prisma.UniversityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UniversityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        findMany: {
+          args: Prisma.UniversityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>[]
+        }
+        create: {
+          args: Prisma.UniversityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        createMany: {
+          args: Prisma.UniversityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UniversityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>[]
+        }
+        delete: {
+          args: Prisma.UniversityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        update: {
+          args: Prisma.UniversityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        deleteMany: {
+          args: Prisma.UniversityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UniversityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UniversityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>[]
+        }
+        upsert: {
+          args: Prisma.UniversityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UniversityPayload>
+        }
+        aggregate: {
+          args: Prisma.UniversityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUniversity>
+        }
+        groupBy: {
+          args: Prisma.UniversityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UniversityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UniversityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UniversityCountAggregateOutputType> | number
+        }
+      }
+    }
+    Programme: {
+      payload: Prisma.$ProgrammePayload<ExtArgs>
+      fields: Prisma.ProgrammeFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProgrammeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProgrammeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        findFirst: {
+          args: Prisma.ProgrammeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProgrammeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        findMany: {
+          args: Prisma.ProgrammeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>[]
+        }
+        create: {
+          args: Prisma.ProgrammeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        createMany: {
+          args: Prisma.ProgrammeCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProgrammeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>[]
+        }
+        delete: {
+          args: Prisma.ProgrammeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        update: {
+          args: Prisma.ProgrammeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProgrammeDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProgrammeUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProgrammeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProgrammeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammePayload>
+        }
+        aggregate: {
+          args: Prisma.ProgrammeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProgramme>
+        }
+        groupBy: {
+          args: Prisma.ProgrammeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgrammeGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProgrammeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgrammeCountAggregateOutputType> | number
+        }
+      }
+    }
+    EducationReview: {
+      payload: Prisma.$EducationReviewPayload<ExtArgs>
+      fields: Prisma.EducationReviewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EducationReviewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EducationReviewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        findFirst: {
+          args: Prisma.EducationReviewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EducationReviewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        findMany: {
+          args: Prisma.EducationReviewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>[]
+        }
+        create: {
+          args: Prisma.EducationReviewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        createMany: {
+          args: Prisma.EducationReviewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.EducationReviewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>[]
+        }
+        delete: {
+          args: Prisma.EducationReviewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        update: {
+          args: Prisma.EducationReviewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        deleteMany: {
+          args: Prisma.EducationReviewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EducationReviewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.EducationReviewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>[]
+        }
+        upsert: {
+          args: Prisma.EducationReviewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EducationReviewPayload>
+        }
+        aggregate: {
+          args: Prisma.EducationReviewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEducationReview>
+        }
+        groupBy: {
+          args: Prisma.EducationReviewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EducationReviewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EducationReviewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EducationReviewCountAggregateOutputType> | number
+        }
+      }
+    }
+    ImmigrationRule: {
+      payload: Prisma.$ImmigrationRulePayload<ExtArgs>
+      fields: Prisma.ImmigrationRuleFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmigrationRuleFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmigrationRuleFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        findFirst: {
+          args: Prisma.ImmigrationRuleFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmigrationRuleFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        findMany: {
+          args: Prisma.ImmigrationRuleFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>[]
+        }
+        create: {
+          args: Prisma.ImmigrationRuleCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        createMany: {
+          args: Prisma.ImmigrationRuleCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmigrationRuleCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>[]
+        }
+        delete: {
+          args: Prisma.ImmigrationRuleDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        update: {
+          args: Prisma.ImmigrationRuleUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmigrationRuleDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmigrationRuleUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmigrationRuleUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmigrationRuleUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRulePayload>
+        }
+        aggregate: {
+          args: Prisma.ImmigrationRuleAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmigrationRule>
+        }
+        groupBy: {
+          args: Prisma.ImmigrationRuleGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmigrationRuleGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmigrationRuleCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmigrationRuleCountAggregateOutputType> | number
+        }
+      }
+    }
+    ImmigrationRuleReview: {
+      payload: Prisma.$ImmigrationRuleReviewPayload<ExtArgs>
+      fields: Prisma.ImmigrationRuleReviewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ImmigrationRuleReviewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ImmigrationRuleReviewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        findFirst: {
+          args: Prisma.ImmigrationRuleReviewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ImmigrationRuleReviewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        findMany: {
+          args: Prisma.ImmigrationRuleReviewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>[]
+        }
+        create: {
+          args: Prisma.ImmigrationRuleReviewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        createMany: {
+          args: Prisma.ImmigrationRuleReviewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ImmigrationRuleReviewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>[]
+        }
+        delete: {
+          args: Prisma.ImmigrationRuleReviewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        update: {
+          args: Prisma.ImmigrationRuleReviewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        deleteMany: {
+          args: Prisma.ImmigrationRuleReviewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ImmigrationRuleReviewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ImmigrationRuleReviewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>[]
+        }
+        upsert: {
+          args: Prisma.ImmigrationRuleReviewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ImmigrationRuleReviewPayload>
+        }
+        aggregate: {
+          args: Prisma.ImmigrationRuleReviewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateImmigrationRuleReview>
+        }
+        groupBy: {
+          args: Prisma.ImmigrationRuleReviewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmigrationRuleReviewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ImmigrationRuleReviewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ImmigrationRuleReviewCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1401,7 +1776,11 @@ export const FactScalarFieldEnum = {
   status: 'status',
   createdBy: 'createdBy',
   reviewedAt: 'reviewedAt',
-  createdAt: 'createdAt'
+  createdAt: 'createdAt',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  deadlineType: 'deadlineType',
+  immigrationRuleId: 'immigrationRuleId'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -1431,6 +1810,84 @@ export const FactReviewScalarFieldEnum = {
 } as const
 
 export type FactReviewScalarFieldEnum = (typeof FactReviewScalarFieldEnum)[keyof typeof FactReviewScalarFieldEnum]
+
+
+export const UniversityScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  name: 'name',
+  officialUrl: 'officialUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type UniversityScalarFieldEnum = (typeof UniversityScalarFieldEnum)[keyof typeof UniversityScalarFieldEnum]
+
+
+export const ProgrammeScalarFieldEnum = {
+  id: 'id',
+  universityId: 'universityId',
+  name: 'name',
+  degreeType: 'degreeType',
+  field: 'field',
+  language: 'language',
+  officialUrl: 'officialUrl',
+  applicationUrl: 'applicationUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ProgrammeScalarFieldEnum = (typeof ProgrammeScalarFieldEnum)[keyof typeof ProgrammeScalarFieldEnum]
+
+
+export const EducationReviewScalarFieldEnum = {
+  id: 'id',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type EducationReviewScalarFieldEnum = (typeof EducationReviewScalarFieldEnum)[keyof typeof EducationReviewScalarFieldEnum]
+
+
+export const ImmigrationRuleScalarFieldEnum = {
+  id: 'id',
+  countryId: 'countryId',
+  ruleType: 'ruleType',
+  title: 'title',
+  officialUrl: 'officialUrl',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type ImmigrationRuleScalarFieldEnum = (typeof ImmigrationRuleScalarFieldEnum)[keyof typeof ImmigrationRuleScalarFieldEnum]
+
+
+export const ImmigrationRuleReviewScalarFieldEnum = {
+  id: 'id',
+  immigrationRuleId: 'immigrationRuleId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type ImmigrationRuleReviewScalarFieldEnum = (typeof ImmigrationRuleReviewScalarFieldEnum)[keyof typeof ImmigrationRuleReviewScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1703,6 +2160,11 @@ export type GlobalOmitConfig = {
   fact?: Prisma.FactOmit
   evidence?: Prisma.EvidenceOmit
   factReview?: Prisma.FactReviewOmit
+  university?: Prisma.UniversityOmit
+  programme?: Prisma.ProgrammeOmit
+  educationReview?: Prisma.EducationReviewOmit
+  immigrationRule?: Prisma.ImmigrationRuleOmit
+  immigrationRuleReview?: Prisma.ImmigrationRuleReviewOmit
 }
 
 /* Types for Logging */

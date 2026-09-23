@@ -9,7 +9,7 @@ beforeAll(async () => {
   CREATE SCHEMA auth; CREATE TABLE auth.users(id uuid PRIMARY KEY, email text, created_at timestamptz DEFAULT now(), email_confirmed_at timestamptz, deleted_at timestamptz, banned_until timestamptz);
   CREATE FUNCTION auth.uid() RETURNS uuid LANGUAGE sql STABLE AS $$ SELECT nullif(current_setting('request.jwt.claim.sub',true),'')::uuid $$;
   GRANT USAGE ON SCHEMA public,auth TO anon,authenticated; GRANT EXECUTE ON FUNCTION auth.uid() TO authenticated;`);
-  for (const migration of ["20260917090000_countries_sources", "20260918100000_rbac", "20260919100000_sources_manage"]) {
+  for (const migration of ["20260917090000_countries_sources", "20260918100000_rbac", "20260919100000_sources_manage", "20260923091000_source_reverification"]) {
     await db.exec(readFileSync(`../../packages/db/prisma/migrations/${migration}/migration.sql`, "utf8"));
   }
   for (const id of [admin, member]) await db.query("INSERT INTO auth.users(id,email_confirmed_at) VALUES($1,now())", [id]);
@@ -28,11 +28,11 @@ function save(overrides: Record<string, unknown> = {}) {
     id: null, name: "Udlændingestyrelsen", url: `https://www.nyidanmark.dk/en-GB?case=${++urlCounter}`, country: denmark,
     tier: "T1", type: "government", topics: ["immigration"], language: "en",
     notes: null, status: "needs_verification", policy: "not_reviewed", crawlEnabled: false,
-    frequency: null, freeNotes: null, ...overrides,
+    frequency: null, freeNotes: null, reverify: false, ...overrides,
   };
   return db.query<{ save_source: string }>(
-    "SELECT save_source($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) AS save_source",
-    [p.id, p.name, p.url, p.country, p.tier, p.type, p.topics, p.language, p.notes, p.status, p.policy, p.crawlEnabled, p.frequency, p.freeNotes],
+    "SELECT save_source($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15) AS save_source",
+    [p.id, p.name, p.url, p.country, p.tier, p.type, p.topics, p.language, p.notes, p.status, p.policy, p.crawlEnabled, p.frequency, p.freeNotes, p.reverify],
   );
 }
 it("denies unpermitted authenticated users and anonymous callers", async () => {
@@ -85,4 +85,34 @@ it("still exposes new rows through the public read policy, never through direct 
     expect((await db.query("SELECT id FROM sources WHERE id=$1", [id])).rows).toHaveLength(1);
     await expect(db.exec(`UPDATE sources SET name='hacked' WHERE id='${id}'`)).rejects.toThrow(/permission denied/i);
   });
+});
+
+async function verifiedAt(id: string) {
+  return (await db.query<{ last_verified_at: Date | null }>("SELECT last_verified_at FROM sources WHERE id=$1", [id])).rows[0].last_verified_at;
+}
+// Runs as the table owner (outside asUser): simulates a verification made long ago.
+const backdate = (id: string) => db.query("UPDATE sources SET last_verified_at = '2026-01-01T00:00:00Z' WHERE id=$1", [id]);
+const asAdmin = (overrides: Record<string, unknown>) => asUser(admin, () => save(overrides));
+it("keeps the verification date on ordinary edits and restamps only on explicit re-verification", async () => {
+  // Regression for the 2026-09-23 fix: editing notes must not refresh "last verified".
+  const url = "https://www.nyidanmark.dk/en-GB?case=reverify";
+  const id = (await asAdmin({ url, status: "verified", notes: "Checked the official domain." })).rows[0].save_source;
+  await backdate(id);
+  await asAdmin({ id, url, status: "verified", notes: "Checked the official domain.", freeNotes: "typo fix" });
+  expect((await verifiedAt(id))?.toISOString()).toBe("2026-01-01T00:00:00.000Z");
+  await asAdmin({ id, url, status: "needs_verification", notes: "Checked the official domain." });
+  // History is kept; the status (not the date) says it is no longer verified.
+  expect((await verifiedAt(id))?.toISOString()).toBe("2026-01-01T00:00:00.000Z");
+  await asAdmin({ id, url, status: "verified", notes: "Re-checked." });
+  expect((await verifiedAt(id))!.getTime()).toBeGreaterThan(Date.parse("2026-01-02"));
+  await backdate(id);
+  await asAdmin({ id, url, status: "verified", notes: "Re-checked again.", reverify: true });
+  expect((await verifiedAt(id))!.getTime()).toBeGreaterThan(Date.parse("2026-01-02"));
+});
+it("requires re-verification when the URL or tier of a verified source changes", async () => {
+  const url = "https://www.nyidanmark.dk/en-GB?case=identity";
+  const id = (await asAdmin({ url, status: "verified", notes: "Checked." })).rows[0].save_source;
+  await expect(asAdmin({ id, url: url + "-moved", status: "verified", notes: "Checked." })).rejects.toThrow("sources_reverify_required");
+  await expect(asAdmin({ id, url, tier: "T3", status: "verified", notes: "Checked." })).rejects.toThrow("sources_reverify_required");
+  await asAdmin({ id, url: url + "-moved", status: "verified", notes: "Checked new URL.", reverify: true });
 });
