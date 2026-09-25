@@ -30,6 +30,8 @@ export default async function CountryPage({ params }: PageProps<"/countries/[slu
         <ListRow href={`/universities?country=${country.slug}`} title={`Reviewed universities in ${country.name}`} />
         <ListRow href={`/programmes?country=${country.slug}`} title={`Reviewed programmes in ${country.name}`} />
         <ListRow href={`/immigration?country=${country.slug}`} title={`Immigration rules in ${country.name}`} subtitle="Research information, not immigration advice." />
+        <ListRow href={`/compare?c=${country.slug}`} title={`Compare ${country.name} with other countries`} subtitle="Side by side, with sources — no scores or rankings." />
+        <ListRow href="/occupations" title="Occupations & labour-market figures" subtitle={`Pick an occupation, then filter its figures by ${country.name}.`} />
       </List>
     </Section>
     {/* Latest few only; the full, paginated list is /facts?country=… */}

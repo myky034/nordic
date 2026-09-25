@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 // Client component only because the active tab depends on the current path.
 const links = [
   ["/countries", "Countries"], ["/universities", "Universities"], ["/programmes", "Programmes"],
-  ["/immigration", "Immigration"], ["/facts", "Facts"], ["/sources", "Sources"], ["/documents", "Documents"],
+  ["/immigration", "Immigration"], ["/occupations", "Occupations"], ["/compare", "Compare"], ["/facts", "Facts"], ["/sources", "Sources"], ["/documents", "Documents"],
 ] as const;
 
 export function NavLinks() {

@@ -4,7 +4,7 @@ import { proposeFact, reviewFact } from "./actions";
 import { deadlineTypes } from "@/lib/education/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
 import { buttonPrimary, control } from "@/components/ui/styles";
-export function ProposalForm({documents,countries,selected,entities=[]}:{documents:{id:string;title:string|null}[];countries:{id:string;name:string}[];selected:string;entities?:{value:string;label:string}[]}) {
+export function ProposalForm({documents,countries,selected,entities=[],metrics=[]}:{documents:{id:string;title:string|null}[];countries:{id:string;name:string}[];selected:string;entities?:{value:string;label:string}[];metrics?:{id:string;label:string;unit_hint:string|null}[]}) {
  const [state,action,pending]=useActionState(proposeFact,{});
  return <Card><form action={action} className="space-y-5">
  <div><h2 className="text-[22px] font-semibold tracking-[-0.015em]">Thêm thông tin đề xuất</h2>
@@ -20,8 +20,10 @@ export function ProposalForm({documents,countries,selected,entities=[]}:{documen
  <Field label="Đơn vị (nếu có)"><input name="unit" maxLength={100} className={control}/></Field>
  <Field label="Quốc gia (nếu xác định được)"><select name="country" className={control}><option value="">Chưa xác định / không áp dụng</option>{countries.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
  </div>
- <Field label="Gắn với trường/chương trình/quy định nhập cư (học phí, deadline, điều kiện…)"><select name="entity" className={control}><option value="">Không gắn</option>{entities.map(e=><option key={e.value} value={e.value}>{e.label}</option>)}</select></Field>
+ <Field label="Gắn với trường/chương trình/quy định nhập cư/nghề (học phí, deadline, điều kiện, lương…)"><select name="entity" className={control}><option value="">Không gắn</option>{entities.map(e=><option key={e.value} value={e.value}>{e.label}</option>)}</select></Field>
  <Field label="Loại deadline (chỉ khi thông tin là hạn nộp hồ sơ)"><select name="deadlineType" className={control}><option value="">Không phải deadline / nguồn không nêu</option>{Object.entries(deadlineTypes).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></Field>
+ <Field label="Chỉ số so sánh (nếu thông tin là giá trị của một chỉ số)" hint="Dùng để xếp giá trị vào bảng so sánh quốc gia. Bắt buộc có quốc gia. Chỉ chọn khi đúng định nghĩa của chỉ số."><select name="metric" className={control}><option value="">Không gắn</option>{metrics.map(m=><option key={m.id} value={m.id}>{m.label}{m.unit_hint?` (${m.unit_hint})`:""}</option>)}</select></Field>
+ <Field label="Kỳ số liệu (chỉ với số liệu thống kê)" hint="Kỳ mà con số mô tả, ví dụ 2024, 2024-Q2, 2024-H1, 2024-09. Bắt buộc có quốc gia khi gắn với một nghề."><input name="referencePeriod" maxLength={7} pattern="[0-9]{4}(-(Q[1-4]|H[12]|0[1-9]|1[0-2]))?" placeholder="2024" className={control}/></Field>
  <div className="grid gap-5 sm:grid-cols-2"><Field label="Từ ngày (chỉ khi nguồn nêu)"><input type="date" name="from" className={control}/></Field><Field label="Đến ngày (chỉ khi nguồn nêu)"><input type="date" name="until" className={control}/></Field></div>
  <Field label="Trích đoạn bằng chứng (nguyên văn, tối đa 500 ký tự)" hint="URL và ngày thu thập lấy từ tài liệu đã chọn. Chỉ dùng trích đoạn được phép sử dụng; không dán toàn bài."><textarea name="excerpt" required maxLength={500} rows={3} className={control}/></Field>
  <FormMessage error={state.error} message={state.message}/>

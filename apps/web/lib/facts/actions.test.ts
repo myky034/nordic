@@ -15,7 +15,7 @@ it("never forwards actor, status, source URL or retrieval date from the form",as
  await proposeFact({},form);
  expect(requirePermission).toHaveBeenCalledWith("facts.propose");
  expect(rpc.mock.calls[0][1]).not.toHaveProperty("actor");
- expect(Object.keys(rpc.mock.calls[0][1]).sort()).toEqual(["p_document","p_topic","p_subject","p_predicate","p_value","p_unit","p_country","p_from","p_until","p_excerpt","p_university","p_programme","p_deadline_type","p_immigration_rule"].sort());
+ expect(Object.keys(rpc.mock.calls[0][1]).sort()).toEqual(["p_document","p_topic","p_subject","p_predicate","p_value","p_unit","p_country","p_from","p_until","p_excerpt","p_university","p_programme","p_deadline_type","p_immigration_rule","p_occupation","p_reference_period","p_metric"].sort());
 });
 it("requires review capability and hides database details",async()=>{
  rpc.mockResolvedValue({error:{message:"secret connection details"}});
@@ -31,4 +31,13 @@ it("forwards at most one education entity and rejects malformed links",async()=>
    rpc.mockClear();const bad=new FormData();bad.set("entity",entity);bad.set("deadlineType",deadline);
    expect((await proposeFact({},bad)).error).toBeDefined();expect(rpc).not.toHaveBeenCalled();
  }
+});
+it("forwards an occupation link with a reference period and rejects fuzzy periods",async()=>{
+ const form=new FormData();form.set("document","doc");form.set("entity","occupation:11111111-1111-4111-8111-111111111111");form.set("referencePeriod","2025-Q2");
+ await proposeFact({},form);
+ expect(rpc.mock.calls[0][1]).toMatchObject({p_occupation:"11111111-1111-4111-8111-111111111111",p_reference_period:"2025-Q2",p_programme:null,p_immigration_rule:null});
+ rpc.mockClear();
+ const bad=new FormData();bad.set("referencePeriod","recent");
+ expect((await proposeFact({},bad)).error).toContain("Kỳ số liệu");
+ expect(rpc).not.toHaveBeenCalled();
 });

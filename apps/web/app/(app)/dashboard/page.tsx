@@ -35,10 +35,12 @@ export default async function DashboardPage() {
     has("facts.propose", "facts.review") && ["/facts/workspace", "Thông tin & bằng chứng", "Đề xuất và duyệt thông tin có trích đoạn nguồn"],
     has("education.manage", "facts.review") && ["/education/workspace", "Trường & chương trình", "Đề xuất và duyệt trường, chương trình"],
     has("immigration.manage", "facts.review") && ["/immigration/workspace", "Quy định nhập cư", "Chỉ từ nguồn T1 của cơ quan chính phủ"],
+    has("labour.manage", "facts.review") && ["/labour/workspace", "Thị trường lao động", "Đề xuất và duyệt nghề; số liệu nhập ở Thông tin & bằng chứng"],
     has("documents.ingest") && ["/documents/import", "Nhập tài liệu", "Thêm tài liệu từ nguồn đã đăng ký"],
   ].filter(Boolean) as [string, string, string][];
   const admin = [
     has("sources.manage") && ["/admin/sources", "Quản lý Source Registry", "Thêm, sửa, xác minh nguồn và bật/tắt crawl"],
+    has("metrics.manage") && ["/admin/metrics", "Chỉ số so sánh", "Định nghĩa các chỉ số dùng trong bảng so sánh quốc gia"],
     has("roles.manage", "users.assign_roles") && ["/admin/access", "Người dùng & phân quyền", "Vai trò, quyền và nhật ký thay đổi"],
   ].filter(Boolean) as [string, string, string][];
 

@@ -37,6 +37,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  client.from("programmes").select("id,name,universities!programmes_university_id_fkey(name)").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
  client.from("universities").select("id,name").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
  client.from("immigration_rules").select("id,title,countries(name)").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
+ client.from("occupations").select("id,name,countries(name)").neq("status","rejected").order("name").limit(200),
+ client.from("comparison_metrics").select("id,label,unit_hint").eq("active",true).order("label"),
  // Only reviewed/conflicted claims can be paired as a conflict (2026-09-23 fix).
  client.from("facts").select("id,subject").in("status",["reviewed","conflicted"]).order("created_at",{ascending:false}).limit(200),
  ...counts,
@@ -50,9 +52,11 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    ...(results[4].data as unknown as {id:string;name:string;universities:{name:string}}[]).map(p=>({value:`programme:${p.id}`,label:`Chương trình: ${p.name} · ${p.universities.name}`})),
    ...(results[5].data as {id:string;name:string}[]).map(u=>({value:`university:${u.id}`,label:`Trường: ${u.name}`})),
    ...(results[6].data as unknown as {id:string;title:string;countries:{name:string}}[]).map(r=>({value:`immigration_rule:${r.id}`,label:`Quy định nhập cư: ${r.title} · ${r.countries.name}`})),
+   ...(results[7].data as unknown as {id:string;name:string;countries:{name:string}|null}[]).map(o=>({value:`occupation:${o.id}`,label:`Nghề: ${o.name} · ${o.countries?.name ?? "Quốc tế"}`})),
  ];
- const conflictCandidates=results[7].data as {id:string;subject:string}[];
- const tabCounts=results.slice(8).map(r=>r.count ?? 0);
+ const metrics=results[8].data as {id:string;label:string;unit_hint:string|null}[];
+ const conflictCandidates=results[9].data as {id:string;subject:string}[];
+ const tabCounts=results.slice(10).map(r=>r.count ?? 0);
  // A document deep-link must remain usable even when it is outside the recent list.
  if(selected&&!documents.some(d=>d.id===selected)){
    const extra=await client.from("documents").select("id,title").eq("id",selected).maybeSingle();
@@ -62,7 +66,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  return <>
  <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Nhập thủ công từ nguồn. Duyệt bằng chứng không đồng nghĩa xác minh hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
- {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities}/></Disclosure>}
+ {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}
  <Section title="Đề xuất">
  <Segmented label="Lọc theo trạng thái" items={tabs.map(([value,label],i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label,count:tabCounts[i],active:status===value}))}/>
  <form action="/facts/workspace" className="mb-5">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
