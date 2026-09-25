@@ -97,3 +97,18 @@ export type ImmigrationRule = Prisma.ImmigrationRuleModel
  * 
  */
 export type ImmigrationRuleReview = Prisma.ImmigrationRuleReviewModel
+/**
+ * Model Occupation
+ * 
+ */
+export type Occupation = Prisma.OccupationModel
+/**
+ * Model OccupationReview
+ * 
+ */
+export type OccupationReview = Prisma.OccupationReviewModel
+/**
+ * Model ComparisonMetric
+ * 
+ */
+export type ComparisonMetric = Prisma.ComparisonMetricModel

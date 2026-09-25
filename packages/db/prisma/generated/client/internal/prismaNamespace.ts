@@ -412,7 +412,10 @@ export const ModelName = {
   Programme: 'Programme',
   EducationReview: 'EducationReview',
   ImmigrationRule: 'ImmigrationRule',
-  ImmigrationRuleReview: 'ImmigrationRuleReview'
+  ImmigrationRuleReview: 'ImmigrationRuleReview',
+  Occupation: 'Occupation',
+  OccupationReview: 'OccupationReview',
+  ComparisonMetric: 'ComparisonMetric'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -428,7 +431,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1616,6 +1619,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Occupation: {
+      payload: Prisma.$OccupationPayload<ExtArgs>
+      fields: Prisma.OccupationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OccupationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OccupationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        findFirst: {
+          args: Prisma.OccupationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OccupationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        findMany: {
+          args: Prisma.OccupationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>[]
+        }
+        create: {
+          args: Prisma.OccupationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        createMany: {
+          args: Prisma.OccupationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OccupationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>[]
+        }
+        delete: {
+          args: Prisma.OccupationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        update: {
+          args: Prisma.OccupationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        deleteMany: {
+          args: Prisma.OccupationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OccupationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OccupationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>[]
+        }
+        upsert: {
+          args: Prisma.OccupationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationPayload>
+        }
+        aggregate: {
+          args: Prisma.OccupationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOccupation>
+        }
+        groupBy: {
+          args: Prisma.OccupationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OccupationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OccupationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OccupationCountAggregateOutputType> | number
+        }
+      }
+    }
+    OccupationReview: {
+      payload: Prisma.$OccupationReviewPayload<ExtArgs>
+      fields: Prisma.OccupationReviewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.OccupationReviewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.OccupationReviewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        findFirst: {
+          args: Prisma.OccupationReviewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.OccupationReviewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        findMany: {
+          args: Prisma.OccupationReviewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>[]
+        }
+        create: {
+          args: Prisma.OccupationReviewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        createMany: {
+          args: Prisma.OccupationReviewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.OccupationReviewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>[]
+        }
+        delete: {
+          args: Prisma.OccupationReviewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        update: {
+          args: Prisma.OccupationReviewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        deleteMany: {
+          args: Prisma.OccupationReviewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.OccupationReviewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.OccupationReviewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>[]
+        }
+        upsert: {
+          args: Prisma.OccupationReviewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$OccupationReviewPayload>
+        }
+        aggregate: {
+          args: Prisma.OccupationReviewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateOccupationReview>
+        }
+        groupBy: {
+          args: Prisma.OccupationReviewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OccupationReviewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.OccupationReviewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.OccupationReviewCountAggregateOutputType> | number
+        }
+      }
+    }
+    ComparisonMetric: {
+      payload: Prisma.$ComparisonMetricPayload<ExtArgs>
+      fields: Prisma.ComparisonMetricFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ComparisonMetricFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ComparisonMetricFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        findFirst: {
+          args: Prisma.ComparisonMetricFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ComparisonMetricFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        findMany: {
+          args: Prisma.ComparisonMetricFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+        }
+        create: {
+          args: Prisma.ComparisonMetricCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        createMany: {
+          args: Prisma.ComparisonMetricCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ComparisonMetricCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+        }
+        delete: {
+          args: Prisma.ComparisonMetricDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        update: {
+          args: Prisma.ComparisonMetricUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        deleteMany: {
+          args: Prisma.ComparisonMetricDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ComparisonMetricUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ComparisonMetricUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+        }
+        upsert: {
+          args: Prisma.ComparisonMetricUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+        }
+        aggregate: {
+          args: Prisma.ComparisonMetricAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateComparisonMetric>
+        }
+        groupBy: {
+          args: Prisma.ComparisonMetricGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ComparisonMetricGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ComparisonMetricCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ComparisonMetricCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1780,7 +2005,10 @@ export const FactScalarFieldEnum = {
   universityId: 'universityId',
   programmeId: 'programmeId',
   deadlineType: 'deadlineType',
-  immigrationRuleId: 'immigrationRuleId'
+  immigrationRuleId: 'immigrationRuleId',
+  occupationId: 'occupationId',
+  referencePeriod: 'referencePeriod',
+  metricId: 'metricId'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -1888,6 +2116,51 @@ export const ImmigrationRuleReviewScalarFieldEnum = {
 } as const
 
 export type ImmigrationRuleReviewScalarFieldEnum = (typeof ImmigrationRuleReviewScalarFieldEnum)[keyof typeof ImmigrationRuleReviewScalarFieldEnum]
+
+
+export const OccupationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  classificationSystem: 'classificationSystem',
+  classificationCode: 'classificationCode',
+  countryId: 'countryId',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OccupationScalarFieldEnum = (typeof OccupationScalarFieldEnum)[keyof typeof OccupationScalarFieldEnum]
+
+
+export const OccupationReviewScalarFieldEnum = {
+  id: 'id',
+  occupationId: 'occupationId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type OccupationReviewScalarFieldEnum = (typeof OccupationReviewScalarFieldEnum)[keyof typeof OccupationReviewScalarFieldEnum]
+
+
+export const ComparisonMetricScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  label: 'label',
+  description: 'description',
+  unitHint: 'unitHint',
+  category: 'category',
+  active: 'active',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComparisonMetricScalarFieldEnum = (typeof ComparisonMetricScalarFieldEnum)[keyof typeof ComparisonMetricScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -2165,6 +2438,9 @@ export type GlobalOmitConfig = {
   educationReview?: Prisma.EducationReviewOmit
   immigrationRule?: Prisma.ImmigrationRuleOmit
   immigrationRuleReview?: Prisma.ImmigrationRuleReviewOmit
+  occupation?: Prisma.OccupationOmit
+  occupationReview?: Prisma.OccupationReviewOmit
+  comparisonMetric?: Prisma.ComparisonMetricOmit
 }
 
 /* Types for Logging */

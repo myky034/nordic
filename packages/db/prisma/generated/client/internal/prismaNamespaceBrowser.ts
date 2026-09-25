@@ -66,7 +66,10 @@ export const ModelName = {
   Programme: 'Programme',
   EducationReview: 'EducationReview',
   ImmigrationRule: 'ImmigrationRule',
-  ImmigrationRuleReview: 'ImmigrationRuleReview'
+  ImmigrationRuleReview: 'ImmigrationRuleReview',
+  Occupation: 'Occupation',
+  OccupationReview: 'OccupationReview',
+  ComparisonMetric: 'ComparisonMetric'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -210,7 +213,10 @@ export const FactScalarFieldEnum = {
   universityId: 'universityId',
   programmeId: 'programmeId',
   deadlineType: 'deadlineType',
-  immigrationRuleId: 'immigrationRuleId'
+  immigrationRuleId: 'immigrationRuleId',
+  occupationId: 'occupationId',
+  referencePeriod: 'referencePeriod',
+  metricId: 'metricId'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -318,6 +324,51 @@ export const ImmigrationRuleReviewScalarFieldEnum = {
 } as const
 
 export type ImmigrationRuleReviewScalarFieldEnum = (typeof ImmigrationRuleReviewScalarFieldEnum)[keyof typeof ImmigrationRuleReviewScalarFieldEnum]
+
+
+export const OccupationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  classificationSystem: 'classificationSystem',
+  classificationCode: 'classificationCode',
+  countryId: 'countryId',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  status: 'status',
+  createdBy: 'createdBy',
+  reviewedAt: 'reviewedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type OccupationScalarFieldEnum = (typeof OccupationScalarFieldEnum)[keyof typeof OccupationScalarFieldEnum]
+
+
+export const OccupationReviewScalarFieldEnum = {
+  id: 'id',
+  occupationId: 'occupationId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type OccupationReviewScalarFieldEnum = (typeof OccupationReviewScalarFieldEnum)[keyof typeof OccupationReviewScalarFieldEnum]
+
+
+export const ComparisonMetricScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  label: 'label',
+  description: 'description',
+  unitHint: 'unitHint',
+  category: 'category',
+  active: 'active',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ComparisonMetricScalarFieldEnum = (typeof ComparisonMetricScalarFieldEnum)[keyof typeof ComparisonMetricScalarFieldEnum]
 
 
 export const SortOrder = {

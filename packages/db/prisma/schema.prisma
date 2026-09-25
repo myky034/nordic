@@ -50,7 +50,11 @@ model Country {
   sources   Source[]
   universities University[]
   immigrationRules ImmigrationRule[]
+  occupations Occupation[]
 
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "countries_search_idx")
   @@map("countries")
 }
 
@@ -78,6 +82,9 @@ model Source {
 
   @@index([countryId])
   @@index([sourceTier, status])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "sources_search_idx")
   @@map("sources")
 }
 
@@ -90,6 +97,7 @@ model Document {
   universities University[]
   programmes Programme[]
   immigrationRules ImmigrationRule[]
+  occupations Occupation[]
   id               String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   sourceId         String   @map("source_id") @db.Uuid
   source           Source   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
@@ -111,6 +119,9 @@ model Document {
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "documents_search_idx")
   @@map("documents")
 }
 
@@ -177,7 +188,7 @@ model Fact {
   createdBy String @map("created_by") @db.Uuid
   reviewedAt DateTime? @map("reviewed_at") @db.Timestamptz(6)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  // Slice 5/6a: at most one linked entity (SQL CHECK facts_single_entity).
+  // Slice 5/6a/6b: at most one linked entity (SQL CHECK facts_single_entity).
   universityId String? @map("university_id") @db.Uuid
   university University? @relation(fields: [universityId], references: [id], onDelete: Restrict)
   programmeId String? @map("programme_id") @db.Uuid
@@ -185,6 +196,14 @@ model Fact {
   deadlineType String? @map("deadline_type")
   immigrationRuleId String? @map("immigration_rule_id") @db.Uuid
   immigrationRule ImmigrationRule? @relation(fields: [immigrationRuleId], references: [id], onDelete: Restrict)
+  // Slice 6b: occupation-linked figures must have country_id (SQL CHECK facts_occupation_country).
+  occupationId String? @map("occupation_id") @db.Uuid
+  occupation Occupation? @relation(fields: [occupationId], references: [id], onDelete: Restrict)
+  // Period a statistic measures: YYYY, YYYY-Qn, YYYY-Hn or YYYY-MM (SQL CHECK).
+  referencePeriod String? @map("reference_period")
+  // Slice 7: comparison metric; requires country_id (SQL CHECK facts_metric_country).
+  metricId String? @map("metric_id") @db.Uuid
+  metric ComparisonMetric? @relation(fields: [metricId], references: [id], onDelete: Restrict)
   evidence Evidence?
   reviews FactReview[] @relation("ReviewedFact")
   conflicts FactReview[] @relation("RelatedFact")
@@ -193,6 +212,10 @@ model Fact {
   @@index([programmeId])
   @@index([universityId])
   @@index([immigrationRuleId])
+  @@index([occupationId])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "facts_search_idx")
   @@map("facts")
 }
 model Evidence {
@@ -244,6 +267,9 @@ model University {
   reviews         EducationReview[]
 
   @@index([status, countryId])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "universities_search_idx")
   @@map("universities")
 }
 
@@ -269,6 +295,9 @@ model Programme {
 
   @@index([universityId])
   @@index([status, degreeType])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "programmes_search_idx")
   @@map("programmes")
 }
 
@@ -308,6 +337,9 @@ model ImmigrationRule {
   reviews         ImmigrationRuleReview[]
 
   @@index([status, countryId])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "immigration_rules_search_idx")
   @@map("immigration_rules")
 }
 
@@ -322,4 +354,63 @@ model ImmigrationRuleReview {
 
   @@index([immigrationRuleId])
   @@map("immigration_rule_reviews")
+}
+
+// Slice 6b: identity-only occupations. Labour-market figures are Facts linked
+// via occupationId with a referencePeriod. Partial unique index on
+// (lower(name), country) and the created_by FK live in the SQL migration.
+model Occupation {
+  id                   String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                 String
+  classificationSystem String?  @map("classification_system")
+  classificationCode   String?  @map("classification_code")
+  countryId            String?  @map("country_id") @db.Uuid
+  country              Country? @relation(fields: [countryId], references: [id], onDelete: Restrict)
+  documentId           String   @map("document_id") @db.Uuid
+  document             Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  evidenceExcerpt      String   @map("evidence_excerpt")
+  status               String   @default("proposed")
+  createdBy            String   @map("created_by") @db.Uuid
+  reviewedAt           DateTime? @map("reviewed_at") @db.Timestamptz(6)
+  createdAt            DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  facts                Fact[]
+  reviews              OccupationReview[]
+
+  @@index([status, createdAt])
+  // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  @@index([searchVector], type: Gin, map: "occupations_search_idx")
+  @@map("occupations")
+}
+
+model OccupationReview {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  occupationId String   @map("occupation_id") @db.Uuid
+  occupation   Occupation @relation(fields: [occupationId], references: [id], onDelete: Restrict)
+  actorId      String   @map("actor_id") @db.Uuid
+  decision     String
+  note         String
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([occupationId])
+  @@map("occupation_reviews")
+}
+
+// Slice 7: admin-curated comparison vocabulary. Definitions only, never values.
+// key and category are immutable once created (enforced by save_metric).
+model ComparisonMetric {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key         String   @unique
+  label       String
+  description String
+  unitHint    String?  @map("unit_hint")
+  category    String
+  active      Boolean  @default(true)
+  createdBy   String   @map("created_by") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  facts       Fact[]
+
+  @@index([category, label])
+  @@map("comparison_metrics")
 }
