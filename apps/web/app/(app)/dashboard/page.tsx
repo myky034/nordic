@@ -40,6 +40,7 @@ export default async function DashboardPage() {
   ].filter(Boolean) as [string, string, string][];
   const admin = [
     has("sources.manage") && ["/admin/sources", "Quản lý Source Registry", "Thêm, sửa, xác minh nguồn và bật/tắt crawl"],
+    has("crawler.manage") && ["/admin/crawler", "Crawler", "URL được crawl, lần chạy gần nhất và kết quả từng URL"],
     has("metrics.manage") && ["/admin/metrics", "Chỉ số so sánh", "Định nghĩa các chỉ số dùng trong bảng so sánh quốc gia"],
     has("roles.manage", "users.assign_roles") && ["/admin/access", "Người dùng & phân quyền", "Vai trò, quyền và nhật ký thay đổi"],
   ].filter(Boolean) as [string, string, string][];
@@ -48,6 +49,12 @@ export default async function DashboardPage() {
     <>
       <PageHeader eyebrow="Workspace" title="Dashboard"
         description={<>Signed in as <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
+      <Section title="Của bạn">
+        <List>
+          <ListRow href="/workspace" title="My workspace" subtitle="Research project, mục đã lưu và ghi chú riêng của bạn" />
+          <ListRow href="/workspace/plan" title="My Europe Plan" subtitle="Hồ sơ mục tiêu: vai trò, bậc học, năm, quốc gia, ngân sách" />
+        </List>
+      </Section>
       {editing.length > 0 && <Section title="Biên tập">
         <List>{editing.map(([href, title, text]) => <ListRow key={href} href={href} title={title} subtitle={text} />)}</List>
       </Section>}

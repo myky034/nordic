@@ -234,6 +234,8 @@ export type OccupationWhereInput = {
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.OccupationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }
 
 export type OccupationOrderByWithRelationInput = {
@@ -252,6 +254,8 @@ export type OccupationOrderByWithRelationInput = {
   document?: Prisma.DocumentOrderByWithRelationInput
   facts?: Prisma.FactOrderByRelationAggregateInput
   reviews?: Prisma.OccupationReviewOrderByRelationAggregateInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
 }
 
 export type OccupationWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +277,8 @@ export type OccupationWhereUniqueInput = Prisma.AtLeast<{
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.OccupationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }, "id">
 
 export type OccupationOrderByWithAggregationInput = {
@@ -323,6 +329,8 @@ export type OccupationCreateInput = {
   document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
   facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUncheckedCreateInput = {
@@ -339,6 +347,8 @@ export type OccupationUncheckedCreateInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUpdateInput = {
@@ -355,6 +365,8 @@ export type OccupationUpdateInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
   facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateInput = {
@@ -371,6 +383,8 @@ export type OccupationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationCreateManyInput = {
@@ -589,6 +603,38 @@ export type OccupationUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OccupationUpdateToOneWithWhereWithoutReviewsInput, Prisma.OccupationUpdateWithoutReviewsInput>, Prisma.OccupationUncheckedUpdateWithoutReviewsInput>
 }
 
+export type OccupationCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.OccupationCreateWithoutSavedItemsInput, Prisma.OccupationUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.OccupationCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.OccupationWhereUniqueInput
+}
+
+export type OccupationUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.OccupationCreateWithoutSavedItemsInput, Prisma.OccupationUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.OccupationCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.OccupationUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.OccupationWhereInput | boolean
+  delete?: Prisma.OccupationWhereInput | boolean
+  connect?: Prisma.OccupationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OccupationUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.OccupationUpdateWithoutSavedItemsInput>, Prisma.OccupationUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type OccupationCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.OccupationCreateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.OccupationCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.OccupationWhereUniqueInput
+}
+
+export type OccupationUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.OccupationCreateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.OccupationCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.OccupationUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.OccupationWhereInput | boolean
+  delete?: Prisma.OccupationWhereInput | boolean
+  connect?: Prisma.OccupationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OccupationUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.OccupationUpdateWithoutWorkspaceNotesInput>, Prisma.OccupationUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
 export type OccupationCreateWithoutCountryInput = {
   id?: string
   name: string
@@ -602,6 +648,8 @@ export type OccupationCreateWithoutCountryInput = {
   document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
   facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUncheckedCreateWithoutCountryInput = {
@@ -617,6 +665,8 @@ export type OccupationUncheckedCreateWithoutCountryInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationCreateOrConnectWithoutCountryInput = {
@@ -675,6 +725,8 @@ export type OccupationCreateWithoutDocumentInput = {
   country?: Prisma.CountryCreateNestedOneWithoutOccupationsInput
   facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUncheckedCreateWithoutDocumentInput = {
@@ -690,6 +742,8 @@ export type OccupationUncheckedCreateWithoutDocumentInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
   reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationCreateOrConnectWithoutDocumentInput = {
@@ -731,6 +785,8 @@ export type OccupationCreateWithoutFactsInput = {
   country?: Prisma.CountryCreateNestedOneWithoutOccupationsInput
   document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
   reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUncheckedCreateWithoutFactsInput = {
@@ -746,6 +802,8 @@ export type OccupationUncheckedCreateWithoutFactsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationCreateOrConnectWithoutFactsInput = {
@@ -777,6 +835,8 @@ export type OccupationUpdateWithoutFactsInput = {
   country?: Prisma.CountryUpdateOneWithoutOccupationsNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
   reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateWithoutFactsInput = {
@@ -792,6 +852,8 @@ export type OccupationUncheckedUpdateWithoutFactsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationCreateWithoutReviewsInput = {
@@ -807,6 +869,8 @@ export type OccupationCreateWithoutReviewsInput = {
   country?: Prisma.CountryCreateNestedOneWithoutOccupationsInput
   document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
   facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationUncheckedCreateWithoutReviewsInput = {
@@ -822,6 +886,8 @@ export type OccupationUncheckedCreateWithoutReviewsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
 }
 
 export type OccupationCreateOrConnectWithoutReviewsInput = {
@@ -853,6 +919,8 @@ export type OccupationUpdateWithoutReviewsInput = {
   country?: Prisma.CountryUpdateOneWithoutOccupationsNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
   facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateWithoutReviewsInput = {
@@ -868,6 +936,176 @@ export type OccupationUncheckedUpdateWithoutReviewsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
+}
+
+export type OccupationCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  classificationSystem?: string | null
+  classificationCode?: string | null
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country?: Prisma.CountryCreateNestedOneWithoutOccupationsInput
+  document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
+  facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
+  reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutOccupationInput
+}
+
+export type OccupationUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  classificationSystem?: string | null
+  classificationCode?: string | null
+  countryId?: string | null
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
+  reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutOccupationInput
+}
+
+export type OccupationCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.OccupationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OccupationCreateWithoutSavedItemsInput, Prisma.OccupationUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type OccupationUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.OccupationUpdateWithoutSavedItemsInput, Prisma.OccupationUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.OccupationCreateWithoutSavedItemsInput, Prisma.OccupationUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.OccupationWhereInput
+}
+
+export type OccupationUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.OccupationWhereInput
+  data: Prisma.XOR<Prisma.OccupationUpdateWithoutSavedItemsInput, Prisma.OccupationUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type OccupationUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  classificationSystem?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneWithoutOccupationsNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
+  facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
+  reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
+}
+
+export type OccupationUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  classificationSystem?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
+  reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
+}
+
+export type OccupationCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  classificationSystem?: string | null
+  classificationCode?: string | null
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country?: Prisma.CountryCreateNestedOneWithoutOccupationsInput
+  document: Prisma.DocumentCreateNestedOneWithoutOccupationsInput
+  facts?: Prisma.FactCreateNestedManyWithoutOccupationInput
+  reviews?: Prisma.OccupationReviewCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutOccupationInput
+}
+
+export type OccupationUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  classificationSystem?: string | null
+  classificationCode?: string | null
+  countryId?: string | null
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutOccupationInput
+  reviews?: Prisma.OccupationReviewUncheckedCreateNestedManyWithoutOccupationInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutOccupationInput
+}
+
+export type OccupationCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.OccupationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OccupationCreateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type OccupationUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.OccupationUpdateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.OccupationCreateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.OccupationWhereInput
+}
+
+export type OccupationUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.OccupationWhereInput
+  data: Prisma.XOR<Prisma.OccupationUpdateWithoutWorkspaceNotesInput, Prisma.OccupationUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type OccupationUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  classificationSystem?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneWithoutOccupationsNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
+  facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
+  reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+}
+
+export type OccupationUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  classificationSystem?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  classificationCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
+  reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationCreateManyCountryInput = {
@@ -896,6 +1134,8 @@ export type OccupationUpdateWithoutCountryInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutOccupationsNestedInput
   facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateWithoutCountryInput = {
@@ -911,6 +1151,8 @@ export type OccupationUncheckedUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateManyWithoutCountryInput = {
@@ -952,6 +1194,8 @@ export type OccupationUpdateWithoutDocumentInput = {
   country?: Prisma.CountryUpdateOneWithoutOccupationsNestedInput
   facts?: Prisma.FactUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateWithoutDocumentInput = {
@@ -967,6 +1211,8 @@ export type OccupationUncheckedUpdateWithoutDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutOccupationNestedInput
   reviews?: Prisma.OccupationReviewUncheckedUpdateManyWithoutOccupationNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutOccupationNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutOccupationNestedInput
 }
 
 export type OccupationUncheckedUpdateManyWithoutDocumentInput = {
@@ -990,11 +1236,15 @@ export type OccupationUncheckedUpdateManyWithoutDocumentInput = {
 export type OccupationCountOutputType = {
   facts: number
   reviews: number
+  savedItems: number
+  workspaceNotes: number
 }
 
 export type OccupationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | OccupationCountOutputTypeCountFactsArgs
   reviews?: boolean | OccupationCountOutputTypeCountReviewsArgs
+  savedItems?: boolean | OccupationCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | OccupationCountOutputTypeCountWorkspaceNotesArgs
 }
 
 /**
@@ -1021,6 +1271,20 @@ export type OccupationCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.OccupationReviewWhereInput
 }
 
+/**
+ * OccupationCountOutputType without action
+ */
+export type OccupationCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * OccupationCountOutputType without action
+ */
+export type OccupationCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
 
 export type OccupationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1038,6 +1302,8 @@ export type OccupationSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.Occupation$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.Occupation$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Occupation$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Occupation$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.OccupationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["occupation"]>
 
@@ -1093,6 +1359,8 @@ export type OccupationInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.Occupation$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.Occupation$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Occupation$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Occupation$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.OccupationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OccupationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1111,6 +1379,8 @@ export type $OccupationPayload<ExtArgs extends runtime.Types.Extensions.Internal
     document: Prisma.$DocumentPayload<ExtArgs>
     facts: Prisma.$FactPayload<ExtArgs>[]
     reviews: Prisma.$OccupationReviewPayload<ExtArgs>[]
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1522,6 +1792,8 @@ export interface Prisma__OccupationClient<T, Null = never, ExtArgs extends runti
   document<T extends Prisma.DocumentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   facts<T extends Prisma.Occupation$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Occupation$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.Occupation$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Occupation$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OccupationReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedItems<T extends Prisma.Occupation$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Occupation$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.Occupation$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Occupation$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2027,6 +2299,54 @@ export type Occupation$reviewsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.OccupationReviewScalarFieldEnum | Prisma.OccupationReviewScalarFieldEnum[]
+}
+
+/**
+ * Occupation.savedItems
+ */
+export type Occupation$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * Occupation.workspaceNotes
+ */
+export type Occupation$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
 }
 
 /**

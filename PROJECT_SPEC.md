@@ -414,6 +414,12 @@ Crawler:
 - detects changes
 - sends normalized documents to Supabase
 
+> Update 2026-09-25 (Slice 9 — see Section 21): the crawler does **not** use a
+> service-role key. It connects as a login role that is a member of the
+> `nordic_crawler_ops` Postgres role, which has no table privileges and may only
+> execute five `crawler_*` SECURITY DEFINER functions. The text above is kept
+> unchanged for history.
+
 AI pipeline:
 
 - processes normalized documents
@@ -645,6 +651,13 @@ Optional if a source has multiple crawlable URLs.
 
 ### personal_plans
 
+> Update 2026-09-27 (Slice 8 — see Section 21): `personal_plans` is merged
+> into `research_projects` (each project has target year, role and countries);
+> `user_profiles` is implemented as `user_plans` ("My Europe Plan", one per
+> user; `current_role` became `current_position` because CURRENT_ROLE is an SQL
+> keyword); bookmarks use real foreign keys (`saved_items`) instead of
+> entity_type/entity_id. The field lists here are kept unchanged.
+
 - id
 - user_id
 - name
@@ -729,6 +742,12 @@ Do NOT:
 - scrape authenticated content without explicit authorization
 - download enormous files without size/type limits
 
+> Update 2026-09-25 (Slice 9 — see Section 21): "registered/approved" means a
+> URL listed in `crawl_targets` (admin, `crawler.manage`) for a source that is
+> `verified`, crawl policy `approved` and crawl enabled. Sitemaps are allowed
+> with a path-prefix filter and a 1–100 URL cap; links inside pages are never
+> followed. RSS is not implemented yet.
+
 ---
 
 ## 9. Copyright / Content Rules
@@ -750,6 +769,11 @@ Do not mirror entire third-party articles.
 Do not expose large copyrighted text passages.
 
 Always link to the original source.
+
+> Update 2026-09-25 (Slice 9): crawler-extracted page text is stored in
+> `document_texts`, readable only by editors (facts.propose, facts.review,
+> documents.ingest) for change review and future extraction. It is never shown
+> on public pages.
 
 ---
 
@@ -1255,3 +1279,57 @@ Comparison (Section 2.10):
   ranking.
 - Details: `docs/architecture/slice-07-search-comparison.md`,
   `docs/learning/slice-07-search-comparison.md`.
+
+### 2026-09-27 — Slice 8 research workspace (recommendations accepted)
+
+- First user-private data. Tables `research_projects`,
+  `research_project_countries`, `saved_items`, `notes`, `user_plans`,
+  `user_plan_countries`; owner-only RLS on all of them (no anon access, no
+  admin read path, no SECURITY DEFINER bypass). Owners may edit/delete freely.
+- Bookmarks and note targets use one real FK per kind (country, university,
+  programme, immigration rule, occupation, source), exactly one (bookmark) or at
+  most one (note) set; only publicly visible items can be attached.
+- `user_plans` = My Europe Plan (one per user); `personal_plans` merged into
+  `research_projects`. Optional budget: amount + ISO currency + period,
+  all-or-nothing, never used in calculations.
+- Personal data cascades on account deletion; `delete_my_workspace()` lets the
+  owner wipe it (typed confirmation).
+- Plan page offers filtered **shortcuts** labelled as not recommendations; no
+  recommendation engine.
+- Details: `docs/architecture/slice-08-research-workspace.md`,
+  `docs/learning/slice-08-research-workspace.md`.
+
+### 2026-09-25 — Slice 9 crawler (recommendations accepted)
+
+- **Scope**: the crawler fetches only URLs registered in `crawl_targets`
+  (`/admin/crawler`, new permission `crawler.manage`) for sources that are
+  verified + crawl policy approved + crawl enabled. A sitemap target is
+  filtered by path prefix and capped at 100 URLs; sitemap indexes and in-page
+  links are not followed. The database re-checks every recorded URL
+  (`crawler_url_not_registered`), and switching a source off stops recording
+  immediately.
+- **Credentials**: replaces the planned service-role key (Sections 4 and 16
+  text kept). The worker logs in as an operator-created role that is a member
+  of `nordic_crawler_ops` only: no table privileges, EXECUTE on
+  `crawler_start_run`, `crawler_due_targets`, `crawler_url_states`,
+  `crawler_record`, `crawler_finish_run`. The password lives only in the
+  GitHub secret `CRAWLER_DATABASE_URL`, never in the repository or Vercel.
+- **Behaviour**: robots.txt respected (`NordicResearchBot`), one request at a
+  time, 5 s per-domain delay, 2 retries, 2 MB / 30 s limits, HTML/XML only, no
+  cross-domain redirects, conditional requests (ETag / Last-Modified), honest
+  User-Agent. Weekly schedule + manual trigger (`.github/workflows/crawler.yml`).
+- **Change detection**: crawled documents use `hash_method = sha256-text-v1`
+  (SHA-256 of NFC-normalised, whitespace-collapsed extracted text) so rotating
+  tokens do not create versions. Same hash → no new document (`unchanged`);
+  304 → `not_modified`. Every fetch is logged in `crawler_runs` /
+  `crawler_run_items`.
+- **Text storage**: extracted text is kept privately in `document_texts`
+  (editors only), never published (Section 9 / AGENTS.md 8).
+- **Published facts on change**: when a new version of the evidence page is
+  recorded, reviewed/conflicted facts stay public with a visible warning
+  (`facts.source_changed_at`, link to the new version) and appear in the
+  "Nguồn đã đổi" queue. A reviewer records `revalidated` or `rejected`
+  (`resolve_source_change`, history in `fact_reviews`). Nothing is decided
+  automatically; no AI is involved (Slice 10).
+- Details: `docs/architecture/slice-09-crawler.md`,
+  `docs/learning/slice-09-crawler.md`, `crawler/README.md`.

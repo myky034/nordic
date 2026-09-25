@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -27,8 +29,9 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
   const rule = ruleResult.data as unknown as RuleDetailRow;
   const facts = factsResult.data as unknown as FactRow[];
   const source = rule.documents.sources;
+  const save = await savedState("immigration_rule", rule.id);
   return <>
-    <PageHeader back={<BackLink href="/immigration">All immigration rules</BackLink>}
+    <PageHeader back={<BackLink href="/immigration">All immigration rules</BackLink>} actions={<SaveButton kind="immigration_rule" id={rule.id} signedIn={save.signedIn} initialSaved={save.saved} />}
       eyebrow={<>{ruleTypeLabel(rule.rule_type)} · <Link href={`/countries/${rule.countries.slug}`} className="hover:underline">{rule.countries.name}</Link></>}
       title={rule.title} />
     <div className="-mt-4 space-y-4">

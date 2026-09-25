@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -26,8 +28,9 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
   const programme = programmeResult.data as unknown as ProgrammeDetailRow;
   const facts = factsResult.data as unknown as FactRow[];
   const uni = programme.universities;
+  const save = await savedState("programme", programme.id);
   return <>
-    <PageHeader back={<BackLink href="/programmes">All programmes</BackLink>}
+    <PageHeader back={<BackLink href="/programmes">All programmes</BackLink>} actions={<SaveButton kind="programme" id={programme.id} signedIn={save.signedIn} initialSaved={save.saved} />}
       eyebrow={<>{degreeLabel(programme.degree_type)} · <Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{uni.countries.name}</Link></>}
       title={programme.name}
       description={<Link href={`/programmes?university=${uni.id}`} className={textLink}>{uni.name}</Link>} />

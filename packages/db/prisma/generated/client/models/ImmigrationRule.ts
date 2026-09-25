@@ -234,6 +234,8 @@ export type ImmigrationRuleWhereInput = {
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.ImmigrationRuleReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }
 
 export type ImmigrationRuleOrderByWithRelationInput = {
@@ -252,6 +254,8 @@ export type ImmigrationRuleOrderByWithRelationInput = {
   document?: Prisma.DocumentOrderByWithRelationInput
   facts?: Prisma.FactOrderByRelationAggregateInput
   reviews?: Prisma.ImmigrationRuleReviewOrderByRelationAggregateInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
 }
 
 export type ImmigrationRuleWhereUniqueInput = Prisma.AtLeast<{
@@ -273,6 +277,8 @@ export type ImmigrationRuleWhereUniqueInput = Prisma.AtLeast<{
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.ImmigrationRuleReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }, "id">
 
 export type ImmigrationRuleOrderByWithAggregationInput = {
@@ -323,6 +329,8 @@ export type ImmigrationRuleCreateInput = {
   document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
   facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUncheckedCreateInput = {
@@ -339,6 +347,8 @@ export type ImmigrationRuleUncheckedCreateInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUpdateInput = {
@@ -355,6 +365,8 @@ export type ImmigrationRuleUpdateInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
   facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateInput = {
@@ -371,6 +383,8 @@ export type ImmigrationRuleUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleCreateManyInput = {
@@ -589,6 +603,38 @@ export type ImmigrationRuleUpdateOneRequiredWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ImmigrationRuleUpdateToOneWithWhereWithoutReviewsInput, Prisma.ImmigrationRuleUpdateWithoutReviewsInput>, Prisma.ImmigrationRuleUncheckedUpdateWithoutReviewsInput>
 }
 
+export type ImmigrationRuleCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.ImmigrationRuleCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.ImmigrationRuleWhereUniqueInput
+}
+
+export type ImmigrationRuleUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.ImmigrationRuleCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.ImmigrationRuleUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.ImmigrationRuleWhereInput | boolean
+  delete?: Prisma.ImmigrationRuleWhereInput | boolean
+  connect?: Prisma.ImmigrationRuleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ImmigrationRuleUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.ImmigrationRuleUpdateWithoutSavedItemsInput>, Prisma.ImmigrationRuleUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type ImmigrationRuleCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.ImmigrationRuleCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.ImmigrationRuleWhereUniqueInput
+}
+
+export type ImmigrationRuleUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.ImmigrationRuleCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.ImmigrationRuleUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.ImmigrationRuleWhereInput | boolean
+  delete?: Prisma.ImmigrationRuleWhereInput | boolean
+  connect?: Prisma.ImmigrationRuleWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ImmigrationRuleUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUpdateWithoutWorkspaceNotesInput>, Prisma.ImmigrationRuleUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
 export type ImmigrationRuleCreateWithoutCountryInput = {
   id?: string
   ruleType: string
@@ -602,6 +648,8 @@ export type ImmigrationRuleCreateWithoutCountryInput = {
   document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
   facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUncheckedCreateWithoutCountryInput = {
@@ -617,6 +665,8 @@ export type ImmigrationRuleUncheckedCreateWithoutCountryInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleCreateOrConnectWithoutCountryInput = {
@@ -675,6 +725,8 @@ export type ImmigrationRuleCreateWithoutDocumentInput = {
   country: Prisma.CountryCreateNestedOneWithoutImmigrationRulesInput
   facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUncheckedCreateWithoutDocumentInput = {
@@ -690,6 +742,8 @@ export type ImmigrationRuleUncheckedCreateWithoutDocumentInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleCreateOrConnectWithoutDocumentInput = {
@@ -731,6 +785,8 @@ export type ImmigrationRuleCreateWithoutFactsInput = {
   country: Prisma.CountryCreateNestedOneWithoutImmigrationRulesInput
   document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
   reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUncheckedCreateWithoutFactsInput = {
@@ -746,6 +802,8 @@ export type ImmigrationRuleUncheckedCreateWithoutFactsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleCreateOrConnectWithoutFactsInput = {
@@ -777,6 +835,8 @@ export type ImmigrationRuleUpdateWithoutFactsInput = {
   country?: Prisma.CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateWithoutFactsInput = {
@@ -792,6 +852,8 @@ export type ImmigrationRuleUncheckedUpdateWithoutFactsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleCreateWithoutReviewsInput = {
@@ -807,6 +869,8 @@ export type ImmigrationRuleCreateWithoutReviewsInput = {
   country: Prisma.CountryCreateNestedOneWithoutImmigrationRulesInput
   document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
   facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleUncheckedCreateWithoutReviewsInput = {
@@ -822,6 +886,8 @@ export type ImmigrationRuleUncheckedCreateWithoutReviewsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
 }
 
 export type ImmigrationRuleCreateOrConnectWithoutReviewsInput = {
@@ -853,6 +919,8 @@ export type ImmigrationRuleUpdateWithoutReviewsInput = {
   country?: Prisma.CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
   facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateWithoutReviewsInput = {
@@ -868,6 +936,176 @@ export type ImmigrationRuleUncheckedUpdateWithoutReviewsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+}
+
+export type ImmigrationRuleCreateWithoutSavedItemsInput = {
+  id?: string
+  ruleType: string
+  title: string
+  officialUrl: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country: Prisma.CountryCreateNestedOneWithoutImmigrationRulesInput
+  document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
+  facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
+  reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutImmigrationRuleInput
+}
+
+export type ImmigrationRuleUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  countryId: string
+  ruleType: string
+  title: string
+  officialUrl: string
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutImmigrationRuleInput
+}
+
+export type ImmigrationRuleCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.ImmigrationRuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type ImmigrationRuleUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.ImmigrationRuleUpdateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.ImmigrationRuleWhereInput
+}
+
+export type ImmigrationRuleUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.ImmigrationRuleWhereInput
+  data: Prisma.XOR<Prisma.ImmigrationRuleUpdateWithoutSavedItemsInput, Prisma.ImmigrationRuleUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type ImmigrationRuleUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ruleType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
+  facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
+  reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
+}
+
+export type ImmigrationRuleUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.StringFieldUpdateOperationsInput | string
+  ruleType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+}
+
+export type ImmigrationRuleCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  ruleType: string
+  title: string
+  officialUrl: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country: Prisma.CountryCreateNestedOneWithoutImmigrationRulesInput
+  document: Prisma.DocumentCreateNestedOneWithoutImmigrationRulesInput
+  facts?: Prisma.FactCreateNestedManyWithoutImmigrationRuleInput
+  reviews?: Prisma.ImmigrationRuleReviewCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutImmigrationRuleInput
+}
+
+export type ImmigrationRuleUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  countryId: string
+  ruleType: string
+  title: string
+  officialUrl: string
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  reviews?: Prisma.ImmigrationRuleReviewUncheckedCreateNestedManyWithoutImmigrationRuleInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutImmigrationRuleInput
+}
+
+export type ImmigrationRuleCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.ImmigrationRuleWhereUniqueInput
+  create: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type ImmigrationRuleUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.ImmigrationRuleUpdateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.ImmigrationRuleCreateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.ImmigrationRuleWhereInput
+}
+
+export type ImmigrationRuleUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.ImmigrationRuleWhereInput
+  data: Prisma.XOR<Prisma.ImmigrationRuleUpdateWithoutWorkspaceNotesInput, Prisma.ImmigrationRuleUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type ImmigrationRuleUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  ruleType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
+  facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
+  reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+}
+
+export type ImmigrationRuleUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.StringFieldUpdateOperationsInput | string
+  ruleType?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleCreateManyCountryInput = {
@@ -896,6 +1134,8 @@ export type ImmigrationRuleUpdateWithoutCountryInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutImmigrationRulesNestedInput
   facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateWithoutCountryInput = {
@@ -911,6 +1151,8 @@ export type ImmigrationRuleUncheckedUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateManyWithoutCountryInput = {
@@ -952,6 +1194,8 @@ export type ImmigrationRuleUpdateWithoutDocumentInput = {
   country?: Prisma.CountryUpdateOneRequiredWithoutImmigrationRulesNestedInput
   facts?: Prisma.FactUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateWithoutDocumentInput = {
@@ -967,6 +1211,8 @@ export type ImmigrationRuleUncheckedUpdateWithoutDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutImmigrationRuleNestedInput
   reviews?: Prisma.ImmigrationRuleReviewUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutImmigrationRuleNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutImmigrationRuleNestedInput
 }
 
 export type ImmigrationRuleUncheckedUpdateManyWithoutDocumentInput = {
@@ -990,11 +1236,15 @@ export type ImmigrationRuleUncheckedUpdateManyWithoutDocumentInput = {
 export type ImmigrationRuleCountOutputType = {
   facts: number
   reviews: number
+  savedItems: number
+  workspaceNotes: number
 }
 
 export type ImmigrationRuleCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | ImmigrationRuleCountOutputTypeCountFactsArgs
   reviews?: boolean | ImmigrationRuleCountOutputTypeCountReviewsArgs
+  savedItems?: boolean | ImmigrationRuleCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | ImmigrationRuleCountOutputTypeCountWorkspaceNotesArgs
 }
 
 /**
@@ -1021,6 +1271,20 @@ export type ImmigrationRuleCountOutputTypeCountReviewsArgs<ExtArgs extends runti
   where?: Prisma.ImmigrationRuleReviewWhereInput
 }
 
+/**
+ * ImmigrationRuleCountOutputType without action
+ */
+export type ImmigrationRuleCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * ImmigrationRuleCountOutputType without action
+ */
+export type ImmigrationRuleCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
 
 export type ImmigrationRuleSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1038,6 +1302,8 @@ export type ImmigrationRuleSelect<ExtArgs extends runtime.Types.Extensions.Inter
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.ImmigrationRule$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.ImmigrationRule$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.ImmigrationRule$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.ImmigrationRule$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.ImmigrationRuleCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["immigrationRule"]>
 
@@ -1093,6 +1359,8 @@ export type ImmigrationRuleInclude<ExtArgs extends runtime.Types.Extensions.Inte
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.ImmigrationRule$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.ImmigrationRule$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.ImmigrationRule$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.ImmigrationRule$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.ImmigrationRuleCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ImmigrationRuleIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1111,6 +1379,8 @@ export type $ImmigrationRulePayload<ExtArgs extends runtime.Types.Extensions.Int
     document: Prisma.$DocumentPayload<ExtArgs>
     facts: Prisma.$FactPayload<ExtArgs>[]
     reviews: Prisma.$ImmigrationRuleReviewPayload<ExtArgs>[]
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1522,6 +1792,8 @@ export interface Prisma__ImmigrationRuleClient<T, Null = never, ExtArgs extends 
   document<T extends Prisma.DocumentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   facts<T extends Prisma.ImmigrationRule$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmigrationRule$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.ImmigrationRule$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmigrationRule$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmigrationRuleReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedItems<T extends Prisma.ImmigrationRule$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmigrationRule$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.ImmigrationRule$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ImmigrationRule$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2008,6 +2280,54 @@ export type ImmigrationRule$reviewsArgs<ExtArgs extends runtime.Types.Extensions
   take?: number
   skip?: number
   distinct?: Prisma.ImmigrationRuleReviewScalarFieldEnum | Prisma.ImmigrationRuleReviewScalarFieldEnum[]
+}
+
+/**
+ * ImmigrationRule.savedItems
+ */
+export type ImmigrationRule$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * ImmigrationRule.workspaceNotes
+ */
+export type ImmigrationRule$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
 }
 
 /**

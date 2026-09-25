@@ -284,6 +284,10 @@ export type SourceWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Source"> | Date | string
   documents?: Prisma.DocumentListRelationFilter
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
+  crawlTargets?: Prisma.CrawlTargetListRelationFilter
+  crawlUrlStates?: Prisma.CrawlUrlStateListRelationFilter
 }
 
 export type SourceOrderByWithRelationInput = {
@@ -307,6 +311,10 @@ export type SourceOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   documents?: Prisma.DocumentOrderByRelationAggregateInput
   country?: Prisma.CountryOrderByWithRelationInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
+  crawlTargets?: Prisma.CrawlTargetOrderByRelationAggregateInput
+  crawlUrlStates?: Prisma.CrawlUrlStateOrderByRelationAggregateInput
 }
 
 export type SourceWhereUniqueInput = Prisma.AtLeast<{
@@ -333,6 +341,10 @@ export type SourceWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Source"> | Date | string
   documents?: Prisma.DocumentListRelationFilter
   country?: Prisma.XOR<Prisma.CountryNullableScalarRelationFilter, Prisma.CountryWhereInput> | null
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
+  crawlTargets?: Prisma.CrawlTargetListRelationFilter
+  crawlUrlStates?: Prisma.CrawlUrlStateListRelationFilter
 }, "id" | "canonicalUrl">
 
 export type SourceOrderByWithAggregationInput = {
@@ -403,6 +415,10 @@ export type SourceCreateInput = {
   updatedAt?: Date | string
   documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
   country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUncheckedCreateInput = {
@@ -425,6 +441,10 @@ export type SourceUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUpdateInput = {
@@ -447,6 +467,10 @@ export type SourceUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
   country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateInput = {
@@ -469,6 +493,10 @@ export type SourceUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceCreateManyInput = {
@@ -617,6 +645,11 @@ export type SourceScalarRelationFilter = {
   isNot?: Prisma.SourceWhereInput
 }
 
+export type SourceNullableScalarRelationFilter = {
+  is?: Prisma.SourceWhereInput | null
+  isNot?: Prisma.SourceWhereInput | null
+}
+
 export type SourceCreateNestedManyWithoutCountryInput = {
   create?: Prisma.XOR<Prisma.SourceCreateWithoutCountryInput, Prisma.SourceUncheckedCreateWithoutCountryInput> | Prisma.SourceCreateWithoutCountryInput[] | Prisma.SourceUncheckedCreateWithoutCountryInput[]
   connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCountryInput | Prisma.SourceCreateOrConnectWithoutCountryInput[]
@@ -690,6 +723,66 @@ export type SourceUpdateOneRequiredWithoutDocumentsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutDocumentsInput, Prisma.SourceUpdateWithoutDocumentsInput>, Prisma.SourceUncheckedUpdateWithoutDocumentsInput>
 }
 
+export type SourceCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutSavedItemsInput, Prisma.SourceUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.SourceWhereUniqueInput
+}
+
+export type SourceUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutSavedItemsInput, Prisma.SourceUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.SourceUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.SourceWhereInput | boolean
+  delete?: Prisma.SourceWhereInput | boolean
+  connect?: Prisma.SourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.SourceUpdateWithoutSavedItemsInput>, Prisma.SourceUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type SourceCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.SourceWhereUniqueInput
+}
+
+export type SourceUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.SourceUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.SourceWhereInput | boolean
+  delete?: Prisma.SourceWhereInput | boolean
+  connect?: Prisma.SourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.SourceUpdateWithoutWorkspaceNotesInput>, Prisma.SourceUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type SourceCreateNestedOneWithoutCrawlTargetsInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutCrawlTargetsInput, Prisma.SourceUncheckedCreateWithoutCrawlTargetsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCrawlTargetsInput
+  connect?: Prisma.SourceWhereUniqueInput
+}
+
+export type SourceUpdateOneRequiredWithoutCrawlTargetsNestedInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutCrawlTargetsInput, Prisma.SourceUncheckedCreateWithoutCrawlTargetsInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCrawlTargetsInput
+  upsert?: Prisma.SourceUpsertWithoutCrawlTargetsInput
+  connect?: Prisma.SourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutCrawlTargetsInput, Prisma.SourceUpdateWithoutCrawlTargetsInput>, Prisma.SourceUncheckedUpdateWithoutCrawlTargetsInput>
+}
+
+export type SourceCreateNestedOneWithoutCrawlUrlStatesInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedCreateWithoutCrawlUrlStatesInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCrawlUrlStatesInput
+  connect?: Prisma.SourceWhereUniqueInput
+}
+
+export type SourceUpdateOneRequiredWithoutCrawlUrlStatesNestedInput = {
+  create?: Prisma.XOR<Prisma.SourceCreateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedCreateWithoutCrawlUrlStatesInput>
+  connectOrCreate?: Prisma.SourceCreateOrConnectWithoutCrawlUrlStatesInput
+  upsert?: Prisma.SourceUpsertWithoutCrawlUrlStatesInput
+  connect?: Prisma.SourceWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.SourceUpdateToOneWithWhereWithoutCrawlUrlStatesInput, Prisma.SourceUpdateWithoutCrawlUrlStatesInput>, Prisma.SourceUncheckedUpdateWithoutCrawlUrlStatesInput>
+}
+
 export type SourceCreateWithoutCountryInput = {
   id?: string
   name: string
@@ -709,6 +802,10 @@ export type SourceCreateWithoutCountryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUncheckedCreateWithoutCountryInput = {
@@ -730,6 +827,10 @@ export type SourceUncheckedCreateWithoutCountryInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
 }
 
 export type SourceCreateOrConnectWithoutCountryInput = {
@@ -801,6 +902,10 @@ export type SourceCreateWithoutDocumentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
 }
 
 export type SourceUncheckedCreateWithoutDocumentsInput = {
@@ -822,6 +927,10 @@ export type SourceUncheckedCreateWithoutDocumentsInput = {
   notes?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
 }
 
 export type SourceCreateOrConnectWithoutDocumentsInput = {
@@ -859,6 +968,10 @@ export type SourceUpdateWithoutDocumentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateWithoutDocumentsInput = {
@@ -880,6 +993,474 @@ export type SourceUncheckedUpdateWithoutDocumentsInput = {
   notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
+  country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
+}
+
+export type SourceUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  countryId?: string | null
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
+}
+
+export type SourceCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.SourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SourceCreateWithoutSavedItemsInput, Prisma.SourceUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type SourceUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.SourceUpdateWithoutSavedItemsInput, Prisma.SourceUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.SourceCreateWithoutSavedItemsInput, Prisma.SourceUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.SourceWhereInput
+}
+
+export type SourceUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.SourceWhereInput
+  data: Prisma.XOR<Prisma.SourceUpdateWithoutSavedItemsInput, Prisma.SourceUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type SourceUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
+  country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
+  country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
+}
+
+export type SourceUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  countryId?: string | null
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
+}
+
+export type SourceCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.SourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SourceCreateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type SourceUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.SourceUpdateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.SourceCreateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.SourceWhereInput
+}
+
+export type SourceUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.SourceWhereInput
+  data: Prisma.XOR<Prisma.SourceUpdateWithoutWorkspaceNotesInput, Prisma.SourceUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type SourceUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
+  country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceCreateWithoutCrawlTargetsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
+  country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutSourceInput
+}
+
+export type SourceUncheckedCreateWithoutCrawlTargetsInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  countryId?: string | null
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutSourceInput
+}
+
+export type SourceCreateOrConnectWithoutCrawlTargetsInput = {
+  where: Prisma.SourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SourceCreateWithoutCrawlTargetsInput, Prisma.SourceUncheckedCreateWithoutCrawlTargetsInput>
+}
+
+export type SourceUpsertWithoutCrawlTargetsInput = {
+  update: Prisma.XOR<Prisma.SourceUpdateWithoutCrawlTargetsInput, Prisma.SourceUncheckedUpdateWithoutCrawlTargetsInput>
+  create: Prisma.XOR<Prisma.SourceCreateWithoutCrawlTargetsInput, Prisma.SourceUncheckedCreateWithoutCrawlTargetsInput>
+  where?: Prisma.SourceWhereInput
+}
+
+export type SourceUpdateToOneWithWhereWithoutCrawlTargetsInput = {
+  where?: Prisma.SourceWhereInput
+  data: Prisma.XOR<Prisma.SourceUpdateWithoutCrawlTargetsInput, Prisma.SourceUncheckedUpdateWithoutCrawlTargetsInput>
+}
+
+export type SourceUpdateWithoutCrawlTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
+  country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceUncheckedUpdateWithoutCrawlTargetsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceCreateWithoutCrawlUrlStatesInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentCreateNestedManyWithoutSourceInput
+  country?: Prisma.CountryCreateNestedOneWithoutSourcesInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetCreateNestedManyWithoutSourceInput
+}
+
+export type SourceUncheckedCreateWithoutCrawlUrlStatesInput = {
+  id?: string
+  name: string
+  canonicalUrl: string
+  countryId?: string | null
+  sourceTier?: string | null
+  sourceType?: string | null
+  topics?: Prisma.SourceCreatetopicsInput | string[]
+  language?: string | null
+  authorityNotes?: string | null
+  status?: string
+  crawlEnabled?: boolean
+  crawlFrequency?: string | null
+  crawlPolicy?: string
+  lastCrawledAt?: Date | string | null
+  lastVerifiedAt?: Date | string | null
+  notes?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutSourceInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutSourceInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutSourceInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedCreateNestedManyWithoutSourceInput
+}
+
+export type SourceCreateOrConnectWithoutCrawlUrlStatesInput = {
+  where: Prisma.SourceWhereUniqueInput
+  create: Prisma.XOR<Prisma.SourceCreateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedCreateWithoutCrawlUrlStatesInput>
+}
+
+export type SourceUpsertWithoutCrawlUrlStatesInput = {
+  update: Prisma.XOR<Prisma.SourceUpdateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedUpdateWithoutCrawlUrlStatesInput>
+  create: Prisma.XOR<Prisma.SourceCreateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedCreateWithoutCrawlUrlStatesInput>
+  where?: Prisma.SourceWhereInput
+}
+
+export type SourceUpdateToOneWithWhereWithoutCrawlUrlStatesInput = {
+  where?: Prisma.SourceWhereInput
+  data: Prisma.XOR<Prisma.SourceUpdateWithoutCrawlUrlStatesInput, Prisma.SourceUncheckedUpdateWithoutCrawlUrlStatesInput>
+}
+
+export type SourceUpdateWithoutCrawlUrlStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
+  country?: Prisma.CountryUpdateOneWithoutSourcesNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+}
+
+export type SourceUncheckedUpdateWithoutCrawlUrlStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceTier?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sourceType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  topics?: Prisma.SourceUpdatetopicsInput | string[]
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  authorityNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  crawlEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  crawlFrequency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  crawlPolicy?: Prisma.StringFieldUpdateOperationsInput | string
+  lastCrawledAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  lastVerifiedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  notes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceCreateManyCountryInput = {
@@ -921,6 +1502,10 @@ export type SourceUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateWithoutCountryInput = {
@@ -942,6 +1527,10 @@ export type SourceUncheckedUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutSourceNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutSourceNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutSourceNestedInput
+  crawlTargets?: Prisma.CrawlTargetUncheckedUpdateManyWithoutSourceNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutSourceNestedInput
 }
 
 export type SourceUncheckedUpdateManyWithoutCountryInput = {
@@ -971,10 +1560,18 @@ export type SourceUncheckedUpdateManyWithoutCountryInput = {
 
 export type SourceCountOutputType = {
   documents: number
+  savedItems: number
+  workspaceNotes: number
+  crawlTargets: number
+  crawlUrlStates: number
 }
 
 export type SourceCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   documents?: boolean | SourceCountOutputTypeCountDocumentsArgs
+  savedItems?: boolean | SourceCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | SourceCountOutputTypeCountWorkspaceNotesArgs
+  crawlTargets?: boolean | SourceCountOutputTypeCountCrawlTargetsArgs
+  crawlUrlStates?: boolean | SourceCountOutputTypeCountCrawlUrlStatesArgs
 }
 
 /**
@@ -992,6 +1589,34 @@ export type SourceCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Exten
  */
 export type SourceCountOutputTypeCountDocumentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.DocumentWhereInput
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeCountCrawlTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrawlTargetWhereInput
+}
+
+/**
+ * SourceCountOutputType without action
+ */
+export type SourceCountOutputTypeCountCrawlUrlStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrawlUrlStateWhereInput
 }
 
 
@@ -1016,6 +1641,10 @@ export type SourceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   updatedAt?: boolean
   documents?: boolean | Prisma.Source$documentsArgs<ExtArgs>
   country?: boolean | Prisma.Source$countryArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Source$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Source$workspaceNotesArgs<ExtArgs>
+  crawlTargets?: boolean | Prisma.Source$crawlTargetsArgs<ExtArgs>
+  crawlUrlStates?: boolean | Prisma.Source$crawlUrlStatesArgs<ExtArgs>
   _count?: boolean | Prisma.SourceCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["source"]>
 
@@ -1088,6 +1717,10 @@ export type SourceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
 export type SourceInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   documents?: boolean | Prisma.Source$documentsArgs<ExtArgs>
   country?: boolean | Prisma.Source$countryArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Source$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Source$workspaceNotesArgs<ExtArgs>
+  crawlTargets?: boolean | Prisma.Source$crawlTargetsArgs<ExtArgs>
+  crawlUrlStates?: boolean | Prisma.Source$crawlUrlStatesArgs<ExtArgs>
   _count?: boolean | Prisma.SourceCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type SourceIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1102,6 +1735,10 @@ export type $SourcePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   objects: {
     documents: Prisma.$DocumentPayload<ExtArgs>[]
     country: Prisma.$CountryPayload<ExtArgs> | null
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
+    crawlTargets: Prisma.$CrawlTargetPayload<ExtArgs>[]
+    crawlUrlStates: Prisma.$CrawlUrlStatePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1518,6 +2155,10 @@ export interface Prisma__SourceClient<T, Null = never, ExtArgs extends runtime.T
   readonly [Symbol.toStringTag]: "PrismaPromise"
   documents<T extends Prisma.Source$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   country<T extends Prisma.Source$countryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$countryArgs<ExtArgs>>): Prisma.Prisma__CountryClient<runtime.Types.Result.GetResult<Prisma.$CountryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  savedItems<T extends Prisma.Source$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.Source$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crawlTargets<T extends Prisma.Source$crawlTargetsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$crawlTargetsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlTargetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crawlUrlStates<T extends Prisma.Source$crawlUrlStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Source$crawlUrlStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlUrlStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2006,6 +2647,102 @@ export type Source$countryArgs<ExtArgs extends runtime.Types.Extensions.Internal
    */
   include?: Prisma.CountryInclude<ExtArgs> | null
   where?: Prisma.CountryWhereInput
+}
+
+/**
+ * Source.savedItems
+ */
+export type Source$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * Source.workspaceNotes
+ */
+export type Source$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
+}
+
+/**
+ * Source.crawlTargets
+ */
+export type Source$crawlTargetsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrawlTarget
+   */
+  select?: Prisma.CrawlTargetSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrawlTarget
+   */
+  omit?: Prisma.CrawlTargetOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrawlTargetInclude<ExtArgs> | null
+  where?: Prisma.CrawlTargetWhereInput
+  orderBy?: Prisma.CrawlTargetOrderByWithRelationInput | Prisma.CrawlTargetOrderByWithRelationInput[]
+  cursor?: Prisma.CrawlTargetWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrawlTargetScalarFieldEnum | Prisma.CrawlTargetScalarFieldEnum[]
+}
+
+/**
+ * Source.crawlUrlStates
+ */
+export type Source$crawlUrlStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrawlUrlState
+   */
+  select?: Prisma.CrawlUrlStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrawlUrlState
+   */
+  omit?: Prisma.CrawlUrlStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrawlUrlStateInclude<ExtArgs> | null
+  where?: Prisma.CrawlUrlStateWhereInput
+  orderBy?: Prisma.CrawlUrlStateOrderByWithRelationInput | Prisma.CrawlUrlStateOrderByWithRelationInput[]
+  cursor?: Prisma.CrawlUrlStateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrawlUrlStateScalarFieldEnum | Prisma.CrawlUrlStateScalarFieldEnum[]
 }
 
 /**

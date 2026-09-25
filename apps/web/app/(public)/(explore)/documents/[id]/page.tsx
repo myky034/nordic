@@ -4,6 +4,7 @@ import { getDocument, documentVersions } from "@/lib/documents/queries";
 import { canonicalSourceUrl, dateLabel, tierLabel } from "@/lib/registry/domain";
 import { BackLink, Badge, DescriptionList, EmptyState, ExternalLink, List, ListRow, PageHeader, Quote, Section } from "@/components/ui";
 import { buttonPrimary, textLink } from "@/components/ui/styles";
+import { InternalText } from "./internal-text";
 
 export default async function DocumentPage({ params }: PageProps<"/documents/[id]">) {
   const { id } = await params;
@@ -31,6 +32,7 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
     <Section title="Source excerpt" description="An excerpt records source text; it is not a verified fact or legal advice.">
       {document.excerpt ? <Quote>{document.excerpt}</Quote> : <EmptyState>No excerpt supplied. Read the original source for context.</EmptyState>}
     </Section>
+    <InternalText documentId={id} />
     <Section title="Recorded versions" description={<>Versions preserve changes without selecting one as authoritative.{versions.length > 20 ? " Showing the 20 most recently retrieved versions." : ""}</>}>
       {versions.length ? <List label="Versions">{versions.slice(0, 20).map((version) => <ListRow key={version.id} href={`/documents/${version.id}`}
         title={`Retrieved ${dateLabel(version.retrievedAt)}`}

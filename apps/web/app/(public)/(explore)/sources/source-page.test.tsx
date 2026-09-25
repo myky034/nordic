@@ -1,6 +1,9 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
 const { getSource } = vi.hoisted(() => ({ getSource: vi.fn() }));
+// Detail pages ask whether the visitor bookmarked the item; render as a guest here.
+vi.mock("@/lib/workspace/saved", () => ({ savedState: async () => ({ signedIn: false, saved: false }) }));
+vi.mock("@/components/save-button", () => ({ SaveButton: () => null }));
 vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NOT_FOUND"); } }));
 vi.mock("@/lib/registry/queries", () => ({ getSource }));
 import SourcePage from "./[id]/page";

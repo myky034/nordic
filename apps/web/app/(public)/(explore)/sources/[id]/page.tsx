@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { getSource } from "@/lib/registry/queries";
 import { canonicalSourceUrl, dateLabel, tierLabel, verificationLabel } from "@/lib/registry/domain";
@@ -13,8 +15,9 @@ export default async function SourcePage({ params }: PageProps<"/sources/[id]">)
   if (!source) notFound();
   const url = canonicalSourceUrl(source.canonicalUrl);
   const host = hostLabel(url);
+  const save = await savedState("source", source.id);
   return <>
-    <PageHeader back={<BackLink href="/sources">Source registry</BackLink>} eyebrow="Source" title={source.name}
+    <PageHeader back={<BackLink href="/sources">Source registry</BackLink>} actions={<SaveButton kind="source" id={source.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Source" title={source.name}
       description={<div className="flex flex-wrap gap-2 pt-1"><TierBadge tier={source.sourceTier} /><SourceStatusBadge status={source.status}>{verificationLabel(source.status, source.lastVerifiedAt)}</SourceStatusBadge></div>} />
     <DescriptionList items={[
       ["URL", url ? <ExternalLink key="u" href={url}>{url}</ExternalLink> : "Source URL needs verification."],

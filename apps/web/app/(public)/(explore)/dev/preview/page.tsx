@@ -29,7 +29,7 @@ export const metadata = { title: "UI preview (DEMO)", robots: { index: false, fo
 
 const toc = [
   ["foundations", "Foundations"], ["lists", "Long list + pagination"], ["sources", "Source rows"], ["facts", "Fact cards"],
-  ["workspace", "Workspace rows"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
+  ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
 ] as const;
 
 export default async function PreviewPage({ searchParams }: PageProps<"/dev/preview">) {
@@ -39,15 +39,18 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
   const { from, to } = pageWindow(page);
   const tab = typeof query.tab === "string" ? query.tab : "proposed";
   const rows = demoProgrammes.slice(from, to + 1);
+  // ?section=<id> renders one section only (handy for screenshots in docs).
+  const only = typeof query.section === "string" && toc.some(([id]) => id === query.section) ? query.section : "";
+  const show = (id: string) => !only || only === id;
 
   return <>
     <div className="mb-8"><Notice tone="caution" role="alert" title="DEMO — dữ liệu giả chỉ để xem giao diện">
       Mọi tên, số và URL trên trang này là hư cấu (domain <code>example.test</code>) và không được ghi vào database. Trang chỉ tồn tại khi chạy dev; bản production trả về 404.
     </Notice></div>
-    <PageHeader eyebrow="Development" title="UI preview" description="Every shared component and state, rendered with DEMO fixtures. Toggle dark mode in your OS settings to review both themes." />
-    <nav aria-label="Sections" className="mb-4 flex flex-wrap gap-2">{toc.map(([id, label]) => <a key={id} href={`#${id}`} className={buttonSmall}>{label}</a>)}</nav>
+    {!only && <><PageHeader eyebrow="Development" title="UI preview" description="Every shared component and state, rendered with DEMO fixtures. Toggle dark mode in your OS settings to review both themes." />
+    <nav aria-label="Sections" className="mb-4 flex flex-wrap gap-2">{toc.map(([id, label]) => <a key={id} href={`#${id}`} className={buttonSmall}>{label}</a>)}</nav></>}
 
-    <Section title="Foundations" className="scroll-mt-24"><span id="foundations" />
+    {show("foundations") && <Section title="Foundations" className="scroll-mt-24"><span id="foundations" />
       <Card className="space-y-6">
         <div className="flex flex-wrap gap-3"><button className={buttonPrimary}>Primary</button><button className={buttonSecondary}>Secondary</button><button className={buttonSmall}>Small</button><button className={buttonPrimary} disabled>Disabled</button><a href="#foundations" className={`${textLink} self-center text-[15px]`}>Text link</a></div>
         <div className="flex flex-wrap gap-2"><TierBadge tier="T1" /><TierBadge tier="T2" /><TierBadge tier="T3" /><TierBadge tier="T4" /><TierBadge tier={null} /></div>
@@ -65,23 +68,23 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
         <LegalDisclaimer />
         <ConflictBanner />
       </div>
-    </Section>
+    </Section>}
 
-    <Section title="Long list + pagination" description="60 DEMO rows, 25 per page — the pattern used by every list." className="scroll-mt-24"><span id="lists" />
+    {show("lists") && <Section title="Long list + pagination" description="60 DEMO rows, 25 per page — the pattern used by every list." className="scroll-mt-24"><span id="lists" />
       <List label="DEMO programmes">{rows.map((p) => <ListRow key={p.id} href="#lists" title={p.name} badges={<Badge tone="accent">{p.degree}</Badge>}
         subtitle={`${p.university} · ${p.country} · ${p.field ?? "Field not stated"} · ${p.language ?? "Language not stated"}`} />)}</List>
       <Pagination summary={pageSummary(demoProgrammes.length, page)} href={(p) => `/dev/preview?page=${p}#lists`} />
-    </Section>
+    </Section>}
 
-    <Section title="Source rows" description="Compact rows; full metadata lives on the source page." className="scroll-mt-24"><span id="sources" />
+    {show("sources") && <Section title="Source rows" description="Compact rows; full metadata lives on the source page." className="scroll-mt-24"><span id="sources" />
       <SourceList sources={demoSources} />
-    </Section>
+    </Section>}
 
-    <Section title="Fact cards" description="Each visual state a claim can take." className="scroll-mt-24"><span id="facts" />
+    {show("facts") && <Section title="Fact cards" description="Each visual state a claim can take." className="scroll-mt-24"><span id="facts" />
       <div className="space-y-6">{demoFacts.map(({ label, fact }) => <div key={fact.id}><p className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</p><FactCard fact={fact} /></div>)}</div>
-    </Section>
+    </Section>}
 
-    <Section title="Workspace rows" description="Status tabs, search and a review disclosure (forms here are inert)." className="scroll-mt-24"><span id="workspace" />
+    {show("workspace") && <Section title="Workspace rows" description="Status tabs, search and a review disclosure (forms here are inert)." className="scroll-mt-24"><span id="workspace" />
       <Segmented label="DEMO status" items={[["proposed", "Chờ duyệt", 12], ["reviewed", "Đã duyệt", 48], ["rejected", "Từ chối", 3]].map(([v, l, n]) => ({ href: `/dev/preview?tab=${v}#workspace`, label: l as string, count: n as number, active: tab === v }))} />
       <List>{[1, 2, 3].map((i) => <ListRow key={i} title={`DEMO University ${String.fromCharCode(64 + i)}`}
         badges={<ReviewBadge status={tab}>{tab}</ReviewBadge>} subtitle="Sweden · https://demo.example.test/university">
@@ -94,37 +97,58 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
             </fieldset></div>
         </Disclosure>
       </ListRow>)}</List>
-    </Section>
+    </Section>}
 
-    <Section title="Comparison table" description="Every value per cell with its own source, tier and period; a conflict, a non-official value and empty cells." className="scroll-mt-24"><span id="compare" />
+    {show("personal") && <Section title="Personal workspace" description="Save button, projects, saved items, notes and plan shortcuts (inert DEMO copies)." className="scroll-mt-24"><span id="personal" />
+      <div className="mb-5 flex flex-wrap items-center gap-3">
+        <span className="inline-flex items-center rounded-full bg-fill px-4 py-2 text-[14px] font-medium text-ink">☆ Lưu</span>
+        <span className="inline-flex items-center rounded-full bg-accent px-4 py-2 text-[14px] font-medium text-white">★ Đã lưu</span>
+        <span className="inline-flex items-center rounded-full bg-fill px-4 py-2 text-[14px] font-medium text-ink">☆ Đăng nhập để lưu</span>
+      </div>
+      <h3 className="mb-3 px-1 text-[17px] font-semibold">Research projects</h3>
+      <Segmented label="DEMO projects" items={[{ href: "#personal", label: "Đang làm", active: true }, { href: "#personal", label: "Đã lưu trữ", active: false }]} />
+      <List>{[["DEMO Sweden 2028", "2028 · DEMO role · Sweden, Denmark"], ["DEMO Master plan", "Chưa đặt mục tiêu"]].map(([t, sub]) => <ListRow key={t} href="#personal" title={t} subtitle={sub} />)}</List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Đã lưu</h3>
+      <Segmented label="DEMO kinds" items={[["Tất cả", 4, true], ["Quốc gia", 1, false], ["Chương trình", 2, false], ["Quy định nhập cư", 1, false]].map(([l, n, a]) => ({ href: "#personal", label: l as string, count: n as number, active: a as boolean }))} />
+      <List>{[["DEMO Saved Programme", "Chương trình", "DEMO Sweden 2028"], ["DEMO University A", "Trường", ""]].map(([t, k, proj]) => <ListRow key={t} title={t} badges={<Badge>{k}</Badge>} meta="Lưu ngày 2026-01-15">
+        <div className="flex flex-wrap items-center gap-4"><select disabled defaultValue={proj} className={`${control} mt-0 w-auto py-1.5 text-[13px]`}><option value="">Chưa gắn project</option><option value="DEMO Sweden 2028">DEMO Sweden 2028</option></select><span className="text-[13px] text-critical">Bỏ lưu</span></div>
+      </ListRow>)}</List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Ghi chú gần đây</h3>
+      <List><ListRow title={<span className="font-normal">DEMO note: prepare transcripts before November.</span>} badges={<Badge>Ghi chú của bạn</Badge>} meta="DEMO Sweden 2028 · DEMO Saved Programme · sửa ngày 2026-01-15" /></List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Lối tắt theo hồ sơ (My Europe Plan)</h3>
+      <div className="mb-3"><Notice tone="neutral">Đây là các liên kết lọc sẵn theo câu trả lời của bạn — <strong>không phải khuyến nghị</strong>, không xếp hạng và không dự đoán khả năng trúng tuyển.</Notice></div>
+      <List>{[["So sánh các nước bạn quan tâm", "Sweden, Denmark"], ["Chương trình master tại Sweden", "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]].map(([t, sub]) => <ListRow key={t} href="#personal" title={t} subtitle={sub} />)}</List>
+    </Section>}
+
+    {show("compare") && <Section title="Comparison table" description="Every value per cell with its own source, tier and period; a conflict, a non-official value and empty cells." className="scroll-mt-24"><span id="compare" />
       <CompareTable countries={demoCountries} rows={demoCompareRows.map((r) => ({
         key: r.key,
         head: <><span>{r.label}</span><span className="block text-[12px] font-normal text-ink-3">{r.unit}</span><span className="mt-1 block text-[12px] font-normal text-ink-3">{r.description}</span></>,
         cells: demoCountries.map((c) => <CompareCell key={c.id} labour={r.key === "m2"} values={r.cells[c.id as keyof typeof r.cells]} />),
       }))} />
-    </Section>
+    </Section>}
 
-    <Section title="Search results" className="scroll-mt-24"><span id="search" />
+    {show("search") && <Section title="Search results" className="scroll-mt-24"><span id="search" />
       <div className="space-y-8">{demoSearchGroups.map((g) => <div key={g.label}>
         <div className="mb-3 flex items-end justify-between px-1"><h3 className="text-[17px] font-semibold">{g.label} <span className="text-[15px] font-normal text-ink-3">{g.total}</span></h3>{g.total > g.hits.length && <a href="#search" className={`${textLink} text-[15px]`}>See all</a>}</div>
         <List>{g.hits.map((h) => <ListRow key={h.id} href="#search" title={h.title} subtitle={h.subtitle} />)}</List>
       </div>)}</div>
-    </Section>
+    </Section>}
 
-    <Section title="Detail blocks" className="scroll-mt-24"><span id="detail" />
+    {show("detail") && <Section title="Detail blocks" className="scroll-mt-24"><span id="detail" />
       <DescriptionList items={[
         ["Official website", <ExternalLink key="w" href="https://demo.example.test/">https://demo.example.test/</ExternalLink>],
         ["Classification", "DEMO-CODE 0000"], ["Last registry verification", "2026-01-15"], ["Unknown value", "Not available"],
       ]} />
       <div className="mt-4"><Card><ExistenceEvidence excerpt="DEMO excerpt naming the entity." document={demoEvidenceDocument} reviewedAt="2026-01-16T00:00:00Z" /></Card></div>
-    </Section>
+    </Section>}
 
-    <Section title="Empty & loading states" className="scroll-mt-24"><span id="states" />
+    {show("states") && <Section title="Empty & loading states" className="scroll-mt-24"><span id="states" />
       <div className="space-y-4">
         <EmptyState title="DEMO empty state with title" action={<Link href="#states" className={`${textLink} text-[15px]`}>DEMO action</Link>}>Explains why nothing is shown, without inventing content.</EmptyState>
         <EmptyState>Chưa có dữ liệu.</EmptyState>
         <Card><LoadingState label="DEMO loading" /></Card>
       </div>
-    </Section>
+    </Section>}
   </>;
 }

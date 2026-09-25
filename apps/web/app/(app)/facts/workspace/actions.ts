@@ -42,3 +42,16 @@ export async function reviewFact(_: FactState, form: FormData): Promise<FactStat
     return {message:"Đã ghi nhận quyết định và lịch sử."};
   } catch(e) { logAccessError("review_fact"); return {error:factError(e instanceof Error ? e.message : "")}; }
 }
+// Slice 9: close a "source changed" flag. revalidated = the claim still
+// matches the new page version; rejected = withdraw it from public pages.
+export async function resolveSourceChange(_: FactState, form: FormData): Promise<FactState> {
+  try {
+    const { client } = await requirePermission("facts.review");
+    const decision = form.get("decision");
+    if (!uuidPattern.test(String(form.get("fact") ?? "")) || (decision !== "revalidated" && decision !== "rejected")) return {error:factError("facts_invalid")};
+    const { error } = await client.rpc("resolve_source_change",{p_fact:form.get("fact"),p_decision:decision,p_note:form.get("note")});
+    if(error) throw new Error(error.message);
+    revalidatePath("/facts/workspace"); revalidatePath("/facts");
+    return {message:decision==="revalidated"?"Đã xác nhận thông tin vẫn khớp với phiên bản mới.":"Đã từ chối; thông tin không còn hiển thị công khai."};
+  } catch(e) { logAccessError("resolve_source_change"); return {error:factError(e instanceof Error ? e.message : "")}; }
+}

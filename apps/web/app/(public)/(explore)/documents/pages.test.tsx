@@ -17,6 +17,8 @@ vi.mock("@/lib/documents/queries", () => ({
   getDocument: get,
   documentVersions: versions,
 }));
+// The internal-text section reads Supabase with the viewer's session; it has its own test.
+vi.mock("./[id]/internal-text", () => ({ InternalText: () => null }));
 import DocumentsPage from "./page";
 import DocumentPage from "./[id]/page";
 it("renders an honest empty state instead of fictional documents", async () => {

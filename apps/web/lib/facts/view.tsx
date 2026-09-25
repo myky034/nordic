@@ -7,11 +7,11 @@ import { isOfficialTier } from "../immigration/domain";
 import { isOfficialStatisticsTier } from "../labour/domain";
 export type FactRow = {
  id:string; document_id:string; topic:string; subject:string; predicate:string; value:string;
- unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
+ unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
  evidence:{source_url:string;excerpt:string;retrieved_at:string};
  documents:{title:string|null;sources:{name:string;source_tier:string|null}};
 };
-export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier))";
+export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier))";
 const day=(value:string|null)=>value?new Date(value).toISOString().slice(0,10):"chưa có";
 // One claim = one card: the value is the headline, status and source are
 // badges, the supporting excerpt is quoted, dates sit in a quiet meta grid.
@@ -27,6 +27,9 @@ export function FactCard({fact}:{fact:FactRow}) {
    {(deadlineLabel(fact.deadline_type)||fact.reference_period||fact.comparison_metrics)&&<p className="mt-2 flex flex-wrap gap-2">{fact.comparison_metrics&&<Badge>Chỉ số: {fact.comparison_metrics.label}</Badge>}{deadlineLabel(fact.deadline_type)&&<Badge>Loại deadline: {deadlineLabel(fact.deadline_type)}</Badge>}{fact.reference_period&&<Badge tone="accent">Kỳ số liệu: {fact.reference_period}</Badge>}</p>}
    {fact.occupation_id&&!isOfficialStatisticsTier(fact.documents.sources.source_tier)&&<p role="note" className="mt-4 rounded-xl bg-caution/[0.08] px-4 py-3 text-[15px] text-caution">Không phải số liệu thống kê chính thức (nguồn không thuộc T1/T2). Chỉ tham khảo.</p>}
    {fact.immigration_rule_id&&!isOfficialTier(fact.documents.sources.source_tier)&&<p role="note" className="mt-4 rounded-xl bg-caution/[0.08] px-4 py-3 text-[15px] text-caution">Không phải nguồn chính thức (T1). Chỉ tham khảo; kiểm tra lại trên trang của cơ quan di trú.</p>}
+   {/* Slice 9: the crawler saw a newer version of the evidence page. The claim
+       stays visible (Slice 9 decision, Section 21) but must not look current. */}
+   {fact.source_changed_at&&<p role="note" className="mt-4 rounded-xl bg-caution/[0.08] px-4 py-3 text-[15px] text-caution">Trang nguồn đã thay đổi từ {day(fact.source_changed_at)}; thông tin này có thể đã cũ và đang chờ kiểm tra lại.{fact.source_changed_document_id&&<> <Link className="underline underline-offset-4" href={`/documents/${fact.source_changed_document_id}`}>Xem phiên bản mới</Link></>}</p>}
    <div className="mt-5"><Quote>{e.excerpt}</Quote></div>
    <dl className="mt-5 grid gap-x-6 gap-y-3 text-[13px] sm:grid-cols-2">
      <div><dt className="text-ink-3">Nguồn</dt><dd className="mt-0.5 flex flex-wrap items-center gap-2 text-[15px] text-ink">Nguồn: {fact.documents.sources.name} <span className="sr-only">· Tier: {fact.documents.sources.source_tier ?? "chưa phân loại"}</span><TierBadge tier={fact.documents.sources.source_tier}/></dd></div>

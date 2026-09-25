@@ -54,6 +54,10 @@ model Country {
 
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
   searchVector Unsupported("tsvector")? @map("search_vector")
+  savedItems SavedItem[]
+  workspaceNotes Note[]
+  projectCountries ResearchProjectCountry[]
+  planCountries UserPlanCountry[]
   @@index([searchVector], type: Gin, map: "countries_search_idx")
   @@map("countries")
 }
@@ -80,6 +84,10 @@ model Source {
   createdAt      DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt      DateTime  @default(now()) @updatedAt @map("updated_at") @db.Timestamptz(6)
 
+  savedItems SavedItem[]
+  workspaceNotes Note[]
+  crawlTargets CrawlTarget[]
+  crawlUrlStates CrawlUrlState[]
   @@index([countryId])
   @@index([sourceTier, status])
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
@@ -92,7 +100,7 @@ model Source {
 // One immutable observation per source + URL + content hash. Changed content
 // creates another row, preserving earlier metadata for later evidence links.
 model Document {
-  facts Fact[]
+  facts Fact[] @relation("FactDocument")
   evidence Evidence[]
   universities University[]
   programmes Programme[]
@@ -116,6 +124,10 @@ model Document {
   extractionStatus String   @default("not_started") @map("extraction_status")
   createdAt        DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
+  text DocumentText?
+  crawlUrlStates CrawlUrlState[]
+  crawlerRunItems CrawlerRunItem[]
+  changedFacts Fact[] @relation("SourceChangedDocument")
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -174,7 +186,7 @@ model AccessAudit {
 model Fact {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   documentId String @map("document_id") @db.Uuid
-  document Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  document Document @relation("FactDocument", fields: [documentId], references: [id], onDelete: Restrict)
   topic String
   subject String
   predicate String
@@ -204,6 +216,10 @@ model Fact {
   // Slice 7: comparison metric; requires country_id (SQL CHECK facts_metric_country).
   metricId String? @map("metric_id") @db.Uuid
   metric ComparisonMetric? @relation(fields: [metricId], references: [id], onDelete: Restrict)
+  // Slice 9: set by the crawler when the page behind this fact changed after review.
+  sourceChangedAt DateTime? @map("source_changed_at") @db.Timestamptz(6)
+  sourceChangedDocumentId String? @map("source_changed_document_id") @db.Uuid
+  sourceChangedDocument Document? @relation("SourceChangedDocument", fields: [sourceChangedDocumentId], references: [id], onDelete: SetNull)
   evidence Evidence?
   reviews FactReview[] @relation("ReviewedFact")
   conflicts FactReview[] @relation("RelatedFact")
@@ -266,6 +282,8 @@ model University {
   facts           Fact[]
   reviews         EducationReview[]
 
+  savedItems SavedItem[]
+  workspaceNotes Note[]
   @@index([status, countryId])
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
   searchVector Unsupported("tsvector")? @map("search_vector")
@@ -293,6 +311,8 @@ model Programme {
   facts           Fact[]
   reviews         EducationReview[]
 
+  savedItems SavedItem[]
+  workspaceNotes Note[]
   @@index([universityId])
   @@index([status, degreeType])
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
@@ -336,6 +356,8 @@ model ImmigrationRule {
   facts           Fact[]
   reviews         ImmigrationRuleReview[]
 
+  savedItems SavedItem[]
+  workspaceNotes Note[]
   @@index([status, countryId])
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
   searchVector Unsupported("tsvector")? @map("search_vector")
@@ -376,6 +398,8 @@ model Occupation {
   facts                Fact[]
   reviews              OccupationReview[]
 
+  savedItems SavedItem[]
+  workspaceNotes Note[]
   @@index([status, createdAt])
   // Slice 7: STORED generated full-text vector (read-only; see 20260926090000_search).
   searchVector Unsupported("tsvector")? @map("search_vector")
@@ -413,4 +437,197 @@ model ComparisonMetric {
 
   @@index([category, label])
   @@map("comparison_metrics")
+}
+
+// Slice 8: user-private workspace. Owner-only RLS on every table; user_id FKs
+// to Supabase auth.users (ON DELETE CASCADE) live in the SQL migration only.
+model ResearchProject {
+  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId      String   @default(dbgenerated("auth.uid()")) @map("user_id") @db.Uuid
+  name        String
+  description String?
+  targetYear  Int?     @map("target_year")
+  targetRole  String?  @map("target_role")
+  status      String   @default("active")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  countries   ResearchProjectCountry[]
+  savedItems  SavedItem[]
+  notes       Note[]
+
+  @@index([userId, status, updatedAt(sort: Desc)], map: "research_projects_user_idx")
+  @@map("research_projects")
+}
+
+model ResearchProjectCountry {
+  projectId String @map("project_id") @db.Uuid
+  project   ResearchProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  countryId String @map("country_id") @db.Uuid
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Restrict)
+
+  @@id([projectId, countryId])
+  @@map("research_project_countries")
+}
+
+// Exactly one referenced item (SQL CHECK); one bookmark per item per user (partial unique indexes).
+model SavedItem {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @default(dbgenerated("auth.uid()")) @map("user_id") @db.Uuid
+  projectId         String?  @map("project_id") @db.Uuid
+  project           ResearchProject? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  countryId         String?  @map("country_id") @db.Uuid
+  country           Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  universityId      String?  @map("university_id") @db.Uuid
+  university        University? @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  programmeId       String?  @map("programme_id") @db.Uuid
+  programme         Programme? @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  immigrationRuleId String?  @map("immigration_rule_id") @db.Uuid
+  immigrationRule   ImmigrationRule? @relation(fields: [immigrationRuleId], references: [id], onDelete: Cascade)
+  occupationId      String?  @map("occupation_id") @db.Uuid
+  occupation        Occupation? @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+  sourceId          String?  @map("source_id") @db.Uuid
+  source            Source?  @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([userId, createdAt(sort: Desc)], map: "saved_items_user_idx")
+  @@index([projectId], map: "saved_items_project_idx")
+  @@map("saved_items")
+}
+
+model Note {
+  id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId            String   @default(dbgenerated("auth.uid()")) @map("user_id") @db.Uuid
+  projectId         String?  @map("project_id") @db.Uuid
+  project           ResearchProject? @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  countryId         String?  @map("country_id") @db.Uuid
+  country           Country? @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  universityId      String?  @map("university_id") @db.Uuid
+  university        University? @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  programmeId       String?  @map("programme_id") @db.Uuid
+  programme         Programme? @relation(fields: [programmeId], references: [id], onDelete: Cascade)
+  immigrationRuleId String?  @map("immigration_rule_id") @db.Uuid
+  immigrationRule   ImmigrationRule? @relation(fields: [immigrationRuleId], references: [id], onDelete: Cascade)
+  occupationId      String?  @map("occupation_id") @db.Uuid
+  occupation        Occupation? @relation(fields: [occupationId], references: [id], onDelete: Cascade)
+  sourceId          String?  @map("source_id") @db.Uuid
+  source            Source?  @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  content           String
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@index([userId, updatedAt(sort: Desc)], map: "notes_user_idx")
+  @@index([projectId], map: "notes_project_idx")
+  @@map("notes")
+}
+
+// My Europe Plan: one per user. Budget fields are all-or-nothing (SQL CHECK).
+model UserPlan {
+  userId            String   @id @default(dbgenerated("auth.uid()")) @map("user_id") @db.Uuid
+  currentPosition   String?  @map("current_position")
+  education         String?
+  targetRole        String?  @map("target_role")
+  targetDegree      String?  @map("target_degree")
+  targetYear        Int?     @map("target_year")
+  languageGoals     String?  @map("language_goals")
+  applicationStatus String?  @map("application_status")
+  budgetAmount      Decimal? @map("budget_amount") @db.Decimal(12, 2)
+  budgetCurrency    String?  @map("budget_currency")
+  budgetPeriod      String?  @map("budget_period")
+  createdAt         DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt         DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  countries         UserPlanCountry[]
+
+  @@map("user_plans")
+}
+
+model UserPlanCountry {
+  userId    String   @default(dbgenerated("auth.uid()")) @map("user_id") @db.Uuid
+  plan      UserPlan @relation(fields: [userId], references: [userId], onDelete: Cascade)
+  countryId String   @map("country_id") @db.Uuid
+  country   Country  @relation(fields: [countryId], references: [id], onDelete: Restrict)
+
+  @@id([userId, countryId])
+  @@map("user_plan_countries")
+}
+
+// Slice 9: crawler configuration, incremental state, run log and private text.
+// Written only through the crawler_* SQL functions (least-privilege role).
+model CrawlTarget {
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  sourceId        String   @map("source_id") @db.Uuid
+  source          Source   @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  url             String
+  kind            String   @default("page")
+  pathPrefix      String?  @map("path_prefix")
+  maxUrls         Int      @default(20) @map("max_urls")
+  contentSelector String?  @map("content_selector")
+  active          Boolean  @default(true)
+  createdBy       String   @map("created_by") @db.Uuid
+  createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  runItems        CrawlerRunItem[]
+
+  @@unique([sourceId, url])
+  @@map("crawl_targets")
+}
+
+model CrawlUrlState {
+  sourceId       String    @map("source_id") @db.Uuid
+  source         Source    @relation(fields: [sourceId], references: [id], onDelete: Restrict)
+  url            String
+  etag           String?
+  lastModified   String?   @map("last_modified")
+  lastHash       String?   @map("last_hash") @db.VarChar(64)
+  lastStatus     Int?      @map("last_status")
+  lastOutcome    String?   @map("last_outcome")
+  lastFetchedAt  DateTime? @map("last_fetched_at") @db.Timestamptz(6)
+  lastDocumentId String?   @map("last_document_id") @db.Uuid
+  lastDocument   Document? @relation(fields: [lastDocumentId], references: [id], onDelete: SetNull)
+
+  @@id([sourceId, url])
+  @@map("crawl_url_states")
+}
+
+model CrawlerRun {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trigger    String
+  status     String    @default("running")
+  startedAt  DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt DateTime? @map("finished_at") @db.Timestamptz(6)
+  note       String?
+  counts     Json?
+  items      CrawlerRunItem[]
+
+  @@index([startedAt(sort: Desc)], map: "crawler_runs_started_idx")
+  @@map("crawler_runs")
+}
+
+model CrawlerRunItem {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  runId         String    @map("run_id") @db.Uuid
+  run           CrawlerRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  targetId      String?   @map("target_id") @db.Uuid
+  target        CrawlTarget? @relation(fields: [targetId], references: [id], onDelete: SetNull)
+  url           String
+  httpStatus    Int?      @map("http_status")
+  outcome       String
+  errorCategory String?   @map("error_category")
+  durationMs    Int?      @map("duration_ms")
+  documentId    String?   @map("document_id") @db.Uuid
+  document      Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  flaggedFacts  Int       @default(0) @map("flagged_facts")
+  createdAt     DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([runId, createdAt], map: "crawler_run_items_run_idx")
+  @@map("crawler_run_items")
+}
+
+model DocumentText {
+  documentId  String   @id @map("document_id") @db.Uuid
+  document    Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  text        String
+  extractor   String
+  extractedAt DateTime @default(now()) @map("extracted_at") @db.Timestamptz(6)
+
+  @@map("document_texts")
 }

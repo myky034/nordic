@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -22,8 +24,9 @@ export default async function UniversityPage({ params }: PageProps<"/universitie
   const uni = uniResult.data as unknown as UniversityRow;
   const programmes = (programmesResult.data ?? []) as { id: string; name: string; degree_type: string; field: string | null; language: string | null }[];
   const total = programmesResult.count ?? programmes.length;
+  const save = await savedState("university", uni.id);
   return <>
-    <PageHeader back={<BackLink href="/universities">All universities</BackLink>}
+    <PageHeader back={<BackLink href="/universities">All universities</BackLink>} actions={<SaveButton kind="university" id={uni.id} signedIn={save.signedIn} initialSaved={save.saved} />}
       eyebrow={<Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{uni.countries.name}</Link>} title={uni.name} />
     <DescriptionList items={[["Official website", <ExternalLink key="w" href={uni.official_url}>{uni.official_url}</ExternalLink>]]} />
     <Section title="Programmes" actions={total > programmes.length ? <Link href={`/programmes?university=${uni.id}`} className={`${textLink} text-[15px]`}>All {total}</Link> : undefined}>

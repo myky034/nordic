@@ -227,6 +227,8 @@ export type UniversityWhereInput = {
   programmes?: Prisma.ProgrammeListRelationFilter
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.EducationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }
 
 export type UniversityOrderByWithRelationInput = {
@@ -245,6 +247,8 @@ export type UniversityOrderByWithRelationInput = {
   programmes?: Prisma.ProgrammeOrderByRelationAggregateInput
   facts?: Prisma.FactOrderByRelationAggregateInput
   reviews?: Prisma.EducationReviewOrderByRelationAggregateInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
 }
 
 export type UniversityWhereUniqueInput = Prisma.AtLeast<{
@@ -266,6 +270,8 @@ export type UniversityWhereUniqueInput = Prisma.AtLeast<{
   programmes?: Prisma.ProgrammeListRelationFilter
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.EducationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }, "id">
 
 export type UniversityOrderByWithAggregationInput = {
@@ -314,6 +320,8 @@ export type UniversityCreateInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateInput = {
@@ -330,6 +338,8 @@ export type UniversityUncheckedCreateInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUpdateInput = {
@@ -346,6 +356,8 @@ export type UniversityUpdateInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateInput = {
@@ -362,6 +374,8 @@ export type UniversityUncheckedUpdateInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityCreateManyInput = {
@@ -590,6 +604,38 @@ export type UniversityUpdateOneWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UniversityUpdateToOneWithWhereWithoutReviewsInput, Prisma.UniversityUpdateWithoutReviewsInput>, Prisma.UniversityUncheckedUpdateWithoutReviewsInput>
 }
 
+export type UniversityCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.UniversityCreateWithoutSavedItemsInput, Prisma.UniversityUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.UniversityCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.UniversityWhereUniqueInput
+}
+
+export type UniversityUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.UniversityCreateWithoutSavedItemsInput, Prisma.UniversityUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.UniversityCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.UniversityUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.UniversityWhereInput | boolean
+  delete?: Prisma.UniversityWhereInput | boolean
+  connect?: Prisma.UniversityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UniversityUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.UniversityUpdateWithoutSavedItemsInput>, Prisma.UniversityUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type UniversityCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.UniversityCreateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.UniversityCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.UniversityWhereUniqueInput
+}
+
+export type UniversityUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.UniversityCreateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.UniversityCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.UniversityUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.UniversityWhereInput | boolean
+  delete?: Prisma.UniversityWhereInput | boolean
+  connect?: Prisma.UniversityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UniversityUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.UniversityUpdateWithoutWorkspaceNotesInput>, Prisma.UniversityUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
 export type UniversityCreateWithoutCountryInput = {
   id?: string
   name: string
@@ -603,6 +649,8 @@ export type UniversityCreateWithoutCountryInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateWithoutCountryInput = {
@@ -618,6 +666,8 @@ export type UniversityUncheckedCreateWithoutCountryInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityCreateOrConnectWithoutCountryInput = {
@@ -675,6 +725,8 @@ export type UniversityCreateWithoutDocumentInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateWithoutDocumentInput = {
@@ -690,6 +742,8 @@ export type UniversityUncheckedCreateWithoutDocumentInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityCreateOrConnectWithoutDocumentInput = {
@@ -731,6 +785,8 @@ export type UniversityCreateWithoutFactsInput = {
   document: Prisma.DocumentCreateNestedOneWithoutUniversitiesInput
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateWithoutFactsInput = {
@@ -746,6 +802,8 @@ export type UniversityUncheckedCreateWithoutFactsInput = {
   createdAt?: Date | string
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityCreateOrConnectWithoutFactsInput = {
@@ -777,6 +835,8 @@ export type UniversityUpdateWithoutFactsInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutUniversitiesNestedInput
   programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateWithoutFactsInput = {
@@ -792,6 +852,8 @@ export type UniversityUncheckedUpdateWithoutFactsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityCreateWithoutProgrammesInput = {
@@ -807,6 +869,8 @@ export type UniversityCreateWithoutProgrammesInput = {
   document: Prisma.DocumentCreateNestedOneWithoutUniversitiesInput
   facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateWithoutProgrammesInput = {
@@ -822,6 +886,8 @@ export type UniversityUncheckedCreateWithoutProgrammesInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityCreateOrConnectWithoutProgrammesInput = {
@@ -853,6 +919,8 @@ export type UniversityUpdateWithoutProgrammesInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutUniversitiesNestedInput
   facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateWithoutProgrammesInput = {
@@ -868,6 +936,8 @@ export type UniversityUncheckedUpdateWithoutProgrammesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityCreateWithoutReviewsInput = {
@@ -883,6 +953,8 @@ export type UniversityCreateWithoutReviewsInput = {
   document: Prisma.DocumentCreateNestedOneWithoutUniversitiesInput
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityUncheckedCreateWithoutReviewsInput = {
@@ -898,6 +970,8 @@ export type UniversityUncheckedCreateWithoutReviewsInput = {
   createdAt?: Date | string
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
 }
 
 export type UniversityCreateOrConnectWithoutReviewsInput = {
@@ -929,6 +1003,8 @@ export type UniversityUpdateWithoutReviewsInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutUniversitiesNestedInput
   programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateWithoutReviewsInput = {
@@ -944,6 +1020,176 @@ export type UniversityUncheckedUpdateWithoutReviewsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
+}
+
+export type UniversityCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  officialUrl: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country: Prisma.CountryCreateNestedOneWithoutUniversitiesInput
+  document: Prisma.DocumentCreateNestedOneWithoutUniversitiesInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
+  facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
+  reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutUniversityInput
+}
+
+export type UniversityUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  countryId: string
+  name: string
+  officialUrl: string
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
+  reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutUniversityInput
+}
+
+export type UniversityCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.UniversityWhereUniqueInput
+  create: Prisma.XOR<Prisma.UniversityCreateWithoutSavedItemsInput, Prisma.UniversityUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type UniversityUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.UniversityUpdateWithoutSavedItemsInput, Prisma.UniversityUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.UniversityCreateWithoutSavedItemsInput, Prisma.UniversityUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.UniversityWhereInput
+}
+
+export type UniversityUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.UniversityWhereInput
+  data: Prisma.XOR<Prisma.UniversityUpdateWithoutSavedItemsInput, Prisma.UniversityUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type UniversityUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneRequiredWithoutUniversitiesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutUniversitiesNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
+  facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
+  reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
+}
+
+export type UniversityUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
+  facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
+  reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
+}
+
+export type UniversityCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  officialUrl: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  country: Prisma.CountryCreateNestedOneWithoutUniversitiesInput
+  document: Prisma.DocumentCreateNestedOneWithoutUniversitiesInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutUniversityInput
+  facts?: Prisma.FactCreateNestedManyWithoutUniversityInput
+  reviews?: Prisma.EducationReviewCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutUniversityInput
+}
+
+export type UniversityUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  countryId: string
+  name: string
+  officialUrl: string
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutUniversityInput
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutUniversityInput
+  reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutUniversityInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutUniversityInput
+}
+
+export type UniversityCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.UniversityWhereUniqueInput
+  create: Prisma.XOR<Prisma.UniversityCreateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type UniversityUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.UniversityUpdateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.UniversityCreateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.UniversityWhereInput
+}
+
+export type UniversityUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.UniversityWhereInput
+  data: Prisma.XOR<Prisma.UniversityUpdateWithoutWorkspaceNotesInput, Prisma.UniversityUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type UniversityUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  country?: Prisma.CountryUpdateOneRequiredWithoutUniversitiesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutUniversitiesNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
+  facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
+  reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+}
+
+export type UniversityUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  countryId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
+  facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
+  reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityCreateManyCountryInput = {
@@ -971,6 +1217,8 @@ export type UniversityUpdateWithoutCountryInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateWithoutCountryInput = {
@@ -986,6 +1234,8 @@ export type UniversityUncheckedUpdateWithoutCountryInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateManyWithoutCountryInput = {
@@ -1025,6 +1275,8 @@ export type UniversityUpdateWithoutDocumentInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateWithoutDocumentInput = {
@@ -1040,6 +1292,8 @@ export type UniversityUncheckedUpdateWithoutDocumentInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutUniversityNestedInput
   facts?: Prisma.FactUncheckedUpdateManyWithoutUniversityNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutUniversityNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutUniversityNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutUniversityNestedInput
 }
 
 export type UniversityUncheckedUpdateManyWithoutDocumentInput = {
@@ -1063,12 +1317,16 @@ export type UniversityCountOutputType = {
   programmes: number
   facts: number
   reviews: number
+  savedItems: number
+  workspaceNotes: number
 }
 
 export type UniversityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   programmes?: boolean | UniversityCountOutputTypeCountProgrammesArgs
   facts?: boolean | UniversityCountOutputTypeCountFactsArgs
   reviews?: boolean | UniversityCountOutputTypeCountReviewsArgs
+  savedItems?: boolean | UniversityCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | UniversityCountOutputTypeCountWorkspaceNotesArgs
 }
 
 /**
@@ -1102,6 +1360,20 @@ export type UniversityCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.EducationReviewWhereInput
 }
 
+/**
+ * UniversityCountOutputType without action
+ */
+export type UniversityCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * UniversityCountOutputType without action
+ */
+export type UniversityCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
 
 export type UniversitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1119,6 +1391,8 @@ export type UniversitySelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   programmes?: boolean | Prisma.University$programmesArgs<ExtArgs>
   facts?: boolean | Prisma.University$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.University$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.University$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.University$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.UniversityCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["university"]>
 
@@ -1172,6 +1446,8 @@ export type UniversityInclude<ExtArgs extends runtime.Types.Extensions.InternalA
   programmes?: boolean | Prisma.University$programmesArgs<ExtArgs>
   facts?: boolean | Prisma.University$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.University$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.University$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.University$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.UniversityCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UniversityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1191,6 +1467,8 @@ export type $UniversityPayload<ExtArgs extends runtime.Types.Extensions.Internal
     programmes: Prisma.$ProgrammePayload<ExtArgs>[]
     facts: Prisma.$FactPayload<ExtArgs>[]
     reviews: Prisma.$EducationReviewPayload<ExtArgs>[]
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1602,6 +1880,8 @@ export interface Prisma__UniversityClient<T, Null = never, ExtArgs extends runti
   programmes<T extends Prisma.University$programmesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.University$programmesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgrammePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   facts<T extends Prisma.University$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.University$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.University$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.University$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedItems<T extends Prisma.University$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.University$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.University$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.University$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2111,6 +2391,54 @@ export type University$reviewsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.EducationReviewScalarFieldEnum | Prisma.EducationReviewScalarFieldEnum[]
+}
+
+/**
+ * University.savedItems
+ */
+export type University$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * University.workspaceNotes
+ */
+export type University$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
 }
 
 /**

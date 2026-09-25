@@ -5,7 +5,8 @@
   "type": "module",
   "exports": {
     ".": "./prisma/generated/client/client.ts",
-    "./client": "./prisma/generated/client/client.ts"
+    "./client": "./prisma/generated/client/client.ts",
+    "./document-hash": "./src/document-hash.ts"
   },
   "scripts": {
     "generate": "prisma generate",

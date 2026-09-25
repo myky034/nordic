@@ -1,16 +1,11 @@
 import "server-only";
-import { createHash } from "node:crypto";
+import { metadataHash } from "@nordic/db/document-hash";
 import { prisma } from "../db";
 import { type DocumentInput, IngestionError, validateSource } from "./domain";
 
-export function metadataHash(input: DocumentInput) {
-  // Retrieval time/method can differ on retry. The immutable descriptive metadata
-  // must agree; otherwise preserve the stored observation and request review.
-  return createHash("sha256").update(JSON.stringify([
-    input.title, input.documentType, input.excerpt,
-    input.publishedAt?.toISOString() ?? null, input.sourceUpdatedAt?.toISOString() ?? null,
-  ])).digest("hex");
-}
+// Shared with the crawler (packages/db/src/document-hash.ts) so both paths
+// fingerprint metadata identically. Re-exported for existing callers/tests.
+export { metadataHash };
 
 export async function ingestDocument(input: DocumentInput, actorId?: string) {
   return prisma.$transaction(async (tx) => {

@@ -1,7 +1,7 @@
 import "server-only";
 import { createClient } from "../supabase/server";
 
-export type PermissionKey = "facts.propose" | "facts.review" | "documents.read" | "documents.ingest" | "users.assign_roles" | "roles.manage" | "sources.manage" | "education.manage" | "immigration.manage" | "labour.manage" | "metrics.manage";
+export type PermissionKey = "facts.propose" | "facts.review" | "documents.read" | "documents.ingest" | "users.assign_roles" | "roles.manage" | "sources.manage" | "education.manage" | "immigration.manage" | "labour.manage" | "metrics.manage" | "crawler.manage";
 export async function accessContext() {
   const client = await createClient();
   const { data, error } = await client.auth.getUser();

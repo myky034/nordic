@@ -69,7 +69,18 @@ export const ModelName = {
   ImmigrationRuleReview: 'ImmigrationRuleReview',
   Occupation: 'Occupation',
   OccupationReview: 'OccupationReview',
-  ComparisonMetric: 'ComparisonMetric'
+  ComparisonMetric: 'ComparisonMetric',
+  ResearchProject: 'ResearchProject',
+  ResearchProjectCountry: 'ResearchProjectCountry',
+  SavedItem: 'SavedItem',
+  Note: 'Note',
+  UserPlan: 'UserPlan',
+  UserPlanCountry: 'UserPlanCountry',
+  CrawlTarget: 'CrawlTarget',
+  CrawlUrlState: 'CrawlUrlState',
+  CrawlerRun: 'CrawlerRun',
+  CrawlerRunItem: 'CrawlerRunItem',
+  DocumentText: 'DocumentText'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -216,7 +227,9 @@ export const FactScalarFieldEnum = {
   immigrationRuleId: 'immigrationRuleId',
   occupationId: 'occupationId',
   referencePeriod: 'referencePeriod',
-  metricId: 'metricId'
+  metricId: 'metricId',
+  sourceChangedAt: 'sourceChangedAt',
+  sourceChangedDocumentId: 'sourceChangedDocumentId'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -371,6 +384,162 @@ export const ComparisonMetricScalarFieldEnum = {
 export type ComparisonMetricScalarFieldEnum = (typeof ComparisonMetricScalarFieldEnum)[keyof typeof ComparisonMetricScalarFieldEnum]
 
 
+export const ResearchProjectScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  name: 'name',
+  description: 'description',
+  targetYear: 'targetYear',
+  targetRole: 'targetRole',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ResearchProjectScalarFieldEnum = (typeof ResearchProjectScalarFieldEnum)[keyof typeof ResearchProjectScalarFieldEnum]
+
+
+export const ResearchProjectCountryScalarFieldEnum = {
+  projectId: 'projectId',
+  countryId: 'countryId'
+} as const
+
+export type ResearchProjectCountryScalarFieldEnum = (typeof ResearchProjectCountryScalarFieldEnum)[keyof typeof ResearchProjectCountryScalarFieldEnum]
+
+
+export const SavedItemScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  countryId: 'countryId',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  immigrationRuleId: 'immigrationRuleId',
+  occupationId: 'occupationId',
+  sourceId: 'sourceId',
+  createdAt: 'createdAt'
+} as const
+
+export type SavedItemScalarFieldEnum = (typeof SavedItemScalarFieldEnum)[keyof typeof SavedItemScalarFieldEnum]
+
+
+export const NoteScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  projectId: 'projectId',
+  countryId: 'countryId',
+  universityId: 'universityId',
+  programmeId: 'programmeId',
+  immigrationRuleId: 'immigrationRuleId',
+  occupationId: 'occupationId',
+  sourceId: 'sourceId',
+  content: 'content',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type NoteScalarFieldEnum = (typeof NoteScalarFieldEnum)[keyof typeof NoteScalarFieldEnum]
+
+
+export const UserPlanScalarFieldEnum = {
+  userId: 'userId',
+  currentPosition: 'currentPosition',
+  education: 'education',
+  targetRole: 'targetRole',
+  targetDegree: 'targetDegree',
+  targetYear: 'targetYear',
+  languageGoals: 'languageGoals',
+  applicationStatus: 'applicationStatus',
+  budgetAmount: 'budgetAmount',
+  budgetCurrency: 'budgetCurrency',
+  budgetPeriod: 'budgetPeriod',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type UserPlanScalarFieldEnum = (typeof UserPlanScalarFieldEnum)[keyof typeof UserPlanScalarFieldEnum]
+
+
+export const UserPlanCountryScalarFieldEnum = {
+  userId: 'userId',
+  countryId: 'countryId'
+} as const
+
+export type UserPlanCountryScalarFieldEnum = (typeof UserPlanCountryScalarFieldEnum)[keyof typeof UserPlanCountryScalarFieldEnum]
+
+
+export const CrawlTargetScalarFieldEnum = {
+  id: 'id',
+  sourceId: 'sourceId',
+  url: 'url',
+  kind: 'kind',
+  pathPrefix: 'pathPrefix',
+  maxUrls: 'maxUrls',
+  contentSelector: 'contentSelector',
+  active: 'active',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CrawlTargetScalarFieldEnum = (typeof CrawlTargetScalarFieldEnum)[keyof typeof CrawlTargetScalarFieldEnum]
+
+
+export const CrawlUrlStateScalarFieldEnum = {
+  sourceId: 'sourceId',
+  url: 'url',
+  etag: 'etag',
+  lastModified: 'lastModified',
+  lastHash: 'lastHash',
+  lastStatus: 'lastStatus',
+  lastOutcome: 'lastOutcome',
+  lastFetchedAt: 'lastFetchedAt',
+  lastDocumentId: 'lastDocumentId'
+} as const
+
+export type CrawlUrlStateScalarFieldEnum = (typeof CrawlUrlStateScalarFieldEnum)[keyof typeof CrawlUrlStateScalarFieldEnum]
+
+
+export const CrawlerRunScalarFieldEnum = {
+  id: 'id',
+  trigger: 'trigger',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  note: 'note',
+  counts: 'counts'
+} as const
+
+export type CrawlerRunScalarFieldEnum = (typeof CrawlerRunScalarFieldEnum)[keyof typeof CrawlerRunScalarFieldEnum]
+
+
+export const CrawlerRunItemScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  targetId: 'targetId',
+  url: 'url',
+  httpStatus: 'httpStatus',
+  outcome: 'outcome',
+  errorCategory: 'errorCategory',
+  durationMs: 'durationMs',
+  documentId: 'documentId',
+  flaggedFacts: 'flaggedFacts',
+  createdAt: 'createdAt'
+} as const
+
+export type CrawlerRunItemScalarFieldEnum = (typeof CrawlerRunItemScalarFieldEnum)[keyof typeof CrawlerRunItemScalarFieldEnum]
+
+
+export const DocumentTextScalarFieldEnum = {
+  documentId: 'documentId',
+  text: 'text',
+  extractor: 'extractor',
+  extractedAt: 'extractedAt'
+} as const
+
+export type DocumentTextScalarFieldEnum = (typeof DocumentTextScalarFieldEnum)[keyof typeof DocumentTextScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -384,6 +553,14 @@ export const JsonNullValueInput = {
 } as const
 
 export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
+export const NullableJsonNullValueInput = {
+  DbNull: DbNull,
+  JsonNull: JsonNull
+} as const
+
+export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
 export const QueryMode = {

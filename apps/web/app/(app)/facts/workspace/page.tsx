@@ -3,14 +3,16 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
-import { ProposalForm, ReviewForm } from "./forms";
+import { ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
 import { uuidPattern } from "@/lib/documents/domain";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
 import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, SearchInput, Section, Segmented } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 
-const tabs = [["proposed", "Chờ duyệt"], ["reviewed", "Đã duyệt"], ["conflicted", "Mâu thuẫn"], ["rejected", "Từ chối"]] as const;
+// "source_changed" is not a status: it is the Slice 9 queue of published
+// claims whose evidence page changed (facts.source_changed_at is set).
+const tabs = [["proposed", "Chờ duyệt"], ["source_changed", "Nguồn đã đổi"], ["reviewed", "Đã duyệt"], ["conflicted", "Mâu thuẫn"], ["rejected", "Từ chối"]] as const;
 const statusValues = tabs.map(([value]) => value);
 
 export default async function Page({searchParams}:PageProps<"/facts/workspace">) {
@@ -25,9 +27,10 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  const q=searchParam(params);
  const page=pageParam(params);
  const {from,to}=pageWindow(page);
- let list=client.from("facts").select(factSelect,{count:"exact"}).eq("status",status);
+ let list=client.from("facts").select(factSelect,{count:"exact"});
+ list=status==="source_changed"?list.not("source_changed_at","is",null):list.eq("status",status);
  if(q) list=list.ilike("subject",likePattern(q));
- const counts=statusValues.map(s=>client.from("facts").select("id",{count:"exact",head:true}).eq("status",s));
+ const counts=statusValues.map(s=>{const c=client.from("facts").select("id",{count:"exact",head:true});return s==="source_changed"?c.not("source_changed_at","is",null):c.eq("status",s);});
  const results=await Promise.all([
  list.order("created_at",{ascending:false}).range(from,to),
  client.from("documents").select("id,title").order("created_at",{ascending:false}).limit(100),
@@ -70,8 +73,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  <Section title="Đề xuất">
  <Segmented label="Lọc theo trạng thái" items={tabs.map(([value,label],i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label,count:tabCounts[i],active:status===value}))}/>
  <form action="/facts/workspace" className="mb-5">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
- {facts.length?<div className="space-y-4">{facts.map(f=><div key={f.id} className="space-y-2"><FactCard fact={f}/>{review&&f.status!=="rejected"&&(f.status==="proposed"||conflictCandidates.length>1)&&<div className="px-1"><Disclosure small summary={f.status==="proposed"?"Duyệt đề xuất này":"Đánh dấu mâu thuẫn"}><ReviewForm id={f.id} status={f.status} others={conflictCandidates}/></Disclosure></div>}</div>)}</div>
-  :<EmptyState>{status==="proposed"?"Không có đề xuất nào đang chờ duyệt.":"Không có mục nào trong nhóm này."}{q?` (tìm “${q}”)`:""}</EmptyState>}
+ {facts.length?<div className="space-y-4">{facts.map(f=><div key={f.id} className="space-y-2"><FactCard fact={f}/>{review&&f.source_changed_at&&<div className="px-1"><Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm id={f.id}/></Disclosure></div>}{review&&status!=="source_changed"&&f.status!=="rejected"&&(f.status==="proposed"||conflictCandidates.length>1)&&<div className="px-1"><Disclosure small summary={f.status==="proposed"?"Duyệt đề xuất này":"Đánh dấu mâu thuẫn"}><ReviewForm id={f.id} status={f.status} others={conflictCandidates}/></Disclosure></div>}</div>)}</div>
+  :<EmptyState>{status==="proposed"?"Không có đề xuất nào đang chờ duyệt.":status==="source_changed"?"Không có thông tin nào có nguồn vừa thay đổi.":"Không có mục nào trong nhóm này."}{q?` (tìm “${q}”)`:""}</EmptyState>}
  <Pagination summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p})}/>
  </Section>
  <Section>

@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { getCountry } from "@/lib/registry/queries";
 import { createClient } from "@/lib/supabase/server";
@@ -22,8 +24,9 @@ export default async function CountryPage({ params }: PageProps<"/countries/[slu
     .order("created_at", { ascending: false }).limit(6);
   if (error) { logAccessError("country_facts"); throw new Error("Không tải được thông tin của quốc gia này."); }
   const facts = data as unknown as FactRow[];
+  const save = await savedState("country", country.id);
   return <>
-    <PageHeader back={<BackLink href="/countries">All countries</BackLink>} eyebrow="Country" title={country.name}
+    <PageHeader back={<BackLink href="/countries">All countries</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Country" title={country.name}
       description={<span className="inline-flex items-center gap-2">Research status <Badge>{country.status.replaceAll("_", " ")}</Badge></span>} />
     <Section title="Explore">
       <List>

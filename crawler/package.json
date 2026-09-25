@@ -2,5 +2,26 @@
   "name": "@nordic/crawler",
   "version": "0.0.0",
   "private": true,
-  "description": "Reserved for Slice 9. See PROJECT_SPEC.md Section 3 (Crawler) and Section 8 (Crawler Rules) before adding code here."
+  "description": "Scheduled crawler (Slice 9): fetches registered URLs of approved sources and records documents through least-privilege SQL functions.",
+  "dependencies": {
+    "@crawlee/basic": "^3.18.1",
+    "@crawlee/utils": "^3.18.1",
+    "@nordic/db": "*",
+    "cheerio": "^1.2.0",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  },
+  "type": "module",
+  "scripts": {
+    "crawl": "tsx src/main.ts",
+    "probe": "tsx src/main.ts --probe",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  }
 }

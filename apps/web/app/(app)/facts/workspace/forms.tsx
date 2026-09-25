@@ -1,6 +1,6 @@
 "use client";
 import { useActionState } from "react";
-import { proposeFact, reviewFact } from "./actions";
+import { proposeFact, resolveSourceChange, reviewFact } from "./actions";
 import { deadlineTypes } from "@/lib/education/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
 import { buttonPrimary, control } from "@/components/ui/styles";
@@ -41,5 +41,17 @@ export function ReviewForm({id,status,others}:{id:string;status:string;others:{i
  <Field label="Lý do / ghi chú kiểm tra"><textarea name="note" required maxLength={1000} rows={2} className={control}/></Field>
  <FormMessage error={state.error} message={state.message}/>
  <button disabled={pending} className={buttonPrimary}>{pending?"Đang lưu…":"Ghi nhận quyết định"}</button>
+ </form>;
+}
+// Slice 9: a reviewer compares the claim with the NEW page version, then
+// either confirms it still holds or withdraws it. Never decided automatically.
+export function SourceChangeForm({id}:{id:string}) {
+ const [state,action,pending]=useActionState(resolveSourceChange,{});
+ return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
+ <input type="hidden" name="fact" value={id}/>
+ <Field label="Kết quả đối chiếu với phiên bản mới"><select name="decision" className={control}><option value="revalidated">Vẫn khớp — giữ thông tin</option><option value="rejected">Không còn đúng — từ chối</option></select></Field>
+ <Field label="Ghi chú đối chiếu" hint="Ví dụ: câu trích vẫn có trong phiên bản mới, mục 2."><textarea name="note" required maxLength={1000} rows={2} className={control}/></Field>
+ <FormMessage error={state.error} message={state.message}/>
+ <button disabled={pending} className={buttonPrimary}>{pending?"Đang lưu…":"Ghi nhận"}</button>
  </form>;
 }

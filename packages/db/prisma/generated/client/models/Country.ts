@@ -211,6 +211,10 @@ export type CountryWhereInput = {
   universities?: Prisma.UniversityListRelationFilter
   immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   occupations?: Prisma.OccupationListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
+  projectCountries?: Prisma.ResearchProjectCountryListRelationFilter
+  planCountries?: Prisma.UserPlanCountryListRelationFilter
 }
 
 export type CountryOrderByWithRelationInput = {
@@ -227,6 +231,10 @@ export type CountryOrderByWithRelationInput = {
   universities?: Prisma.UniversityOrderByRelationAggregateInput
   immigrationRules?: Prisma.ImmigrationRuleOrderByRelationAggregateInput
   occupations?: Prisma.OccupationOrderByRelationAggregateInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
+  projectCountries?: Prisma.ResearchProjectCountryOrderByRelationAggregateInput
+  planCountries?: Prisma.UserPlanCountryOrderByRelationAggregateInput
 }
 
 export type CountryWhereUniqueInput = Prisma.AtLeast<{
@@ -246,6 +254,10 @@ export type CountryWhereUniqueInput = Prisma.AtLeast<{
   universities?: Prisma.UniversityListRelationFilter
   immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   occupations?: Prisma.OccupationListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
+  projectCountries?: Prisma.ResearchProjectCountryListRelationFilter
+  planCountries?: Prisma.UserPlanCountryListRelationFilter
 }, "id" | "slug" | "name" | "isoCode">
 
 export type CountryOrderByWithAggregationInput = {
@@ -290,6 +302,10 @@ export type CountryCreateInput = {
   universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateInput = {
@@ -306,6 +322,10 @@ export type CountryUncheckedCreateInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUpdateInput = {
@@ -322,6 +342,10 @@ export type CountryUpdateInput = {
   universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateInput = {
@@ -338,6 +362,10 @@ export type CountryUncheckedUpdateInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateManyInput = {
@@ -504,6 +532,66 @@ export type CountryUpdateOneWithoutOccupationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutOccupationsInput, Prisma.CountryUpdateWithoutOccupationsInput>, Prisma.CountryUncheckedUpdateWithoutOccupationsInput>
 }
 
+export type CountryCreateNestedOneWithoutProjectCountriesInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutProjectCountriesInput, Prisma.CountryUncheckedCreateWithoutProjectCountriesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutProjectCountriesInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneRequiredWithoutProjectCountriesNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutProjectCountriesInput, Prisma.CountryUncheckedCreateWithoutProjectCountriesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutProjectCountriesInput
+  upsert?: Prisma.CountryUpsertWithoutProjectCountriesInput
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutProjectCountriesInput, Prisma.CountryUpdateWithoutProjectCountriesInput>, Prisma.CountryUncheckedUpdateWithoutProjectCountriesInput>
+}
+
+export type CountryCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutSavedItemsInput, Prisma.CountryUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutSavedItemsInput, Prisma.CountryUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.CountryUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.CountryWhereInput | boolean
+  delete?: Prisma.CountryWhereInput | boolean
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.CountryUpdateWithoutSavedItemsInput>, Prisma.CountryUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type CountryCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.CountryUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.CountryWhereInput | boolean
+  delete?: Prisma.CountryWhereInput | boolean
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.CountryUpdateWithoutWorkspaceNotesInput>, Prisma.CountryUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type CountryCreateNestedOneWithoutPlanCountriesInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutPlanCountriesInput, Prisma.CountryUncheckedCreateWithoutPlanCountriesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutPlanCountriesInput
+  connect?: Prisma.CountryWhereUniqueInput
+}
+
+export type CountryUpdateOneRequiredWithoutPlanCountriesNestedInput = {
+  create?: Prisma.XOR<Prisma.CountryCreateWithoutPlanCountriesInput, Prisma.CountryUncheckedCreateWithoutPlanCountriesInput>
+  connectOrCreate?: Prisma.CountryCreateOrConnectWithoutPlanCountriesInput
+  upsert?: Prisma.CountryUpsertWithoutPlanCountriesInput
+  connect?: Prisma.CountryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CountryUpdateToOneWithWhereWithoutPlanCountriesInput, Prisma.CountryUpdateWithoutPlanCountriesInput>, Prisma.CountryUncheckedUpdateWithoutPlanCountriesInput>
+}
+
 export type CountryCreateWithoutSourcesInput = {
   id?: string
   slug: string
@@ -517,6 +605,10 @@ export type CountryCreateWithoutSourcesInput = {
   universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutSourcesInput = {
@@ -532,6 +624,10 @@ export type CountryUncheckedCreateWithoutSourcesInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutSourcesInput = {
@@ -563,6 +659,10 @@ export type CountryUpdateWithoutSourcesInput = {
   universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutSourcesInput = {
@@ -578,6 +678,10 @@ export type CountryUncheckedUpdateWithoutSourcesInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateWithoutFactsInput = {
@@ -593,6 +697,10 @@ export type CountryCreateWithoutFactsInput = {
   universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutFactsInput = {
@@ -608,6 +716,10 @@ export type CountryUncheckedCreateWithoutFactsInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutFactsInput = {
@@ -639,6 +751,10 @@ export type CountryUpdateWithoutFactsInput = {
   universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutFactsInput = {
@@ -654,6 +770,10 @@ export type CountryUncheckedUpdateWithoutFactsInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateWithoutUniversitiesInput = {
@@ -669,6 +789,10 @@ export type CountryCreateWithoutUniversitiesInput = {
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutUniversitiesInput = {
@@ -684,6 +808,10 @@ export type CountryUncheckedCreateWithoutUniversitiesInput = {
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutUniversitiesInput = {
@@ -715,6 +843,10 @@ export type CountryUpdateWithoutUniversitiesInput = {
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutUniversitiesInput = {
@@ -730,6 +862,10 @@ export type CountryUncheckedUpdateWithoutUniversitiesInput = {
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateWithoutImmigrationRulesInput = {
@@ -745,6 +881,10 @@ export type CountryCreateWithoutImmigrationRulesInput = {
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
   universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutImmigrationRulesInput = {
@@ -760,6 +900,10 @@ export type CountryUncheckedCreateWithoutImmigrationRulesInput = {
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutImmigrationRulesInput = {
@@ -791,6 +935,10 @@ export type CountryUpdateWithoutImmigrationRulesInput = {
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
   universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutImmigrationRulesInput = {
@@ -806,6 +954,10 @@ export type CountryUncheckedUpdateWithoutImmigrationRulesInput = {
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryCreateWithoutOccupationsInput = {
@@ -821,6 +973,10 @@ export type CountryCreateWithoutOccupationsInput = {
   sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
   universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
 }
 
 export type CountryUncheckedCreateWithoutOccupationsInput = {
@@ -836,6 +992,10 @@ export type CountryUncheckedCreateWithoutOccupationsInput = {
   sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
 }
 
 export type CountryCreateOrConnectWithoutOccupationsInput = {
@@ -867,6 +1027,10 @@ export type CountryUpdateWithoutOccupationsInput = {
   sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
   universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
 }
 
 export type CountryUncheckedUpdateWithoutOccupationsInput = {
@@ -882,6 +1046,378 @@ export type CountryUncheckedUpdateWithoutOccupationsInput = {
   sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutProjectCountriesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutProjectCountriesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutProjectCountriesInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutProjectCountriesInput, Prisma.CountryUncheckedCreateWithoutProjectCountriesInput>
+}
+
+export type CountryUpsertWithoutProjectCountriesInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutProjectCountriesInput, Prisma.CountryUncheckedUpdateWithoutProjectCountriesInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutProjectCountriesInput, Prisma.CountryUncheckedCreateWithoutProjectCountriesInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutProjectCountriesInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutProjectCountriesInput, Prisma.CountryUncheckedUpdateWithoutProjectCountriesInput>
+}
+
+export type CountryUpdateWithoutProjectCountriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutProjectCountriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutSavedItemsInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutSavedItemsInput, Prisma.CountryUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type CountryUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutSavedItemsInput, Prisma.CountryUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutSavedItemsInput, Prisma.CountryUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutSavedItemsInput, Prisma.CountryUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type CountryUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+  planCountries?: Prisma.UserPlanCountryUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type CountryUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutWorkspaceNotesInput, Prisma.CountryUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type CountryUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
+  planCountries?: Prisma.UserPlanCountryUncheckedUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryCreateWithoutPlanCountriesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryCreateNestedManyWithoutCountryInput
+}
+
+export type CountryUncheckedCreateWithoutPlanCountriesInput = {
+  id?: string
+  slug: string
+  name: string
+  isoCode?: string | null
+  region?: string | null
+  status?: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutCountryInput
+  sources?: Prisma.SourceUncheckedCreateNestedManyWithoutCountryInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutCountryInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutCountryInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutCountryInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutCountryInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutCountryInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedCreateNestedManyWithoutCountryInput
+}
+
+export type CountryCreateOrConnectWithoutPlanCountriesInput = {
+  where: Prisma.CountryWhereUniqueInput
+  create: Prisma.XOR<Prisma.CountryCreateWithoutPlanCountriesInput, Prisma.CountryUncheckedCreateWithoutPlanCountriesInput>
+}
+
+export type CountryUpsertWithoutPlanCountriesInput = {
+  update: Prisma.XOR<Prisma.CountryUpdateWithoutPlanCountriesInput, Prisma.CountryUncheckedUpdateWithoutPlanCountriesInput>
+  create: Prisma.XOR<Prisma.CountryCreateWithoutPlanCountriesInput, Prisma.CountryUncheckedCreateWithoutPlanCountriesInput>
+  where?: Prisma.CountryWhereInput
+}
+
+export type CountryUpdateToOneWithWhereWithoutPlanCountriesInput = {
+  where?: Prisma.CountryWhereInput
+  data: Prisma.XOR<Prisma.CountryUpdateWithoutPlanCountriesInput, Prisma.CountryUncheckedUpdateWithoutPlanCountriesInput>
+}
+
+export type CountryUpdateWithoutPlanCountriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUpdateManyWithoutCountryNestedInput
+}
+
+export type CountryUncheckedUpdateWithoutPlanCountriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  isoCode?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  region?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutCountryNestedInput
+  sources?: Prisma.SourceUncheckedUpdateManyWithoutCountryNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutCountryNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutCountryNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutCountryNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutCountryNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutCountryNestedInput
+  projectCountries?: Prisma.ResearchProjectCountryUncheckedUpdateManyWithoutCountryNestedInput
 }
 
 
@@ -895,6 +1431,10 @@ export type CountryCountOutputType = {
   universities: number
   immigrationRules: number
   occupations: number
+  savedItems: number
+  workspaceNotes: number
+  projectCountries: number
+  planCountries: number
 }
 
 export type CountryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -903,6 +1443,10 @@ export type CountryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   universities?: boolean | CountryCountOutputTypeCountUniversitiesArgs
   immigrationRules?: boolean | CountryCountOutputTypeCountImmigrationRulesArgs
   occupations?: boolean | CountryCountOutputTypeCountOccupationsArgs
+  savedItems?: boolean | CountryCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | CountryCountOutputTypeCountWorkspaceNotesArgs
+  projectCountries?: boolean | CountryCountOutputTypeCountProjectCountriesArgs
+  planCountries?: boolean | CountryCountOutputTypeCountPlanCountriesArgs
 }
 
 /**
@@ -950,6 +1494,34 @@ export type CountryCountOutputTypeCountOccupationsArgs<ExtArgs extends runtime.T
   where?: Prisma.OccupationWhereInput
 }
 
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountProjectCountriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ResearchProjectCountryWhereInput
+}
+
+/**
+ * CountryCountOutputType without action
+ */
+export type CountryCountOutputTypeCountPlanCountriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UserPlanCountryWhereInput
+}
+
 
 export type CountrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -965,6 +1537,10 @@ export type CountrySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   universities?: boolean | Prisma.Country$universitiesArgs<ExtArgs>
   immigrationRules?: boolean | Prisma.Country$immigrationRulesArgs<ExtArgs>
   occupations?: boolean | Prisma.Country$occupationsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Country$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Country$workspaceNotesArgs<ExtArgs>
+  projectCountries?: boolean | Prisma.Country$projectCountriesArgs<ExtArgs>
+  planCountries?: boolean | Prisma.Country$planCountriesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["country"]>
 
@@ -1008,6 +1584,10 @@ export type CountryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   universities?: boolean | Prisma.Country$universitiesArgs<ExtArgs>
   immigrationRules?: boolean | Prisma.Country$immigrationRulesArgs<ExtArgs>
   occupations?: boolean | Prisma.Country$occupationsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Country$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Country$workspaceNotesArgs<ExtArgs>
+  projectCountries?: boolean | Prisma.Country$projectCountriesArgs<ExtArgs>
+  planCountries?: boolean | Prisma.Country$planCountriesArgs<ExtArgs>
   _count?: boolean | Prisma.CountryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CountryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1021,6 +1601,10 @@ export type $CountryPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     universities: Prisma.$UniversityPayload<ExtArgs>[]
     immigrationRules: Prisma.$ImmigrationRulePayload<ExtArgs>[]
     occupations: Prisma.$OccupationPayload<ExtArgs>[]
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
+    projectCountries: Prisma.$ResearchProjectCountryPayload<ExtArgs>[]
+    planCountries: Prisma.$UserPlanCountryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1430,6 +2014,10 @@ export interface Prisma__CountryClient<T, Null = never, ExtArgs extends runtime.
   universities<T extends Prisma.Country$universitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$universitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UniversityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   immigrationRules<T extends Prisma.Country$immigrationRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$immigrationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   occupations<T extends Prisma.Country$occupationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$occupationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OccupationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedItems<T extends Prisma.Country$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.Country$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectCountries<T extends Prisma.Country$projectCountriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$projectCountriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResearchProjectCountryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  planCountries<T extends Prisma.Country$planCountriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Country$planCountriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UserPlanCountryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1977,6 +2565,102 @@ export type Country$occupationsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.OccupationScalarFieldEnum | Prisma.OccupationScalarFieldEnum[]
+}
+
+/**
+ * Country.savedItems
+ */
+export type Country$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * Country.workspaceNotes
+ */
+export type Country$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
+}
+
+/**
+ * Country.projectCountries
+ */
+export type Country$projectCountriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ResearchProjectCountry
+   */
+  select?: Prisma.ResearchProjectCountrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ResearchProjectCountry
+   */
+  omit?: Prisma.ResearchProjectCountryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ResearchProjectCountryInclude<ExtArgs> | null
+  where?: Prisma.ResearchProjectCountryWhereInput
+  orderBy?: Prisma.ResearchProjectCountryOrderByWithRelationInput | Prisma.ResearchProjectCountryOrderByWithRelationInput[]
+  cursor?: Prisma.ResearchProjectCountryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ResearchProjectCountryScalarFieldEnum | Prisma.ResearchProjectCountryScalarFieldEnum[]
+}
+
+/**
+ * Country.planCountries
+ */
+export type Country$planCountriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UserPlanCountry
+   */
+  select?: Prisma.UserPlanCountrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UserPlanCountry
+   */
+  omit?: Prisma.UserPlanCountryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UserPlanCountryInclude<ExtArgs> | null
+  where?: Prisma.UserPlanCountryWhereInput
+  orderBy?: Prisma.UserPlanCountryOrderByWithRelationInput | Prisma.UserPlanCountryOrderByWithRelationInput[]
+  cursor?: Prisma.UserPlanCountryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UserPlanCountryScalarFieldEnum | Prisma.UserPlanCountryScalarFieldEnum[]
 }
 
 /**

@@ -258,6 +258,8 @@ export type ProgrammeWhereInput = {
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.EducationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }
 
 export type ProgrammeOrderByWithRelationInput = {
@@ -279,6 +281,8 @@ export type ProgrammeOrderByWithRelationInput = {
   document?: Prisma.DocumentOrderByWithRelationInput
   facts?: Prisma.FactOrderByRelationAggregateInput
   reviews?: Prisma.EducationReviewOrderByRelationAggregateInput
+  savedItems?: Prisma.SavedItemOrderByRelationAggregateInput
+  workspaceNotes?: Prisma.NoteOrderByRelationAggregateInput
 }
 
 export type ProgrammeWhereUniqueInput = Prisma.AtLeast<{
@@ -303,6 +307,8 @@ export type ProgrammeWhereUniqueInput = Prisma.AtLeast<{
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
   facts?: Prisma.FactListRelationFilter
   reviews?: Prisma.EducationReviewListRelationFilter
+  savedItems?: Prisma.SavedItemListRelationFilter
+  workspaceNotes?: Prisma.NoteListRelationFilter
 }, "id">
 
 export type ProgrammeOrderByWithAggregationInput = {
@@ -362,6 +368,8 @@ export type ProgrammeCreateInput = {
   document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
   facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUncheckedCreateInput = {
@@ -381,6 +389,8 @@ export type ProgrammeUncheckedCreateInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUpdateInput = {
@@ -400,6 +410,8 @@ export type ProgrammeUpdateInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
   facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateInput = {
@@ -419,6 +431,8 @@ export type ProgrammeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeCreateManyInput = {
@@ -652,6 +666,38 @@ export type ProgrammeUpdateOneWithoutReviewsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProgrammeUpdateToOneWithWhereWithoutReviewsInput, Prisma.ProgrammeUpdateWithoutReviewsInput>, Prisma.ProgrammeUncheckedUpdateWithoutReviewsInput>
 }
 
+export type ProgrammeCreateNestedOneWithoutSavedItemsInput = {
+  create?: Prisma.XOR<Prisma.ProgrammeCreateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.ProgrammeCreateOrConnectWithoutSavedItemsInput
+  connect?: Prisma.ProgrammeWhereUniqueInput
+}
+
+export type ProgrammeUpdateOneWithoutSavedItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgrammeCreateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedCreateWithoutSavedItemsInput>
+  connectOrCreate?: Prisma.ProgrammeCreateOrConnectWithoutSavedItemsInput
+  upsert?: Prisma.ProgrammeUpsertWithoutSavedItemsInput
+  disconnect?: Prisma.ProgrammeWhereInput | boolean
+  delete?: Prisma.ProgrammeWhereInput | boolean
+  connect?: Prisma.ProgrammeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProgrammeUpdateToOneWithWhereWithoutSavedItemsInput, Prisma.ProgrammeUpdateWithoutSavedItemsInput>, Prisma.ProgrammeUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type ProgrammeCreateNestedOneWithoutWorkspaceNotesInput = {
+  create?: Prisma.XOR<Prisma.ProgrammeCreateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.ProgrammeCreateOrConnectWithoutWorkspaceNotesInput
+  connect?: Prisma.ProgrammeWhereUniqueInput
+}
+
+export type ProgrammeUpdateOneWithoutWorkspaceNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProgrammeCreateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedCreateWithoutWorkspaceNotesInput>
+  connectOrCreate?: Prisma.ProgrammeCreateOrConnectWithoutWorkspaceNotesInput
+  upsert?: Prisma.ProgrammeUpsertWithoutWorkspaceNotesInput
+  disconnect?: Prisma.ProgrammeWhereInput | boolean
+  delete?: Prisma.ProgrammeWhereInput | boolean
+  connect?: Prisma.ProgrammeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProgrammeUpdateToOneWithWhereWithoutWorkspaceNotesInput, Prisma.ProgrammeUpdateWithoutWorkspaceNotesInput>, Prisma.ProgrammeUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
 export type ProgrammeCreateWithoutDocumentInput = {
   id?: string
   name: string
@@ -668,6 +714,8 @@ export type ProgrammeCreateWithoutDocumentInput = {
   university: Prisma.UniversityCreateNestedOneWithoutProgrammesInput
   facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUncheckedCreateWithoutDocumentInput = {
@@ -686,6 +734,8 @@ export type ProgrammeUncheckedCreateWithoutDocumentInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeCreateOrConnectWithoutDocumentInput = {
@@ -750,6 +800,8 @@ export type ProgrammeCreateWithoutFactsInput = {
   university: Prisma.UniversityCreateNestedOneWithoutProgrammesInput
   document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUncheckedCreateWithoutFactsInput = {
@@ -768,6 +820,8 @@ export type ProgrammeUncheckedCreateWithoutFactsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeCreateOrConnectWithoutFactsInput = {
@@ -802,6 +856,8 @@ export type ProgrammeUpdateWithoutFactsInput = {
   university?: Prisma.UniversityUpdateOneRequiredWithoutProgrammesNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateWithoutFactsInput = {
@@ -820,6 +876,8 @@ export type ProgrammeUncheckedUpdateWithoutFactsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeCreateWithoutUniversityInput = {
@@ -838,6 +896,8 @@ export type ProgrammeCreateWithoutUniversityInput = {
   document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
   facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUncheckedCreateWithoutUniversityInput = {
@@ -856,6 +916,8 @@ export type ProgrammeUncheckedCreateWithoutUniversityInput = {
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
   reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeCreateOrConnectWithoutUniversityInput = {
@@ -900,6 +962,8 @@ export type ProgrammeCreateWithoutReviewsInput = {
   university: Prisma.UniversityCreateNestedOneWithoutProgrammesInput
   document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
   facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeUncheckedCreateWithoutReviewsInput = {
@@ -918,6 +982,8 @@ export type ProgrammeUncheckedCreateWithoutReviewsInput = {
   reviewedAt?: Date | string | null
   createdAt?: Date | string
   facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
 }
 
 export type ProgrammeCreateOrConnectWithoutReviewsInput = {
@@ -952,6 +1018,8 @@ export type ProgrammeUpdateWithoutReviewsInput = {
   university?: Prisma.UniversityUpdateOneRequiredWithoutProgrammesNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
   facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateWithoutReviewsInput = {
@@ -970,6 +1038,200 @@ export type ProgrammeUncheckedUpdateWithoutReviewsInput = {
   reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
+}
+
+export type ProgrammeCreateWithoutSavedItemsInput = {
+  id?: string
+  name: string
+  degreeType: string
+  field?: string | null
+  language?: string | null
+  officialUrl: string
+  applicationUrl?: string | null
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  university: Prisma.UniversityCreateNestedOneWithoutProgrammesInput
+  document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
+  facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
+  reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteCreateNestedManyWithoutProgrammeInput
+}
+
+export type ProgrammeUncheckedCreateWithoutSavedItemsInput = {
+  id?: string
+  universityId: string
+  name: string
+  degreeType: string
+  field?: string | null
+  language?: string | null
+  officialUrl: string
+  applicationUrl?: string | null
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
+  reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  workspaceNotes?: Prisma.NoteUncheckedCreateNestedManyWithoutProgrammeInput
+}
+
+export type ProgrammeCreateOrConnectWithoutSavedItemsInput = {
+  where: Prisma.ProgrammeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgrammeCreateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedCreateWithoutSavedItemsInput>
+}
+
+export type ProgrammeUpsertWithoutSavedItemsInput = {
+  update: Prisma.XOR<Prisma.ProgrammeUpdateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedUpdateWithoutSavedItemsInput>
+  create: Prisma.XOR<Prisma.ProgrammeCreateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedCreateWithoutSavedItemsInput>
+  where?: Prisma.ProgrammeWhereInput
+}
+
+export type ProgrammeUpdateToOneWithWhereWithoutSavedItemsInput = {
+  where?: Prisma.ProgrammeWhereInput
+  data: Prisma.XOR<Prisma.ProgrammeUpdateWithoutSavedItemsInput, Prisma.ProgrammeUncheckedUpdateWithoutSavedItemsInput>
+}
+
+export type ProgrammeUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  degreeType?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  applicationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  university?: Prisma.UniversityUpdateOneRequiredWithoutProgrammesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
+  facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
+  reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
+}
+
+export type ProgrammeUncheckedUpdateWithoutSavedItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  universityId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  degreeType?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  applicationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
+  reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
+}
+
+export type ProgrammeCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  name: string
+  degreeType: string
+  field?: string | null
+  language?: string | null
+  officialUrl: string
+  applicationUrl?: string | null
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  university: Prisma.UniversityCreateNestedOneWithoutProgrammesInput
+  document: Prisma.DocumentCreateNestedOneWithoutProgrammesInput
+  facts?: Prisma.FactCreateNestedManyWithoutProgrammeInput
+  reviews?: Prisma.EducationReviewCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemCreateNestedManyWithoutProgrammeInput
+}
+
+export type ProgrammeUncheckedCreateWithoutWorkspaceNotesInput = {
+  id?: string
+  universityId: string
+  name: string
+  degreeType: string
+  field?: string | null
+  language?: string | null
+  officialUrl: string
+  applicationUrl?: string | null
+  documentId: string
+  evidenceExcerpt: string
+  status?: string
+  createdBy: string
+  reviewedAt?: Date | string | null
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutProgrammeInput
+  reviews?: Prisma.EducationReviewUncheckedCreateNestedManyWithoutProgrammeInput
+  savedItems?: Prisma.SavedItemUncheckedCreateNestedManyWithoutProgrammeInput
+}
+
+export type ProgrammeCreateOrConnectWithoutWorkspaceNotesInput = {
+  where: Prisma.ProgrammeWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProgrammeCreateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedCreateWithoutWorkspaceNotesInput>
+}
+
+export type ProgrammeUpsertWithoutWorkspaceNotesInput = {
+  update: Prisma.XOR<Prisma.ProgrammeUpdateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedUpdateWithoutWorkspaceNotesInput>
+  create: Prisma.XOR<Prisma.ProgrammeCreateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedCreateWithoutWorkspaceNotesInput>
+  where?: Prisma.ProgrammeWhereInput
+}
+
+export type ProgrammeUpdateToOneWithWhereWithoutWorkspaceNotesInput = {
+  where?: Prisma.ProgrammeWhereInput
+  data: Prisma.XOR<Prisma.ProgrammeUpdateWithoutWorkspaceNotesInput, Prisma.ProgrammeUncheckedUpdateWithoutWorkspaceNotesInput>
+}
+
+export type ProgrammeUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  degreeType?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  applicationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  university?: Prisma.UniversityUpdateOneRequiredWithoutProgrammesNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
+  facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
+  reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+}
+
+export type ProgrammeUncheckedUpdateWithoutWorkspaceNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  universityId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  degreeType?: Prisma.StringFieldUpdateOperationsInput | string
+  field?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  language?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  officialUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  applicationUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  evidenceExcerpt?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  reviewedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
+  reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeCreateManyDocumentInput = {
@@ -1004,6 +1266,8 @@ export type ProgrammeUpdateWithoutDocumentInput = {
   university?: Prisma.UniversityUpdateOneRequiredWithoutProgrammesNestedInput
   facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateWithoutDocumentInput = {
@@ -1022,6 +1286,8 @@ export type ProgrammeUncheckedUpdateWithoutDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateManyWithoutDocumentInput = {
@@ -1072,6 +1338,8 @@ export type ProgrammeUpdateWithoutUniversityInput = {
   document?: Prisma.DocumentUpdateOneRequiredWithoutProgrammesNestedInput
   facts?: Prisma.FactUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateWithoutUniversityInput = {
@@ -1090,6 +1358,8 @@ export type ProgrammeUncheckedUpdateWithoutUniversityInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   facts?: Prisma.FactUncheckedUpdateManyWithoutProgrammeNestedInput
   reviews?: Prisma.EducationReviewUncheckedUpdateManyWithoutProgrammeNestedInput
+  savedItems?: Prisma.SavedItemUncheckedUpdateManyWithoutProgrammeNestedInput
+  workspaceNotes?: Prisma.NoteUncheckedUpdateManyWithoutProgrammeNestedInput
 }
 
 export type ProgrammeUncheckedUpdateManyWithoutUniversityInput = {
@@ -1116,11 +1386,15 @@ export type ProgrammeUncheckedUpdateManyWithoutUniversityInput = {
 export type ProgrammeCountOutputType = {
   facts: number
   reviews: number
+  savedItems: number
+  workspaceNotes: number
 }
 
 export type ProgrammeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   facts?: boolean | ProgrammeCountOutputTypeCountFactsArgs
   reviews?: boolean | ProgrammeCountOutputTypeCountReviewsArgs
+  savedItems?: boolean | ProgrammeCountOutputTypeCountSavedItemsArgs
+  workspaceNotes?: boolean | ProgrammeCountOutputTypeCountWorkspaceNotesArgs
 }
 
 /**
@@ -1147,6 +1421,20 @@ export type ProgrammeCountOutputTypeCountReviewsArgs<ExtArgs extends runtime.Typ
   where?: Prisma.EducationReviewWhereInput
 }
 
+/**
+ * ProgrammeCountOutputType without action
+ */
+export type ProgrammeCountOutputTypeCountSavedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.SavedItemWhereInput
+}
+
+/**
+ * ProgrammeCountOutputType without action
+ */
+export type ProgrammeCountOutputTypeCountWorkspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NoteWhereInput
+}
+
 
 export type ProgrammeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1167,6 +1455,8 @@ export type ProgrammeSelect<ExtArgs extends runtime.Types.Extensions.InternalArg
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.Programme$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.Programme$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Programme$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Programme$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.ProgrammeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["programme"]>
 
@@ -1231,6 +1521,8 @@ export type ProgrammeInclude<ExtArgs extends runtime.Types.Extensions.InternalAr
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   facts?: boolean | Prisma.Programme$factsArgs<ExtArgs>
   reviews?: boolean | Prisma.Programme$reviewsArgs<ExtArgs>
+  savedItems?: boolean | Prisma.Programme$savedItemsArgs<ExtArgs>
+  workspaceNotes?: boolean | Prisma.Programme$workspaceNotesArgs<ExtArgs>
   _count?: boolean | Prisma.ProgrammeCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProgrammeIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1249,6 +1541,8 @@ export type $ProgrammePayload<ExtArgs extends runtime.Types.Extensions.InternalA
     document: Prisma.$DocumentPayload<ExtArgs>
     facts: Prisma.$FactPayload<ExtArgs>[]
     reviews: Prisma.$EducationReviewPayload<ExtArgs>[]
+    savedItems: Prisma.$SavedItemPayload<ExtArgs>[]
+    workspaceNotes: Prisma.$NotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1663,6 +1957,8 @@ export interface Prisma__ProgrammeClient<T, Null = never, ExtArgs extends runtim
   document<T extends Prisma.DocumentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   facts<T extends Prisma.Programme$factsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Programme$factsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviews<T extends Prisma.Programme$reviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Programme$reviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EducationReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  savedItems<T extends Prisma.Programme$savedItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Programme$savedItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$SavedItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  workspaceNotes<T extends Prisma.Programme$workspaceNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Programme$workspaceNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2152,6 +2448,54 @@ export type Programme$reviewsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.EducationReviewScalarFieldEnum | Prisma.EducationReviewScalarFieldEnum[]
+}
+
+/**
+ * Programme.savedItems
+ */
+export type Programme$savedItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the SavedItem
+   */
+  select?: Prisma.SavedItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the SavedItem
+   */
+  omit?: Prisma.SavedItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.SavedItemInclude<ExtArgs> | null
+  where?: Prisma.SavedItemWhereInput
+  orderBy?: Prisma.SavedItemOrderByWithRelationInput | Prisma.SavedItemOrderByWithRelationInput[]
+  cursor?: Prisma.SavedItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.SavedItemScalarFieldEnum | Prisma.SavedItemScalarFieldEnum[]
+}
+
+/**
+ * Programme.workspaceNotes
+ */
+export type Programme$workspaceNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Note
+   */
+  select?: Prisma.NoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Note
+   */
+  omit?: Prisma.NoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NoteInclude<ExtArgs> | null
+  where?: Prisma.NoteWhereInput
+  orderBy?: Prisma.NoteOrderByWithRelationInput | Prisma.NoteOrderByWithRelationInput[]
+  cursor?: Prisma.NoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NoteScalarFieldEnum | Prisma.NoteScalarFieldEnum[]
 }
 
 /**

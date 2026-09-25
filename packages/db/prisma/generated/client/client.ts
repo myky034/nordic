@@ -136,3 +136,58 @@ export type OccupationReview = Prisma.OccupationReviewModel
  * 
  */
 export type ComparisonMetric = Prisma.ComparisonMetricModel
+/**
+ * Model ResearchProject
+ * 
+ */
+export type ResearchProject = Prisma.ResearchProjectModel
+/**
+ * Model ResearchProjectCountry
+ * 
+ */
+export type ResearchProjectCountry = Prisma.ResearchProjectCountryModel
+/**
+ * Model SavedItem
+ * 
+ */
+export type SavedItem = Prisma.SavedItemModel
+/**
+ * Model Note
+ * 
+ */
+export type Note = Prisma.NoteModel
+/**
+ * Model UserPlan
+ * 
+ */
+export type UserPlan = Prisma.UserPlanModel
+/**
+ * Model UserPlanCountry
+ * 
+ */
+export type UserPlanCountry = Prisma.UserPlanCountryModel
+/**
+ * Model CrawlTarget
+ * 
+ */
+export type CrawlTarget = Prisma.CrawlTargetModel
+/**
+ * Model CrawlUrlState
+ * 
+ */
+export type CrawlUrlState = Prisma.CrawlUrlStateModel
+/**
+ * Model CrawlerRun
+ * 
+ */
+export type CrawlerRun = Prisma.CrawlerRunModel
+/**
+ * Model CrawlerRunItem
+ * 
+ */
+export type CrawlerRunItem = Prisma.CrawlerRunItemModel
+/**
+ * Model DocumentText
+ * 
+ */
+export type DocumentText = Prisma.DocumentTextModel

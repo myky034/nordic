@@ -1,0 +1,44 @@
+# Slice 9 — scheduled crawler. Fetches only URLs registered in /admin/crawler
+# for sources that are verified + crawl policy approved + crawl enabled.
+name: crawler
+on:
+  schedule:
+    - cron: "17 3 * * 1" # weekly, Monday 03:17 UTC (off the hour to spread load)
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: crawler
+  cancel-in-progress: false
+jobs:
+  crawl:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    env:
+      CRAWLER_DATABASE_URL: ${{ secrets.CRAWLER_DATABASE_URL }}
+      # Optional repository variable; the bot falls back to the repository URL.
+      CRAWLER_CONTACT_URL: ${{ vars.CRAWLER_CONTACT_URL }}
+      CRAWLER_TRIGGER: ${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}
+    steps:
+      # Exit quietly (not red) in forks or before the operator has configured
+      # the least-privilege login role; nothing is fetched in that case.
+      - name: Check configuration
+        id: config
+        run: |
+          if [ -z "$CRAWLER_DATABASE_URL" ]; then
+            echo "CRAWLER_DATABASE_URL secret not set; skipping crawl."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - if: steps.config.outputs.ready == 'true'
+        run: npm ci --workspace @nordic/crawler --include-workspace-root
+      - if: steps.config.outputs.ready == 'true'
+        run: npm run crawl --workspace @nordic/crawler

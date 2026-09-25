@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { SaveButton } from "@/components/save-button";
+import { savedState } from "@/lib/workspace/saved";
 import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -40,8 +42,9 @@ export default async function OccupationPage({ params, searchParams }: PageProps
   const counts = countryCounts.map((r) => r.count ?? 0);
   const total = counts.reduce((a, b) => a + b, 0);
   const name = (slug: string) => slug[0].toUpperCase() + slug.slice(1);
+  const save = await savedState("occupation", occupation.id);
   return <>
-    <PageHeader back={<BackLink href="/occupations">All occupations</BackLink>} eyebrow="Occupation" title={occupation.name} />
+    <PageHeader back={<BackLink href="/occupations">All occupations</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Occupation" title={occupation.name} />
     <DescriptionList items={[
       ["Classification", classificationLabel(occupation.classification_system, occupation.classification_code)],
       ["Scope", occupation.countries ? <Link key="c" href={`/countries/${occupation.countries.slug}`} className="text-accent hover:underline">{occupation.countries.name}</Link> : "International definition"],

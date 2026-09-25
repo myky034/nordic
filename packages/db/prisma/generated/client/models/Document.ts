@@ -277,6 +277,10 @@ export type DocumentWhereInput = {
   immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   occupations?: Prisma.OccupationListRelationFilter
   source?: Prisma.XOR<Prisma.SourceScalarRelationFilter, Prisma.SourceWhereInput>
+  text?: Prisma.XOR<Prisma.DocumentTextNullableScalarRelationFilter, Prisma.DocumentTextWhereInput> | null
+  crawlUrlStates?: Prisma.CrawlUrlStateListRelationFilter
+  crawlerRunItems?: Prisma.CrawlerRunItemListRelationFilter
+  changedFacts?: Prisma.FactListRelationFilter
 }
 
 export type DocumentOrderByWithRelationInput = {
@@ -303,6 +307,10 @@ export type DocumentOrderByWithRelationInput = {
   immigrationRules?: Prisma.ImmigrationRuleOrderByRelationAggregateInput
   occupations?: Prisma.OccupationOrderByRelationAggregateInput
   source?: Prisma.SourceOrderByWithRelationInput
+  text?: Prisma.DocumentTextOrderByWithRelationInput
+  crawlUrlStates?: Prisma.CrawlUrlStateOrderByRelationAggregateInput
+  crawlerRunItems?: Prisma.CrawlerRunItemOrderByRelationAggregateInput
+  changedFacts?: Prisma.FactOrderByRelationAggregateInput
 }
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -333,6 +341,10 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   immigrationRules?: Prisma.ImmigrationRuleListRelationFilter
   occupations?: Prisma.OccupationListRelationFilter
   source?: Prisma.XOR<Prisma.SourceScalarRelationFilter, Prisma.SourceWhereInput>
+  text?: Prisma.XOR<Prisma.DocumentTextNullableScalarRelationFilter, Prisma.DocumentTextWhereInput> | null
+  crawlUrlStates?: Prisma.CrawlUrlStateListRelationFilter
+  crawlerRunItems?: Prisma.CrawlerRunItemListRelationFilter
+  changedFacts?: Prisma.FactListRelationFilter
 }, "id" | "sourceId_canonicalUrl_contentHash">
 
 export type DocumentOrderByWithAggregationInput = {
@@ -402,6 +414,10 @@ export type DocumentCreateInput = {
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateInput = {
@@ -427,6 +443,10 @@ export type DocumentUncheckedCreateInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUpdateInput = {
@@ -452,6 +472,10 @@ export type DocumentUpdateInput = {
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateInput = {
@@ -477,6 +501,10 @@ export type DocumentUncheckedUpdateInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -613,6 +641,11 @@ export type DocumentScalarRelationFilter = {
   isNot?: Prisma.DocumentWhereInput
 }
 
+export type DocumentNullableScalarRelationFilter = {
+  is?: Prisma.DocumentWhereInput | null
+  isNot?: Prisma.DocumentWhereInput | null
+}
+
 export type DocumentCreateNestedManyWithoutSourceInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutSourceInput, Prisma.DocumentUncheckedCreateWithoutSourceInput> | Prisma.DocumentCreateWithoutSourceInput[] | Prisma.DocumentUncheckedCreateWithoutSourceInput[]
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutSourceInput | Prisma.DocumentCreateOrConnectWithoutSourceInput[]
@@ -661,12 +694,28 @@ export type DocumentCreateNestedOneWithoutFactsInput = {
   connect?: Prisma.DocumentWhereUniqueInput
 }
 
+export type DocumentCreateNestedOneWithoutChangedFactsInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutChangedFactsInput, Prisma.DocumentUncheckedCreateWithoutChangedFactsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutChangedFactsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
 export type DocumentUpdateOneRequiredWithoutFactsNestedInput = {
   create?: Prisma.XOR<Prisma.DocumentCreateWithoutFactsInput, Prisma.DocumentUncheckedCreateWithoutFactsInput>
   connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutFactsInput
   upsert?: Prisma.DocumentUpsertWithoutFactsInput
   connect?: Prisma.DocumentWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutFactsInput, Prisma.DocumentUpdateWithoutFactsInput>, Prisma.DocumentUncheckedUpdateWithoutFactsInput>
+}
+
+export type DocumentUpdateOneWithoutChangedFactsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutChangedFactsInput, Prisma.DocumentUncheckedCreateWithoutChangedFactsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutChangedFactsInput
+  upsert?: Prisma.DocumentUpsertWithoutChangedFactsInput
+  disconnect?: Prisma.DocumentWhereInput | boolean
+  delete?: Prisma.DocumentWhereInput | boolean
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutChangedFactsInput, Prisma.DocumentUpdateWithoutChangedFactsInput>, Prisma.DocumentUncheckedUpdateWithoutChangedFactsInput>
 }
 
 export type DocumentCreateNestedOneWithoutEvidenceInput = {
@@ -739,6 +788,52 @@ export type DocumentUpdateOneRequiredWithoutOccupationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutOccupationsInput, Prisma.DocumentUpdateWithoutOccupationsInput>, Prisma.DocumentUncheckedUpdateWithoutOccupationsInput>
 }
 
+export type DocumentCreateNestedOneWithoutCrawlUrlStatesInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedCreateWithoutCrawlUrlStatesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutCrawlUrlStatesInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneWithoutCrawlUrlStatesNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedCreateWithoutCrawlUrlStatesInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutCrawlUrlStatesInput
+  upsert?: Prisma.DocumentUpsertWithoutCrawlUrlStatesInput
+  disconnect?: Prisma.DocumentWhereInput | boolean
+  delete?: Prisma.DocumentWhereInput | boolean
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutCrawlUrlStatesInput, Prisma.DocumentUpdateWithoutCrawlUrlStatesInput>, Prisma.DocumentUncheckedUpdateWithoutCrawlUrlStatesInput>
+}
+
+export type DocumentCreateNestedOneWithoutCrawlerRunItemsInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedCreateWithoutCrawlerRunItemsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutCrawlerRunItemsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneWithoutCrawlerRunItemsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedCreateWithoutCrawlerRunItemsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutCrawlerRunItemsInput
+  upsert?: Prisma.DocumentUpsertWithoutCrawlerRunItemsInput
+  disconnect?: Prisma.DocumentWhereInput | boolean
+  delete?: Prisma.DocumentWhereInput | boolean
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutCrawlerRunItemsInput, Prisma.DocumentUpdateWithoutCrawlerRunItemsInput>, Prisma.DocumentUncheckedUpdateWithoutCrawlerRunItemsInput>
+}
+
+export type DocumentCreateNestedOneWithoutTextInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTextInput, Prisma.DocumentUncheckedCreateWithoutTextInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTextInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutTextNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutTextInput, Prisma.DocumentUncheckedCreateWithoutTextInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutTextInput
+  upsert?: Prisma.DocumentUpsertWithoutTextInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutTextInput, Prisma.DocumentUpdateWithoutTextInput>, Prisma.DocumentUncheckedUpdateWithoutTextInput>
+}
+
 export type DocumentCreateWithoutSourceInput = {
   id?: string
   canonicalUrl: string
@@ -761,6 +856,10 @@ export type DocumentCreateWithoutSourceInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutSourceInput = {
@@ -785,6 +884,10 @@ export type DocumentUncheckedCreateWithoutSourceInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutSourceInput = {
@@ -857,6 +960,10 @@ export type DocumentCreateWithoutFactsInput = {
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutFactsInput = {
@@ -881,11 +988,76 @@ export type DocumentUncheckedCreateWithoutFactsInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutFactsInput = {
   where: Prisma.DocumentWhereUniqueInput
   create: Prisma.XOR<Prisma.DocumentCreateWithoutFactsInput, Prisma.DocumentUncheckedCreateWithoutFactsInput>
+}
+
+export type DocumentCreateWithoutChangedFactsInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutChangedFactsInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutChangedFactsInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutChangedFactsInput, Prisma.DocumentUncheckedCreateWithoutChangedFactsInput>
 }
 
 export type DocumentUpsertWithoutFactsInput = {
@@ -921,6 +1093,10 @@ export type DocumentUpdateWithoutFactsInput = {
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutFactsInput = {
@@ -945,6 +1121,77 @@ export type DocumentUncheckedUpdateWithoutFactsInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentUpsertWithoutChangedFactsInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutChangedFactsInput, Prisma.DocumentUncheckedUpdateWithoutChangedFactsInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutChangedFactsInput, Prisma.DocumentUncheckedCreateWithoutChangedFactsInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutChangedFactsInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutChangedFactsInput, Prisma.DocumentUncheckedUpdateWithoutChangedFactsInput>
+}
+
+export type DocumentUpdateWithoutChangedFactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutChangedFactsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutEvidenceInput = {
@@ -969,6 +1216,10 @@ export type DocumentCreateWithoutEvidenceInput = {
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutEvidenceInput = {
@@ -993,6 +1244,10 @@ export type DocumentUncheckedCreateWithoutEvidenceInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEvidenceInput = {
@@ -1033,6 +1288,10 @@ export type DocumentUpdateWithoutEvidenceInput = {
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutEvidenceInput = {
@@ -1057,6 +1316,10 @@ export type DocumentUncheckedUpdateWithoutEvidenceInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateWithoutUniversitiesInput = {
@@ -1081,6 +1344,10 @@ export type DocumentCreateWithoutUniversitiesInput = {
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutUniversitiesInput = {
@@ -1105,6 +1372,10 @@ export type DocumentUncheckedCreateWithoutUniversitiesInput = {
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutUniversitiesInput = {
@@ -1145,6 +1416,10 @@ export type DocumentUpdateWithoutUniversitiesInput = {
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutUniversitiesInput = {
@@ -1169,6 +1444,10 @@ export type DocumentUncheckedUpdateWithoutUniversitiesInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateWithoutProgrammesInput = {
@@ -1193,6 +1472,10 @@ export type DocumentCreateWithoutProgrammesInput = {
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutProgrammesInput = {
@@ -1217,6 +1500,10 @@ export type DocumentUncheckedCreateWithoutProgrammesInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutProgrammesInput = {
@@ -1257,6 +1544,10 @@ export type DocumentUpdateWithoutProgrammesInput = {
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutProgrammesInput = {
@@ -1281,6 +1572,10 @@ export type DocumentUncheckedUpdateWithoutProgrammesInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateWithoutImmigrationRulesInput = {
@@ -1305,6 +1600,10 @@ export type DocumentCreateWithoutImmigrationRulesInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutImmigrationRulesInput = {
@@ -1329,6 +1628,10 @@ export type DocumentUncheckedCreateWithoutImmigrationRulesInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutImmigrationRulesInput = {
@@ -1369,6 +1672,10 @@ export type DocumentUpdateWithoutImmigrationRulesInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutImmigrationRulesInput = {
@@ -1393,6 +1700,10 @@ export type DocumentUncheckedUpdateWithoutImmigrationRulesInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateWithoutOccupationsInput = {
@@ -1417,6 +1728,10 @@ export type DocumentCreateWithoutOccupationsInput = {
   programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
   source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutOccupationsInput = {
@@ -1441,6 +1756,10 @@ export type DocumentUncheckedCreateWithoutOccupationsInput = {
   universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
   programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutOccupationsInput = {
@@ -1481,6 +1800,10 @@ export type DocumentUpdateWithoutOccupationsInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutOccupationsInput = {
@@ -1505,6 +1828,394 @@ export type DocumentUncheckedUpdateWithoutOccupationsInput = {
   universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentCreateWithoutCrawlUrlStatesInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutCrawlUrlStatesInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutCrawlUrlStatesInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedCreateWithoutCrawlUrlStatesInput>
+}
+
+export type DocumentUpsertWithoutCrawlUrlStatesInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedUpdateWithoutCrawlUrlStatesInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedCreateWithoutCrawlUrlStatesInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutCrawlUrlStatesInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutCrawlUrlStatesInput, Prisma.DocumentUncheckedUpdateWithoutCrawlUrlStatesInput>
+}
+
+export type DocumentUpdateWithoutCrawlUrlStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutCrawlUrlStatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentCreateWithoutCrawlerRunItemsInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutCrawlerRunItemsInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutCrawlerRunItemsInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedCreateWithoutCrawlerRunItemsInput>
+}
+
+export type DocumentUpsertWithoutCrawlerRunItemsInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedUpdateWithoutCrawlerRunItemsInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedCreateWithoutCrawlerRunItemsInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutCrawlerRunItemsInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutCrawlerRunItemsInput, Prisma.DocumentUncheckedUpdateWithoutCrawlerRunItemsInput>
+}
+
+export type DocumentUpdateWithoutCrawlerRunItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutCrawlerRunItemsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentCreateWithoutTextInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutTextInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutTextInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutTextInput, Prisma.DocumentUncheckedCreateWithoutTextInput>
+}
+
+export type DocumentUpsertWithoutTextInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutTextInput, Prisma.DocumentUncheckedUpdateWithoutTextInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutTextInput, Prisma.DocumentUncheckedCreateWithoutTextInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutTextInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutTextInput, Prisma.DocumentUncheckedUpdateWithoutTextInput>
+}
+
+export type DocumentUpdateWithoutTextInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutTextInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentCreateManySourceInput = {
@@ -1547,6 +2258,10 @@ export type DocumentUpdateWithoutSourceInput = {
   programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutSourceInput = {
@@ -1571,6 +2286,10 @@ export type DocumentUncheckedUpdateWithoutSourceInput = {
   programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
   immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
   occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutSourceInput = {
@@ -1603,6 +2322,9 @@ export type DocumentCountOutputType = {
   programmes: number
   immigrationRules: number
   occupations: number
+  crawlUrlStates: number
+  crawlerRunItems: number
+  changedFacts: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1612,6 +2334,9 @@ export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   programmes?: boolean | DocumentCountOutputTypeCountProgrammesArgs
   immigrationRules?: boolean | DocumentCountOutputTypeCountImmigrationRulesArgs
   occupations?: boolean | DocumentCountOutputTypeCountOccupationsArgs
+  crawlUrlStates?: boolean | DocumentCountOutputTypeCountCrawlUrlStatesArgs
+  crawlerRunItems?: boolean | DocumentCountOutputTypeCountCrawlerRunItemsArgs
+  changedFacts?: boolean | DocumentCountOutputTypeCountChangedFactsArgs
 }
 
 /**
@@ -1666,6 +2391,27 @@ export type DocumentCountOutputTypeCountOccupationsArgs<ExtArgs extends runtime.
   where?: Prisma.OccupationWhereInput
 }
 
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountCrawlUrlStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrawlUrlStateWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountCrawlerRunItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.CrawlerRunItemWhereInput
+}
+
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountChangedFactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FactWhereInput
+}
+
 
 export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1691,6 +2437,10 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   immigrationRules?: boolean | Prisma.Document$immigrationRulesArgs<ExtArgs>
   occupations?: boolean | Prisma.Document$occupationsArgs<ExtArgs>
   source?: boolean | Prisma.SourceDefaultArgs<ExtArgs>
+  text?: boolean | Prisma.Document$textArgs<ExtArgs>
+  crawlUrlStates?: boolean | Prisma.Document$crawlUrlStatesArgs<ExtArgs>
+  crawlerRunItems?: boolean | Prisma.Document$crawlerRunItemsArgs<ExtArgs>
+  changedFacts?: boolean | Prisma.Document$changedFactsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
@@ -1762,6 +2512,10 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   immigrationRules?: boolean | Prisma.Document$immigrationRulesArgs<ExtArgs>
   occupations?: boolean | Prisma.Document$occupationsArgs<ExtArgs>
   source?: boolean | Prisma.SourceDefaultArgs<ExtArgs>
+  text?: boolean | Prisma.Document$textArgs<ExtArgs>
+  crawlUrlStates?: boolean | Prisma.Document$crawlUrlStatesArgs<ExtArgs>
+  crawlerRunItems?: boolean | Prisma.Document$crawlerRunItemsArgs<ExtArgs>
+  changedFacts?: boolean | Prisma.Document$changedFactsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1781,6 +2535,10 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     immigrationRules: Prisma.$ImmigrationRulePayload<ExtArgs>[]
     occupations: Prisma.$OccupationPayload<ExtArgs>[]
     source: Prisma.$SourcePayload<ExtArgs>
+    text: Prisma.$DocumentTextPayload<ExtArgs> | null
+    crawlUrlStates: Prisma.$CrawlUrlStatePayload<ExtArgs>[]
+    crawlerRunItems: Prisma.$CrawlerRunItemPayload<ExtArgs>[]
+    changedFacts: Prisma.$FactPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2200,6 +2958,10 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   immigrationRules<T extends Prisma.Document$immigrationRulesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$immigrationRulesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   occupations<T extends Prisma.Document$occupationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$occupationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OccupationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   source<T extends Prisma.SourceDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.SourceDefaultArgs<ExtArgs>>): Prisma.Prisma__SourceClient<runtime.Types.Result.GetResult<Prisma.$SourcePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  text<T extends Prisma.Document$textArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$textArgs<ExtArgs>>): Prisma.Prisma__DocumentTextClient<runtime.Types.Result.GetResult<Prisma.$DocumentTextPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  crawlUrlStates<T extends Prisma.Document$crawlUrlStatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$crawlUrlStatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlUrlStatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  crawlerRunItems<T extends Prisma.Document$crawlerRunItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$crawlerRunItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CrawlerRunItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  changedFacts<T extends Prisma.Document$changedFactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$changedFactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2787,6 +3549,97 @@ export type Document$occupationsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.OccupationScalarFieldEnum | Prisma.OccupationScalarFieldEnum[]
+}
+
+/**
+ * Document.text
+ */
+export type Document$textArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DocumentText
+   */
+  select?: Prisma.DocumentTextSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the DocumentText
+   */
+  omit?: Prisma.DocumentTextOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.DocumentTextInclude<ExtArgs> | null
+  where?: Prisma.DocumentTextWhereInput
+}
+
+/**
+ * Document.crawlUrlStates
+ */
+export type Document$crawlUrlStatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrawlUrlState
+   */
+  select?: Prisma.CrawlUrlStateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrawlUrlState
+   */
+  omit?: Prisma.CrawlUrlStateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrawlUrlStateInclude<ExtArgs> | null
+  where?: Prisma.CrawlUrlStateWhereInput
+  orderBy?: Prisma.CrawlUrlStateOrderByWithRelationInput | Prisma.CrawlUrlStateOrderByWithRelationInput[]
+  cursor?: Prisma.CrawlUrlStateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrawlUrlStateScalarFieldEnum | Prisma.CrawlUrlStateScalarFieldEnum[]
+}
+
+/**
+ * Document.crawlerRunItems
+ */
+export type Document$crawlerRunItemsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the CrawlerRunItem
+   */
+  select?: Prisma.CrawlerRunItemSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the CrawlerRunItem
+   */
+  omit?: Prisma.CrawlerRunItemOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.CrawlerRunItemInclude<ExtArgs> | null
+  where?: Prisma.CrawlerRunItemWhereInput
+  orderBy?: Prisma.CrawlerRunItemOrderByWithRelationInput | Prisma.CrawlerRunItemOrderByWithRelationInput[]
+  cursor?: Prisma.CrawlerRunItemWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.CrawlerRunItemScalarFieldEnum | Prisma.CrawlerRunItemScalarFieldEnum[]
+}
+
+/**
+ * Document.changedFacts
+ */
+export type Document$changedFactsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Fact
+   */
+  select?: Prisma.FactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Fact
+   */
+  omit?: Prisma.FactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FactInclude<ExtArgs> | null
+  where?: Prisma.FactWhereInput
+  orderBy?: Prisma.FactOrderByWithRelationInput | Prisma.FactOrderByWithRelationInput[]
+  cursor?: Prisma.FactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FactScalarFieldEnum | Prisma.FactScalarFieldEnum[]
 }
 
 /**
