@@ -120,3 +120,24 @@ khiến người dùng phải cuộn rất nhiều. Ba thay đổi:
 
 Component mới trong `components/ui/index.tsx`: `Pagination`, `Segmented`,
 `SearchInput`; `Disclosure` có thêm prop `open`.
+
+## Cập nhật 2026-09-26 — trang xem trước UI `/dev/preview`
+
+Lý do: để review giao diện cần có danh sách dài, dữ liệu mâu thuẫn, nhãn nguồn
+không chính thức, bảng so sánh đầy ô… nhưng không được ghi dữ liệu bịa vào DB dùng
+chung (AGENTS.md 1.1).
+
+- Trang `apps/web/app/(public)/(explore)/dev/preview/page.tsx` render **đúng các
+  component thật** (`FactCard`, `SourceList`, `CompareTable`, `ListRow`,
+  `Pagination`…) với dữ liệu trong `apps/web/lib/dev/demo-fixtures.ts`.
+- Dữ liệu fixture: mọi tên có tiền tố "DEMO", mọi URL dùng domain `example.test`
+  (dành riêng cho test), mọi con số là 0, và trang có banner cam ở đầu.
+- **Không truy cập DB** (test đảm bảo: mock client DB ném lỗi nếu bị gọi) và **trả
+  404 ở production**. Khi build, trang được prerender thành 404.
+- `CompareTable` / `CompareCell` được tách ra `components/compare-table.tsx` để trang
+  `/compare` và trang preview dùng chung.
+- Cách dùng: `npm run dev` → mở `http://localhost:3000/dev/preview`. Trang có mục
+  lục để nhảy tới từng phần; bật dark mode trong cài đặt hệ điều hành để xem giao
+  diện tối.
+- Khi thêm component hoặc trạng thái mới, hãy thêm một mẫu vào trang này và vào
+  `demo-fixtures.ts`.

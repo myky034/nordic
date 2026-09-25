@@ -575,6 +575,13 @@ Optional if a source has multiple crawlable URLs.
 - period
 - source/evidence relation
 
+> Update 2026-09-25 (Slice 6b — see Section 21): `occupations` is implemented
+> as identity only (name, optional classification system + code, optional
+> country scope, document + excerpt). `labour_market_items` is NOT a separate
+> table: each figure is a fact linked by `facts.occupation_id`, with
+> `facts.reference_period` as the period and a required country. The field
+> lists above are kept unchanged as the original suggestion.
+
 ### immigration_rules
 
 - id
@@ -1203,3 +1210,48 @@ changed.
   of an iOS-style segmented control; list rows are compact and link to detail
   pages (`/sources/[id]`, `/universities/[id]` added). Search is substring
   matching only; PostgreSQL full-text search remains Slice 7.
+
+### 2026-09-25 — Slice 6b labour market (recommendations accepted)
+
+- `occupations` holds identity only: name, optional classification
+  (`ISCO-08` / `ESCO` / `national` / `other` + code, recorded only when the
+  source states it; both or neither), optional country scope, document +
+  excerpt. No seed rows.
+- No `labour_market_items` table: salary, vacancy and other figures are facts
+  linked by `facts.occupation_id`. New `facts.reference_period`
+  (`YYYY`, `YYYY-Qn`, `YYYY-Hn`, `YYYY-MM`) states the measured period,
+  distinct from `valid_from`/`valid_until`. An occupation figure must have a
+  country.
+- Public visibility: occupation reviewed AND the figure's own evidence source
+  registry-`verified`. Non-T1/T2 figures are labelled "not official
+  statistics". Figures are presented as past-period research data, not
+  forecasts or advice.
+- New permission `labour.manage` (propose); reviewing uses `facts.review`.
+- Job postings, employers and skills remain out of scope.
+- Details: `docs/architecture/slice-06b-labour-market.md`,
+  `docs/learning/slice-06b-labour-market.md`.
+
+### 2026-09-26 — Slice 7 search and country comparison (recommendations accepted)
+
+Search (Section 2.11, still PostgreSQL only):
+- STORED generated `search_vector` columns (config `simple`) with GIN indexes on
+  countries, sources, documents, universities, programmes, immigration rules,
+  occupations and facts.
+- Accent folding by an IMMUTABLE `search_fold()` (`lower` + `translate`)
+  instead of the `unaccent` extension, which is neither installed nor
+  available to the test database.
+- `search_public()` is SECURITY INVOKER and is called with an anonymous
+  client, so results are exactly the public (RLS) view. `/search` groups
+  results by type; the header links to it.
+
+Comparison (Section 2.10):
+- New admin-curated `comparison_metrics` (definitions only, no seed rows;
+  permission `metrics.manage`; key and category immutable after creation;
+  edits audited) and `facts.metric_id` (requires a country).
+- `/compare` accepts 2–5 countries and shows: a metrics table (every public
+  value per cell with source, tier, period and date, conflicts marked),
+  immigration rules by type, figures of one chosen occupation, and counts of
+  reviewed education entries. No aggregation, normalisation, score or
+  ranking.
+- Details: `docs/architecture/slice-07-search-comparison.md`,
+  `docs/learning/slice-07-search-comparison.md`.
