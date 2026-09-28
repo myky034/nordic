@@ -50,3 +50,10 @@ Environment: `CRAWLER_DATABASE_URL` (required for `crawl`), `CRAWLER_CONTACT_URL
 > Superseded (Slice 9 decision): the crawler uses the least-privilege
 > `nordic_crawler_ops` role instead of a service-role key, and reads its work
 > list through `crawler_due_targets()` rather than the `sources` table.
+
+## TLS (added 2026-09-28)
+
+Set `DATABASE_CA_CERT` (GitHub secret) to Supabase's root CA PEM so the database
+connection is verified. Without it, `sslmode=require` fails with
+"self-signed certificate in certificate chain" and a URL without `sslmode` is
+not verified. Details: `docs/architecture/slice-10a-ai-extraction.md`.

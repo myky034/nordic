@@ -17,6 +17,8 @@ jobs:
     timeout-minutes: 30
     env:
       EXTRACTOR_DATABASE_URL: ${{ secrets.EXTRACTOR_DATABASE_URL }}
+      # Supabase root CA (PEM) so TLS is verified; see docs/architecture/slice-09-crawler.md.
+      DATABASE_CA_CERT: ${{ secrets.DATABASE_CA_CERT }}
       LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
       LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
       LLM_MODEL: ${{ vars.LLM_MODEL }}

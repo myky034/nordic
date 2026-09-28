@@ -1390,3 +1390,11 @@ Comparison (Section 2.10):
   state lives in `extraction_requests`).
 - Details: `docs/architecture/slice-10a-ai-extraction.md`,
   `docs/learning/slice-10a-ai-extraction.md`, `extractor/README.md`.
+
+### 2026-09-28 — Verified TLS for worker database connections
+
+- Crawler and extractor connect with TLS verified against Supabase's root CA
+  (`DATABASE_CA_CERT`, PEM, GitHub secret), handled by
+  `packages/db/src/pg-ssl.ts`. Certificate verification is never disabled;
+  without the CA the worker logs a warning. Found when the extractor failed with
+  "self-signed certificate in certificate chain" using `sslmode=require`.

@@ -1,4 +1,5 @@
 import pg from "pg";
+import { workerPoolConfig } from "@nordic/db/pg-ssl";
 
 // The crawler's only database surface: the crawler_* SQL functions. Its role
 // has no table privileges, so every rule is enforced (again) in the database.
@@ -18,9 +19,10 @@ export type CrawlerDb = {
   close(): Promise<void>;
 };
 
-export function pgCrawlerDb(connectionString: string): CrawlerDb {
+export function pgCrawlerDb(connectionString: string, caCert?: string | null): CrawlerDb {
   // One connection is plenty for a sequential crawler and gentle on the pooler.
-  const pool = new pg.Pool({ connectionString, max: 1, connectionTimeoutMillis: 15_000, statement_timeout: 30_000 });
+  const { connectionString: url, ssl } = workerPoolConfig(connectionString, caCert);
+  const pool = new pg.Pool({ connectionString: url, ssl, max: 1, connectionTimeoutMillis: 15_000, statement_timeout: 30_000 });
   const one = async <T>(sql: string, args: unknown[]) => (await pool.query(sql, args)).rows[0] as T;
   return {
     startRun: async (trigger) => (await one<{ id: string }>("SELECT crawler_start_run($1) AS id", [trigger])).id,

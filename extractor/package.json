@@ -5,6 +5,7 @@
   "description": "AI extraction worker (Slice 10a): turns editor-requested document texts into validated fact PROPOSALS through least-privilege SQL functions.",
   "type": "module",
   "dependencies": {
+    "@nordic/db": "*",
     "pg": "^8.23.0"
   },
   "devDependencies": {

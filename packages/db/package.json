@@ -6,7 +6,8 @@
   "exports": {
     ".": "./prisma/generated/client/client.ts",
     "./client": "./prisma/generated/client/client.ts",
-    "./document-hash": "./src/document-hash.ts"
+    "./document-hash": "./src/document-hash.ts",
+    "./pg-ssl": "./src/pg-ssl.ts"
   },
   "scripts": {
     "generate": "prisma generate",

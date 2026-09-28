@@ -109,3 +109,27 @@ successfully without work when any of the four settings is missing.
 - Embeddings, semantic search, RAG (Slice 10b).
 - AI linking to universities/programmes/rules/occupations/metrics.
 - Automatic requests for every crawled version.
+
+## Update 2026-09-28 — verified TLS to Supabase (`DATABASE_CA_CERT`)
+
+With `?sslmode=require`, node-postgres verifies the full certificate chain and
+fails with `self-signed certificate in certificate chain`, because Supabase
+signs its certificates with its own root CA (chain seen on the pooler:
+`*.pooler.supabase.com` ← Supabase Intermediate 2021 CA ← **Supabase Root 2021
+CA**). Without `sslmode` the worker connects without verified TLS.
+
+Fix (both workers, `packages/db/src/pg-ssl.ts`): set the secret
+`DATABASE_CA_CERT` to the PEM from Supabase → Project Settings → Database → SSL
+configuration → Download certificate. The worker then removes `sslmode` from
+the URL and verifies the server against that CA only
+(`rejectUnauthorized: true`). Verification is never turned off. Without the
+secret the worker logs a warning.
+
+Check the downloaded file before saving it (should match the root observed on
+2026-09-28):
+
+```bash
+openssl x509 -in prod-ca-2021.crt -noout -subject -fingerprint -sha256
+# CN=Supabase Root 2021 CA
+# SHA256 Fingerprint=80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA
+```

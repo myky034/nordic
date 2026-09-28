@@ -45,7 +45,10 @@ async function main() {
   if (!url) throw new Error("EXTRACTOR_DATABASE_URL is not set (see docs/architecture/slice-10a-ai-extraction.md).");
   const trigger = (process.env.EXTRACTOR_TRIGGER as "schedule" | "manual" | "local") || "local";
   const maxDocuments = Number(process.env.EXTRACTOR_MAX_DOCUMENTS) || LIMITS.defaultDocuments;
-  const db = pgExtractorDb(url);
+  // Without the Supabase CA the connection is either unencrypted or fails
+  // verification; say so instead of failing silently later.
+  if (!process.env.DATABASE_CA_CERT) console.warn(JSON.stringify({ source: "extractor", operation: "connect", status: "warning", message: "DATABASE_CA_CERT not set: database TLS certificate is not verified against the Supabase CA" }));
+  const db = pgExtractorDb(url, process.env.DATABASE_CA_CERT);
   try { await runExtraction({ db, llm: llmFromEnv(), trigger, maxDocuments }); } finally { await db.close(); }
 }
 

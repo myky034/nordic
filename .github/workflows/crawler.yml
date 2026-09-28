@@ -16,6 +16,8 @@ jobs:
     timeout-minutes: 60
     env:
       CRAWLER_DATABASE_URL: ${{ secrets.CRAWLER_DATABASE_URL }}
+      # Supabase root CA (PEM) so TLS is verified; see docs/architecture/slice-09-crawler.md.
+      DATABASE_CA_CERT: ${{ secrets.DATABASE_CA_CERT }}
       # Optional repository variable; the bot falls back to the repository URL.
       CRAWLER_CONTACT_URL: ${{ vars.CRAWLER_CONTACT_URL }}
       CRAWLER_TRIGGER: ${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}

@@ -33,7 +33,10 @@ async function main() {
   const url = process.env.CRAWLER_DATABASE_URL;
   if (!url) throw new Error("CRAWLER_DATABASE_URL is not set (see docs/architecture/slice-09-crawler.md).");
   const trigger = (process.env.CRAWLER_TRIGGER as "schedule" | "manual" | "local") || "local";
-  const db = pgCrawlerDb(url);
+  // Without the Supabase CA the connection is either unencrypted or fails
+  // verification; say so instead of failing silently later.
+  if (!process.env.DATABASE_CA_CERT) console.warn(JSON.stringify({ source: "crawler", operation: "connect", status: "warning", message: "DATABASE_CA_CERT not set: database TLS certificate is not verified against the Supabase CA" }));
+  const db = pgCrawlerDb(url, process.env.DATABASE_CA_CERT);
   try { await runCrawl({ db, trigger, contactUrl }); } finally { await db.close(); }
 }
 

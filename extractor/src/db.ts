@@ -1,4 +1,5 @@
 import pg from "pg";
+import { workerPoolConfig } from "@nordic/db/pg-ssl";
 import type { Candidate } from "./validate";
 import type { Country, SourceDocument } from "./prompt";
 
@@ -16,8 +17,9 @@ export type ExtractorDb = {
   close(): Promise<void>;
 };
 
-export function pgExtractorDb(connectionString: string): ExtractorDb {
-  const pool = new pg.Pool({ connectionString, max: 1, connectionTimeoutMillis: 15_000, statement_timeout: 30_000 });
+export function pgExtractorDb(connectionString: string, caCert?: string | null): ExtractorDb {
+  const { connectionString: url, ssl } = workerPoolConfig(connectionString, caCert);
+  const pool = new pg.Pool({ connectionString: url, ssl, max: 1, connectionTimeoutMillis: 15_000, statement_timeout: 30_000 });
   return {
     startRun: async (t, p, m, v) => (await pool.query("SELECT extractor_start_run($1,$2,$3,$4) AS id", [t, p, m, v])).rows[0].id,
     countries: async () => (await pool.query("SELECT * FROM extractor_countries()")).rows,
