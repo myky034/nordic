@@ -1,13 +1,15 @@
 import { readFileSync } from "node:fs";
 import { LIMITS } from "./config";
 import { pgExtractorDb } from "./db";
-import { openAiCompatible } from "./llm";
+import { LlmError, openAiCompatible, RESPONSE_MODES } from "./llm";
 import { buildMessages, candidateSchema, truncateText } from "./prompt";
 import { runExtraction } from "./run";
 import { parseCandidates, precheck } from "./validate";
 
 // Entry point.
 //   npm run extract -w @nordic/extractor                       → process pending requests
+//   npm run check-llm -w @nordic/extractor                     → tiny request per response
+//       format; shows which ones the provider/model accepts (no database, no page text)
 //   npm run dry-run -w @nordic/extractor -- <text-file> [url]  → call the model on a local
 //       text file and print candidates with local checks (no database writes)
 const args = process.argv.slice(2);
@@ -36,7 +38,31 @@ async function dryRun(file: string, url = "file://local") {
   console.log(JSON.stringify({ candidates: candidates.length, truncated, tokens: { input: completion.inputTokens, output: completion.outputTokens } }));
 }
 
+async function checkLlm() {
+  const { LLM_BASE_URL, LLM_API_KEY, LLM_MODEL } = process.env;
+  if (!LLM_BASE_URL || !LLM_API_KEY || !LLM_MODEL) throw new Error("LLM_BASE_URL, LLM_API_KEY and LLM_MODEL must be set.");
+  const tiny = { type: "object", additionalProperties: false, required: ["ok"], properties: { ok: { type: "boolean" } } };
+  // Synthetic one-line page: tests the REAL extraction schema and prompt
+  // without sending any stored page text.
+  const sample = buildMessages({ title: "Synthetic check", url: "https://example.test/", source_name: "check", source_tier: null,
+    text: "Synthetic check page. The application fee is EUR 100." }, DRY_RUN_COUNTRIES);
+  const tests: [string, Parameters<ReturnType<typeof openAiCompatible>["complete"]>[0], object][] = [
+    ["tiny", [{ role: "user", content: 'Reply with the JSON object {"ok": true}.' }], tiny],
+    ["extraction", sample, candidateSchema],
+  ];
+  for (const [name, messages, schema] of tests) for (const mode of RESPONSE_MODES) {
+    const llm = openAiCompatible({ baseUrl: LLM_BASE_URL, apiKey: LLM_API_KEY, model: LLM_MODEL, modes: [mode] });
+    try {
+      const r = await llm.complete(messages, schema);
+      console.log(JSON.stringify({ test: name, mode, status: "ok", content: JSON.stringify(r.content).slice(0, 200) }));
+    } catch (e) {
+      console.log(JSON.stringify({ test: name, mode, status: "failed", category: e instanceof LlmError ? e.category : "error", message: e instanceof Error ? e.message : "unknown" }));
+    }
+  }
+}
+
 async function main() {
+  if (args[0] === "--check") return checkLlm();
   if (args[0] === "--dry-run") {
     if (!args[1]) throw new Error("usage: npm run dry-run -w @nordic/extractor -- <text-file> [url]");
     return dryRun(args[1], args[2]);

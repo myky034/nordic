@@ -34,11 +34,11 @@ export async function runExtraction(opts: RunOptions) {
           const r = await opts.db.propose(runId, doc.request_id, c);
           tally[r.outcome] = (tally[r.outcome] ?? 0) + 1;
         }
-        const note = [`${candidates.length} candidates`, ...Object.entries(tally).map(([k, n]) => `${k} ${n}`),
+        const note = [`${candidates.length} candidates`, completion.mode ? `mode ${completion.mode}` : "", ...Object.entries(tally).map(([k, n]) => `${k} ${n}`),
           dropped ? `${dropped} over the limit ignored` : "", truncated ? `text cut at ${LIMITS.maxChars} characters` : ""].filter(Boolean).join(", ");
         await opts.db.finishRequest(runId, doc.request_id, "done", note, completion.inputTokens, completion.outputTokens, truncated);
         log(JSON.stringify({ source: "extractor", operation: "document", request: doc.request_id, outcome: "done", tally, truncated,
-          tokens: { input: completion.inputTokens, output: completion.outputTokens } }));
+          mode: completion.mode, tokens: { input: completion.inputTokens, output: completion.outputTokens } }));
       } catch (error) {
         failed += 1;
         const category = error instanceof LlmError ? error.category : "worker_error";

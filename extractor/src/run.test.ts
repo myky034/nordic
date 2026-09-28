@@ -24,7 +24,7 @@ it("proposes every candidate, records a per-document summary and caps documents 
   const { db, calls, finished } = fakeDb([doc("r1")]);
   const llm: Llm = { provider: "p", model: "m", complete: async () => ({ content: { candidates: [candidate("a"), candidate("bad")] }, inputTokens: 1, outputTokens: 1 }) };
   await runExtraction({ db, llm, trigger: "manual", maxDocuments: 99, delayMs: 0, log: () => {} });
-  expect(calls[0]).toBe("start manual p m extract-v1");
+  expect(calls[0]).toBe("start manual p m extract-v2");
   expect(calls[1]).toBe("claim 10");
   expect(finished).toEqual([{ request: "r1", status: "done", note: "2 candidates, proposed 1, invalid 1" }]);
   expect(calls.at(-1)).toBe("finish succeeded null");
