@@ -29,7 +29,7 @@ export default async function DocumentsPage({ searchParams }: PageProps<"/docume
       : <List label="Documents">{rows.map((document) => <ListRow key={document.id} href={`/documents/${document.id}`}
           title={document.title ?? "Untitled document"}
           badges={<TierBadge tier={document.source.sourceTier} />}
-          subtitle={`${document.source.name} · Retrieved ${dateLabel(document.retrievedAt)} · Extraction not started`} />)}</List>}
+          subtitle={`${document.source.name} · Retrieved ${dateLabel(document.retrievedAt)}`} />)}</List>}
     <Pagination summary={pageSummary(total, page)} href={(p) => withParams("/documents", query, { page: p })} />
   </>;
 }

@@ -1,0 +1,23 @@
+{
+  "name": "@nordic/extractor",
+  "version": "0.0.0",
+  "private": true,
+  "description": "AI extraction worker (Slice 10a): turns editor-requested document texts into validated fact PROPOSALS through least-privilege SQL functions.",
+  "type": "module",
+  "dependencies": {
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.19.43",
+    "@types/pg": "^8.23.1",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.11"
+  },
+  "scripts": {
+    "extract": "tsx src/main.ts",
+    "dry-run": "tsx src/main.ts --dry-run",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit -p ."
+  }
+}

@@ -40,6 +40,7 @@ export default async function DashboardPage() {
   ].filter(Boolean) as [string, string, string][];
   const admin = [
     has("sources.manage") && ["/admin/sources", "Quản lý Source Registry", "Thêm, sửa, xác minh nguồn và bật/tắt crawl"],
+    has("facts.propose", "facts.review") && ["/admin/extraction", "Trích xuất AI", "Yêu cầu đang chờ, các lần chạy và lý do đề xuất bị loại"],
     has("crawler.manage") && ["/admin/crawler", "Crawler", "URL được crawl, lần chạy gần nhất và kết quả từng URL"],
     has("metrics.manage") && ["/admin/metrics", "Chỉ số so sánh", "Định nghĩa các chỉ số dùng trong bảng so sánh quốc gia"],
     has("roles.manage", "users.assign_roles") && ["/admin/access", "Người dùng & phân quyền", "Vai trò, quyền và nhật ký thay đổi"],

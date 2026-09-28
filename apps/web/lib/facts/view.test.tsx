@@ -12,3 +12,11 @@ it("keeps a fact whose source page changed visible, with a warning and a link to
  const html=renderToStaticMarkup(<FactCard fact={fact}/>);
  for(const value of ["Trang nguồn đã thay đổi từ 2026-09-25","/documents/newdoc","Test excerpt"]) expect(html).toContain(value);
 });
+it("labels AI proposals with the model and its self-reported confidence, and keeps the AI origin after review",()=>{
+ const base={id:"t",document_id:"doc",topic:"immigration",subject:"s",predicate:"p",value:"1",unit:null,valid_from:null,valid_until:null,reviewed_at:null,origin:"ai",ai_model:"synthetic-model",ai_confidence:"0.85",evidence:{source_url:"https://example.com/",excerpt:"e",retrieved_at:"2026-09-19T00:00:00Z"},documents:{title:null,sources:{name:"S",source_tier:"T1"}}};
+ const proposed=renderToStaticMarkup(<FactCard fact={{...base,status:"proposed"}}/>);
+ for(const v of ["Đề xuất bởi AI · synthetic-model","mô hình tự đánh giá 85%"]) expect(proposed).toContain(v);
+ const reviewed=renderToStaticMarkup(<FactCard fact={{...base,status:"reviewed"}}/>);
+ expect(reviewed).toContain("Trích bởi AI, đã qua người duyệt");
+ expect(reviewed).not.toContain("tự đánh giá");
+});

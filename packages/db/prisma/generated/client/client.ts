@@ -191,3 +191,23 @@ export type CrawlerRunItem = Prisma.CrawlerRunItemModel
  * 
  */
 export type DocumentText = Prisma.DocumentTextModel
+/**
+ * Model ExtractionSetting
+ * 
+ */
+export type ExtractionSetting = Prisma.ExtractionSettingModel
+/**
+ * Model ExtractionRun
+ * 
+ */
+export type ExtractionRun = Prisma.ExtractionRunModel
+/**
+ * Model ExtractionRequest
+ * 
+ */
+export type ExtractionRequest = Prisma.ExtractionRequestModel
+/**
+ * Model ExtractionItem
+ * 
+ */
+export type ExtractionItem = Prisma.ExtractionItemModel

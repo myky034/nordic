@@ -1,0 +1,50 @@
+# Slice 10a — AI extraction worker. Processes only documents an editor
+# requested (extraction_requests), at most EXTRACTOR_MAX_DOCUMENTS per run.
+# Output is PROPOSALS only; a reviewer decides in /facts/workspace.
+name: extractor
+on:
+  schedule:
+    - cron: "41 4 * * *" # daily 04:41 UTC; an empty queue finishes in seconds
+  workflow_dispatch: {}
+permissions:
+  contents: read
+concurrency:
+  group: extractor
+  cancel-in-progress: false
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      EXTRACTOR_DATABASE_URL: ${{ secrets.EXTRACTOR_DATABASE_URL }}
+      LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+      LLM_BASE_URL: ${{ vars.LLM_BASE_URL }}
+      LLM_MODEL: ${{ vars.LLM_MODEL }}
+      EXTRACTOR_MAX_DOCUMENTS: ${{ vars.EXTRACTOR_MAX_DOCUMENTS }}
+      EXTRACTOR_TRIGGER: ${{ github.event_name == 'schedule' && 'schedule' || 'manual' }}
+    steps:
+      # Exit quietly (not red) until the operator has configured everything.
+      - name: Check configuration
+        id: config
+        run: |
+          missing=""
+          for v in EXTRACTOR_DATABASE_URL LLM_API_KEY LLM_BASE_URL LLM_MODEL; do
+            if [ -z "${!v}" ]; then missing="$missing $v"; fi
+          done
+          if [ -n "$missing" ]; then
+            echo "Not configured:$missing; skipping extraction."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+      - if: steps.config.outputs.ready == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - if: steps.config.outputs.ready == 'true'
+        run: npm ci --workspace @nordic/extractor --include-workspace-root
+      - if: steps.config.outputs.ready == 'true'
+        run: npm run extract --workspace @nordic/extractor

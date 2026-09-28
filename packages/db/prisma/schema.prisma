@@ -128,6 +128,8 @@ model Document {
   crawlUrlStates CrawlUrlState[]
   crawlerRunItems CrawlerRunItem[]
   changedFacts Fact[] @relation("SourceChangedDocument")
+  extractionRequests ExtractionRequest[]
+  extractionItems ExtractionItem[]
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -220,6 +222,12 @@ model Fact {
   sourceChangedAt DateTime? @map("source_changed_at") @db.Timestamptz(6)
   sourceChangedDocumentId String? @map("source_changed_document_id") @db.Uuid
   sourceChangedDocument Document? @relation("SourceChangedDocument", fields: [sourceChangedDocumentId], references: [id], onDelete: SetNull)
+  // Slice 10a: 'ai' = created by the extraction worker (still only a proposal).
+  // ai_confidence is the model's self-reported hint, not a trust score.
+  origin String @default("manual")
+  aiModel String? @map("ai_model")
+  aiConfidence Decimal? @map("ai_confidence") @db.Decimal(3, 2)
+  extractionItems ExtractionItem[]
   evidence Evidence?
   reviews FactReview[] @relation("ReviewedFact")
   conflicts FactReview[] @relation("RelatedFact")
@@ -630,4 +638,76 @@ model DocumentText {
   extractedAt DateTime @default(now()) @map("extracted_at") @db.Timestamptz(6)
 
   @@map("document_texts")
+}
+
+// Slice 10a — AI extraction (migration 20260929090000_ai_extraction).
+// Written only through SQL functions; see docs/architecture/slice-10a-ai-extraction.md.
+model ExtractionSetting {
+  id        Boolean  @id @default(true)
+  aiUserId  String   @map("ai_user_id") @db.Uuid
+  updatedBy String   @map("updated_by") @db.Uuid
+  updatedAt DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+
+  @@map("extraction_settings")
+}
+
+model ExtractionRun {
+  id            String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  trigger       String
+  provider      String
+  model         String
+  promptVersion String    @map("prompt_version")
+  status        String    @default("running")
+  startedAt     DateTime  @default(now()) @map("started_at") @db.Timestamptz(6)
+  finishedAt    DateTime? @map("finished_at") @db.Timestamptz(6)
+  inputTokens   Int       @default(0) @map("input_tokens")
+  outputTokens  Int       @default(0) @map("output_tokens")
+  counts        Json?
+  note          String?
+  requests      ExtractionRequest[]
+  items         ExtractionItem[]
+
+  @@index([startedAt(sort: Desc)], map: "extraction_runs_started_idx")
+  @@map("extraction_runs")
+}
+
+model ExtractionRequest {
+  id           String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId   String    @map("document_id") @db.Uuid
+  document     Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  requestedBy  String    @map("requested_by") @db.Uuid
+  status       String    @default("pending")
+  runId        String?   @map("run_id") @db.Uuid
+  run          ExtractionRun? @relation(fields: [runId], references: [id], onDelete: SetNull)
+  note         String?
+  inputTokens  Int?      @map("input_tokens")
+  outputTokens Int?      @map("output_tokens")
+  truncated    Boolean   @default(false)
+  createdAt    DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  startedAt    DateTime? @map("started_at") @db.Timestamptz(6)
+  finishedAt   DateTime? @map("finished_at") @db.Timestamptz(6)
+  items        ExtractionItem[]
+
+  @@index([status, createdAt], map: "extraction_requests_status_idx")
+  @@map("extraction_requests")
+}
+
+model ExtractionItem {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  runId      String   @map("run_id") @db.Uuid
+  run        ExtractionRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+  requestId  String   @map("request_id") @db.Uuid
+  request    ExtractionRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  documentId String   @map("document_id") @db.Uuid
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  outcome    String
+  reason     String?
+  factId     String?  @map("fact_id") @db.Uuid
+  fact       Fact?    @relation(fields: [factId], references: [id], onDelete: SetNull)
+  candidate  Json
+  createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([requestId], map: "extraction_items_request_idx")
+  @@index([runId], map: "extraction_items_run_idx")
+  @@map("extraction_items")
 }

@@ -426,7 +426,11 @@ export const ModelName = {
   CrawlUrlState: 'CrawlUrlState',
   CrawlerRun: 'CrawlerRun',
   CrawlerRunItem: 'CrawlerRunItem',
-  DocumentText: 'DocumentText'
+  DocumentText: 'DocumentText',
+  ExtractionSetting: 'ExtractionSetting',
+  ExtractionRun: 'ExtractionRun',
+  ExtractionRequest: 'ExtractionRequest',
+  ExtractionItem: 'ExtractionItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -442,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2666,6 +2670,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ExtractionSetting: {
+      payload: Prisma.$ExtractionSettingPayload<ExtArgs>
+      fields: Prisma.ExtractionSettingFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractionSettingFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractionSettingFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractionSettingFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractionSettingFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractionSettingFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractionSettingCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractionSettingCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractionSettingCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractionSettingDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        update: {
+          args: Prisma.ExtractionSettingUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractionSettingDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractionSettingUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractionSettingUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractionSettingUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionSettingPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractionSettingAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractionSetting>
+        }
+        groupBy: {
+          args: Prisma.ExtractionSettingGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionSettingGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractionSettingCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionSettingCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExtractionRun: {
+      payload: Prisma.$ExtractionRunPayload<ExtArgs>
+      fields: Prisma.ExtractionRunFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractionRunFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractionRunFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractionRunFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractionRunFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractionRunFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractionRunCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractionRunCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractionRunCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractionRunDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        update: {
+          args: Prisma.ExtractionRunUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractionRunDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractionRunUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractionRunUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractionRunUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRunPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractionRunAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractionRun>
+        }
+        groupBy: {
+          args: Prisma.ExtractionRunGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionRunGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractionRunCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionRunCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExtractionRequest: {
+      payload: Prisma.$ExtractionRequestPayload<ExtArgs>
+      fields: Prisma.ExtractionRequestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractionRequestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractionRequestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractionRequestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractionRequestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractionRequestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractionRequestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractionRequestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractionRequestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractionRequestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        update: {
+          args: Prisma.ExtractionRequestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractionRequestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractionRequestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractionRequestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractionRequestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionRequestPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractionRequestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractionRequest>
+        }
+        groupBy: {
+          args: Prisma.ExtractionRequestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionRequestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractionRequestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionRequestCountAggregateOutputType> | number
+        }
+      }
+    }
+    ExtractionItem: {
+      payload: Prisma.$ExtractionItemPayload<ExtArgs>
+      fields: Prisma.ExtractionItemFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ExtractionItemFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ExtractionItemFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        findFirst: {
+          args: Prisma.ExtractionItemFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ExtractionItemFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        findMany: {
+          args: Prisma.ExtractionItemFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>[]
+        }
+        create: {
+          args: Prisma.ExtractionItemCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        createMany: {
+          args: Prisma.ExtractionItemCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ExtractionItemCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>[]
+        }
+        delete: {
+          args: Prisma.ExtractionItemDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        update: {
+          args: Prisma.ExtractionItemUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        deleteMany: {
+          args: Prisma.ExtractionItemDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ExtractionItemUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ExtractionItemUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>[]
+        }
+        upsert: {
+          args: Prisma.ExtractionItemUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ExtractionItemPayload>
+        }
+        aggregate: {
+          args: Prisma.ExtractionItemAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateExtractionItem>
+        }
+        groupBy: {
+          args: Prisma.ExtractionItemGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionItemGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ExtractionItemCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ExtractionItemCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2835,7 +3135,10 @@ export const FactScalarFieldEnum = {
   referencePeriod: 'referencePeriod',
   metricId: 'metricId',
   sourceChangedAt: 'sourceChangedAt',
-  sourceChangedDocumentId: 'sourceChangedDocumentId'
+  sourceChangedDocumentId: 'sourceChangedDocumentId',
+  origin: 'origin',
+  aiModel: 'aiModel',
+  aiConfidence: 'aiConfidence'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -3146,6 +3449,67 @@ export const DocumentTextScalarFieldEnum = {
 export type DocumentTextScalarFieldEnum = (typeof DocumentTextScalarFieldEnum)[keyof typeof DocumentTextScalarFieldEnum]
 
 
+export const ExtractionSettingScalarFieldEnum = {
+  id: 'id',
+  aiUserId: 'aiUserId',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExtractionSettingScalarFieldEnum = (typeof ExtractionSettingScalarFieldEnum)[keyof typeof ExtractionSettingScalarFieldEnum]
+
+
+export const ExtractionRunScalarFieldEnum = {
+  id: 'id',
+  trigger: 'trigger',
+  provider: 'provider',
+  model: 'model',
+  promptVersion: 'promptVersion',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  counts: 'counts',
+  note: 'note'
+} as const
+
+export type ExtractionRunScalarFieldEnum = (typeof ExtractionRunScalarFieldEnum)[keyof typeof ExtractionRunScalarFieldEnum]
+
+
+export const ExtractionRequestScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  requestedBy: 'requestedBy',
+  status: 'status',
+  runId: 'runId',
+  note: 'note',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  truncated: 'truncated',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt'
+} as const
+
+export type ExtractionRequestScalarFieldEnum = (typeof ExtractionRequestScalarFieldEnum)[keyof typeof ExtractionRequestScalarFieldEnum]
+
+
+export const ExtractionItemScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  requestId: 'requestId',
+  documentId: 'documentId',
+  outcome: 'outcome',
+  reason: 'reason',
+  factId: 'factId',
+  candidate: 'candidate',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtractionItemScalarFieldEnum = (typeof ExtractionItemScalarFieldEnum)[keyof typeof ExtractionItemScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3250,20 +3614,6 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
- * Reference to a field of type 'Int'
- */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
-    
-
-
-/**
- * Reference to a field of type 'Int[]'
- */
-export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
-    
-
-
-/**
  * Reference to a field of type 'Decimal'
  */
 export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal'>
@@ -3274,6 +3624,20 @@ export type DecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel,
  * Reference to a field of type 'Decimal[]'
  */
 export type ListDecimalFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Decimal[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Int'
+ */
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+    
+
+
+/**
+ * Reference to a field of type 'Int[]'
+ */
+export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
     
 
 
@@ -3471,6 +3835,10 @@ export type GlobalOmitConfig = {
   crawlerRun?: Prisma.CrawlerRunOmit
   crawlerRunItem?: Prisma.CrawlerRunItemOmit
   documentText?: Prisma.DocumentTextOmit
+  extractionSetting?: Prisma.ExtractionSettingOmit
+  extractionRun?: Prisma.ExtractionRunOmit
+  extractionRequest?: Prisma.ExtractionRequestOmit
+  extractionItem?: Prisma.ExtractionItemOmit
 }
 
 /* Types for Logging */

@@ -543,14 +543,6 @@ export type UserPlanScalarRelationFilter = {
   isNot?: Prisma.UserPlanWhereInput
 }
 
-export type NullableDecimalFieldUpdateOperationsInput = {
-  set?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
-  increment?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  decrement?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  multiply?: runtime.Decimal | runtime.DecimalJsLike | number | string
-  divide?: runtime.Decimal | runtime.DecimalJsLike | number | string
-}
-
 export type UserPlanCreateNestedOneWithoutCountriesInput = {
   create?: Prisma.XOR<Prisma.UserPlanCreateWithoutCountriesInput, Prisma.UserPlanUncheckedCreateWithoutCountriesInput>
   connectOrCreate?: Prisma.UserPlanCreateOrConnectWithoutCountriesInput

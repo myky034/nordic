@@ -356,6 +356,11 @@ Use an LLM only for:
 
 AI is not the authority for government/legal facts.
 
+> Update 2026-09-28 (Slice 10a): the LLM is called through any
+> OpenAI-compatible endpoint configured by `LLM_BASE_URL` / `LLM_MODEL` /
+> `LLM_API_KEY`; the first provider is Google Gemini (free tier). It runs in a
+> separate `extractor/` worker, not in the Next.js app.
+
 ### Repository
 
 - Git
@@ -839,6 +844,14 @@ AI cannot:
 
 For high-impact claims:
 AI output must be linked to retrieved evidence.
+
+> Update 2026-09-28 (Slice 10a — see Section 21): implemented as candidate
+> fact extraction only. The model's output is checked in the database
+> (`extractor_propose`): the excerpt must occur verbatim in the stored page
+> text and every number in the value must occur in the excerpt. Accepted
+> candidates are `proposed` facts with `origin = 'ai'`; a human reviews every
+> one. The model's self-reported confidence is shown as a hint, never as a
+> trust score.
 
 ---
 
@@ -1333,3 +1346,47 @@ Comparison (Section 2.10):
   automatically; no AI is involved (Slice 10).
 - Details: `docs/architecture/slice-09-crawler.md`,
   `docs/learning/slice-09-crawler.md`, `crawler/README.md`.
+
+### 2026-09-28 — Slice 10a AI extraction of candidate facts (recommendations accepted)
+
+- **Order**: AI extraction first; embeddings / semantic search / RAG (spec
+  Slice 10 "pgvector/RAG") deferred to Slice 10b so that retrieval later works
+  on reviewed facts.
+- **Provider**: any OpenAI-compatible Chat Completions endpoint; first provider
+  Google Gemini free tier (model id in the `LLM_MODEL` variable). Only public
+  page text from `document_texts` is sent; on the free tier the provider may use
+  inputs to improve its products, so no user data, notes or workspaces are ever
+  sent.
+- **Runtime**: separate `extractor/` worker in GitHub Actions (daily + manual),
+  connecting as a login role that is a member of `nordic_extractor_ops` only (no
+  table privileges; EXECUTE on six `extractor_*` functions). No LLM key or
+  extractor credential in Vercel.
+- **Scope**: only documents an editor explicitly requests
+  (`extraction_requests`, permission `facts.propose`, one open request per
+  document, cancellable).
+- **Limits**: 5 documents per run by default (max 10), text cut at 50 000
+  characters on a line break, at most 30 proposals per document, retries with
+  Retry-After on 429/5xx.
+- **Validation in the database**, first failure recorded as the reason: topic
+  from a fixed list (`extraction_topics()`), required lengths, excerpt 20–500
+  characters and verbatim in the page (NFC, case, whitespace and digit
+  separators normalised), known country slug, ISO dates that exist, reference
+  period format, every number in value/unit and the year of any date or period
+  present in the excerpt, no duplicate (same document, subject, predicate,
+  value), cap of 30.
+- **Language**: subject/predicate in English (as existing facts); value and
+  excerpt in the page's own language.
+- **Links**: AI sets only the country. Universities, programmes, rules,
+  occupations and metrics are linked by a reviewer.
+- **Attribution**: facts get `origin = 'ai'`, `ai_model`, `ai_confidence`
+  (self-reported, labelled "mô hình tự đánh giá"); created by the account set
+  in `/admin/extraction` (`roles.manage`), which must hold `facts.propose` and
+  must not hold `facts.review`. The AI origin stays visible after review.
+- **Audit**: `extraction_runs` (provider host, model, prompt version, tokens),
+  `extraction_items` (every candidate, outcome, reason, raw JSON), visible to
+  editors in `/admin/extraction`.
+- The static "Extraction not started" label on document pages was removed
+  (`documents.extraction_status` stays `not_started` by constraint; extraction
+  state lives in `extraction_requests`).
+- Details: `docs/architecture/slice-10a-ai-extraction.md`,
+  `docs/learning/slice-10a-ai-extraction.md`, `extractor/README.md`.

@@ -80,7 +80,11 @@ export const ModelName = {
   CrawlUrlState: 'CrawlUrlState',
   CrawlerRun: 'CrawlerRun',
   CrawlerRunItem: 'CrawlerRunItem',
-  DocumentText: 'DocumentText'
+  DocumentText: 'DocumentText',
+  ExtractionSetting: 'ExtractionSetting',
+  ExtractionRun: 'ExtractionRun',
+  ExtractionRequest: 'ExtractionRequest',
+  ExtractionItem: 'ExtractionItem'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -229,7 +233,10 @@ export const FactScalarFieldEnum = {
   referencePeriod: 'referencePeriod',
   metricId: 'metricId',
   sourceChangedAt: 'sourceChangedAt',
-  sourceChangedDocumentId: 'sourceChangedDocumentId'
+  sourceChangedDocumentId: 'sourceChangedDocumentId',
+  origin: 'origin',
+  aiModel: 'aiModel',
+  aiConfidence: 'aiConfidence'
 } as const
 
 export type FactScalarFieldEnum = (typeof FactScalarFieldEnum)[keyof typeof FactScalarFieldEnum]
@@ -538,6 +545,67 @@ export const DocumentTextScalarFieldEnum = {
 } as const
 
 export type DocumentTextScalarFieldEnum = (typeof DocumentTextScalarFieldEnum)[keyof typeof DocumentTextScalarFieldEnum]
+
+
+export const ExtractionSettingScalarFieldEnum = {
+  id: 'id',
+  aiUserId: 'aiUserId',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ExtractionSettingScalarFieldEnum = (typeof ExtractionSettingScalarFieldEnum)[keyof typeof ExtractionSettingScalarFieldEnum]
+
+
+export const ExtractionRunScalarFieldEnum = {
+  id: 'id',
+  trigger: 'trigger',
+  provider: 'provider',
+  model: 'model',
+  promptVersion: 'promptVersion',
+  status: 'status',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  counts: 'counts',
+  note: 'note'
+} as const
+
+export type ExtractionRunScalarFieldEnum = (typeof ExtractionRunScalarFieldEnum)[keyof typeof ExtractionRunScalarFieldEnum]
+
+
+export const ExtractionRequestScalarFieldEnum = {
+  id: 'id',
+  documentId: 'documentId',
+  requestedBy: 'requestedBy',
+  status: 'status',
+  runId: 'runId',
+  note: 'note',
+  inputTokens: 'inputTokens',
+  outputTokens: 'outputTokens',
+  truncated: 'truncated',
+  createdAt: 'createdAt',
+  startedAt: 'startedAt',
+  finishedAt: 'finishedAt'
+} as const
+
+export type ExtractionRequestScalarFieldEnum = (typeof ExtractionRequestScalarFieldEnum)[keyof typeof ExtractionRequestScalarFieldEnum]
+
+
+export const ExtractionItemScalarFieldEnum = {
+  id: 'id',
+  runId: 'runId',
+  requestId: 'requestId',
+  documentId: 'documentId',
+  outcome: 'outcome',
+  reason: 'reason',
+  factId: 'factId',
+  candidate: 'candidate',
+  createdAt: 'createdAt'
+} as const
+
+export type ExtractionItemScalarFieldEnum = (typeof ExtractionItemScalarFieldEnum)[keyof typeof ExtractionItemScalarFieldEnum]
 
 
 export const SortOrder = {

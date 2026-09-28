@@ -5,7 +5,8 @@
   "workspaces": [
     "apps/*",
     "packages/*",
-    "crawler"
+    "crawler",
+    "extractor"
   ],
   "scripts": {
     "dev": "npm run dev -w @nordic/web",

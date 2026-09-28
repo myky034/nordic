@@ -5,13 +5,14 @@ import { statuses, validity } from "./domain";
 import { deadlineLabel } from "../education/domain";
 import { isOfficialTier } from "../immigration/domain";
 import { isOfficialStatisticsTier } from "../labour/domain";
+import { confidenceLabel } from "../extraction/domain";
 export type FactRow = {
  id:string; document_id:string; topic:string; subject:string; predicate:string; value:string;
- unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
+ unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
  evidence:{source_url:string;excerpt:string;retrieved_at:string};
  documents:{title:string|null;sources:{name:string;source_tier:string|null}};
 };
-export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier))";
+export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier))";
 const day=(value:string|null)=>value?new Date(value).toISOString().slice(0,10):"chưa có";
 // One claim = one card: the value is the headline, status and source are
 // badges, the supporting excerpt is quoted, dates sit in a quiet meta grid.
@@ -22,6 +23,8 @@ export function FactCard({fact}:{fact:FactRow}) {
      <p className="text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-3">{fact.topic}</p>
      <ReviewBadge status={fact.status}>{statuses[fact.status]}</ReviewBadge>
    </div>
+   {/* Slice 10a: AI origin stays visible after review (transparency, AGENTS.md 15). */}
+   {fact.origin==="ai"&&<p className="mt-2 flex flex-wrap gap-2"><Badge tone="accent">{fact.status==="proposed"?"Đề xuất bởi AI":"Trích bởi AI, đã qua người duyệt"}{fact.ai_model?` · ${fact.ai_model}`:""}</Badge>{fact.status==="proposed"&&confidenceLabel(fact.ai_confidence)&&<Badge>{confidenceLabel(fact.ai_confidence)}</Badge>}</p>}
    <h3 className="mt-2 text-[17px] font-medium leading-snug text-ink-2">{fact.subject} — {fact.predicate}</h3>
    <p className="mt-1 whitespace-pre-wrap break-words text-[22px] font-semibold leading-snug tracking-[-0.01em] text-ink">{fact.value}{fact.unit ? " "+fact.unit : ""}</p>
    {(deadlineLabel(fact.deadline_type)||fact.reference_period||fact.comparison_metrics)&&<p className="mt-2 flex flex-wrap gap-2">{fact.comparison_metrics&&<Badge>Chỉ số: {fact.comparison_metrics.label}</Badge>}{deadlineLabel(fact.deadline_type)&&<Badge>Loại deadline: {deadlineLabel(fact.deadline_type)}</Badge>}{fact.reference_period&&<Badge tone="accent">Kỳ số liệu: {fact.reference_period}</Badge>}</p>}

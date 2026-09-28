@@ -19,6 +19,7 @@ vi.mock("@/lib/documents/queries", () => ({
 }));
 // The internal-text section reads Supabase with the viewer's session; it has its own test.
 vi.mock("./[id]/internal-text", () => ({ InternalText: () => null }));
+vi.mock("./[id]/extraction-panel", () => ({ ExtractionPanel: () => null }));
 import DocumentsPage from "./page";
 import DocumentPage from "./[id]/page";
 it("renders an honest empty state instead of fictional documents", async () => {
@@ -62,7 +63,7 @@ it("renders escaped excerpts, attribution, unknown dates and unverified status",
   for (const text of [
     "Not available",
     "Claims not verified",
-    "Extraction not started",
+    "Metadata stored",
     "Synthetic source",
     'href="https://example.com/document"',
   ])
