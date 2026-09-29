@@ -9,6 +9,9 @@ import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination
 import { ReviewBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
 import { VisibilityNote } from "@/components/review/visibility-note";
+import { ReviewSteps } from "@/components/review/review-steps";
+import { DecisionHistory } from "@/components/review/decision-history";
+import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { programmeBlockers, visibilityOf } from "@/lib/review/visibility";
 
@@ -21,7 +24,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   await requireAuth();
   const { client, permissions } = await accessContext();
   const manage = permissions.includes("education.manage"), review = permissions.includes("facts.review");
-  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập giáo dục" back="/programmes" backLabel="Xem chương trình công khai">Nhờ quản trị viên cấp education.manage (đề xuất) hoặc facts.review (duyệt) tại Người dùng & phân quyền.</NoAccess>;
+  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập giáo dục" back="/programmes" backLabel="Xem chương trình công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("education.manage")}” để đề xuất, hoặc “${permissionName("facts.review")}” để duyệt, ở trang Người dùng & phân quyền.`}</NoAccess>;
   const params = await searchParams;
   const kind = choiceParam(params, "kind", kinds.map(([v]) => v), "university");
   const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
@@ -40,7 +43,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
     list.order("created_at", { ascending: false }).range(from, to),
     client.from("documents").select("id,title,canonical_url").order("created_at", { ascending: false }).limit(100),
     client.from("countries").select("id,name").order("name"),
-    client.from("education_reviews").select("id,university_id,programme_id,decision,note,created_at").order("created_at", { ascending: false }).limit(20),
+    client.from("education_reviews").select("id,university_id,decision,note,created_at,universities(name),programmes(name)").order("created_at", { ascending: false }).limit(20),
     client.from("universities").select("id,name,countries(name)").neq("status", "rejected").order("name").limit(300),
     ...tabs.map(([s]) => client.from(table).select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
@@ -49,15 +52,16 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   const rows = (results[0].data ?? []) as unknown as Row[];
   const documents = (results[1].data as { id: string; title: string | null; canonical_url: string }[]).map((d) => ({ id: d.id, label: d.title ?? d.canonical_url }));
   const countries = (results[2].data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }));
-  const reviews = results[3].data as { id: string; university_id: string | null; programme_id: string | null; decision: string; note: string; created_at: string }[];
+  const reviews = results[3].data as unknown as { id: string; university_id: string | null; decision: string; note: string; created_at: string; universities: { name: string } | null; programmes: { name: string } | null }[];
   const liveUniversities = (results[4].data as unknown as { id: string; name: string; countries: { name: string } }[]).map((u) => ({ id: u.id, label: `${u.name} · ${u.countries.name}` }));
   const tabCounts = results.slice(5).map((r) => r.count ?? 0);
   const visible = status === "reviewed" ? await publicIds(table, rows.map((r) => r.id)) : new Set<string>();
   const base = { kind: kind === "university" ? null : kind };
   return <>
     <PageHeader eyebrow="Workspace" title="Trường & chương trình"
-      description="Chỉ nhập mục có trong tài liệu nguồn. Duyệt ở đây xác nhận bằng chứng tồn tại, không xác nhận học phí, deadline hay hiệu lực hiện tại."
+      description="Duyệt ở đây chỉ xác nhận trường hoặc chương trình có tồn tại theo nguồn. Học phí và hạn nộp là thông tin riêng, được duyệt ở “Thông tin & bằng chứng”. Một chương trình chỉ hiển thị công khai khi trường của nó đã được duyệt."
       actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập học phí / deadline</Link></>} />
+    {review && <ReviewSteps client={client} permissions={permissions} current="education" />}
     {manage && <div className="space-y-3">
       <Disclosure summary="Đề xuất trường đại học"><UniversityForm countries={countries} documents={documents} /></Disclosure>
       <Disclosure summary="Đề xuất chương trình học"><ProgrammeForm universities={liveUniversities} documents={documents} /></Disclosure>
@@ -90,12 +94,8 @@ export default async function Page({ searchParams }: PageProps<"/education/works
       <Pagination summary={pageSummary(results[0].count ?? rows.length, page)} href={(p) => withParams("/education/workspace", params, { page: p })} />
     </Section>
     <Section>
-      <Disclosure summary="20 quyết định gần nhất">
-        {reviews.length ? <List>{reviews.map((r) => <ListRow key={r.id} title={r.decision}
-          meta={new Date(r.created_at).toISOString().replace("T", " ").slice(0, 16)} subtitle={r.note}>
-          <p className="break-all text-[13px] text-ink-3">{r.university_id ? `Trường: ${r.university_id}` : `Chương trình: ${r.programme_id}`}</p>
-        </ListRow>)}</List> : <EmptyState>Chưa có quyết định nào.</EmptyState>}
-      </Disclosure>
+      <DecisionHistory items={reviews.map((r) => ({ id: r.id, decision: r.decision, note: r.note, createdAt: r.created_at,
+        title: (r.university_id ? r.universities?.name : r.programmes?.name) ?? "Mục không còn truy cập được", detail: r.university_id ? "Trường" : "Chương trình" }))} />
     </Section>
   </>;
 }

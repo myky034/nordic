@@ -5,12 +5,16 @@ import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
 import { VisibilityNote } from "@/components/review/visibility-note";
+import { ReviewSteps } from "@/components/review/review-steps";
+import { DecisionHistory } from "@/components/review/decision-history";
+import { factName } from "@/lib/review/history";
+import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { factBlockers, visibilityOf } from "@/lib/review/visibility";
 import { uuidPattern } from "@/lib/documents/domain";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
-import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, SearchInput, Section, Segmented } from "@/components/ui";
+import { Disclosure, EmptyState, NoAccess, PageHeader, Pagination, SearchInput, Section, Segmented } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 
 // "source_changed" is not a status: it is the Slice 9 queue of published
@@ -22,7 +26,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  await requireAuth();
  const {client,permissions}=await accessContext();
  const propose=permissions.includes("facts.propose"), review=permissions.includes("facts.review");
- if(!propose&&!review) return <NoAccess title="Bạn chưa có quyền biên tập thông tin" back="/facts" backLabel="Xem thông tin công khai">Nhờ quản trị viên cấp facts.propose hoặc facts.review tại Người dùng & phân quyền.</NoAccess>;
+ if(!propose&&!review) return <NoAccess title="Bạn chưa có quyền biên tập thông tin" back="/facts" backLabel="Xem thông tin công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("facts.propose")}” hoặc “${permissionName("facts.review")}” ở trang Người dùng & phân quyền.`}</NoAccess>;
  const params=await searchParams;
  const selected=typeof params.document==="string" && uuidPattern.test(params.document)?params.document:"";
  // Review queue first: the default tab is "proposed", one status per page of 25.
@@ -38,7 +42,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  list.order("created_at",{ascending:false}).range(from,to),
  client.from("documents").select("id,title").order("created_at",{ascending:false}).limit(100),
  client.from("countries").select("id,name").order("name"),
- client.from("fact_reviews").select("id,fact_id,decision,note,created_at,related_fact_id").order("created_at",{ascending:false}).limit(20),
+ // Two foreign keys point at facts, so each embed names its constraint.
+ client.from("fact_reviews").select("id,decision,note,created_at,fact:facts!fact_reviews_fact_id_fkey(subject,predicate),related:facts!fact_reviews_related_fact_id_fkey(subject,predicate)").order("created_at",{ascending:false}).limit(20),
  // Slice 5/6a: draft or reviewed (never rejected) entities a fact can describe.
  client.from("programmes").select("id,name,universities!programmes_university_id_fkey(name)").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
  client.from("universities").select("id,name").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
@@ -53,7 +58,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  if(results.some(r=>r.error)){logAccessError("facts_workspace");throw new Error("Không tải được dữ liệu biên tập.");}
  const facts=(results[0].data ?? []) as unknown as FactRow[];
  const documents=results[1].data as {id:string;title:string|null}[];
- const reviews=results[3].data as {id:string;fact_id:string;decision:string;note:string;created_at:string;related_fact_id:string|null}[];
+ type Named={subject:string;predicate:string}|null;
+ const reviews=results[3].data as unknown as {id:string;decision:string;note:string;created_at:string;fact:Named;related:Named}[];
  const entities=[
    ...(results[4].data as unknown as {id:string;name:string;universities:{name:string}}[]).map(p=>({value:`programme:${p.id}`,label:`Chương trình: ${p.name} · ${p.universities.name}`})),
    ...(results[5].data as {id:string;name:string}[]).map(u=>({value:`university:${u.id}`,label:`Trường: ${u.name}`})),
@@ -89,7 +95,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
  }));
  return <>
- <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Nhập thủ công từ nguồn. Duyệt bằng chứng không đồng nghĩa xác minh hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
+ <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
+ {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
  {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}
  <Section title="Đề xuất">
@@ -107,11 +114,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  <Pagination summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p})}/>
  </Section>
  <Section>
- <Disclosure summary="20 quyết định gần nhất">
- {reviews.length?<List>{reviews.map(r=><ListRow key={r.id} title={r.decision} meta={new Date(r.created_at).toISOString().replace("T"," ").slice(0,16)} subtitle={r.note}>
-   <p className="break-all text-[13px] text-ink-3">Thông tin: {r.fact_id}{r.related_fact_id&&<><br/>Mâu thuẫn với: {r.related_fact_id}</>}</p>
- </ListRow>)}</List>:<EmptyState>Chưa có quyết định nào.</EmptyState>}
- </Disclosure>
+ <DecisionHistory items={reviews.map(r=>({id:r.id,decision:r.decision,note:r.note,createdAt:r.created_at,title:factName(r.fact),
+   detail:r.related?`Mâu thuẫn với: ${factName(r.related)}`:undefined}))}/>
  </Section>
  </>;
 }

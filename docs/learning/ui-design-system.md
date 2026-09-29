@@ -334,6 +334,57 @@ vì hiện "chưa biết · chưa biết".
 ### Còn lại
 
 - User Guide (`documents/User_Guide.docx`) vẫn mô tả form cũ ("Duyệt đề xuất
-  này", "Ghi nhận quyết định"); sẽ cập nhật sau đợt 2, khi nhãn trên màn hình ổn
-  định.
+  này", "Ghi nhận quyết định"); cập nhật sau đợt 2 (xem mục đợt 2 bên dưới).
 - Chưa thử trên database thật với tài khoản duyệt (trang workspace cần đăng nhập).
+
+## Cập nhật 2026-09-29 — Đợt 2: hướng dẫn cho người duyệt
+
+### Đã xây dựng
+
+- **"Quy trình duyệt"** (`components/review/review-steps.tsx`) ở đầu 4 trang
+  workspace, chỉ hiện với người có quyền duyệt: ba bước đánh số
+  (1 Xác minh nguồn → 2 Duyệt mục gốc → 3 Duyệt thông tin chi tiết), mỗi mục có số
+  việc đang chờ, bước hiện tại được tô xanh (`aria-current="page"`). Mục người dùng
+  không có quyền mở vẫn hiện, kèm "Người quản lý nguồn thực hiện".
+- **Lịch sử quyết định dễ đọc** (`components/review/decision-history.tsx`): tên
+  mục (thay vì UUID), nhãn "Đã duyệt / Đã từ chối / Đánh dấu mâu thuẫn / Vẫn khớp
+  nguồn mới" (thay vì `reviewed`…), thời gian ghi rõ UTC; với mâu thuẫn, ghi cả
+  thông tin đối chiếu.
+- **Câu chữ**: mô tả đầu 4 trang viết lại theo "mục này dùng để làm gì, khi nào
+  công khai"; thông báo thiếu quyền dùng tên dễ hiểu kèm mã
+  ("Duyệt đề xuất (facts.review)") — `lib/rbac/labels.ts`.
+
+### Vì sao thiết kế như vậy
+
+- Thứ tự làm việc quyết định việc công khai (nguồn → mục gốc → thông tin gắn
+  kèm). Trước đây thứ tự này không có trên màn hình. Nó được định nghĩa một chỗ
+  (`lib/review/steps.ts`), không nằm trong component (AGENTS.md 16).
+- Số đếm đi qua client của người dùng, nên RLS giới hạn mọi con số — cùng quy tắc
+  với `/dashboard`. Đếm lỗi thì hiện "—", không hiện 0 (AGENTS.md 13).
+- Mã quyền vẫn được giữ trong ngoặc vì quản trị viên cần tìm đúng mã đó ở trang
+  phân quyền (trang đó sẽ được Việt hóa ở đợt 4).
+
+### Khái niệm Next.js / Supabase
+
+- **Async Server Component**: `ReviewSteps` tự `await` các truy vấn đếm rồi render.
+  Phần hiển thị tách thành `ReviewStepsView` (đồng bộ, không truy cập dữ liệu) để
+  `/dev/preview` và test dùng được — `renderToStaticMarkup` không render được
+  component async lồng bên trong.
+- **Embed có hai khóa ngoại tới cùng bảng**: `fact_reviews` có `fact_id` và
+  `related_fact_id` cùng trỏ tới `facts`, nên PostgREST cần tên constraint:
+  `fact:facts!fact_reviews_fact_id_fkey(subject,predicate)`. `fact:` là alias để
+  đặt tên trường trong kết quả.
+
+### Kiểm thử
+
+- `lib/review/steps.test.ts`: thứ tự bước, mục không có quyền, nhãn quyết định,
+  thời gian có UTC, tên quyền kèm mã.
+- `components/review/review.test.tsx`: lịch sử không hiện mã thô; quy trình hiện
+  đúng số đếm, đánh dấu bước hiện tại, đếm lỗi hiện "—" và không có link khi thiếu
+  quyền.
+- Xem bằng mắt: `/dev/preview?section=workspace`.
+
+### Còn lại
+
+- User Guide chưa cập nhật theo đợt 1–2.
+- Chưa thử với database thật và tài khoản duyệt.

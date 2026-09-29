@@ -10,6 +10,9 @@ import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination
 import { ReviewBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
 import { VisibilityNote } from "@/components/review/visibility-note";
+import { ReviewSteps } from "@/components/review/review-steps";
+import { DecisionHistory } from "@/components/review/decision-history";
+import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { visibilityOf } from "@/lib/review/visibility";
 
@@ -20,7 +23,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
   await requireAuth();
   const { client, permissions } = await accessContext();
   const manage = permissions.includes("labour.manage"), review = permissions.includes("facts.review");
-  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập thị trường lao động" back="/occupations" backLabel="Xem trang công khai">Nhờ quản trị viên cấp labour.manage (đề xuất) hoặc facts.review (duyệt) tại Người dùng & phân quyền.</NoAccess>;
+  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập thị trường lao động" back="/occupations" backLabel="Xem trang công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("labour.manage")}” để đề xuất, hoặc “${permissionName("facts.review")}” để duyệt, ở trang Người dùng & phân quyền.`}</NoAccess>;
   const params = await searchParams;
   const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
   const q = searchParam(params);
@@ -32,7 +35,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
     list.order("created_at", { ascending: false }).range(from, to),
     client.from("documents").select("id,title,canonical_url").order("created_at", { ascending: false }).limit(100),
     client.from("countries").select("id,name").order("name"),
-    client.from("occupation_reviews").select("id,occupation_id,decision,note,created_at").order("created_at", { ascending: false }).limit(20),
+    client.from("occupation_reviews").select("id,decision,note,created_at,occupations(name)").order("created_at", { ascending: false }).limit(20),
     ...tabs.map(([s]) => client.from("occupations").select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/labour/workspace", params, { page: null }));
@@ -40,15 +43,16 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
   const rows = (results[0].data ?? []) as unknown as Row[];
   const documents = (results[1].data as { id: string; title: string | null; canonical_url: string }[]).map((d) => ({ id: d.id, label: d.title ?? d.canonical_url }));
   const countries = (results[2].data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }));
-  const reviews = results[3].data as { id: string; occupation_id: string; decision: string; note: string; created_at: string }[];
+  const reviews = results[3].data as unknown as { id: string; decision: string; note: string; created_at: string; occupations: { name: string } | null }[];
   const tabCounts = results.slice(4).map((r) => r.count ?? 0);
   // occupations_public needs only the review itself, so there are no blockers
   // to explain; the check still comes from the database, not from the status.
   const visible = status === "reviewed" ? await publicIds("occupations", rows.map((r) => r.id)) : new Set<string>();
   return <>
     <PageHeader eyebrow="Workspace" title="Thị trường lao động"
-      description="Nghề chỉ lưu thông tin nhận diện. Số liệu (lương, nhu cầu…) là thông tin có bằng chứng, bắt buộc có quốc gia và kỳ số liệu; chỉ hiển thị khi nguồn đã được xác minh."
+      description="Ở đây chỉ lưu tên và mã phân loại của nghề. Số liệu như lương hay nhu cầu tuyển dụng được nhập và duyệt ở “Thông tin & bằng chứng”, và chỉ hiển thị công khai khi nguồn của số liệu đã được xác minh."
       actions={<><Link className={`${textLink} text-[15px]`} href="/occupations">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập số liệu</Link></>} />
+    {review && <ReviewSteps client={client} permissions={permissions} current="labour" />}
     {manage && <Disclosure summary="Đề xuất nghề"><OccupationForm countries={countries} documents={documents} /></Disclosure>}
     <Section title="Danh sách">
       <Segmented label="Trạng thái" items={tabs.map(([value, label], i) => ({ href: withParams("/labour/workspace", { q }, { status: value === "proposed" ? null : value }), label, count: tabCounts[i], active: status === value }))} />
@@ -66,12 +70,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
       <Pagination summary={pageSummary(results[0].count ?? rows.length, page)} href={(p) => withParams("/labour/workspace", params, { page: p })} />
     </Section>
     <Section>
-      <Disclosure summary="20 quyết định gần nhất">
-        {reviews.length ? <List>{reviews.map((r) => <ListRow key={r.id} title={r.decision}
-          meta={new Date(r.created_at).toISOString().replace("T", " ").slice(0, 16)} subtitle={r.note}>
-          <p className="break-all text-[13px] text-ink-3">Nghề: {r.occupation_id}</p>
-        </ListRow>)}</List> : <EmptyState>Chưa có quyết định nào.</EmptyState>}
-      </Disclosure>
+      <DecisionHistory items={reviews.map((r) => ({ id: r.id, title: r.occupations?.name ?? "Nghề không còn truy cập được", decision: r.decision, note: r.note, createdAt: r.created_at }))} />
     </Section>
   </>;
 }

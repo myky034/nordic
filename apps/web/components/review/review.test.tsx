@@ -32,3 +32,22 @@ it("never claims a record is public when the check failed", () => {
   expect(html).toContain("Không kiểm tra được");
   expect(html).not.toContain("Đang hiển thị công khai");
 });
+
+it("lists decisions by item name with a plain label, not a code or an id", async () => {
+  const { DecisionHistory } = await import("./decision-history");
+  const html = renderToStaticMarkup(<DecisionHistory items={[{ id: "r1", title: "Synthetic rule", decision: "rejected", note: "Excerpt not on the page", createdAt: "2026-09-29T10:20:00Z", detail: "Trường" }]} />);
+  for (const text of ["Synthetic rule", "Đã từ chối", "Excerpt not on the page", "2026-09-29 10:20 UTC · Trường"]) expect(html).toContain(text);
+  expect(html).not.toContain(">rejected<");
+});
+
+it("shows the three review steps with counts, marks the current one, and never shows a failed count as zero", async () => {
+  const { ReviewSteps } = await import("./review-steps");
+  // Fake client: every table has 2 pending rows except sources, whose count fails.
+  const client = { from: (table: string) => ({ select: () => ({ eq: () => Promise.resolve(table === "sources" ? { count: null, error: new Error("x") } : { count: 2, error: null }) }) }) };
+  const errors = console.error; console.error = () => {};
+  try {
+    const html = renderToStaticMarkup(await ReviewSteps({ client: client as never, permissions: ["facts.review"], current: "immigration" }));
+    for (const text of ["Xác minh nguồn", "Duyệt mục gốc", "Duyệt thông tin chi tiết", "4 chờ", "2 chờ", "—", "Người quản lý nguồn thực hiện", 'aria-current="page"']) expect(html).toContain(text);
+    expect(html).not.toContain('href="/admin/sources"');
+  } finally { console.error = errors; }
+});

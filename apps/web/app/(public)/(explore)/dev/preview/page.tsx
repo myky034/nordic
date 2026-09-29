@@ -29,6 +29,11 @@ import { itemOutcomes, requestStatuses } from "@/lib/extraction/domain";
 import { counters, dashboardGroups } from "@/lib/dashboard/items";
 import { CounterTile, TileLink } from "@/app/(app)/dashboard/tiles";
 import { ReviewFields } from "@/components/review/review-panel";
+import { ReviewStepsView } from "@/components/review/review-steps";
+import { DecisionHistory } from "@/components/review/decision-history";
+
+// DEMO pending counts for the review steps; null shows how a failed count looks ("—").
+const demoStepCounts = { sourcesUnverified: null, education: 12, immigration: 3, labour: 0, facts: 16 };
 import { VisibilityNote } from "@/components/review/visibility-note";
 import { entityStatuses } from "@/lib/education/domain";
 import type { Visibility } from "@/lib/review/visibility";
@@ -111,6 +116,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
     </Section>}
 
     {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
+      <ReviewStepsView counts={demoStepCounts} permissions={["facts.review"]} current="education" />
       <Segmented label="DEMO status" items={[["proposed", "Chờ duyệt", 12], ["reviewed", "Đã duyệt", 48], ["rejected", "Từ chối", 3]].map(([v, l, n]) => ({ href: `/dev/preview?tab=${v}#workspace`, label: l as string, count: n as number, active: tab === v }))} />
       <List>{demoVisibility(tab).map(([title, visibility], i) => <ListRow key={i} title={title}
         badges={<ReviewBadge status={tab}>{entityStatuses[tab] ?? tab}</ReviewBadge>} subtitle="Sweden · https://demo.example.test/university">
@@ -122,6 +128,11 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
             </fieldset>}</div>
         </Disclosure>
       </ListRow>)}</List>
+      <div className="mt-6"><DecisionHistory summary="Lịch sử quyết định (DEMO)" items={[
+        { id: "h1", title: "DEMO University C", decision: "reviewed", note: "DEMO: khớp nguyên văn trang gốc.", createdAt: "2026-01-15T09:30:00Z", detail: "Trường" },
+        { id: "h2", title: "DEMO University F", decision: "rejected", note: "DEMO: trích đoạn không có trên trang.", createdAt: "2026-01-14T16:05:00Z", detail: "Trường" },
+        { id: "h3", title: "DEMO fact — tuition", decision: "conflicted", note: "DEMO: hai nguồn nêu hai mức khác nhau.", createdAt: "2026-01-13T08:00:00Z", detail: "Mâu thuẫn với: DEMO fact — tuition (T2)" },
+      ]} /></div>
     </Section>}
 
     {show("personal") && <Section title="Personal workspace" description="Save button, projects, saved items, notes and plan shortcuts (inert DEMO copies)." className="scroll-mt-24"><span id="personal" />

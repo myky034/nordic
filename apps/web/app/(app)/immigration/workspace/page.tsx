@@ -10,6 +10,9 @@ import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination
 import { ReviewBadge, SourceStatusBadge, TierBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
 import { VisibilityNote } from "@/components/review/visibility-note";
+import { ReviewSteps } from "@/components/review/review-steps";
+import { DecisionHistory } from "@/components/review/decision-history";
+import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { ruleBlockers, visibilityOf } from "@/lib/review/visibility";
 
@@ -21,7 +24,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
   await requireAuth();
   const { client, permissions } = await accessContext();
   const manage = permissions.includes("immigration.manage"), review = permissions.includes("facts.review");
-  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập nhập cư" back="/immigration" backLabel="Xem trang công khai">Nhờ quản trị viên cấp immigration.manage (đề xuất) hoặc facts.review (duyệt) tại Người dùng & phân quyền.</NoAccess>;
+  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập nhập cư" back="/immigration" backLabel="Xem trang công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("immigration.manage")}” để đề xuất, hoặc “${permissionName("facts.review")}” để duyệt, ở trang Người dùng & phân quyền.`}</NoAccess>;
   const params = await searchParams;
   const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
   const q = searchParam(params);
@@ -34,7 +37,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
     // Only T1 documents can prove a rule; filtering here just saves a failed attempt.
     client.from("documents").select("id,title,canonical_url,sources!inner(name,source_tier)").eq("sources.source_tier", "T1").order("created_at", { ascending: false }).limit(100),
     client.from("countries").select("id,name").order("name"),
-    client.from("immigration_rule_reviews").select("id,immigration_rule_id,decision,note,created_at").order("created_at", { ascending: false }).limit(20),
+    client.from("immigration_rule_reviews").select("id,decision,note,created_at,immigration_rules(title)").order("created_at", { ascending: false }).limit(20),
     ...tabs.map(([s]) => client.from("immigration_rules").select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/immigration/workspace", params, { page: null }));
@@ -43,14 +46,15 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
   const documents = (results[1].data as unknown as { id: string; title: string | null; canonical_url: string; sources: { name: string } }[])
     .map((d) => ({ id: d.id, label: `${d.title ?? d.canonical_url} · ${d.sources.name}` }));
   const countries = (results[2].data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }));
-  const reviews = results[3].data as { id: string; immigration_rule_id: string; decision: string; note: string; created_at: string }[];
+  const reviews = results[3].data as unknown as { id: string; decision: string; note: string; created_at: string; immigration_rules: { title: string } | null }[];
   const tabCounts = results.slice(4).map((r) => r.count ?? 0);
   // Only reviewed rules can be public; ask the database (as anon) which are.
   const visible = status === "reviewed" ? await publicIds("immigration_rules", rules.map((r) => r.id)) : new Set<string>();
   return <>
     <PageHeader eyebrow="Workspace" title="Quy định nhập cư"
-      description="Chỉ nhập quy định có trên trang của cơ quan chính phủ (nguồn T1). Công chúng chỉ thấy quy định đã duyệt VÀ nguồn T1 đã được xác minh trong Source Registry."
+      description="Mỗi quy định phải có trên trang của một cơ quan nhà nước (nguồn T1). Quy định chỉ hiển thị công khai khi đã được duyệt và nguồn T1 đó đã được xác minh."
       actions={<><Link className={`${textLink} text-[15px]`} href="/immigration">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập điều kiện</Link><Link className={`${textLink} text-[15px]`} href="/admin/sources">Xác minh nguồn</Link></>} />
+    {review && <ReviewSteps client={client} permissions={permissions} current="immigration" />}
     {manage && <Disclosure summary="Đề xuất quy định nhập cư"><RuleForm countries={countries} documents={documents} /></Disclosure>}
     <Section title="Danh sách">
       <Segmented label="Trạng thái" items={tabs.map(([value, label], i) => ({ href: withParams("/immigration/workspace", { q }, { status: value === "proposed" ? null : value }), label, count: tabCounts[i], active: status === value }))} />
@@ -70,12 +74,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
       <Pagination summary={pageSummary(results[0].count ?? rules.length, page)} href={(p) => withParams("/immigration/workspace", params, { page: p })} />
     </Section>
     <Section>
-      <Disclosure summary="20 quyết định gần nhất">
-        {reviews.length ? <List>{reviews.map((r) => <ListRow key={r.id} title={r.decision}
-          meta={new Date(r.created_at).toISOString().replace("T", " ").slice(0, 16)} subtitle={r.note}>
-          <p className="break-all text-[13px] text-ink-3">Quy định: {r.immigration_rule_id}</p>
-        </ListRow>)}</List> : <EmptyState>Chưa có quyết định nào.</EmptyState>}
-      </Disclosure>
+      <DecisionHistory items={reviews.map((r) => ({ id: r.id, title: r.immigration_rules?.title ?? "Quy định không còn truy cập được", decision: r.decision, note: r.note, createdAt: r.created_at }))} />
     </Section>
   </>;
 }
