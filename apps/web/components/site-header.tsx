@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { NavLinks } from "./nav-links";
+import { MobileMenu, NavLinks } from "./nav-links";
 
 // One global navigation bar for public and signed-in pages. A light
 // translucent surface with backdrop blur, used only here (spec: blur sparingly).
@@ -10,14 +10,15 @@ function SearchLink() {
 }
 
 export function SiteHeader({ right }: { right?: React.ReactNode }) {
+  // One row at every width: logo, grouped navigation (md+), then search,
+  // account and — below 1024px (lg) — the Menu button. lg, not a tablet width,
+  // because signed-in pages show two account buttons and the bar must never
+  // truncate labels. The sticky header anchors the full-width group panels.
   return <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/80 backdrop-blur-xl backdrop-saturate-150">
-    <div className="mx-auto flex max-w-6xl flex-col gap-2 px-5 py-3 sm:flex-row sm:items-center sm:gap-6 sm:px-8">
-      <div className="flex items-center justify-between gap-4">
-        <Link href="/" className="text-[15px] font-semibold tracking-[0.18em] text-ink">NORDIC</Link>
-        <div className="flex items-center gap-1 sm:hidden"><SearchLink />{right}</div>
-      </div>
+    <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-5 sm:px-8">
+      <Link href="/" className="text-[15px] font-semibold tracking-[0.18em] text-ink">NORDIC</Link>
       <div className="min-w-0 flex-1"><NavLinks /></div>
-      <div className="hidden items-center gap-1 sm:flex"><SearchLink />{right}</div>
+      <div className="flex items-center gap-1"><SearchLink />{right}<MobileMenu /></div>
     </div>
   </header>;
 }
