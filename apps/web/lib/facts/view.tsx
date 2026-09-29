@@ -10,9 +10,9 @@ export type FactRow = {
  id:string; document_id:string; topic:string; subject:string; predicate:string; value:string;
  unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
  evidence:{source_url:string;excerpt:string;retrieved_at:string};
- documents:{title:string|null;sources:{name:string;source_tier:string|null}};
+ documents:{title:string|null;sources:{name:string;source_tier:string|null;status?:string}};
 };
-export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier))";
+export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier,status))";
 const day=(value:string|null)=>value?new Date(value).toISOString().slice(0,10):"chưa có";
 // One claim = one card: the value is the headline, status and source are
 // badges, the supporting excerpt is quoted, dates sit in a quiet meta grid.

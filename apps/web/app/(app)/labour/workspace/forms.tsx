@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { proposeOccupation, reviewOccupation } from "./actions";
 import { classificationSystems } from "@/lib/labour/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
+import { ReviewPanel } from "@/components/review/review-panel";
 import { buttonPrimary, control } from "@/components/ui/styles";
 type Option = { id: string; label: string };
 export function OccupationForm({ countries, documents }: { countries: Option[]; documents: Option[] }) {
@@ -23,12 +24,9 @@ export function OccupationForm({ countries, documents }: { countries: Option[]; 
   </form></Card>;
 }
 export function OccupationReviewForm({ id }: { id: string }) {
-  const [state, action, pending] = useActionState(reviewOccupation, {});
-  return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
-    <input type="hidden" name="id" value={id} />
-    <Field label="Quyết định"><select name="decision" className={control}><option value="reviewed">Đã kiểm tra bằng chứng</option><option value="rejected">Không chấp nhận</option></select></Field>
-    <Field label="Lý do / ghi chú kiểm tra"><textarea name="note" required maxLength={1000} rows={2} className={control} /></Field>
-    <FormMessage error={state.error} message={state.message} />
-    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : "Ghi nhận quyết định"}</button>
-  </form>;
+  return <ReviewPanel action={reviewOccupation} hidden={{ id }} checks={[
+    "Trích đoạn có nguyên văn trên trang gốc và nêu đúng tên nghề này.",
+    "Mã phân loại (nếu có) khớp đúng với mã trên trang, không tự suy ra.",
+    "Phạm vi quốc gia đúng với nguồn.",
+  ]} />;
 }

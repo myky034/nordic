@@ -6,6 +6,10 @@ export const buttonPrimary =
   "inline-flex items-center justify-center gap-2 rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-accent-hover active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40";
 export const buttonSecondary =
   "inline-flex items-center justify-center gap-2 rounded-full bg-fill px-5 py-2.5 text-[15px] font-medium text-ink transition hover:bg-fill-strong active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40";
+// Apple HIG "destructive" style: red label on the neutral fill, never a solid
+// red button, so it reads as a choice rather than an alarm.
+export const buttonDestructive =
+  "inline-flex items-center justify-center gap-2 rounded-full bg-fill px-5 py-2.5 text-[15px] font-medium text-critical transition hover:bg-critical/10 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-40";
 export const buttonSmall =
   "inline-flex items-center justify-center rounded-full bg-fill px-3.5 py-1.5 text-sm font-medium text-ink transition hover:bg-fill-strong disabled:opacity-40";
 export const textLink = "text-accent underline-offset-4 hover:underline";

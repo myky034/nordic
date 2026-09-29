@@ -243,3 +243,97 @@ lưu), **trích đoạn** (excerpt), **đề xuất** (proposal), **duyệt** (r
 Mỗi giá trị chỉ xuất hiện một lần dưới nhãn của nó (trước đây nhãn bị lặp, ví
 dụ "Nguồn — Nguồn: …"). Ô hiệu lực nói rõ khi nguồn không nêu thời hạn, thay
 vì hiện "chưa biết · chưa biết".
+
+## Cập nhật 2026-09-29 — Đợt 1: form duyệt và trạng thái công khai
+
+### Đã xây dựng
+
+- **`ReviewPanel`** (`components/review/review-panel.tsx`): một form duyệt dùng
+  chung cho 4 workspace (thông tin, trường/chương trình, nhập cư, nghề). Gồm danh
+  sách việc cần đối chiếu, ô ghi chú bắt buộc, và **hai nút "Duyệt" / "Từ chối"**.
+- **`VisibilityNote`** (`components/review/visibility-note.tsx`): dưới mỗi mục ở
+  workspace, cho biết mục đó **đang công khai**, **đã duyệt nhưng chưa công khai
+  (kèm lý do)**, hay (với đề xuất) **sau khi duyệt có công khai không**.
+- **`ConflictForm`** (workspace thông tin): tách riêng việc đánh dấu mâu thuẫn,
+  chỉ hiện với thông tin đã duyệt; danh sách chọn hiện "đối tượng — thuộc tính:
+  giá trị" thay vì 8 ký tự đầu của ID.
+- Ở tab "Chờ duyệt", bằng chứng và form duyệt **mở sẵn**, không phải bấm thêm.
+- Nút kiểu "destructive" (`buttonDestructive`): chữ đỏ trên nền xám, theo Apple HIG.
+
+### Vì sao thiết kế như vậy
+
+- **Ô "Quyết định" cũ mặc định là "Đã kiểm tra bằng chứng"**: chỉ cần gõ ghi chú
+  rồi bấm lưu là đã duyệt. AGENTS.md 1.3 yêu cầu một người *chủ động* quyết định,
+  nên giờ không có lựa chọn nào được chọn sẵn.
+- **Duyệt xong mà không thấy công khai là điều khó hiểu nhất với người mới.** Quy
+  tắc công khai nằm trong RLS (ví dụ quy định nhập cư cần nguồn T1 *đã xác minh*),
+  người duyệt không thấy được. Giờ màn hình nói rõ lý do và dẫn tới chỗ sửa.
+- Form cũ cho chọn "Đánh dấu mâu thuẫn" với đề xuất chưa duyệt, nhưng database
+  luôn từ chối lựa chọn đó (quy tắc 2026-09-23). Lựa chọn không bao giờ thành công
+  thì không nên xuất hiện.
+
+### Luồng hoạt động: "mục này có công khai không?"
+
+1. Trang workspace tải danh sách bằng client của người dùng (thấy cả bản nháp).
+2. `publicIds(table, ids)` (`lib/review/public-check.ts`) hỏi lại **bằng client ẩn
+   danh** (`anon`): "trong các id này, id nào người chưa đăng nhập đọc được?".
+   RLS trả lời, nên đây là câu trả lời thật, không phải đoán.
+3. Nếu một mục đã duyệt không có trong kết quả, `factBlockers` / `ruleBlockers` /
+   `programmeBlockers` (`lib/review/visibility.ts`) giải thích lý do bằng lời.
+4. `visibilityOf` gộp hai thông tin trên thành một trạng thái; `VisibilityNote`
+   hiển thị. Nếu bước 2 lỗi thì hiện "Không kiểm tra được", **không bao giờ** đoán
+   là đang công khai (AGENTS.md 13).
+
+### Khái niệm Next.js / React
+
+- **Nhiều nút submit trong một form action**: `<button name="decision"
+  value="reviewed">`. React 19 đưa `name/value` của nút được bấm vào `FormData`
+  truyền cho server action, nên không cần state phía client. Server action vẫn
+  kiểm tra giá trị (không tin dữ liệu từ trình duyệt).
+- **Tách phần hiển thị khỏi hook**: `ReviewFields` không dùng `useActionState`,
+  nên trang `/dev/preview` (Server Component) render được bản "khóa" để xem giao
+  diện mà không cần server action.
+
+### Khái niệm TypeScript
+
+- `Visibility` là **discriminated union** (`state: "public" | "hidden" | …`):
+  `switch (visibility.state)` trong `VisibilityNote` buộc xử lý đủ mọi trường hợp,
+  và chỉ trạng thái `hidden` / `will_stay_hidden` mới có `blockers`.
+
+### Bảo mật
+
+- Client ẩn danh chỉ dùng publishable key (vốn công khai) và chỉ `select("id")`.
+- Logic giải thích **không quyết định** gì: chỉ database (RLS) quyết định công khai.
+  Vì vậy nếu code giải thích bị lệch so với policy, hậu quả chỉ là lời giải thích
+  mơ hồ hơn, không bao giờ là nhãn "đang công khai" sai.
+
+### Lỗi thường gặp
+
+- Sửa policy `*_public` trong migration mà quên sửa `lib/review/visibility.ts`:
+  test `visibility.database.test.ts` sẽ fail, vì nó dựng mọi tổ hợp trạng thái
+  trong PGlite và so sánh với kết quả thật của `anon`.
+- Viết test so khớp chuỗi thuộc tính HTML theo thứ tự: React có thể sắp xếp thuộc
+  tính khác đi. Hãy kiểm tra từng thuộc tính riêng.
+
+### Kiểm thử
+
+- `lib/review/visibility.test.ts`: các quy tắc giải thích.
+- `lib/review/visibility.database.test.ts`: đối chiếu với RLS thật (PGlite, mọi
+  migration, dữ liệu giả).
+- `components/review/review.test.tsx`: có hai nút submit, không có `<select>`,
+  ghi chú bắt buộc; không bao giờ nói "đang công khai" khi kiểm tra lỗi.
+- Xem bằng mắt: `/dev/preview?section=workspace` (tab Chờ duyệt / Đã duyệt / Từ chối).
+
+### Thứ tự đọc code
+
+`lib/review/visibility.ts` → `lib/review/public-check.ts` →
+`components/review/visibility-note.tsx` → `components/review/review-panel.tsx` →
+`app/(app)/immigration/workspace/page.tsx` (ví dụ gọn nhất) →
+`app/(app)/facts/workspace/page.tsx` (có liên kết quy định/nghề).
+
+### Còn lại
+
+- User Guide (`documents/User_Guide.docx`) vẫn mô tả form cũ ("Duyệt đề xuất
+  này", "Ghi nhận quyết định"); sẽ cập nhật sau đợt 2, khi nhãn trên màn hình ổn
+  định.
+- Chưa thử trên database thật với tài khoản duyệt (trang workspace cần đăng nhập).

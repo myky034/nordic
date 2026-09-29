@@ -9,6 +9,9 @@ import { OccupationForm, OccupationReviewForm } from "./forms";
 import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, Quote, SearchInput, Section, Segmented } from "@/components/ui";
 import { ReviewBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
+import { VisibilityNote } from "@/components/review/visibility-note";
+import { publicIds } from "@/lib/review/public-check";
+import { visibilityOf } from "@/lib/review/visibility";
 
 type Row = { id: string; name: string; status: string; classification_system: string | null; classification_code: string | null; evidence_excerpt: string; document_id: string; countries: { name: string } | null };
 const tabs = [["proposed", "Chờ duyệt"], ["reviewed", "Đã duyệt"], ["rejected", "Từ chối"]] as const;
@@ -39,6 +42,9 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
   const countries = (results[2].data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }));
   const reviews = results[3].data as { id: string; occupation_id: string; decision: string; note: string; created_at: string }[];
   const tabCounts = results.slice(4).map((r) => r.count ?? 0);
+  // occupations_public needs only the review itself, so there are no blockers
+  // to explain; the check still comes from the database, not from the status.
+  const visible = status === "reviewed" ? await publicIds("occupations", rows.map((r) => r.id)) : new Set<string>();
   return <>
     <PageHeader eyebrow="Workspace" title="Thị trường lao động"
       description="Nghề chỉ lưu thông tin nhận diện. Số liệu (lương, nhu cầu…) là thông tin có bằng chứng, bắt buộc có quốc gia và kỳ số liệu; chỉ hiển thị khi nguồn đã được xác minh."
@@ -50,7 +56,8 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
       {rows.length ? <List>{rows.map((r) => <ListRow key={r.id} title={r.name}
         badges={<ReviewBadge status={r.status}>{entityStatuses[r.status]}</ReviewBadge>}
         subtitle={`${r.countries?.name ?? "Quốc tế"} · ${classificationLabel(r.classification_system, r.classification_code)}`}>
-        <Disclosure small summary={review && r.status === "proposed" ? "Bằng chứng & duyệt" : "Bằng chứng"}>
+        <div className="mb-2"><VisibilityNote visibility={visibilityOf(r.id, r.status, visible, [])} publicHref={`/occupations/${r.id}`} /></div>
+        <Disclosure small open={review && r.status === "proposed"} summary={review && r.status === "proposed" ? "Bằng chứng và quyết định" : "Bằng chứng"}>
           <div className="space-y-3"><Quote>{r.evidence_excerpt}</Quote>
             <Link className={`${textLink} text-[15px]`} href={`/documents/${r.document_id}`}>Tài liệu bằng chứng</Link>
             {review && r.status === "proposed" && <OccupationReviewForm id={r.id} />}</div>

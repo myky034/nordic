@@ -9,6 +9,9 @@ import { RuleForm, RuleReviewForm } from "./forms";
 import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, Quote, SearchInput, Section, Segmented } from "@/components/ui";
 import { ReviewBadge, SourceStatusBadge, TierBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
+import { VisibilityNote } from "@/components/review/visibility-note";
+import { publicIds } from "@/lib/review/public-check";
+import { ruleBlockers, visibilityOf } from "@/lib/review/visibility";
 
 type Source = { name: string; source_tier: string | null; status: string };
 type RuleRow = { id: string; title: string; rule_type: string; status: string; official_url: string; evidence_excerpt: string; document_id: string; countries: { name: string }; documents: { sources: Source } };
@@ -42,6 +45,8 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
   const countries = (results[2].data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }));
   const reviews = results[3].data as { id: string; immigration_rule_id: string; decision: string; note: string; created_at: string }[];
   const tabCounts = results.slice(4).map((r) => r.count ?? 0);
+  // Only reviewed rules can be public; ask the database (as anon) which are.
+  const visible = status === "reviewed" ? await publicIds("immigration_rules", rules.map((r) => r.id)) : new Set<string>();
   return <>
     <PageHeader eyebrow="Workspace" title="Quy định nhập cư"
       description="Chỉ nhập quy định có trên trang của cơ quan chính phủ (nguồn T1). Công chúng chỉ thấy quy định đã duyệt VÀ nguồn T1 đã được xác minh trong Source Registry."
@@ -51,9 +56,11 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
       <Segmented label="Trạng thái" items={tabs.map(([value, label], i) => ({ href: withParams("/immigration/workspace", { q }, { status: value === "proposed" ? null : value }), label, count: tabCounts[i], active: status === value }))} />
       <form action="/immigration/workspace" className="mb-5">{status !== "proposed" && <input type="hidden" name="status" value={status} />}<SearchInput defaultValue={q} placeholder="Tìm tên quy định" /></form>
       {rules.length ? <List>{rules.map((r) => <ListRow key={r.id} title={r.title}
-        badges={<><ReviewBadge status={r.status}>{entityStatuses[r.status]}</ReviewBadge><TierBadge tier={r.documents.sources.source_tier} /><SourceStatusBadge status={r.documents.sources.status}>{r.documents.sources.status === "verified" ? "Nguồn đã xác minh" : "Nguồn CHƯA xác minh — sẽ không hiển thị công khai"}</SourceStatusBadge></>}
+        badges={<><ReviewBadge status={r.status}>{entityStatuses[r.status]}</ReviewBadge><TierBadge tier={r.documents.sources.source_tier} /><SourceStatusBadge status={r.documents.sources.status}>{r.documents.sources.status === "verified" ? "Nguồn đã xác minh" : "Nguồn chưa xác minh"}</SourceStatusBadge></>}
         subtitle={`${ruleTypeLabel(r.rule_type)} · ${r.countries.name} · ${r.documents.sources.name}`}>
-        <Disclosure small summary={review && r.status === "proposed" ? "Bằng chứng & duyệt" : "Bằng chứng"}>
+        <div className="mb-2"><VisibilityNote visibility={visibilityOf(r.id, r.status, visible, ruleBlockers({ source: r.documents.sources }))} publicHref={`/immigration/${r.id}`} /></div>
+        {/* Open in the review queue: the evidence and the decision are the work. */}
+        <Disclosure small open={review && r.status === "proposed"} summary={review && r.status === "proposed" ? "Bằng chứng và quyết định" : "Bằng chứng"}>
           <div className="space-y-3"><Quote>{r.evidence_excerpt}</Quote>
             <p className="break-all text-[13px] text-ink-3">{r.official_url}</p>
             <Link className={`${textLink} text-[15px]`} href={`/documents/${r.document_id}`}>Tài liệu bằng chứng</Link>

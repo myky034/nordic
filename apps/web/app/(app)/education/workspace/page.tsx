@@ -8,6 +8,9 @@ import { EducationReviewForm, ProgrammeForm, UniversityForm } from "./forms";
 import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, Quote, SearchInput, Section, Segmented } from "@/components/ui";
 import { ReviewBadge } from "@/components/ui/badges";
 import { textLink } from "@/components/ui/styles";
+import { VisibilityNote } from "@/components/review/visibility-note";
+import { publicIds } from "@/lib/review/public-check";
+import { programmeBlockers, visibilityOf } from "@/lib/review/visibility";
 
 type Row = { id: string; name: string; status: string; official_url: string; evidence_excerpt: string; document_id: string;
   countries?: { name: string }; degree_type?: string; universities?: { name: string; status: string } };
@@ -49,6 +52,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   const reviews = results[3].data as { id: string; university_id: string | null; programme_id: string | null; decision: string; note: string; created_at: string }[];
   const liveUniversities = (results[4].data as unknown as { id: string; name: string; countries: { name: string } }[]).map((u) => ({ id: u.id, label: `${u.name} · ${u.countries.name}` }));
   const tabCounts = results.slice(5).map((r) => r.count ?? 0);
+  const visible = status === "reviewed" ? await publicIds(table, rows.map((r) => r.id)) : new Set<string>();
   const base = { kind: kind === "university" ? null : kind };
   return <>
     <PageHeader eyebrow="Workspace" title="Trường & chương trình"
@@ -72,7 +76,9 @@ export default async function Page({ searchParams }: PageProps<"/education/works
         return <ListRow key={r.id} title={r.name}
           badges={<ReviewBadge status={r.status}>{entityStatuses[r.status]}</ReviewBadge>}
           subtitle={kind === "university" ? `${r.countries?.name} · ${r.official_url}` : `${degreeLabel(r.degree_type ?? "")} · ${r.universities?.name} · ${r.official_url}`}>
-          <Disclosure small summary={review && r.status === "proposed" ? "Bằng chứng & duyệt" : "Bằng chứng"}>
+          <div className="mb-2"><VisibilityNote visibility={visibilityOf(r.id, r.status, visible, kind === "programme" ? programmeBlockers({ universityStatus: r.universities?.status }) : [])}
+            publicHref={`/${kind === "university" ? "universities" : "programmes"}/${r.id}`} /></div>
+          <Disclosure small open={review && r.status === "proposed"} summary={review && r.status === "proposed" ? "Bằng chứng và quyết định" : "Bằng chứng"}>
             <div className="space-y-3"><Quote>{r.evidence_excerpt}</Quote>
               <Link className={`${textLink} text-[15px]`} href={`/documents/${r.document_id}`}>Tài liệu bằng chứng</Link>
               {review && r.status === "proposed" && (blocked

@@ -3,7 +3,10 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
-import { ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
+import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
+import { VisibilityNote } from "@/components/review/visibility-note";
+import { publicIds } from "@/lib/review/public-check";
+import { factBlockers, visibilityOf } from "@/lib/review/visibility";
 import { uuidPattern } from "@/lib/documents/domain";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
@@ -43,7 +46,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  client.from("occupations").select("id,name,countries(name)").neq("status","rejected").order("name").limit(200),
  client.from("comparison_metrics").select("id,label,unit_hint").eq("active",true).order("label"),
  // Only reviewed/conflicted claims can be paired as a conflict (2026-09-23 fix).
- client.from("facts").select("id,subject").in("status",["reviewed","conflicted"]).order("created_at",{ascending:false}).limit(200),
+ client.from("facts").select("id,subject,predicate,value").in("status",["reviewed","conflicted"]).order("created_at",{ascending:false}).limit(200),
  ...counts,
  ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/facts/workspace", params, { page: null }));
@@ -58,7 +61,9 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    ...(results[7].data as unknown as {id:string;name:string;countries:{name:string}|null}[]).map(o=>({value:`occupation:${o.id}`,label:`Nghề: ${o.name} · ${o.countries?.name ?? "Quốc tế"}`})),
  ];
  const metrics=results[8].data as {id:string;label:string;unit_hint:string|null}[];
- const conflictCandidates=results[9].data as {id:string;subject:string}[];
+ // Readable choices: "subject — predicate: value", not an id prefix.
+ const conflictCandidates=(results[9].data as {id:string;subject:string;predicate:string;value:string}[])
+   .map(c=>({id:c.id,label:`${c.subject} — ${c.predicate}: ${c.value.length>60?c.value.slice(0,60)+"…":c.value}`}));
  const tabCounts=results.slice(10).map(r=>r.count ?? 0);
  // A document deep-link must remain usable even when it is outside the recent list.
  if(selected&&!documents.some(d=>d.id===selected)){
@@ -66,6 +71,23 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    if(extra.error){logAccessError("facts_selected_document");throw new Error("Không tải được tài liệu đã chọn.");}
    if(extra.data) documents.unshift(extra.data);
  }
+ // Visibility: the database answers "is it public?" (anon client); linked
+ // rules/occupations are loaded only to explain a "no" (lib/review/visibility.ts).
+ const ruleIds=[...new Set(facts.flatMap(f=>f.immigration_rule_id?[f.immigration_rule_id]:[]))];
+ const occupationIds=[...new Set(facts.flatMap(f=>f.occupation_id?[f.occupation_id]:[]))];
+ const [linkedRules,linkedOccupations,visible]=await Promise.all([
+   ruleIds.length?client.from("immigration_rules").select("id,status,documents!immigration_rules_document_id_fkey(sources(status,source_tier))").in("id",ruleIds):Promise.resolve({data:[],error:null}),
+   occupationIds.length?client.from("occupations").select("id,status").in("id",occupationIds):Promise.resolve({data:[],error:null}),
+   facts.some(f=>f.status==="reviewed"||f.status==="conflicted")?publicIds("facts",facts.map(f=>f.id)):Promise.resolve(new Set<string>()),
+ ]);
+ if(linkedRules.error||linkedOccupations.error){logAccessError("facts_workspace_links");throw new Error("Không tải được dữ liệu biên tập.");}
+ const rules=new Map((linkedRules.data as unknown as {id:string;status:string;documents:{sources:{status:string;source_tier:string|null}}}[]).map(r=>[r.id,{status:r.status,source:r.documents.sources}]));
+ const occupations=new Map((linkedOccupations.data as {id:string;status:string}[]).map(o=>[o.id,o]));
+ const visibility=(f:FactRow)=>visibilityOf(f.id,f.status,visible,factBlockers({
+   source:{status:f.documents.sources.status ?? "",source_tier:f.documents.sources.source_tier},
+   rule:f.immigration_rule_id?rules.get(f.immigration_rule_id) ?? {status:"",source:{status:"",source_tier:null}}:null,
+   occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
+ }));
  return <>
  <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Nhập thủ công từ nguồn. Duyệt bằng chứng không đồng nghĩa xác minh hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
@@ -73,7 +95,14 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  <Section title="Đề xuất">
  <Segmented label="Lọc theo trạng thái" items={tabs.map(([value,label],i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label,count:tabCounts[i],active:status===value}))}/>
  <form action="/facts/workspace" className="mb-5">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
- {facts.length?<div className="space-y-4">{facts.map(f=><div key={f.id} className="space-y-2"><FactCard fact={f}/>{review&&f.source_changed_at&&<div className="px-1"><Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm id={f.id}/></Disclosure></div>}{review&&status!=="source_changed"&&f.status!=="rejected"&&(f.status==="proposed"||conflictCandidates.length>1)&&<div className="px-1"><Disclosure small summary={f.status==="proposed"?"Duyệt đề xuất này":"Đánh dấu mâu thuẫn"}><ReviewForm id={f.id} status={f.status} others={conflictCandidates}/></Disclosure></div>}</div>)}</div>
+ {facts.length?<div className="space-y-6">{facts.map(f=><div key={f.id} className="space-y-3"><FactCard fact={f}/>
+   <div className="space-y-3 px-1">
+   <VisibilityNote visibility={visibility(f)} publicHref="/facts"/>
+   {/* The decision sits right under the claim in the review queue: no extra click to find it. */}
+   {review&&f.status==="proposed"&&<ReviewForm id={f.id} ai={f.origin==="ai"}/>}
+   {review&&f.source_changed_at&&<Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm id={f.id}/></Disclosure>}
+   {review&&status!=="source_changed"&&(f.status==="reviewed"||f.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary="Đánh dấu mâu thuẫn với thông tin khác"><ConflictForm id={f.id} others={conflictCandidates}/></Disclosure>}
+   </div></div>)}</div>
   :<EmptyState>{status==="proposed"?"Không có đề xuất nào đang chờ duyệt.":status==="source_changed"?"Không có thông tin nào có nguồn vừa thay đổi.":"Không có mục nào trong nhóm này."}{q?` (tìm “${q}”)`:""}</EmptyState>}
  <Pagination summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p})}/>
  </Section>

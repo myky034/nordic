@@ -22,12 +22,25 @@ import {
   Quote, SearchInput, Section, Segmented,
 } from "@/components/ui";
 import { ReviewBadge, SourceStatusBadge, TierBadge } from "@/components/ui/badges";
-import { buttonPrimary, buttonSecondary, buttonSmall, control, textLink } from "@/components/ui/styles";
+import { buttonDestructive, buttonPrimary, buttonSecondary, buttonSmall, control, textLink } from "@/components/ui/styles";
 import { SourceList } from "../../source-list";
 import { crawlOutcomes, runStatuses as crawlRunStatuses } from "@/lib/crawler/domain";
 import { itemOutcomes, requestStatuses } from "@/lib/extraction/domain";
 import { counters, dashboardGroups } from "@/lib/dashboard/items";
 import { CounterTile, TileLink } from "@/app/(app)/dashboard/tiles";
+import { ReviewFields } from "@/components/review/review-panel";
+import { VisibilityNote } from "@/components/review/visibility-note";
+import { entityStatuses } from "@/lib/education/domain";
+import type { Visibility } from "@/lib/review/visibility";
+
+// One DEMO row per visibility state a reviewer can meet (lib/review/visibility.ts).
+function demoVisibility(tab: string): [string, Visibility | null][] {
+  if (tab === "proposed") return [["DEMO University A", { state: "will_be_public" }],
+    ["DEMO Immigration rule B", { state: "will_stay_hidden", blockers: ["rule_source_unverified"] }]];
+  if (tab === "reviewed") return [["DEMO University C", { state: "public" }],
+    ["DEMO Salary figure D", { state: "hidden", blockers: ["source_unverified"] }], ["DEMO University E", { state: "unknown" }]];
+  return [["DEMO University F", null]];
+}
 
 export const metadata = { title: "UI preview (DEMO)", robots: { index: false, follow: false } };
 
@@ -58,7 +71,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
 
     {show("foundations") && <Section title="Foundations" className="scroll-mt-24"><span id="foundations" />
       <Card className="space-y-6">
-        <div className="flex flex-wrap gap-3"><button className={buttonPrimary}>Primary</button><button className={buttonSecondary}>Secondary</button><button className={buttonSmall}>Small</button><button className={buttonPrimary} disabled>Disabled</button><a href="#foundations" className={`${textLink} self-center text-[15px]`}>Text link</a></div>
+        <div className="flex flex-wrap gap-3"><button className={buttonPrimary}>Primary</button><button className={buttonSecondary}>Secondary</button><button className={buttonDestructive}>Destructive</button><button className={buttonSmall}>Small</button><button className={buttonPrimary} disabled>Disabled</button><a href="#foundations" className={`${textLink} self-center text-[15px]`}>Text link</a></div>
         <div className="flex flex-wrap gap-2"><TierBadge tier="T1" /><TierBadge tier="T2" /><TierBadge tier="T3" /><TierBadge tier="T4" /><TierBadge tier={null} /></div>
         <div className="flex flex-wrap gap-2">{["proposed", "reviewed", "conflicted", "rejected"].map((s) => <ReviewBadge key={s} status={s}>{s}</ReviewBadge>)}</div>
         <div className="flex flex-wrap gap-2">{["verified", "needs_verification", "review_required"].map((s) => <SourceStatusBadge key={s} status={s}>{s}</SourceStatusBadge>)}<Badge tone="accent">Kỳ số liệu: 2025-Q2</Badge></div>
@@ -97,17 +110,16 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.tiles.map((t) => <TileLink key={t.href} tile={{ ...t, href: "#dashboard" }} />)}</div></div>)}
     </Section>}
 
-    {show("workspace") && <Section title="Workspace rows" description="Status tabs, search and a review disclosure (forms here are inert)." className="scroll-mt-24"><span id="workspace" />
+    {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
       <Segmented label="DEMO status" items={[["proposed", "Chờ duyệt", 12], ["reviewed", "Đã duyệt", 48], ["rejected", "Từ chối", 3]].map(([v, l, n]) => ({ href: `/dev/preview?tab=${v}#workspace`, label: l as string, count: n as number, active: tab === v }))} />
-      <List>{[1, 2, 3].map((i) => <ListRow key={i} title={`DEMO University ${String.fromCharCode(64 + i)}`}
-        badges={<ReviewBadge status={tab}>{tab}</ReviewBadge>} subtitle="Sweden · https://demo.example.test/university">
-        <Disclosure small summary="Bằng chứng & duyệt">
+      <List>{demoVisibility(tab).map(([title, visibility], i) => <ListRow key={i} title={title}
+        badges={<ReviewBadge status={tab}>{entityStatuses[tab] ?? tab}</ReviewBadge>} subtitle="Sweden · https://demo.example.test/university">
+        <div className="mb-2"><VisibilityNote visibility={visibility} publicHref="/dev/preview#workspace" /></div>
+        <Disclosure small open={tab === "proposed"} summary={tab === "proposed" ? "Bằng chứng và quyết định" : "Bằng chứng"}>
           <div className="space-y-3"><Quote>DEMO excerpt proving the entity exists.</Quote>
-            <fieldset disabled className="space-y-3 rounded-xl bg-fill/40 p-4 opacity-80">
-              <Field label="Quyết định"><select className={control}><option>Đã kiểm tra bằng chứng tồn tại</option></select></Field>
-              <Field label="Lý do / ghi chú kiểm tra"><textarea rows={2} className={control} /></Field>
-              <button className={buttonPrimary}>Ghi nhận quyết định (demo)</button>
-            </fieldset></div>
+            {tab === "proposed" && <fieldset disabled className="space-y-4 rounded-2xl bg-fill/50 p-4 opacity-90 sm:p-5">
+              <ReviewFields checks={["DEMO: trích đoạn có nguyên văn trên trang gốc.", "DEMO: tên chính thức đúng như nguồn ghi."]} />
+            </fieldset>}</div>
         </Disclosure>
       </ListRow>)}</List>
     </Section>}

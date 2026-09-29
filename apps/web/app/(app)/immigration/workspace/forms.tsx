@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { proposeRule, reviewRule } from "./actions";
 import { ruleTypes } from "@/lib/immigration/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
+import { ReviewPanel } from "@/components/review/review-panel";
 import { buttonPrimary, control } from "@/components/ui/styles";
 type Option = { id: string; label: string };
 export function RuleForm({ countries, documents }: { countries: Option[]; documents: Option[] }) {
@@ -24,12 +25,9 @@ export function RuleForm({ countries, documents }: { countries: Option[]; docume
   </form></Card>;
 }
 export function RuleReviewForm({ id }: { id: string }) {
-  const [state, action, pending] = useActionState(reviewRule, {});
-  return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
-    <input type="hidden" name="id" value={id} />
-    <Field label="Quyết định"><select name="decision" className={control}><option value="reviewed">Đã kiểm tra bằng chứng trên trang chính thức</option><option value="rejected">Không chấp nhận</option></select></Field>
-    <Field label="Lý do / ghi chú kiểm tra"><textarea name="note" required maxLength={1000} rows={2} className={control} /></Field>
-    <FormMessage error={state.error} message={state.message} />
-    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : "Ghi nhận quyết định"}</button>
-  </form>;
+  return <ReviewPanel action={reviewRule} hidden={{ id }} checks={[
+    "Trích đoạn có nguyên văn trên trang của cơ quan nhà nước.",
+    "Tên quy định và loại quy định đúng như trang ghi.",
+    "“Trang chính thức của quy định” thuộc cùng trang web với nguồn T1.",
+  ]} />;
 }

@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { proposeFact, resolveSourceChange, reviewFact } from "./actions";
 import { deadlineTypes } from "@/lib/education/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
+import { ReviewPanel } from "@/components/review/review-panel";
 import { buttonPrimary, control } from "@/components/ui/styles";
 export function ProposalForm({documents,countries,selected,entities=[],metrics=[]}:{documents:{id:string;title:string|null}[];countries:{id:string;name:string}[];selected:string;entities?:{value:string;label:string}[];metrics?:{id:string;label:string;unit_hint:string|null}[]}) {
  const [state,action,pending]=useActionState(proposeFact,{});
@@ -30,17 +31,26 @@ export function ProposalForm({documents,countries,selected,entities=[],metrics=[
  <button disabled={pending || !documents.length} className={buttonPrimary}>{pending?"Đang lưu…":"Lưu đề xuất"}</button>
  </form></Card>;
 }
-export function ReviewForm({id,status,others}:{id:string;status:string;others:{id:string;subject:string}[]}) {
+export function ReviewForm({id,ai}:{id:string;ai:boolean}) {
+ return <ReviewPanel action={reviewFact} hidden={{fact:id}} checks={[
+  "Trích đoạn có nguyên văn trên trang gốc (dùng Ctrl/Cmd+F).",
+  "Giá trị khớp trích đoạn: đúng số, đơn vị và điều kiện đi kèm (“ít nhất”, “mỗi tháng”, “từ ngày…”).",
+  "Không có thông tin nguồn không nêu, ví dụ đơn vị tiền tệ hay ngày hiệu lực tự thêm.",
+  ...(ai?["Mức “mô hình tự đánh giá” không phải căn cứ để duyệt."]:[]),
+ ]}/>;
+}
+// Conflicts are marked only between claims that already passed evidence review
+// (facts_conflict_requires_review, 2026-09-23). Both stay public and are shown
+// as conflicting; nothing is averaged or chosen (AGENTS.md 1.4).
+export function ConflictForm({id,others}:{id:string;others:{id:string;label:string}[]}) {
  const [state,action,pending]=useActionState(reviewFact,{});
- return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
- <input type="hidden" name="fact" value={id}/>
- <div className="grid gap-4 sm:grid-cols-2">
- <Field label="Quyết định"><select name="decision" className={control}>{status==="proposed"&&<><option value="reviewed">Đã kiểm tra bằng chứng</option><option value="rejected">Không chấp nhận</option></>}<option value="conflicted">Đánh dấu mâu thuẫn với thông tin khác</option></select></Field>
- <Field label="Thông tin đối chiếu (bắt buộc khi có mâu thuẫn)"><select name="related" className={control}><option value="">Chọn khi đánh dấu mâu thuẫn</option>{others.filter(o=>o.id!==id).map(o=><option key={o.id} value={o.id}>{o.subject} · {o.id.slice(0,8)}</option>)}</select></Field>
- </div>
- <Field label="Lý do / ghi chú kiểm tra"><textarea name="note" required maxLength={1000} rows={2} className={control}/></Field>
+ return <form action={action} className="space-y-4 rounded-2xl bg-fill/50 p-4 sm:p-5">
+ <input type="hidden" name="fact" value={id}/><input type="hidden" name="decision" value="conflicted"/>
+ <p className="text-[15px] leading-relaxed text-ink-2">Dùng khi một thông tin đã duyệt khác nói điều trái ngược. Cả hai vẫn hiển thị và được đánh dấu mâu thuẫn; hệ thống không tự chọn bên đúng.</p>
+ <Field label="Mâu thuẫn với thông tin"><select name="related" required className={control}><option value="">Chọn thông tin</option>{others.filter(o=>o.id!==id).map(o=><option key={o.id} value={o.id}>{o.label}</option>)}</select></Field>
+ <Field label="Ghi chú đối chiếu" hint="Bắt buộc. Hai nguồn nói gì khác nhau?"><textarea name="note" required maxLength={1000} rows={2} className={control}/></Field>
  <FormMessage error={state.error} message={state.message}/>
- <button disabled={pending} className={buttonPrimary}>{pending?"Đang lưu…":"Ghi nhận quyết định"}</button>
+ <button disabled={pending} className={buttonPrimary}>{pending?"Đang lưu…":"Đánh dấu mâu thuẫn"}</button>
  </form>;
 }
 // Slice 9: a reviewer compares the claim with the NEW page version, then

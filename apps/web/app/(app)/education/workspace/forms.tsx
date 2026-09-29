@@ -3,6 +3,7 @@ import { useActionState } from "react";
 import { proposeProgramme, proposeUniversity, reviewEducation } from "./actions";
 import { degreeTypes } from "@/lib/education/domain";
 import { Card, Field, FormMessage } from "@/components/ui";
+import { ReviewPanel } from "@/components/review/review-panel";
 import { buttonPrimary, control } from "@/components/ui/styles";
 type Option = { id: string; label: string };
 function EvidenceFields({ documents }: { documents: Option[] }) {
@@ -54,12 +55,15 @@ export function ProgrammeForm({ universities, documents }: { universities: Optio
 }
 
 export function EducationReviewForm({ kind, id }: { kind: "university" | "programme"; id: string }) {
-  const [state, action, pending] = useActionState(reviewEducation, {});
-  return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
-    <input type="hidden" name="kind" value={kind} /><input type="hidden" name="id" value={id} />
-    <Field label="Quyết định"><select name="decision" className={control}><option value="reviewed">Đã kiểm tra bằng chứng tồn tại</option><option value="rejected">Không chấp nhận</option></select></Field>
-    <Field label="Lý do / ghi chú kiểm tra"><textarea name="note" required maxLength={1000} rows={2} className={control} /></Field>
-    <FormMessage error={state.error} message={state.message} />
-    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : "Ghi nhận quyết định"}</button>
-  </form>;
+  // Education review proves only that the entity EXISTS (Slice 5, Option A);
+  // tuition and deadlines are separate facts with their own review.
+  return <ReviewPanel action={reviewEducation} hidden={{ kind, id }} checks={kind === "university" ? [
+    "Trang nguồn thật sự hiển thị trường này (mở trang trên trình duyệt, không chỉ dựa vào dữ liệu ẩn).",
+    "Tên chính thức đúng như nguồn ghi.",
+    "Website chính thức mở ra đúng trường đó.",
+  ] : [
+    "Trang nguồn thật sự nêu chương trình này của đúng trường này.",
+    "Tên, bậc học, ngành, ngôn ngữ giảng dạy đúng như nguồn; mục nào nguồn không nêu thì để trống.",
+    "Trang chương trình chính thức mở ra đúng chương trình.",
+  ]} />;
 }
