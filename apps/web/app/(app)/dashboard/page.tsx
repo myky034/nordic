@@ -2,8 +2,10 @@
 // Dashboard Page — app/(app)/dashboard/page.tsx  →  route: /dashboard
 // =============================================================================
 //
-// This is the landing page for authenticated users. In Slice 1 it only
-// confirms the user is signed in. Domain content is added in later slices.
+// Landing page for signed-in users. Apple-style overview (iCloud home /
+// Health summary): a "needs attention" row of counts, then grouped app-style
+// tiles. Which tiles and counters appear is decided in lib/dashboard/items.ts
+// from the user's permissions; this page only renders.
 //
 // WHY both requireAuth() and getCurrentUser() here?
 //   - requireAuth() (backed by getClaims) ensures we bail out fast if the
@@ -17,8 +19,10 @@
 
 import { requireAuth } from "@/lib/auth/session";
 import { getCurrentUser } from "@/lib/auth/session";
-import { accessContext } from "@/lib/rbac/access";
-import { List, ListRow, PageHeader, Section } from "@/components/ui";
+import { accessContext, logAccessError } from "@/lib/rbac/access";
+import { visibleCounters, visibleGroups, type CounterId } from "@/lib/dashboard/items";
+import { PageHeader, Section } from "@/components/ui";
+import { CounterTile, TileLink } from "./tiles";
 
 export default async function DashboardPage() {
   // Verify identity via JWT claims — fast, no network call.
@@ -26,49 +30,36 @@ export default async function DashboardPage() {
 
   // Fetch the user record to display their email.
   const user = await getCurrentUser();
-  const { permissions } = await accessContext();
-  const has = (...keys: string[]) => keys.some((k) => permissions.includes(k));
+  const { client, permissions } = await accessContext();
+  const groups = visibleGroups(permissions);
+  const shown = visibleCounters(permissions);
 
-  // Grouped like a settings screen: editing tools, administration, exploring.
-  // Each entry is shown only when the user holds the matching capability.
-  const editing = [
-    has("facts.propose", "facts.review") && ["/facts/workspace", "Thông tin & bằng chứng", "Đề xuất và duyệt thông tin có trích đoạn nguồn"],
-    has("education.manage", "facts.review") && ["/education/workspace", "Trường & chương trình", "Đề xuất và duyệt trường, chương trình"],
-    has("immigration.manage", "facts.review") && ["/immigration/workspace", "Quy định nhập cư", "Chỉ từ nguồn T1 của cơ quan chính phủ"],
-    has("labour.manage", "facts.review") && ["/labour/workspace", "Thị trường lao động", "Đề xuất và duyệt nghề; số liệu nhập ở Thông tin & bằng chứng"],
-    has("documents.ingest") && ["/documents/import", "Nhập tài liệu", "Thêm tài liệu từ nguồn đã đăng ký"],
-  ].filter(Boolean) as [string, string, string][];
-  const admin = [
-    has("sources.manage") && ["/admin/sources", "Quản lý Source Registry", "Thêm, sửa, xác minh nguồn và bật/tắt crawl"],
-    has("facts.propose", "facts.review") && ["/admin/extraction", "Trích xuất AI", "Yêu cầu đang chờ, các lần chạy và lý do đề xuất bị loại"],
-    has("crawler.manage") && ["/admin/crawler", "Crawler", "URL được crawl, lần chạy gần nhất và kết quả từng URL"],
-    has("metrics.manage") && ["/admin/metrics", "Chỉ số so sánh", "Định nghĩa các chỉ số dùng trong bảng so sánh quốc gia"],
-    has("roles.manage", "users.assign_roles") && ["/admin/access", "Người dùng & phân quyền", "Vai trò, quyền và nhật ký thay đổi"],
-  ].filter(Boolean) as [string, string, string][];
+  // Head-only counts through the user's own client: RLS scopes every number.
+  // A failed count is shown as unknown ("—"), never as zero (AGENTS.md §13).
+  const queries: Record<CounterId, () => PromiseLike<{ count: number | null; error: unknown }>> = {
+    proposed: () => client.from("facts").select("id", { count: "exact", head: true }).eq("status", "proposed"),
+    sourceChanged: () => client.from("facts").select("id", { count: "exact", head: true }).not("source_changed_at", "is", null),
+    extractionPending: () => client.from("extraction_requests").select("id", { count: "exact", head: true }).in("status", ["pending", "running"]),
+    sourcesUnverified: () => client.from("sources").select("id", { count: "exact", head: true }).eq("status", "needs_verification"),
+  };
+  const values = await Promise.all(shown.map(async (c) => {
+    const { count, error } = await queries[c.id]();
+    if (error) { logAccessError(`dashboard_count_${c.id}`); return null; }
+    return count ?? 0;
+  }));
 
   return (
     <>
-      <PageHeader eyebrow="Workspace" title="Dashboard"
-        description={<>Signed in as <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
-      <Section title="Của bạn">
-        <List>
-          <ListRow href="/workspace" title="My workspace" subtitle="Research project, mục đã lưu và ghi chú riêng của bạn" />
-          <ListRow href="/workspace/plan" title="My Europe Plan" subtitle="Hồ sơ mục tiêu: vai trò, bậc học, năm, quốc gia, ngân sách" />
-        </List>
-      </Section>
-      {editing.length > 0 && <Section title="Biên tập">
-        <List>{editing.map(([href, title, text]) => <ListRow key={href} href={href} title={title} subtitle={text} />)}</List>
+      <PageHeader eyebrow="Workspace" title="Tổng quan"
+        description={<>Đăng nhập với <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
+      {shown.length > 0 && <Section title="Cần xử lý">
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {shown.map((c, i) => <CounterTile key={c.id} label={c.label} href={c.href} value={values[i]} />)}
+        </div>
       </Section>}
-      {admin.length > 0 && <Section title="Quản trị">
-        <List>{admin.map(([href, title, text]) => <ListRow key={href} href={href} title={title} subtitle={text} />)}</List>
-      </Section>}
-      <Section title="Explore">
-        <List>
-          <ListRow href="/countries" title="Explore countries" />
-          <ListRow href="/documents" title="Browse documents" />
-          <ListRow href="/sources" title="Browse source registry" />
-        </List>
-      </Section>
+      {groups.map((g) => <Section key={g.id} title={g.title}>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.tiles.map((t) => <TileLink key={t.href} tile={t} />)}</div>
+      </Section>)}
     </>
   );
 }
