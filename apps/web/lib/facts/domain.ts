@@ -15,7 +15,18 @@ export function factError(code: string) {
   if (code === "facts_country_mismatch") return "Quốc gia đã chọn khác quốc gia của trường/chương trình. Bỏ trống quốc gia hoặc chọn đúng.";
   return "Không lưu được. Kiểm tra các trường bắt buộc, bằng chứng và ngày hiệu lực rồi thử lại.";
 }
+// Readable names for the fixed AI topic codes (extraction_topics() in the
+// Slice 10a migration). Manually entered topics are free text written by an
+// editor, so anything not in this list is shown exactly as entered.
+const topicNames: Record<string,string> = {
+  education: "Giáo dục", admission: "Tuyển sinh", tuition: "Học phí", deadline: "Hạn nộp hồ sơ",
+  scholarship: "Học bổng", immigration: "Nhập cư", labour_market: "Thị trường lao động",
+  living_cost: "Chi phí sinh hoạt", housing: "Nhà ở", language: "Ngôn ngữ", other: "Khác",
+};
+export function topicLabel(topic: string) {
+  return Object.hasOwn(topicNames, topic) ? topicNames[topic] : topic;
+}
 export const statuses: Record<string,string> = {
-  proposed: "Đề xuất — chưa duyệt", reviewed: "Đã duyệt bằng chứng — chưa xác minh hiệu lực",
-  rejected: "Không chấp nhận", conflicted: "Có mâu thuẫn — cần xem xét",
+  proposed: "Chờ duyệt", reviewed: "Đã duyệt bằng chứng",
+  rejected: "Đã từ chối", conflicted: "Có mâu thuẫn",
 };

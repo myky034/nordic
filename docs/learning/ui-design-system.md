@@ -191,3 +191,55 @@ Trang `/dashboard` trước đây là bốn danh sách chữ giống nhau. Nay g
 
 File: `lib/dashboard/items.ts`, `app/(app)/dashboard/tiles.tsx` (`AppIcon`,
 `TileLink`, `CounterTile`), `app/(app)/dashboard/page.tsx`.
+
+## Cập nhật 2026-09-29 — Ngôn ngữ giao diện và bảng thuật ngữ
+
+Quyết định (PROJECT_SPEC.md mục 21): **toàn bộ giao diện dùng tiếng Việt**. Nút
+chuyển Việt/Anh sẽ làm sau. Chưa dịch hết một lần: làm theo từng đợt (0 thuật
+ngữ → 1 form duyệt → 2 hướng dẫn người duyệt → 3 trang công khai → 4 trang quản
+trị), nên trong lúc chuyển đổi, trang công khai vẫn còn một phần tiếng Anh.
+
+### Nguyên tắc
+
+- **Không hiện mã nội bộ**: không hiện `needs_verification`, `reviewed`, UUID
+  hay mã quyền như `facts.review` cho người xem. Dùng nhãn trong bảng dưới.
+- **Không dịch nội dung của nguồn**: tên trường, quy định, nghề, trích đoạn và
+  giá trị giữ nguyên như nguồn viết. Giữ các mã cần đối chiếu với nguồn: T1–T4,
+  mã SSYK/ISCO, ngày ISO.
+- **Nhãn dùng chung đặt ở domain module**, không viết thẳng trong component. Khi
+  làm nút chuyển ngôn ngữ, chỉ cần tách các module này thành từ điển theo ngôn
+  ngữ.
+- **Không nói quá bằng chứng** (AGENTS.md 15): "Đã duyệt bằng chứng" nghĩa là
+  trích đoạn đã được đối chiếu, **không** có nghĩa thông tin còn hiệu lực. Không
+  dùng "chính thức" hay "đã xác minh" cho một thông tin nếu quy tắc chưa cho phép.
+
+### Bảng thuật ngữ
+
+| Mã | Nhãn hiển thị | Định nghĩa ở |
+|---|---|---|
+| T1 | T1 · Cơ quan nhà nước (badge: "T1 · Nhà nước") | `tiers`, `tierShort` — `lib/registry/domain.ts` |
+| T2 | T2 · Tổ chức / trường đại học | như trên |
+| T3 | T3 · Nguồn chuyên môn / thứ cấp | như trên |
+| T4 | T4 · Trải nghiệm / cộng đồng | như trên |
+| tier trống | Chưa phân loại | `tierLabel`, `TierBadge` |
+| nguồn `needs_verification` | Chưa xác minh | `sourceStatusLabels`, `verificationLabel` |
+| nguồn `verified` | Đã xác minh (kèm "nội dung chưa kiểm tra hiệu lực" ở badge) | như trên |
+| nguồn `review_required` | Cần xem xét lại | như trên |
+| `proposed` | Chờ duyệt | `statuses` (`lib/facts/domain.ts`), `entityStatuses` (`lib/education/domain.ts`) |
+| `reviewed` | Đã duyệt bằng chứng | như trên |
+| `rejected` | Đã từ chối | như trên |
+| `conflicted` | Có mâu thuẫn | `statuses` |
+| ngày không có | Chưa có | `dateLabel` |
+| bậc học `unknown` | Nguồn không nêu | `degreeTypes` |
+| chủ đề AI (`tuition`…) | Học phí… | `topicLabel` (`lib/facts/domain.ts`) |
+
+Từ nên dùng thống nhất: **nguồn** (source), **tài liệu** (document, một trang đã
+lưu), **trích đoạn** (excerpt), **đề xuất** (proposal), **duyệt** (review),
+**xác minh nguồn** (verify a source), **công khai** (hiển thị cho người chưa
+đăng nhập).
+
+### Thẻ thông tin (`FactCard`)
+
+Mỗi giá trị chỉ xuất hiện một lần dưới nhãn của nó (trước đây nhãn bị lặp, ví
+dụ "Nguồn — Nguồn: …"). Ô hiệu lực nói rõ khi nguồn không nêu thời hạn, thay
+vì hiện "chưa biết · chưa biết".

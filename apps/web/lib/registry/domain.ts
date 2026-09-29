@@ -1,7 +1,15 @@
-export const tiers = { T1: "Government / authority", T2: "Institutional / university", T3: "Professional / secondary", T4: "Experience / community" } as const;
+// Plain-language tier names (glossary: docs/learning/ui-design-system.md).
+// The code (T1–T4) stays visible next to them so it can be matched with the
+// Source Registry. A tier describes WHO publishes, never that a claim is true.
+export const tiers = { T1: "Cơ quan nhà nước", T2: "Tổ chức / trường đại học", T3: "Nguồn chuyên môn / thứ cấp", T4: "Trải nghiệm / cộng đồng" } as const;
+/** Short form for badges, where space is tight. */
+export const tierShort = { T1: "Nhà nước", T2: "Tổ chức", T3: "Chuyên môn", T4: "Cộng đồng" } as const;
 export type Tier = keyof typeof tiers;
 export const countrySlugs = ["sweden", "denmark", "finland", "norway", "netherlands"] as const;
 export const sourceStatuses = ["needs_verification", "verified", "review_required"] as const;
+export const sourceStatusLabels: Record<(typeof sourceStatuses)[number], string> = {
+  needs_verification: "Chưa xác minh", verified: "Đã xác minh", review_required: "Cần xem xét lại",
+};
 export const crawlPolicies = ["not_reviewed", "approved", "blocked"] as const;
 
 // Comma/newline/semicolon-separated free text -> a short, deduplicated topic list.
@@ -35,16 +43,16 @@ export function canonicalSourceUrl(value: string): string | null {
 }
 
 export function tierLabel(tier: string | null) {
-  return tier && Object.hasOwn(tiers, tier) ? `${tier} · ${tiers[tier as Tier]}` : "Unclassified";
+  return tier && Object.hasOwn(tiers, tier) ? `${tier} · ${tiers[tier as Tier]}` : "Chưa phân loại";
 }
 
 export function verificationLabel(status: string, verifiedAt: Date | null) {
-  if (status === "review_required") return "Review required";
-  if (status !== "verified" || !verifiedAt) return "Needs verification";
+  if (status === "review_required") return "Cần xem xét lại";
+  if (status !== "verified" || !verifiedAt) return "Chưa xác minh";
   // A historical review date does not establish current validity of source content.
-  return "Registry metadata reviewed; content validity unknown";
+  return "Đã xác minh nguồn · nội dung chưa kiểm tra hiệu lực";
 }
 
 export function dateLabel(date: Date | null) {
-  return date ? date.toISOString().slice(0, 10) : "Not available";
+  return date ? date.toISOString().slice(0, 10) : "Chưa có";
 }

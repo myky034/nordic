@@ -18,7 +18,7 @@ it("shows full registry metadata with unknowns stated, and the original link", a
   getSource.mockResolvedValue(base);
   const html = await render();
   expect(html).toContain('href="https://example.com/"');
-  for (const text of ["Unclassified", "Not available", "Needs verification", "Disabled", "Not assigned", "Not reviewed", "No documents have been imported"]) expect(html).toContain(text);
+  for (const text of ["Chưa phân loại", "Chưa có", "Chưa xác minh", "Disabled", "Not assigned", "Not reviewed", "No documents have been imported"]) expect(html).toContain(text);
 });
 it("never renders an unsafe URL as a link and 404s unknown sources", async () => {
   getSource.mockResolvedValue({ ...base, canonicalUrl: "javascript:alert(1)" });

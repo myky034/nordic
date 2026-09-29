@@ -39,7 +39,7 @@ export const applicationStatuses = {
   exploring: "Đang tìm hiểu", preparing: "Đang chuẩn bị hồ sơ", applying: "Đang nộp hồ sơ",
   awaiting_decision: "Chờ kết quả", admitted: "Đã trúng tuyển", paused: "Tạm dừng",
 } as const;
-export const targetDegrees = { bachelor: "Bachelor", master: "Master", phd: "PhD", other: "Khác" } as const;
+export const targetDegrees = { bachelor: "Cử nhân", master: "Thạc sĩ", phd: "Tiến sĩ", other: "Khác" } as const;
 export const budgetPeriods = { total: "Tổng", per_year: "Mỗi năm", per_month: "Mỗi tháng" } as const;
 
 /** Year field: empty → null; otherwise an integer 2000–2100, else "invalid". */

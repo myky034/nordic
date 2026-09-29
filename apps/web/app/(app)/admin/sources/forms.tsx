@@ -1,7 +1,7 @@
 "use client";
 import { useActionState } from "react";
 import { saveSource } from "./actions";
-import { tiers, sourceStatuses, crawlPolicies } from "@/lib/registry/domain";
+import { tiers, sourceStatuses, sourceStatusLabels, crawlPolicies } from "@/lib/registry/domain";
 import { Field, FormMessage } from "@/components/ui";
 import { buttonPrimary, control } from "@/components/ui/styles";
 type SourceRow = {
@@ -24,7 +24,7 @@ export function SourceForm({ source, countries }: { source?: SourceRow; countrie
       <Field label="Source type"><input className={control} name="sourceType" maxLength={100} defaultValue={source?.sourceType ?? ""} placeholder="government, university, community…" /></Field>
       <Field label="Ngôn ngữ"><input className={control} name="language" maxLength={20} defaultValue={source?.language ?? ""} placeholder="en, sv, da…" /></Field>
       <Field className="sm:col-span-2" label="Chủ đề (phân tách bằng dấu phẩy)"><input className={control} name="topics" defaultValue={source?.topics.join(", ") ?? ""} placeholder="immigration, education, labour_market" /></Field>
-      <Field label="Trạng thái xác minh"><select className={control} name="status" defaultValue={source?.status ?? "needs_verification"}>{sourceStatuses.map((s) => <option key={s} value={s}>{s}</option>)}</select></Field>
+      <Field label="Trạng thái xác minh"><select className={control} name="status" defaultValue={source?.status ?? "needs_verification"}>{sourceStatuses.map((s) => <option key={s} value={s}>{sourceStatusLabels[s]}</option>)}</select></Field>
       <Field label="Crawl policy"><select className={control} name="crawlPolicy" defaultValue={source?.crawlPolicy ?? "not_reviewed"}>{crawlPolicies.map((p) => <option key={p} value={p}>{p}</option>)}</select></Field>
       <Field className="sm:col-span-2" label="Authority notes" hint="Bắt buộc nếu status = verified — mô tả cách bạn xác minh."><textarea className={control} name="authorityNotes" maxLength={2000} rows={2} defaultValue={source?.authorityNotes ?? ""} /></Field>
       <Field label="Crawl frequency"><input className={control} name="crawlFrequency" maxLength={50} defaultValue={source?.crawlFrequency ?? ""} placeholder="weekly, monthly…" /></Field>

@@ -61,7 +61,7 @@ it("renders escaped excerpts, attribution, unknown dates and unverified status",
   expect(html).toContain("&lt;script&gt;");
   expect(html).not.toContain("<script>");
   for (const text of [
-    "Not available",
+    "Chưa có",
     "Claims not verified",
     "Metadata stored",
     "Synthetic source",

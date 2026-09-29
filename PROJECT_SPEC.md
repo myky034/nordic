@@ -1431,3 +1431,29 @@ Decided by the project owner after reviewing the Slice 10b plan.
   building, re-confirm the open decisions from the plan: which provider embeds
   users' queries (and whether it may train on them), who may use semantic
   search, and whether RAG is in scope.
+
+### 2026-09-29 — UI language: Vietnamese now, language switch later
+
+Decided by the project owner.
+
+- **Now**: every user-facing string in the web app is Vietnamese — public
+  pages, workspaces, admin, errors, empty states. Until now public pages were
+  English and workspaces Vietnamese, often mixed on one page.
+- **Not translated**: content that comes from a source (names of countries,
+  universities, programmes, rules and occupations as the source writes them;
+  evidence excerpts; values), and codes users may need to match against a
+  source (T1–T4, SSYK/ISCO codes, ISO dates).
+- **Plain language**: internal codes are never shown raw (`needs_verification`,
+  `reviewed`, UUIDs, permission keys). Shared terms are defined once — the
+  glossary in `docs/learning/ui-design-system.md` — and shared labels live in
+  the domain modules (e.g. `tiers`, `verificationLabel`), not in components.
+- **Later (not scheduled)**: a Vietnamese/English language switch. To keep that
+  cheap, new shared labels go into those domain modules rather than inline
+  text, so they can move into per-language dictionaries in one step. Open
+  questions for that work: routing (`/en/...` vs cookie), which language the
+  AI-extracted `subject`/`predicate` (English today) is shown in, and whether
+  the User Guide is translated.
+- **UI redesign order** (agreed with the owner): 0 language + glossary;
+  1 review forms and public-visibility feedback; 2 guidance for reviewers;
+  3 public pages; 4 admin pages. Visual direction unchanged: Apple-HIG-inspired
+  and as clear as the `/dashboard` overview.

@@ -12,9 +12,9 @@ it("escapes LIKE wildcards so search text matches literally", () => {
   expect(likePattern("50%_off\\")).toBe("%50\\%\\_off\\\\%");
 });
 it("labels unknown degree and deadline types without guessing", () => {
-  expect(degreeLabel("master")).toBe("Master");
-  expect(degreeLabel("diploma")).toBe("Not stated");
-  expect(deadlineLabel("rolling")).toBe("Rolling admission");
+  expect(degreeLabel("master")).toBe("Thạc sĩ");
+  expect(degreeLabel("diploma")).toBe("Nguồn không nêu");
+  expect(deadlineLabel("rolling")).toBe("Xét tuyển liên tục");
   expect(deadlineLabel(null)).toBeNull();
   expect(deadlineLabel("soon")).toBeNull();
 });

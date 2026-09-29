@@ -3,18 +3,18 @@ import { uuidPattern } from "../documents/domain";
 
 // Mirrors the programmes.degree_type CHECK. "unknown" exists so an operator
 // never has to guess a level the source does not state.
-export const degreeTypes = { bachelor: "Bachelor", master: "Master", phd: "PhD", other: "Other", unknown: "Not stated" } as const;
+export const degreeTypes = { bachelor: "Cử nhân", master: "Thạc sĩ", phd: "Tiến sĩ", other: "Khác", unknown: "Nguồn không nêu" } as const;
 export type DegreeType = keyof typeof degreeTypes;
 // Mirrors facts.deadline_type (SRS FR-ED-01). Rolling / year-round deadlines
 // have no single date; the UI must not render one.
-export const deadlineTypes = { fixed: "Fixed date", rolling: "Rolling admission", year_round: "Open all year" } as const;
+export const deadlineTypes = { fixed: "Ngày cố định", rolling: "Xét tuyển liên tục", year_round: "Mở quanh năm" } as const;
 export type DeadlineType = keyof typeof deadlineTypes;
 export const entityStatuses: Record<string, string> = {
-  proposed: "Đề xuất — chưa duyệt", reviewed: "Đã duyệt bằng chứng tồn tại", rejected: "Không chấp nhận",
+  proposed: "Chờ duyệt", reviewed: "Đã duyệt bằng chứng", rejected: "Đã từ chối",
 };
 
 export function degreeLabel(value: string) {
-  return Object.hasOwn(degreeTypes, value) ? degreeTypes[value as DegreeType] : "Not stated";
+  return Object.hasOwn(degreeTypes, value) ? degreeTypes[value as DegreeType] : "Nguồn không nêu";
 }
 export function deadlineLabel(value: string | null | undefined) {
   return value && Object.hasOwn(deadlineTypes, value) ? deadlineTypes[value as DeadlineType] : null;
