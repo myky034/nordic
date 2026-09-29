@@ -141,3 +141,53 @@ chung (AGENTS.md 1.1).
   diện tối.
 - Khi thêm component hoặc trạng thái mới, hãy thêm một mẫu vào trang này và vào
   `demo-fixtures.ts`.
+
+## Cập nhật 2026-09-28 — điều hướng theo nhóm (thay 9 tab ngang hàng)
+
+**Vấn đề:** thanh nav có 9 mục ngang hàng trong một vùng cuộn ngang
+(`overflow-x-auto`). Càng thêm module, chữ càng bị che mất ở cuối thanh.
+
+**Cách làm (theo apple.com và Apple HIG: ít mục cấp cao, gom mục liên quan):**
+
+- 5 mục cấp cao: **Countries · Study ▾ · Work & Immigration ▾ · Compare · Evidence ▾**.
+  Cấu trúc nằm ở `lib/navigation/menu.ts` (có test); thêm module mới = thêm một
+  dòng vào đúng nhóm, không thêm tab.
+- Nhóm mở một **panel ngang toàn màn hình** dưới header: tên nhóm nhỏ, rồi từng
+  trang với chữ lớn và một dòng mô tả. Mở bằng **click** (không chỉ hover) để dùng
+  được bằng cảm ứng và bàn phím; `aria-expanded`/`aria-controls`; đóng bằng Esc,
+  click ra ngoài, hoặc khi chuyển trang. Nhóm được tô nền khi đang ở một trang
+  trong nhóm.
+- Dưới **1024px (`lg`)**: nút **Menu** mở một sheet toàn màn hình liệt kê mọi
+  trang theo nhóm. Chọn `lg` thay vì cỡ tablet vì trang đã đăng nhập có hai nút
+  tài khoản ở bên phải; thanh không bao giờ được cắt chữ.
+- Sheet được render bằng **portal vào `<body>`**: header dùng `backdrop-filter`,
+  và thuộc tính này biến header thành containing block của phần tử
+  `position: fixed` bên trong, khiến sheet bị ép vào chiều cao 56px của header.
+  Portal chỉ render phía client (`useSyncExternalStore` trả `false` khi server
+  render và hydrate) để tránh lệch HTML.
+- Đóng menu khi đổi trang bằng cách so sánh `usePathname()` với giá trị trước
+  ngay trong lúc render (cách React khuyến nghị để reset state theo input), không
+  dùng effect.
+
+File: `lib/navigation/menu.ts`, `components/nav-links.tsx` (`NavLinks`,
+`MobileMenu`, `MobileNavList`), `components/site-header.tsx`.
+Test: `lib/navigation/menu.test.ts`, `components/nav-links.test.tsx`.
+
+## Cập nhật 2026-09-28 — Dashboard kiểu tổng quan (iCloud / Health)
+
+Trang `/dashboard` trước đây là bốn danh sách chữ giống nhau. Nay gồm:
+
+- **Cần xử lý**: ô số lớn như tóm tắt của Apple Health — Đề xuất chờ duyệt,
+  Nguồn đã đổi, Yêu cầu AI đang chờ, Nguồn cần xác minh. Chỉ hiện ô người dùng
+  có quyền xử lý; số đếm qua client của chính người dùng nên RLS giới hạn phạm vi.
+  Số 0 để màu trung tính, số > 0 dùng màu accent; đếm lỗi hiện “—” và “Không tải
+  được”, không bao giờ hiện 0 (AGENTS.md §13).
+- **Các nhóm ô** (Của bạn, Biên tập, Quản trị, Khám phá): icon kiểu app iOS (ô
+  vuông bo góc, màu hệ thống của Apple, nét trắng), tên, một dòng mô tả; lưới 1/2/3
+  cột theo độ rộng. Icon chỉ trang trí (`aria-hidden`), tên ô mang nghĩa.
+- Danh sách ô, quyền cần có và các bộ đếm nằm ở `lib/dashboard/items.ts`
+  (`visibleGroups`, `visibleCounters`, có test) — trang chỉ hiển thị.
+- Xem trước với dữ liệu DEMO: `/dev/preview?section=dashboard`.
+
+File: `lib/dashboard/items.ts`, `app/(app)/dashboard/tiles.tsx` (`AppIcon`,
+`TileLink`, `CounterTile`), `app/(app)/dashboard/page.tsx`.

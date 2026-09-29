@@ -50,6 +50,9 @@ export const demoFacts: { label: string; fact: FactRow }[] = [
   { label: "Rejected (workspace only)", fact: fact("f4", { status: "rejected", reviewed_at: null }) },
   { label: "Deadline, rolling admission", fact: fact("f5", { subject: "DEMO programme", predicate: "application deadline", value: "Rolling — no fixed date stated", deadline_type: "rolling", programme_id: "p1" }) },
   { label: "Immigration requirement from a non-T1 source", fact: fact("f6", { tier: "T4", immigration_rule_id: "r1", subject: "DEMO rule", predicate: "community-reported waiting time", value: "0", unit: "demo weeks" }) },
+  { label: "AI proposal (workspace only)", fact: fact("f8", { status: "proposed", reviewed_at: null, origin: "ai", ai_model: "demo-model", ai_confidence: "0.85", subject: "DEMO permit", predicate: "application fee", value: "0", unit: "DEMO currency" }) },
+  { label: "AI-extracted, reviewed by a person", fact: fact("f9", { origin: "ai", ai_model: "demo-model", ai_confidence: "0.90", subject: "DEMO programme", predicate: "language of instruction", value: "DEMO language" }) },
+  { label: "Source page changed after review", fact: fact("f10", { source_changed_at: iso, source_changed_document_id: "demo-doc-2", subject: "DEMO permit", predicate: "maintenance requirement", value: "0", unit: "DEMO currency / month" }) },
   { label: "Occupation figure, non-official, with period and metric", fact: fact("f7", { tier: "T4", occupation_id: "o1", reference_period: "2025-Q2", metric_id: "m1", comparison_metrics: { label: "DEMO monthly figure" }, subject: "DEMO occupation", predicate: "median pay", value: "0", unit: "DEMO currency / month" }) },
 ];
 

@@ -24,12 +24,16 @@ import {
 import { ReviewBadge, SourceStatusBadge, TierBadge } from "@/components/ui/badges";
 import { buttonPrimary, buttonSecondary, buttonSmall, control, textLink } from "@/components/ui/styles";
 import { SourceList } from "../../source-list";
+import { crawlOutcomes, runStatuses as crawlRunStatuses } from "@/lib/crawler/domain";
+import { itemOutcomes, requestStatuses } from "@/lib/extraction/domain";
+import { counters, dashboardGroups } from "@/lib/dashboard/items";
+import { CounterTile, TileLink } from "@/app/(app)/dashboard/tiles";
 
 export const metadata = { title: "UI preview (DEMO)", robots: { index: false, follow: false } };
 
 const toc = [
   ["foundations", "Foundations"], ["lists", "Long list + pagination"], ["sources", "Source rows"], ["facts", "Fact cards"],
-  ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
+  ["dashboard", "Dashboard"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
 ] as const;
 
 export default async function PreviewPage({ searchParams }: PageProps<"/dev/preview">) {
@@ -42,6 +46,8 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
   // ?section=<id> renders one section only (handy for screenshots in docs).
   const only = typeof query.section === "string" && toc.some(([id]) => id === query.section) ? query.section : "";
   const show = (id: string) => !only || only === id;
+  // ?facts=f8,f9 limits the fact-card section to those DEMO ids (doc screenshots).
+  const factIds = typeof query.facts === "string" ? query.facts.split(",") : [];
 
   return <>
     <div className="mb-8"><Notice tone="caution" role="alert" title="DEMO — dữ liệu giả chỉ để xem giao diện">
@@ -81,7 +87,14 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
     </Section>}
 
     {show("facts") && <Section title="Fact cards" description="Each visual state a claim can take." className="scroll-mt-24"><span id="facts" />
-      <div className="space-y-6">{demoFacts.map(({ label, fact }) => <div key={fact.id}><p className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</p><FactCard fact={fact} /></div>)}</div>
+      <div className="space-y-6">{demoFacts.filter(({ fact }) => !factIds.length || factIds.includes(fact.id)).map(({ label, fact }) => <div key={fact.id}><p className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</p><FactCard fact={fact} /></div>)}</div>
+    </Section>}
+
+    {show("dashboard") && <Section title="Dashboard" description="Every tile an administrator sees, with DEMO counts (one unloadable)." className="scroll-mt-24"><span id="dashboard" />
+      <h3 className="mb-3 px-1 text-[17px] font-semibold">Cần xử lý</h3>
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">{counters.map((c, i) => <CounterTile key={c.id} label={c.label} href="#dashboard" value={[12, 3, 0, null][i]} />)}</div>
+      {dashboardGroups.map((g) => <div key={g.id}><h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">{g.title}</h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.tiles.map((t) => <TileLink key={t.href} tile={{ ...t, href: "#dashboard" }} />)}</div></div>)}
     </Section>}
 
     {show("workspace") && <Section title="Workspace rows" description="Status tabs, search and a review disclosure (forms here are inert)." className="scroll-mt-24"><span id="workspace" />
@@ -118,6 +131,24 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
       <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Lối tắt theo hồ sơ (My Europe Plan)</h3>
       <div className="mb-3"><Notice tone="neutral">Đây là các liên kết lọc sẵn theo câu trả lời của bạn — <strong>không phải khuyến nghị</strong>, không xếp hạng và không dự đoán khả năng trúng tuyển.</Notice></div>
       <List>{[["So sánh các nước bạn quan tâm", "Sweden, Denmark"], ["Chương trình master tại Sweden", "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]].map(([t, sub]) => <ListRow key={t} href="#personal" title={t} subtitle={sub} />)}</List>
+    </Section>}
+
+    {show("automation") && <Section title="Crawler & AI extraction" description="Inert DEMO copies of /admin/crawler, the document-page AI panel and /admin/extraction." className="scroll-mt-24"><span id="automation" />
+      <h3 className="mb-3 px-1 text-[17px] font-semibold">Crawler — URL đã đăng ký</h3>
+      <div className="mb-2 flex flex-wrap items-center gap-2 px-1"><span className="text-[15px] font-semibold">DEMO Government Agency</span><Badge tone="positive">Sẽ được crawl ở lần chạy tới</Badge></div>
+      <List>{([["https://demo.example.test/permits", "created", "Trang"], ["https://demo.example.test/sitemap.xml", "unchanged", "Sitemap /study/"], ["https://demo.example.test/fees", "robots_disallowed", "Trang"]] as const).map(([u, o, k]) =>
+        <ListRow key={u} title={<span className="break-all">{u}</span>} badges={<><Badge>{k}</Badge><Badge tone={crawlOutcomes[o].tone}>{crawlOutcomes[o].label}</Badge></>} meta="Lần lấy gần nhất: 2026-01-15 08:00 · HTTP 200 · selector main" />)}</List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Crawler — lần chạy gần nhất</h3>
+      <List><ListRow title="2026-01-15 08:00" badges={<><Badge tone={crawlRunStatuses.succeeded.tone}>{crawlRunStatuses.succeeded.label}</Badge><Badge>schedule</Badge><Badge tone="caution">1 fact cần xem lại</Badge></>} subtitle="Phiên bản mới: 1 · Không đổi: 1 · robots.txt chặn: 1" /></List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Trang tài liệu — Trích xuất bằng AI</h3>
+      <div className="mb-4 flex flex-wrap items-center gap-4"><button disabled className={buttonPrimary}>Yêu cầu trích xuất bằng AI</button><span className={`${textLink} text-[15px]`}>Hàng chờ duyệt</span><span className={`${textLink} text-[15px]`}>Nhật ký trích xuất</span></div>
+      <List>
+        <ListRow title="Yêu cầu 2026-01-15 09:00" badges={<Badge tone={requestStatuses.done.tone}>{requestStatuses.done.label}</Badge>} subtitle="4 candidates, mode json_schema_basic, proposed 2, invalid 2" meta="Xong 2026-01-15 09:05" />
+        <ListRow title="Yêu cầu 2026-01-14 09:00" badges={<Badge tone={requestStatuses.failed.tone}>{requestStatuses.failed.label}</Badge>} subtitle="rate_limited: LLM HTTP 429 (DEMO)" />
+      </List>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Nhật ký trích xuất — chi tiết ứng viên</h3>
+      <List>{([["DEMO permit — application fee: 0", "proposed", null], ["DEMO permit — processing time: 0 weeks", "invalid", "Excerpt not found verbatim in the document text"], ["DEMO fee — amount: 999", "invalid", "Number 999 not found in the excerpt"], ["DEMO permit — application fee: 0", "duplicate", "Same subject, predicate and value already proposed for this document"]] as const).map(([t, o, r], i) =>
+        <ListRow key={i} title={<span className="text-[14px] font-normal">{t}</span>} badges={<Badge tone={itemOutcomes[o].tone}>{itemOutcomes[o].label}</Badge>} subtitle={r ?? undefined} />)}</List>
     </Section>}
 
     {show("compare") && <Section title="Comparison table" description="Every value per cell with its own source, tier and period; a conflict, a non-official value and empty cells." className="scroll-mt-24"><span id="compare" />
