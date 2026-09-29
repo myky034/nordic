@@ -1406,3 +1406,28 @@ Comparison (Section 2.10):
   basic schema and then to plain JSON mode, and records the mode used.
   Candidates are validated in the database regardless of mode. Prompt version
   `extract-v2`.
+
+### 2026-09-29 — Slice 10b (pgvector / semantic search / RAG) postponed
+
+Decided by the project owner after reviewing the Slice 10b plan.
+
+- **Status**: postponed, not cancelled. Nothing from Slice 10b is built: no
+  `vector` extension, no embeddings table, no embedding provider, no
+  question-answering page. Search stays PostgreSQL full-text (Slice 7).
+- **Why**:
+  - Not required by the MVP scope (Section 15): "Search" is met by Slice 7,
+    and "advanced RAG" is listed under Defer.
+  - Almost no public (reviewed) records exist yet, so semantic search or RAG
+    would have nothing meaningful to retrieve.
+  - It adds cost and risk before it adds value: a second AI provider and key
+    in Vercel, users' search queries sent to a third party (conflicts with the
+    Slice 10a rule that no user data is sent to a free-tier provider), and AI
+    answers about immigration rules.
+- **Current priority instead**: confirm Slice 10a end to end, verify the
+  registered sources, review the pending Swedish proposal batch, grow reviewed
+  data with the existing crawler + extraction pipeline, and deploy the MVP.
+- **Revisit when**: there is a substantial body of reviewed public records
+  and real user feedback shows full-text search is not enough. Before
+  building, re-confirm the open decisions from the plan: which provider embeds
+  users' queries (and whether it may train on them), who may use semantic
+  search, and whether RAG is in scope.
