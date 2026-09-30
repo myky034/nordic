@@ -567,3 +567,23 @@ việc khóa quyền trong form chỉ là hiển thị, database vẫn tự ki�
 quyền mình không có, không tự đổi vai trò của mình).
 
 Xem thử: `/dev/preview?section=access-admin` (thêm `&atab=roles`).
+
+## Cập nhật 2026-09-30 — Trang so sánh các kiểu bố cục `/dev/preview/patterns`
+
+Để chủ dự án so sánh trước khi chọn bố cục cho trang thật. Chỉ có khi chạy dev (bản
+production trả 404), chỉ dùng dữ liệu DEMO (`patterns/data.ts`, tên miền
+`example.test`), không truy cập database, nút và form không lưu gì. Trạng thái nằm
+trong URL (`?p=…&open=…&sort=…`), giống trang thật.
+
+| `?p=` | Kiểu | Ghi chú kỹ thuật |
+|---|---|---|
+| `inspector` | Danh sách toàn chiều rộng + khung trượt từ phải (bảng trượt từ dưới trên điện thoại) | Khung là `position: fixed` + lớp nền mờ bấm để đóng; Esc đóng qua `KeyNav` |
+| `table` | Bảng có sắp xếp theo cột và lọc bằng chip | Bảng nằm trong khung cuộn ngang, nên **không** dùng tiêu đề sticky (sticky sẽ bám theo khung, không theo cửa sổ) |
+| `focus` | Duyệt từng mục, thanh tiến độ, nút cố định ở đáy | Phím tắt A / R / J / K / ← / → qua `KeyNav`; phím bị bỏ qua khi đang gõ trong ô nhập |
+| `three` | Ba cột: khu vực + danh sách + chi tiết | Trên màn hình hẹp, cột khu vực thành hàng chip cuộn ngang |
+| `cards` | Lưới thẻ cho trang công khai | Lọc theo quốc gia bằng chip |
+| `accordion` | Mở rộng tại chỗ | `<details name="…">` của HTML: mở dòng này thì dòng kia tự đóng, không cần JavaScript |
+
+`keys.tsx` (`KeyNav`) là component client duy nhất: gắn phím → URL bằng
+`router.push`. Test: `patterns/patterns.test.tsx` (404 ở production, không truy cập
+database, cả 6 kiểu render, mọi link ngoài là `example.test`).

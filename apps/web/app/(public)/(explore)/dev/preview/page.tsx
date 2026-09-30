@@ -99,7 +99,8 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
       Mọi tên, số và URL trên trang này là hư cấu (domain <code>example.test</code>) và không được ghi vào database. Trang chỉ tồn tại khi chạy dev; bản production trả về 404.
     </Notice></div>
     {!only && <><PageHeader eyebrow="Development" title="UI preview" description="Every shared component and state, rendered with DEMO fixtures. Toggle dark mode in your OS settings to review both themes." />
-    <nav aria-label="Sections" className="mb-4 flex flex-wrap gap-2">{toc.map(([id, label]) => <a key={id} href={`#${id}`} className={buttonSmall}>{label}</a>)}</nav></>}
+    <nav aria-label="Sections" className="mb-4 flex flex-wrap gap-2">{toc.map(([id, label]) => <a key={id} href={`#${id}`} className={buttonSmall}>{label}</a>)}
+      <Link href="/dev/preview/patterns" className={`${buttonSmall} bg-accent/10 text-accent`}>Các kiểu bố cục →</Link></nav></>}
 
     {show("foundations") && <Section title="Foundations" className="scroll-mt-24"><span id="foundations" />
       <Card className="space-y-6">
