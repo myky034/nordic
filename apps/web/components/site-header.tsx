@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MobileMenu, NavLinks } from "./nav-links";
+import { AccountActions } from "./account-actions";
 
 // One global navigation bar for public and signed-in pages. A light
 // translucent surface with backdrop blur, used only here (spec: blur sparingly).
@@ -9,7 +10,7 @@ function SearchLink() {
   </Link>;
 }
 
-export function SiteHeader({ right }: { right?: React.ReactNode }) {
+export function SiteHeader() {
   // One row at every width: logo, grouped navigation (md+), then search,
   // account and — below 1024px (lg) — the Menu button. lg, not a tablet width,
   // because signed-in pages show two account buttons and the bar must never
@@ -18,7 +19,7 @@ export function SiteHeader({ right }: { right?: React.ReactNode }) {
     <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-5 sm:px-8">
       <Link href="/" className="text-[15px] font-semibold tracking-[0.18em] text-ink">NORDIC</Link>
       <div className="min-w-0 flex-1"><NavLinks /></div>
-      <div className="flex items-center gap-1"><SearchLink />{right}<MobileMenu /></div>
+      <div className="flex items-center gap-1"><SearchLink /><AccountActions /><MobileMenu /></div>
     </div>
   </header>;
 }
@@ -30,8 +31,4 @@ export function SiteFooter() {
       <p className="mt-1">Thông tin nghiên cứu — luôn kiểm tra lại tại nguồn chính thức.</p>
     </div>
   </footer>;
-}
-
-export function WorkspaceLink() {
-  return <Link href="/dashboard" className="inline-flex items-center rounded-full bg-ink px-4 py-1.5 text-[13px] font-medium text-canvas transition hover:opacity-85">Workspace</Link>;
 }

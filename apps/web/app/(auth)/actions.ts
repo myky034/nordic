@@ -81,3 +81,12 @@ export async function signInWithGoogle() {
   }
   redirect(destination);
 }
+
+// Sign-out for every page header (public and signed-in). A form + Server
+// Action needs no client JavaScript; signOut() clears the session cookies,
+// and the redirect re-renders the layouts so the header shows "Đăng nhập".
+export async function signOut() {
+  const supabase = await createClient();
+  await supabase.auth.signOut();
+  redirect("/");
+}
