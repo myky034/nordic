@@ -587,3 +587,23 @@ trong URL (`?p=…&open=…&sort=…`), giống trang thật.
 `keys.tsx` (`KeyNav`) là component client duy nhất: gắn phím → URL bằng
 `router.push`. Test: `patterns/patterns.test.tsx` (404 ở production, không truy cập
 database, cả 6 kiểu render, mọi link ngoài là `example.test`).
+
+## Cập nhật 2026-09-30 — `/admin/access` chuyển sang Bảng + khung trượt
+
+Chủ dự án chọn kiểu 1–2 trong `/dev/preview/patterns` cho trang phân quyền, thay
+bố cục chia đôi.
+
+- **Ba bảng** (Người dùng · Vai trò · Nhật ký) dùng `DataTable` / `DataRow` / `Cell`
+  (`components/ui/data-table.tsx`). Cả dòng là một vùng bấm: ô đầu chứa link, và
+  `after:absolute after:inset-0` phủ link lên toàn dòng (`tr` có `relative`), nên
+  trình đọc màn hình chỉ gặp một link có tên.
+- **Sắp xếp** bằng tiêu đề cột (Vai trò: tên, số quyền; Nhật ký: thời gian, thao tác,
+  người thực hiện). Quy tắc trong `lib/table.ts` (có test): giá trị trống luôn nằm
+  cuối, chữ tiếng Việt so theo `Intl.Collator("vi")`. Bảng Người dùng **không** sắp
+  xếp: dữ liệu về 20 dòng mỗi trang, sắp xếp sẽ chỉ đổi thứ tự trong một trang và gây
+  hiểu nhầm.
+- **Khung trượt** (`components/ui/inspector.tsx`): mở bằng tham số URL (`?user=`,
+  `?role=`, `?entry=`, `?new=1`), đóng bằng ✕, bấm ra ngoài hoặc Esc (`KeyNav`, giờ ở
+  `components/key-nav.tsx`). Khung cuộn riêng nên thanh "Lưu vai trò" luôn hiện.
+  Trên điện thoại khung trượt từ dưới lên.
+- Server action và RPC không đổi. Test: `app/(app)/admin/access/access-page.test.tsx`.

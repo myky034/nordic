@@ -34,6 +34,8 @@ import { selectItem } from "@/lib/review/selection";
 import { SamePageFacts } from "@/components/review/same-page-facts";
 import { SourceForm } from "@/app/(app)/admin/sources/forms";
 import { RoleForm, UserRoles } from "@/app/(app)/admin/access/forms";
+import { Cell, DataRow, DataTable } from "@/components/ui/data-table";
+import { Inspector } from "@/components/ui/inspector";
 
 // DEMO roles and users for the access screen (reserved example.test addresses).
 const demoPermissions = ["facts.propose", "facts.review", "education.manage", "immigration.manage", "labour.manage", "metrics.manage", "sources.manage", "documents.read", "documents.ingest", "crawler.manage", "roles.manage", "users.assign_roles"].map((key) => ({ key, description: "" }));
@@ -82,6 +84,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
   const { from, to } = pageWindow(page);
   const tab = typeof query.tab === "string" ? query.tab : "proposed";
   const atab = query.atab === "roles" ? "roles" : "users";
+  const aopen = typeof query.aopen === "string" ? query.aopen : undefined;
   const src = typeof query.src === "string" ? query.src : undefined;
   const demoSource = demoSources.find((s) => s.id === src) ?? demoSources[0];
   const item = typeof query.item === "string" ? query.item : undefined;
@@ -175,17 +178,22 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
         detail={<><h2 className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{demoSource.name}</h2>
           <fieldset disabled><SourceForm source={demoSource} countries={demoCountries} /></fieldset></>} />
     </Section>}
-    {show("access-admin") && <Section title="Access admin" description="/admin/access: users tab (roles as cards with Gỡ, plus Thêm vai trò) and roles tab (grouped permissions). ?atab=roles switches; forms are disabled here." className="scroll-mt-24"><span id="access-admin" />
+    {show("access-admin") && <Section title="Access admin" description="/admin/access: sortable tables; a row opens the slide-over Inspector (?aopen=). ?atab=roles switches tabs; forms are disabled here." className="scroll-mt-24"><span id="access-admin" />
       <Segmented label="DEMO phần" items={[["users", "Người dùng"], ["roles", "Vai trò"], ["audit", "Nhật ký"]].map(([v, l]) => ({ href: `/dev/preview?section=access-admin&atab=${v}`, label: l, active: atab === v }))} />
       {atab === "roles"
-        ? <SplitView paneScroll={false} detailKey="r2" detailOnMobile={false} backHref="/dev/preview?section=access-admin&atab=roles"
-            list={<SplitList label="DEMO roles" footer={<span className="text-[15px] font-medium text-accent">+ Tạo vai trò mới</span>}>{demoRoles.map((r) => <SplitRow key={r.id} href="/dev/preview?section=access-admin&atab=roles" selected={r.id === "r2"} title={r.name} subtitle={r.description} badges={<Badge>{r.role_permissions.length} quyền</Badge>} />)}</SplitList>}
-            detail={<><h2 className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{demoRoles[1].name}</h2><fieldset disabled><RoleForm role={demoRoles[1]} permissions={demoPermissions} own={demoPermissions.map((p) => p.key)} /></fieldset></>} />
-        : <SplitView paneScroll={false} detailKey="u2" detailOnMobile={false} backHref="/dev/preview?section=access-admin"
-            list={<SplitList label="DEMO users">{demoUsers.map((u) => <SplitRow key={u.id} href="/dev/preview?section=access-admin" selected={u.id === "u2"} title={u.email} subtitle={u.self ? "Tài khoản của bạn" : undefined}
-              badges={u.roles.length ? <>{u.roles.map((id) => <Badge key={id}>{demoRoles.find((r) => r.id === id)?.name}</Badge>)}</> : <Badge tone="caution">Chưa có vai trò</Badge>} />)}</SplitList>}
-            detail={<><div className="mb-4 px-1"><h2 className="text-[22px] font-semibold tracking-[-0.015em]">{demoUsers[1].email}</h2><p className="mt-1 font-mono text-[12px] text-ink-3">00000000-0000-4000-8000-000000000002</p></div>
-              <fieldset disabled><UserRoles user="u2" roles={demoRoles} current={demoUsers[1].roles} own={demoPermissions.map((p) => p.key)} self={false} /></fieldset></>} />}
+        ? <DataTable label="DEMO vai trò" minWidth="36rem" columns={[{ label: "Tên vai trò", sorted: "asc", sortHref: "/dev/preview?section=access-admin&atab=roles" }, { label: "Mô tả" }, { label: "Số quyền", className: "text-right" }]}>
+            {demoRoles.map((r) => <DataRow key={r.id} href={`/dev/preview?section=access-admin&atab=roles&aopen=${r.id}`} selected={r.id === aopen} title={r.name}>
+              <Cell>{r.description}</Cell><Cell className="text-right tabular-nums">{r.role_permissions.length}</Cell></DataRow>)}
+          </DataTable>
+        : <DataTable label="DEMO người dùng" minWidth="36rem" columns={[{ label: "Email" }, { label: "Vai trò" }, { label: "Số quyền", className: "text-right" }]}>
+            {demoUsers.map((u) => <DataRow key={u.id} href={`/dev/preview?section=access-admin&aopen=${u.id}`} selected={u.id === aopen} title={<>{u.email}{u.self && <span className="ml-2 text-[13px] font-normal text-ink-3">(bạn)</span>}</>}>
+              <Cell><span className="flex flex-wrap gap-1.5">{u.roles.length ? u.roles.map((id) => <Badge key={id}>{demoRoles.find((r) => r.id === id)?.name}</Badge>) : <Badge tone="caution">Chưa có vai trò</Badge>}</span></Cell>
+              <Cell className="text-right tabular-nums">{new Set(u.roles.flatMap((id) => demoRoles.find((r) => r.id === id)?.role_permissions.map((p) => p.permission_key) ?? [])).size}</Cell></DataRow>)}
+          </DataTable>}
+      {atab === "roles" && demoRoles.find((r) => r.id === aopen) && <Inspector title={demoRoles.find((r) => r.id === aopen)!.name} closeHref="/dev/preview?section=access-admin&atab=roles">
+        <fieldset disabled><RoleForm role={demoRoles.find((r) => r.id === aopen)} permissions={demoPermissions} own={demoPermissions.map((p) => p.key)} /></fieldset></Inspector>}
+      {atab !== "roles" && demoUsers.find((u) => u.id === aopen) && <Inspector title={demoUsers.find((u) => u.id === aopen)!.email} subtitle={<span className="font-mono">00000000-0000-4000-8000-000000000002</span>} closeHref="/dev/preview?section=access-admin">
+        <fieldset disabled><UserRoles user={aopen!} roles={demoRoles} current={demoUsers.find((u) => u.id === aopen)!.roles} own={demoPermissions.map((p) => p.key)} self={false} /></fieldset></Inspector>}
     </Section>}
     {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
       <ReviewStepsView counts={demoStepCounts} permissions={["facts.review"]} current="education" />

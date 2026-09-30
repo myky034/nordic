@@ -5,7 +5,7 @@ vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NOT_FOUND
 vi.mock("@/lib/supabase/server", () => ({ createClient: () => { throw new Error("DB_ACCESS"); } }));
 vi.mock("@/lib/supabase/public", () => ({ createPublicClient: () => { throw new Error("DB_ACCESS"); } }));
 // Client-only pieces (router hook, Server Action form) are covered elsewhere.
-vi.mock("./keys", () => ({ KeyNav: () => null }));
+vi.mock("@/components/key-nav", () => ({ KeyNav: () => null }));
 vi.mock("@/app/(app)/admin/sources/forms", () => ({ SourceForm: () => null }));
 import PatternsPage from "./page";
 afterEach(() => { vi.unstubAllEnvs(); });

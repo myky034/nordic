@@ -18,7 +18,8 @@ import { buttonDestructive, buttonPrimary, buttonSecondary, control, textLink } 
 import { AppIcon } from "@/app/(app)/dashboard/tiles";
 import type { IconName, Tint } from "@/lib/dashboard/items";
 import { SourceForm } from "@/app/(app)/admin/sources/forms";
-import { KeyNav } from "./keys";
+import { KeyNav } from "@/components/key-nav";
+import { Inspector } from "@/components/ui/inspector";
 import { patternLog, patternSources, patternUniversities, type DemoSource } from "./data";
 
 export const metadata = { title: "Layout patterns (DEMO)", robots: { index: false, follow: false } };
@@ -48,24 +49,15 @@ function SourceBadges({ s }: { s: DemoSource }) {
   return <><TierBadge tier={s.tier} /><SourceStatusBadge status={s.status}>{verificationLabel(s.status, s.verifiedAt ? new Date(s.verifiedAt) : null)}</SourceStatusBadge>{s.crawl && <Badge tone="accent">Đang crawl</Badge>}</>;
 }
 
-/** Pattern 1 and 2: a panel that slides over the list from the right (bottom sheet on phones). */
-function Inspector({ s, closeHref }: { s: DemoSource; closeHref: string }) {
-  return <>
-    <Link href={closeHref} scroll={false} aria-label="Đóng khung chi tiết" className="fixed inset-0 z-40 bg-black/25 backdrop-blur-[2px]" />
-    <aside role="dialog" aria-modal="true" aria-label={s.name}
-      className="fixed inset-x-0 bottom-0 z-50 max-h-[88vh] overflow-y-auto rounded-t-3xl bg-canvas shadow-[0_-8px_40px_rgb(0_0_0/0.18)] lg:inset-y-0 lg:left-auto lg:right-0 lg:max-h-none lg:w-[34rem] lg:rounded-none lg:rounded-l-3xl">
-      <div className="sticky top-0 z-10 flex items-center justify-between gap-3 border-b border-hairline bg-canvas/90 px-6 py-4 backdrop-blur">
-        <div className="min-w-0"><p className="truncate text-[17px] font-semibold text-ink">{s.name}</p><p className="truncate text-[13px] text-ink-3">{s.url}</p></div>
-        <Link href={closeHref} scroll={false} aria-label="Đóng" className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-fill text-ink-2 hover:bg-fill-strong">✕</Link>
-      </div>
-      <div className="space-y-4 p-6">
-        <div className="flex flex-wrap gap-2"><SourceBadges s={s} /></div>
-        <DescriptionList items={[["Quốc gia", s.country ?? "Chưa gán"], ["Xác minh gần nhất", s.verifiedAt ?? "Chưa có"], ["Số tài liệu", String(s.documents)]]} />
-        <fieldset disabled><SourceForm countries={[]} source={{ id: s.id, name: s.name, canonicalUrl: s.url, countryId: null, sourceTier: s.tier, sourceType: "demo", topics: ["demo"], language: "en", authorityNotes: null, status: s.status, crawlPolicy: "not_reviewed", crawlEnabled: s.crawl, crawlFrequency: null, notes: null }} /></fieldset>
-      </div>
-    </aside>
-    <KeyNav keys={{ Escape: closeHref }} />
-  </>;
+/** Pattern 1 and 2: the shared slide-over Inspector (components/ui/inspector.tsx). */
+function SourceInspector({ s, closeHref }: { s: DemoSource; closeHref: string }) {
+  return <Inspector title={s.name} subtitle={s.url} closeHref={closeHref}>
+    <div className="space-y-4">
+      <div className="flex flex-wrap gap-2"><SourceBadges s={s} /></div>
+      <DescriptionList items={[["Quốc gia", s.country ?? "Chưa gán"], ["Xác minh gần nhất", s.verifiedAt ?? "Chưa có"], ["Số tài liệu", String(s.documents)]]} />
+      <fieldset disabled><SourceForm countries={[]} source={{ id: s.id, name: s.name, canonicalUrl: s.url, countryId: null, sourceTier: s.tier, sourceType: "demo", topics: ["demo"], language: "en", authorityNotes: null, status: s.status, crawlPolicy: "not_reviewed", crawlEnabled: s.crawl, crawlFrequency: null, notes: null }} /></fieldset>
+    </div>
+  </Inspector>;
 }
 
 function PatternInspector({ q }: { q: Query }) {
@@ -76,7 +68,7 @@ function PatternInspector({ q }: { q: Query }) {
     <List label="DEMO nguồn">{patternSources.map((s) => <ListRow key={s.id} href={href(q, { open: s.id })} title={s.name} badges={<SourceBadges s={s} />}
       subtitle={`${s.url.replace("https://", "")} · ${s.country ?? "Chưa gán quốc gia"}`}
       trailing={<span className="hidden text-[13px] sm:block">{s.verifiedAt ? `Xác minh ${s.verifiedAt}` : "Chưa xác minh"}<span className="block text-ink-3">{s.documents} tài liệu</span></span>} />)}</List>
-    {open && <Inspector s={open} closeHref={href(q, { open: null })} />}
+    {open && <SourceInspector s={open} closeHref={href(q, { open: null })} />}
   </>;
 }
 
@@ -129,7 +121,7 @@ function PatternTable({ q }: { q: Query }) {
       {!rows.length && <p className="p-5 text-[15px] text-ink-2">Không có nguồn nào khớp bộ lọc.</p>}
     </div>
     <p className="mt-2 px-1 text-[13px] text-ink-3">{rows.length} / {patternSources.length} nguồn</p>
-    {open && <Inspector s={open} closeHref={href(q, { open: null })} />}
+    {open && <SourceInspector s={open} closeHref={href(q, { open: null })} />}
   </>;
 }
 

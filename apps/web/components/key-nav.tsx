@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 /**
- * Keyboard shortcuts for the pattern demos: each key navigates to a URL
+ * Keyboard shortcuts that navigate: each key maps to a URL
  * (state lives in the URL, as on the real pages). Ignored while typing in a
  * field, so shortcuts never steal text input.
  */
