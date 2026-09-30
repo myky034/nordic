@@ -62,7 +62,7 @@ export function SourceForm({ source, countries }: { source?: SourceRow; countrie
         <Field className="sm:col-span-2" label="Ghi chú" hint="Chỉ người quản lý nguồn thấy."><textarea className={control} name="notes" maxLength={2000} rows={2} defaultValue={source?.notes ?? ""} /></Field>
       </Group>
     </fieldset>
-    <div className="sticky bottom-0 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-3 border-t border-hairline bg-canvas/90 px-1 py-3 backdrop-blur">
+    <div className="sticky bottom-0 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-3 border-t border-hairline bg-canvas px-1 py-3">
       <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : source ? "Lưu thay đổi" : "Tạo nguồn"}</button>
       <div className="min-w-0 flex-1"><FormMessage error={state.error} message={state.message} /></div>
     </div>

@@ -47,7 +47,7 @@ export function RoleForm({ role, permissions, own }: { role?: RoleRow; permissio
       </section>)}
     </fieldset>
     {!manageable && <p className="mt-3 text-[15px] text-ink-2">Vai trò này có quyền mà bạn không có, nên bạn không sửa được.</p>}
-    <div className="sticky bottom-0 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-3 border-t border-hairline bg-canvas/90 px-1 py-3 backdrop-blur">
+    <div className="sticky bottom-0 z-10 -mx-1 mt-4 flex flex-wrap items-center gap-3 border-t border-hairline bg-canvas px-1 py-3">
       <button disabled={pending || !manageable} className={buttonPrimary}>{pending ? "Đang lưu…" : role ? "Lưu vai trò" : "Tạo vai trò"}</button>
       <div className="min-w-0 flex-1"><FormMessage error={state.error} message={state.message} /></div>
     </div>

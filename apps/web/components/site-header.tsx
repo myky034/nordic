@@ -15,7 +15,7 @@ export function SiteHeader() {
   // account and — below 1024px (lg) — the Menu button. lg, not a tablet width,
   // because signed-in pages show two account buttons and the bar must never
   // truncate labels. The sticky header anchors the full-width group panels.
-  return <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/80 backdrop-blur-xl backdrop-saturate-150">
+  return <header className="sticky top-0 z-40 border-b border-hairline bg-canvas/90 backdrop-blur-md">
     <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-5 sm:px-8">
       <Link href="/" className="text-[15px] font-semibold tracking-[0.18em] text-ink">NORDIC</Link>
       <div className="min-w-0 flex-1"><NavLinks /></div>

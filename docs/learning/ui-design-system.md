@@ -611,3 +611,20 @@ bố cục chia đôi.
   người đó đang có, chia nhóm như trình sửa vai trò, mỗi quyền ghi "từ <vai trò>"
   (`lib/rbac/effective.ts`, có test; `app/(app)/admin/access/effective-permissions.tsx`).
   Chỉ để xem: quyền thật do database tính (`has_permission`).
+
+## Cập nhật 2026-09-30 — Cuộn bị giật: hạn chế hiệu ứng làm mờ
+
+Chủ dự án thấy cuộn trang bị giật. Nguyên nhân chính là `backdrop-filter` (làm mờ
+nền): khi nội dung phía sau một lớp mờ di chuyển, trình duyệt phải làm mờ lại vùng
+đó ở **mọi khung hình**. Các lớp mờ lại xếp chồng lên nhau: header toàn trang, lớp
+nền khi mở khung trượt, tiêu đề dính của khung trượt, thanh "Lưu" dính.
+
+**Quy tắc từ nay:**
+
+- Chỉ header toàn trang được làm mờ, và ở mức nhẹ (`backdrop-blur-md`, bỏ
+  `backdrop-saturate`).
+- **Không** làm mờ lớp nền phủ toàn màn hình (dùng `bg-black/30`), và **không** làm
+  mờ các thanh dính nằm trong vùng cuộn (tiêu đề khung trượt, thanh lưu, thanh nút
+  của chế độ tập trung): dùng nền đặc `bg-canvas`.
+- Khi kiểm tra độ mượt, nên dùng bản production (`npm run build && npm start`):
+  `next dev` chạy mã chưa tối ưu nên chậm hơn bản thật.

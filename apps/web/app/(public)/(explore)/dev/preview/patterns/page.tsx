@@ -150,7 +150,7 @@ function PatternFocus({ q }: { q: Query }) {
     </div>
     {done && <p role="status" className="mb-4 rounded-xl bg-fill/60 px-4 py-2 text-[13px] text-ink-2">DEMO: mục trước được ghi “{decisionLabel(done).label}” (không lưu gì).</p>}
     <div className="mx-auto max-w-2xl"><FactCard fact={fact} /></div>
-    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-canvas/90 backdrop-blur">
+    <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-canvas">
       <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-5 py-3">
         <input aria-label="Ghi chú kiểm tra" placeholder="Ghi chú kiểm tra (bắt buộc trên trang thật)" className={`${control} mt-0 min-w-0 flex-1 basis-60`} />
         <Link href={at(Math.max(0, i - 1))} className={buttonSecondary} aria-label="Mục trước (K)">‹ <kbd className="text-[11px] text-ink-3">K</kbd></Link>
