@@ -11,6 +11,20 @@ export const sourceStatusLabels: Record<(typeof sourceStatuses)[number], string>
   needs_verification: "Chưa xác minh", verified: "Đã xác minh", review_required: "Cần xem xét lại",
 };
 export const crawlPolicies = ["not_reviewed", "approved", "blocked"] as const;
+export const crawlPolicyLabels: Record<(typeof crawlPolicies)[number], string> = {
+  not_reviewed: "Chưa xem xét", approved: "Được phép crawl", blocked: "Không crawl",
+};
+/**
+ * How to choose a tier, shown under the tier field (PROJECT_SPEC.md 2.5 and 7,
+ * AGENTS.md 10). A tier says WHO publishes; it is never proof that each
+ * statement is correct, and an unknown publisher stays unclassified.
+ */
+export const tierGuidance: Record<Tier, string> = {
+  T1: "Cơ quan nhà nước hoặc có thẩm quyền pháp lý (di trú, thống kê quốc gia, bộ ngành). Bắt buộc cho quy định nhập cư.",
+  T2: "Tổ chức EU hoặc quốc tế, trường đại học, tổ chức giáo dục chính thức.",
+  T3: "Báo chí, tạp chí chuyên ngành, trang tổng hợp, công ty tư vấn.",
+  T4: "Blog cá nhân, diễn đàn, mạng xã hội: chỉ là trải nghiệm, không phải chính sách.",
+};
 
 // Comma/newline/semicolon-separated free text -> a short, deduplicated topic list.
 // The RPC does its own length/shape validation; this only shapes the input.

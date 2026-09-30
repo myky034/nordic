@@ -508,3 +508,31 @@ Màn hình cũ không cho người duyệt thấy trang đó đã chứng minh n
 `lib/review/siblings.ts` (quy tắc, có test) → `components/review/same-page-facts.tsx`
 (hiển thị) → `app/(app)/facts/workspace/page.tsx` (truy vấn cho mục đang chọn).
 Xem thử: `/dev/preview?section=review&item=f1`.
+
+## Cập nhật 2026-09-30 — Trang quản lý nguồn `/admin/sources` dạng chia đôi
+
+### Vấn đề
+
+Mỗi nguồn là một dòng có form chỉnh sửa dài (13 trường) giấu trong "Chỉnh sửa";
+mở form ở dòng thứ 10 thì phải cuộn rất xa, phân trang nằm ở cuối, và nhãn còn
+tiếng Anh và mã thô ("Source tier", "Crawl policy: not_reviewed").
+
+### Đã xây dựng
+
+- Dùng lại `SplitView`: **bên trái** danh sách nguồn (tên, tên miền · quốc gia, nhãn
+  tier / xác minh / "Đang crawl"), phân trang ở chân danh sách; **bên phải** tiêu đề
+  nguồn, URL, các nhãn, ngày xác minh gần nhất và form. `?source=<id>` chọn nguồn;
+  nút **Thêm nguồn mới** ở đầu trang mở form trống ở khung bên phải (`?new=1`).
+- **Form chia nhóm** theo câu hỏi mà nhóm đó trả lời, giống Cài đặt của Apple:
+  Thông tin nguồn · Phân loại và xác minh · Crawl · Ghi chú nội bộ.
+- **Hướng dẫn chọn tier ngay dưới ô Tier** (`tierGuidance` trong
+  `lib/registry/domain.ts`), cùng câu nhắc "chưa chắc thì để Chưa phân loại"; ô Căn
+  cứ xác minh có ví dụ mẫu. Chính sách crawl dùng nhãn tiếng Việt
+  (`crawlPolicyLabels`).
+- **Thanh "Lưu thay đổi" dính ở đáy cửa sổ**: với form dài, khung chi tiết cuộn theo
+  trang (`paneScroll={false}`) còn danh sách vẫn dính bên trái, nên nút lưu luôn
+  trong tầm nhìn. Trang duyệt thông tin vẫn để khung chi tiết cuộn riêng.
+- Lưu xong mà nguồn chuyển sang tab khác (ví dụ sang "Đã xác minh") thì nguồn đầu
+  tiên còn lại được mở, như hàng chờ duyệt.
+
+Xem thử: `/dev/preview?section=sources-admin&src=s2`.

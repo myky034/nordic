@@ -14,8 +14,10 @@ import { Chevron } from "@/components/ui";
  * Below 1024px there is room for one pane: without an explicit selection the
  * list shows; with one, the detail shows with a "Danh sách" back link.
  */
-export function SplitView({ list, detail, detailKey, detailOnMobile, backHref }: {
+export function SplitView({ list, detail, detailKey, detailOnMobile, backHref, paneScroll = true }: {
   list: React.ReactNode; detail: React.ReactNode; detailKey?: string; detailOnMobile: boolean; backHref: string;
+  /** false: the detail scrolls with the page (for long forms whose save bar sticks to the bottom of the window). */
+  paneScroll?: boolean;
 }) {
   return <div className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:items-start">
     <div className={`${detailOnMobile ? "hidden lg:block" : ""} lg:sticky lg:top-20`}>
@@ -26,7 +28,7 @@ export function SplitView({ list, detail, detailKey, detailOnMobile, backHref }:
     {/* On wide screens both panes scroll on their own, like Mail, so the page
         never has to move. `key` remounts the pane for each item, which resets
         its scroll to the top when the queue advances after a decision. */}
-    <div key={detailKey} className={`min-w-0 lg:sticky lg:top-20 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1 ${detailOnMobile ? "" : "hidden lg:block"}`}>
+    <div key={detailKey} className={`min-w-0 ${paneScroll ? "lg:sticky lg:top-20 lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:overscroll-contain lg:pr-1" : ""} ${detailOnMobile ? "" : "hidden lg:block"}`}>
       {detailOnMobile && <Link href={backHref} scroll={false} className="mb-4 inline-flex items-center gap-1.5 text-[15px] text-accent lg:hidden">
         <Chevron className="rotate-180 text-accent" />Danh sách
       </Link>}

@@ -32,6 +32,7 @@ import { ReviewFields } from "@/components/review/review-panel";
 import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
 import { selectItem } from "@/lib/review/selection";
 import { SamePageFacts } from "@/components/review/same-page-facts";
+import { SourceForm } from "@/app/(app)/admin/sources/forms";
 import { ReviewStepsView } from "@/components/review/review-steps";
 import { DecisionHistory } from "@/components/review/decision-history";
 
@@ -40,7 +41,7 @@ const demoStepCounts = { sourcesUnverified: null, education: 12, immigration: 3,
 import { VisibilityNote } from "@/components/review/visibility-note";
 import { entityStatuses } from "@/lib/education/domain";
 import { statuses as factStatuses } from "@/lib/facts/domain";
-import { sourceStatusLabels, sourceStatuses } from "@/lib/registry/domain";
+import { sourceStatusLabels, sourceStatuses, verificationLabel } from "@/lib/registry/domain";
 import type { Visibility } from "@/lib/review/visibility";
 
 // One DEMO row per visibility state a reviewer can meet (lib/review/visibility.ts).
@@ -56,7 +57,7 @@ export const metadata = { title: "UI preview (DEMO)", robots: { index: false, fo
 
 const toc = [
   ["foundations", "Foundations"], ["lists", "Long list + pagination"], ["sources", "Source rows"], ["facts", "Fact cards"],
-  ["dashboard", "Dashboard"], ["review", "Review split view"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
+  ["dashboard", "Dashboard"], ["review", "Review split view"], ["sources-admin", "Sources admin"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
 ] as const;
 
 export default async function PreviewPage({ searchParams }: PageProps<"/dev/preview">) {
@@ -65,6 +66,8 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
   const page = pageParam(query);
   const { from, to } = pageWindow(page);
   const tab = typeof query.tab === "string" ? query.tab : "proposed";
+  const src = typeof query.src === "string" ? query.src : undefined;
+  const demoSource = demoSources.find((s) => s.id === src) ?? demoSources[0];
   const item = typeof query.item === "string" ? query.item : undefined;
   const demoSelection = selectItem(demoFacts.map((d) => d.fact.id), item);
   const demoSelected = demoFacts[demoSelection.index].fact;
@@ -144,6 +147,16 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
               <fieldset disabled className="space-y-4 rounded-2xl bg-fill/50 p-4 opacity-90 sm:p-5"><ReviewFields checks={["DEMO: trích đoạn có nguyên văn trên trang gốc.", "DEMO: giá trị khớp trích đoạn."]} /></fieldset>
             </div></div>
         </>} />
+    </Section>}
+    {show("sources-admin") && <Section title="Sources admin" description="/admin/sources: list on the left, the grouped edit form on the right with a sticky save bar. ?src= selects; the form is disabled here." className="scroll-mt-24"><span id="sources-admin" />
+      <SplitView detailKey={demoSource.id} paneScroll={false} detailOnMobile={!!src} backHref="/dev/preview?section=sources-admin"
+        list={<SplitList label="DEMO sources" footer={<SplitPager summary={{ pages: 1, current: 1, first: 1, last: demoSources.length, total: demoSources.length, hasPrev: false, hasNext: false }} href={() => "#"} />}>
+          {demoSources.map((s) => <SplitRow key={s.id} href={`/dev/preview?section=sources-admin&src=${s.id}`} selected={s.id === demoSource.id} explicit={!!src}
+            title={s.name} subtitle={`demo.example.test · ${s.country?.name ?? "Chưa gán quốc gia"}`}
+            badges={<><TierBadge tier={s.sourceTier} /><SourceStatusBadge status={s.status}>{verificationLabel(s.status, s.lastVerifiedAt)}</SourceStatusBadge></>} />)}
+        </SplitList>}
+        detail={<><h2 className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{demoSource.name}</h2>
+          <fieldset disabled><SourceForm source={demoSource} countries={demoCountries} /></fieldset></>} />
     </Section>}
     {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
       <ReviewStepsView counts={demoStepCounts} permissions={["facts.review"]} current="education" />
