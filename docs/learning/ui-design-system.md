@@ -439,3 +439,47 @@ vì hiện "chưa biết · chưa biết".
   số đếm), người đề xuất (không số đếm), đếm lỗi thì không hiện số.
 - Test trang tài liệu và trang quốc gia: khách không thấy link workspace; người có
   quyền thì thấy.
+
+## Cập nhật 2026-09-30 — Trang "Thông tin & bằng chứng" dạng chia đôi (kiểu Mail)
+
+### Vấn đề
+
+Trang duyệt hiển thị tới 25 thẻ thông tin đầy đủ, mỗi thẻ kèm form mở sẵn. Người
+duyệt phải cuộn rất xa xuống cuối trang để phân trang hoặc xem lịch sử, rồi lại
+cuộn lên để đổi tab.
+
+### Đã xây dựng (`components/review/split-view.tsx`)
+
+- **Bên trái**: danh sách gọn (tiêu đề "đối tượng — thuộc tính", một dòng giá trị ·
+  nguồn, nhãn nhỏ "AI", "Nguồn đã đổi", "Chưa công khai"), có thanh cuộn riêng;
+  phân trang gọn ("1–25 / 60 ‹ 1/3 ›") luôn nằm ở chân danh sách.
+- **Bên phải**: thẻ thông tin của mục đang chọn, dòng trạng thái công khai và khung
+  quyết định; nút **‹ Trước · 7/25 · Sau ›** để đi qua các mục mà không cần danh sách.
+  Khung này cũng cuộn riêng; đổi mục thì nó quay về đầu.
+- **Duyệt xong tự sang mục kế tiếp**: mục vừa duyệt rời tab "Chờ duyệt", nên trang
+  hiển thị mục đầu tiên còn lại (`lib/review/selection.ts`) — không cần code phía
+  trình duyệt.
+- **Màn hình hẹp (< 1024px)**: chỉ đủ chỗ cho một khung. Chưa chọn thì hiện danh
+  sách; chọn một mục thì hiện chi tiết với nút "‹ Danh sách".
+
+### Next.js
+
+- Mục đang chọn nằm trong URL (`?fact=<id>`), nên tải lại trang vẫn giữ nguyên và
+  hoạt động không cần JavaScript phía client. Các `Link` dùng `scroll={false}` để
+  trang không nhảy lên đầu khi đổi mục.
+- `key={current.id}` trên khung chi tiết: React tạo lại phần tử khi đổi mục, nên
+  vị trí cuộn của khung được đặt lại về đầu, và form của mục cũ không giữ trạng
+  thái (thông báo lỗi…) sang mục mới.
+
+### Kiểm thử
+
+- `lib/review/selection.test.ts`: chọn đúng mục, mục trước/sau; mục đã rời danh sách
+  thì chọn mục đầu; danh sách trống thì không chọn gì.
+- Xem bằng mắt: `/dev/preview?section=review` (thêm `&item=f8` để chọn một mục).
+
+### Còn lại
+
+- Ba trang duyệt còn lại (trường & chương trình, nhập cư, nghề) vẫn là danh sách
+  một cột; mục của chúng ngắn hơn nhiều. Có thể chuyển sang cùng bố cục nếu cần.
+- User Guide mục 5.4 vẫn mô tả danh sách một cột cho trang này; cần cập nhật hình 22
+  và đoạn hướng dẫn.

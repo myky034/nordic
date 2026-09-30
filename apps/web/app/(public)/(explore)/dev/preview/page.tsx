@@ -29,6 +29,8 @@ import { itemOutcomes, requestStatuses } from "@/lib/extraction/domain";
 import { counters, dashboardGroups } from "@/lib/dashboard/items";
 import { CounterTile, TileLink } from "@/app/(app)/dashboard/tiles";
 import { ReviewFields } from "@/components/review/review-panel";
+import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
+import { selectItem } from "@/lib/review/selection";
 import { ReviewStepsView } from "@/components/review/review-steps";
 import { DecisionHistory } from "@/components/review/decision-history";
 
@@ -53,7 +55,7 @@ export const metadata = { title: "UI preview (DEMO)", robots: { index: false, fo
 
 const toc = [
   ["foundations", "Foundations"], ["lists", "Long list + pagination"], ["sources", "Source rows"], ["facts", "Fact cards"],
-  ["dashboard", "Dashboard"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
+  ["dashboard", "Dashboard"], ["review", "Review split view"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
 ] as const;
 
 export default async function PreviewPage({ searchParams }: PageProps<"/dev/preview">) {
@@ -62,6 +64,9 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
   const page = pageParam(query);
   const { from, to } = pageWindow(page);
   const tab = typeof query.tab === "string" ? query.tab : "proposed";
+  const item = typeof query.item === "string" ? query.item : undefined;
+  const demoSelection = selectItem(demoFacts.map((d) => d.fact.id), item);
+  const demoSelected = demoFacts[demoSelection.index].fact;
   const rows = demoProgrammes.slice(from, to + 1);
   // ?section=<id> renders one section only (handy for screenshots in docs).
   const only = typeof query.section === "string" && toc.some(([id]) => id === query.section) ? query.section : "";
@@ -117,6 +122,23 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.tiles.map((t) => <TileLink key={t.href} tile={{ ...t, href: "#dashboard" }} />)}</div></div>)}
     </Section>}
 
+    {show("review") && <Section title="Review split view" description="/facts/workspace: compact list on the left (own scroll, sticky), the selected claim and its decision on the right. ?item= selects; forms are inert." className="scroll-mt-24"><span id="review" />
+      <SplitView detailKey={demoSelected.id} detailOnMobile={!!item} backHref="/dev/preview?section=review#review"
+        list={<SplitList label="DEMO list" footer={<SplitPager summary={{ pages: 3, current: 1, first: 1, last: demoFacts.length, total: 60, hasPrev: false, hasNext: true }} href={(p) => `/dev/preview?section=review&page=${p}#review`} />}>
+          {demoFacts.map(({ fact: f }) => <SplitRow key={f.id} href={`/dev/preview?section=review&item=${f.id}#review`} selected={f.id === demoSelected.id} explicit={!!item}
+            title={`${f.subject} — ${f.predicate}`} subtitle={`${f.value}${f.unit ? " " + f.unit : ""} · ${f.documents.sources.name}`}
+            badges={f.origin === "ai" || f.source_changed_at ? <>{f.origin === "ai" && <Badge tone="accent">AI</Badge>}{f.source_changed_at && <Badge tone="caution">Nguồn đã đổi</Badge>}</> : undefined} />)}
+        </SplitList>}
+        detail={<>
+          <ItemStepper index={demoSelection.index} count={demoFacts.length}
+            prevHref={demoSelection.prevId ? `/dev/preview?section=review&item=${demoSelection.prevId}#review` : null}
+            nextHref={demoSelection.nextId ? `/dev/preview?section=review&item=${demoSelection.nextId}#review` : null} />
+          <div className="space-y-4"><FactCard fact={demoSelected} />
+            <div className="space-y-3 px-1"><VisibilityNote visibility={{ state: "will_be_public" }} />
+              <fieldset disabled className="space-y-4 rounded-2xl bg-fill/50 p-4 opacity-90 sm:p-5"><ReviewFields checks={["DEMO: trích đoạn có nguyên văn trên trang gốc.", "DEMO: giá trị khớp trích đoạn."]} /></fieldset>
+            </div></div>
+        </>} />
+    </Section>}
     {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
       <ReviewStepsView counts={demoStepCounts} permissions={["facts.review"]} current="education" />
       <Segmented label="DEMO status" items={[["proposed", "Chờ duyệt", 12], ["reviewed", "Đã duyệt", 48], ["rejected", "Từ chối", 3]].map(([v, l, n]) => ({ href: `/dev/preview?tab=${v}#workspace`, label: l as string, count: n as number, active: tab === v }))} />

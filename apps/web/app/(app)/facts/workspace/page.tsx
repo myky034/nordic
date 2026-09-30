@@ -4,6 +4,8 @@ import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
+import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
+import { selectItem } from "@/lib/review/selection";
 import { VisibilityNote } from "@/components/review/visibility-note";
 import { ReviewSteps } from "@/components/review/review-steps";
 import { DecisionHistory } from "@/components/review/decision-history";
@@ -14,7 +16,7 @@ import { factBlockers, visibilityOf } from "@/lib/review/visibility";
 import { uuidPattern } from "@/lib/documents/domain";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
-import { Disclosure, EmptyState, NoAccess, PageHeader, Pagination, SearchInput, Section, Segmented } from "@/components/ui";
+import { Badge, Disclosure, EmptyState, NoAccess, PageHeader, SearchInput, Section, Segmented } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 
 // "source_changed" is not a status: it is the Slice 9 queue of published
@@ -94,24 +96,45 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    rule:f.immigration_rule_id?rules.get(f.immigration_rule_id) ?? {status:"",source:{status:"",source_tier:null}}:null,
    occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
  }));
+ // Split view selection (?fact=…); falls back to the first item on this page.
+ const requested=typeof params.fact==="string"&&uuidPattern.test(params.fact)?params.fact:undefined;
+ const selection=selectItem(facts.map(f=>f.id),requested);
+ const current=selection.index>=0?facts[selection.index]:null;
  return <>
  <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
  {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}
  <Section title="Đề xuất">
+ <div className="flex flex-wrap items-center justify-between gap-3">
  <Segmented label="Lọc theo trạng thái" items={tabs.map(([value,label],i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label,count:tabCounts[i],active:status===value}))}/>
- <form action="/facts/workspace" className="mb-5">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
- {facts.length?<div className="space-y-6">{facts.map(f=><div key={f.id} className="space-y-3"><FactCard fact={f}/>
-   <div className="space-y-3 px-1">
-   <VisibilityNote visibility={visibility(f)} publicHref="/facts"/>
-   {/* The decision sits right under the claim in the review queue: no extra click to find it. */}
-   {review&&f.status==="proposed"&&<ReviewForm id={f.id} ai={f.origin==="ai"}/>}
-   {review&&f.source_changed_at&&<Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm id={f.id}/></Disclosure>}
-   {review&&status!=="source_changed"&&(f.status==="reviewed"||f.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary="Đánh dấu mâu thuẫn với thông tin khác"><ConflictForm id={f.id} others={conflictCandidates}/></Disclosure>}
-   </div></div>)}</div>
+ <form action="/facts/workspace" className="mb-5 w-full sm:w-72">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
+ </div>
+ {facts.length?<SplitView detailKey={current?.id} detailOnMobile={!!requested} backHref={withParams("/facts/workspace",params,{fact:null})}
+   list={<SplitList label="Danh sách thông tin" footer={<SplitPager summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p,fact:null})}/>}>
+     {facts.map(f=>{const v=visibility(f);return <SplitRow key={f.id} href={withParams("/facts/workspace",params,{fact:f.id})} selected={f.id===current?.id} explicit={!!requested}
+       title={`${f.subject} — ${f.predicate}`} subtitle={`${f.value}${f.unit?" "+f.unit:""} · ${f.documents.sources.name}`}
+       badges={(f.origin==="ai"||f.source_changed_at||v?.state==="hidden"||v?.state==="will_stay_hidden")?<>
+         {f.origin==="ai"&&<Badge tone="accent">AI</Badge>}
+         {f.source_changed_at&&<Badge tone="caution">Nguồn đã đổi</Badge>}
+         {(v?.state==="hidden"||v?.state==="will_stay_hidden")&&<Badge tone="caution">Chưa công khai</Badge>}
+       </>:undefined}/>;})}
+   </SplitList>}
+   detail={current&&<>
+     <ItemStepper index={selection.index} count={facts.length}
+       prevHref={selection.prevId?withParams("/facts/workspace",params,{fact:selection.prevId}):null}
+       nextHref={selection.nextId?withParams("/facts/workspace",params,{fact:selection.nextId}):null}/>
+     <div className="space-y-4">
+     <FactCard fact={current}/>
+     <div className="space-y-3 px-1">
+     <VisibilityNote visibility={visibility(current)} publicHref="/facts"/>
+     {/* The decision sits right under the claim. After a decision the item leaves this tab and the next one opens (lib/review/selection.ts). */}
+     {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"}/>}
+     {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm key={current.id} id={current.id}/></Disclosure>}
+     {review&&status!=="source_changed"&&(current.status==="reviewed"||current.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary="Đánh dấu mâu thuẫn với thông tin khác"><ConflictForm key={current.id} id={current.id} others={conflictCandidates}/></Disclosure>}
+     </div></div>
+   </>}/>
   :<EmptyState>{status==="proposed"?"Không có đề xuất nào đang chờ duyệt.":status==="source_changed"?"Không có thông tin nào có nguồn vừa thay đổi.":"Không có mục nào trong nhóm này."}{q?` (tìm “${q}”)`:""}</EmptyState>}
- <Pagination summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p})}/>
  </Section>
  <Section>
  <DecisionHistory items={reviews.map(r=>({id:r.id,decision:r.decision,note:r.note,createdAt:r.created_at,title:factName(r.fact),
