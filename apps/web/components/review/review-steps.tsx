@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { reviewSteps, stepLinks, type CountId, type StepPage } from "@/lib/review/steps";
 import { pendingCounts } from "@/lib/review/pending-counts";
@@ -7,9 +8,23 @@ import { pendingCounts } from "@/lib/review/pending-counts";
  * "Where am I in the review work?" — three numbered steps with pending counts,
  * in the style of an Apple setup assistant / the /dashboard counters.
  * Counting (RLS-scoped, failed count = "—") lives in lib/review/pending-counts.ts.
+ *
+ * The counts take several database round trips, so they stream: the page
+ * (and the review list) renders first, with a placeholder of the same size.
  */
-export async function ReviewSteps({ client, permissions, current }: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
+export function ReviewSteps(props: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
+  return <Suspense fallback={<ReviewStepsPlaceholder />}><ReviewStepsContent {...props} /></Suspense>;
+}
+
+export async function ReviewStepsContent({ client, permissions, current }: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
   return <ReviewStepsView counts={await pendingCounts(client)} permissions={permissions} current={current} />;
+}
+
+function ReviewStepsPlaceholder() {
+  return <div aria-hidden="true" className="mb-10">
+    <div className="mb-3 h-4 w-32 rounded bg-fill" />
+    <div className="grid gap-3 lg:grid-cols-3">{[0, 1, 2].map((i) => <div key={i} className="h-36 animate-pulse rounded-2xl bg-surface ring-1 ring-hairline" />)}</div>
+  </div>;
 }
 
 /** Rendering only (no data access), so /dev/preview can show it with DEMO counts. */

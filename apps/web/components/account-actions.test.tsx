@@ -6,7 +6,7 @@ const pending = vi.fn();
 vi.mock("@/lib/rbac/viewer", () => ({ viewerPermissions: () => perms() }));
 vi.mock("@/lib/review/pending-total", () => ({ pendingProposalTotal: () => pending() }));
 vi.mock("@/app/(auth)/actions", () => ({ signOut: async () => {} }));
-import { AccountActions } from "./account-actions";
+import { AccountActions, PendingBadge } from "./account-actions";
 
 beforeEach(() => { perms.mockReset(); pending.mockReset(); });
 const render = async () => renderToStaticMarkup(await AccountActions());
@@ -29,19 +29,22 @@ it("gives a signed-in user without permissions their own space and sign-out, but
   expect(pending).not.toHaveBeenCalled();
 });
 
-it("adds the editor entry with the pending count for a reviewer", async () => {
+it("adds the editor entry for a reviewer; the pending count streams in as its own badge", async () => {
   perms.mockResolvedValue(["facts.review"]);
-  pending.mockResolvedValue(7);
   const html = await render();
-  for (const text of ['href="/dashboard"', "Biên tập", ">7<", "7 đề xuất chờ duyệt", 'href="/workspace"', "Đăng xuất"]) expect(html).toContain(text);
+  for (const text of ['href="/dashboard"', "Biên tập", 'href="/workspace"', "Đăng xuất"]) expect(html).toContain(text);
+  pending.mockResolvedValue(7);
+  const badge = renderToStaticMarkup(await PendingBadge());
+  expect(badge).toContain(">7<");
+  expect(badge).toContain("đề xuất chờ duyệt");
+  pending.mockResolvedValue(null);
+  expect(await PendingBadge()).toBeNull();
+  pending.mockResolvedValue(0);
+  expect(await PendingBadge()).toBeNull();
 });
 
-it("shows the editor entry without a count to a proposer, and no count when counting failed", async () => {
+it("shows the editor entry to a proposer without asking for the count", async () => {
   perms.mockResolvedValue(["education.manage"]);
-  const proposer = await render();
-  expect(proposer).toContain("Biên tập");
+  expect(await render()).toContain("Biên tập");
   expect(pending).not.toHaveBeenCalled();
-  perms.mockResolvedValue(["facts.review"]);
-  pending.mockResolvedValue(null);
-  expect(await render()).not.toContain("đề xuất chờ duyệt");
 });

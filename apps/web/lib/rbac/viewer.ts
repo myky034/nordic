@@ -1,8 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { getAuthClaims } from "@/lib/auth/session";
-import { createClient } from "@/lib/supabase/server";
-import { logAccessError } from "./access";
+import { myPermissionKeys } from "./access";
 
 /**
  * The current viewer's permission keys, for deciding which buttons to show:
@@ -12,14 +11,12 @@ import { logAccessError } from "./access";
  * cache() makes that one `my_permissions` call instead of several.
  *
  * If the permission lookup fails, the viewer is treated as having none:
- * editor buttons stay hidden (fail closed) and the failure is logged. This is
+ * editor buttons stay hidden (fail closed); myPermissionKeys logs the failure. This is
  * display only — pages and actions enforce permissions themselves.
  */
 export const viewerPermissions = cache(async (): Promise<string[] | null> => {
   const claims = await getAuthClaims();
   if (!claims) return null;
-  const client = await createClient();
-  const { data, error } = await client.rpc("my_permissions");
-  if (error) { logAccessError("viewer_permissions"); return []; }
-  return (data as { key: string }[]).map((row) => row.key);
+  // Same cached lookup as accessContext(), so a page and its header share one call.
+  try { return await myPermissionKeys(); } catch { return []; }
 });

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { signOut } from "@/app/(auth)/actions";
 import { viewerPermissions } from "@/lib/rbac/viewer";
 import { accountLinks } from "@/lib/rbac/ui";
@@ -22,12 +23,11 @@ export async function AccountActions() {
   if (!links.signedIn) {
     return <Link href="/login" className={`${pill} bg-ink text-canvas hover:opacity-85`}>Đăng nhập</Link>;
   }
-  const pending = links.editor?.showPending ? await pendingProposalTotal() : null;
   return <div className="flex items-center gap-2">
-    {links.editor && <Link href={links.editor.href} className={`${pill} bg-ink text-canvas hover:opacity-85`}
-      aria-label={pending ? `${links.editor.label}, ${pending} đề xuất chờ duyệt` : undefined}>
+    {links.editor && <Link href={links.editor.href} className={`${pill} bg-ink text-canvas hover:opacity-85`}>
       {links.editor.label}
-      {!!pending && <span aria-hidden="true" className="min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] font-semibold leading-5 text-white tabular-nums">{pending > 99 ? "99+" : pending}</span>}
+      {/* The count needs several queries; it streams in after the page instead of delaying it. */}
+      {links.editor.showPending && <Suspense fallback={null}><PendingBadge /></Suspense>}
     </Link>}
     {/* With an editor button present, the personal link moves to the dashboard tiles on narrow screens. */}
     <Link href={links.personal.href} className={`${pill} ${links.editor ? "hidden sm:inline-flex bg-fill text-ink hover:bg-fill-strong" : "bg-ink text-canvas hover:opacity-85"}`}>{links.personal.label}</Link>
@@ -35,4 +35,13 @@ export async function AccountActions() {
       <button type="submit" className={`${pill} bg-fill text-ink hover:bg-fill-strong`}>Đăng xuất</button>
     </form>
   </div>;
+}
+
+/** Proposals waiting for review, as a small badge; nothing when zero or when counting failed. */
+export async function PendingBadge() {
+  const pending = await pendingProposalTotal();
+  if (!pending) return null;
+  return <span className="min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] font-semibold leading-5 text-white tabular-nums">
+    <span className="sr-only">, </span>{pending > 99 ? "99+" : pending}<span className="sr-only"> đề xuất chờ duyệt</span>
+  </span>;
 }

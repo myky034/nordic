@@ -628,3 +628,41 @@ nền khi mở khung trượt, tiêu đề dính của khung trượt, thanh "L�
   của chế độ tập trung): dùng nền đặc `bg-canvas`.
 - Khi kiểm tra độ mượt, nên dùng bản production (`npm run build && npm start`):
   `next dev` chạy mã chưa tối ưu nên chậm hơn bản thật.
+
+## Cập nhật 2026-09-30 — Bấm và chuyển trang chậm
+
+### Đo được
+
+- Trang DEMO không truy cập database render trong ~0,1 giây; trang thật 1–3 giây.
+- Mỗi lượt gọi Supabase từ máy dev mất **0,4–0,8 giây**: database ở vùng
+  **ap-southeast-2 (Sydney)**. Thời gian chủ yếu là chờ mạng, và một số lượt gọi chạy
+  **nối tiếp** thay vì song song.
+
+### Đã sửa
+
+- **Hỏi quyền một lần mỗi request**: `myPermissionKeys` và `accessContext` trong
+  `lib/rbac/access.ts` dùng `cache()` của React; `viewerPermissions` (header) dùng lại
+  cùng kết quả. Trước đây header và trang mỗi bên gọi `my_permissions` một lần.
+- **`getUser()` và hỏi quyền chạy song song** trong `accessContext` (kết quả "chưa
+  đăng nhập" vẫn được kiểm tra trước, nên quy tắc không đổi).
+- **Streaming bằng `<Suspense>`**: phần tài khoản ở header, con số việc chờ trên nút
+  "Biên tập" và thanh "Quy trình duyệt" tải trong vùng riêng, có khung giữ chỗ; trang
+  không phải đợi chúng. Khung trang giờ về trong ~0,03–0,14 giây.
+- **Trang duyệt thông tin**: truy vấn "cùng trang" chạy chung lượt với các truy vấn
+  trạng thái công khai (bớt một lượt chờ).
+- **Phản hồi khi bấm**: `LinkPending` (`components/ui/link-pending.tsx`, dùng
+  `useLinkStatus` của `next/link`) hiện vòng xoay nhỏ trong dòng bảng, dòng danh sách,
+  tab và nút Trước/Sau cho đến khi trang mới sẵn sàng; dòng có hiệu ứng nhấn
+  (`active:`).
+
+### Khi deploy
+
+Đặt vùng chạy server của Vercel **cùng vùng với database** (Sydney, `syd1`), vì mỗi
+trang cần nhiều lượt gọi database: cùng vùng thì mỗi lượt vài mili giây thay vì nửa
+giây. Bản dev trên máy luôn chậm hơn bản production.
+
+### Còn lại
+
+- Các trang dùng Prisma trong giao dịch có `SET LOCAL ROLE` (ví dụ `/sources`,
+  `/admin/sources`) cần nhiều lượt đi về trong một giao dịch; từ máy dev mỗi trang
+  ~1,7 giây. Sẽ nhanh lên khi chạy cùng vùng; nếu vẫn chậm thì gộp truy vấn.

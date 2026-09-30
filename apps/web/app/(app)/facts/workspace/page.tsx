@@ -81,15 +81,26 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    if(extra.error){logAccessError("facts_selected_document");throw new Error("Không tải được tài liệu đã chọn.");}
    if(extra.data) documents.unshift(extra.data);
  }
+ // Split view selection (?fact=…); falls back to the first item on this page.
+ const requested=typeof params.fact==="string"&&uuidPattern.test(params.fact)?params.fact:undefined;
+ const selection=selectItem(facts.map(f=>f.id),requested);
+ const current=selection.index>=0?facts[selection.index]:null;
  // Visibility: the database answers "is it public?" (anon client); linked
  // rules/occupations are loaded only to explain a "no" (lib/review/visibility.ts).
  const ruleIds=[...new Set(facts.flatMap(f=>f.immigration_rule_id?[f.immigration_rule_id]:[]))];
  const occupationIds=[...new Set(facts.flatMap(f=>f.occupation_id?[f.occupation_id]:[]))];
- const [linkedRules,linkedOccupations,visible]=await Promise.all([
+ const [linkedRules,linkedOccupations,visible,sameDocument]=await Promise.all([
    ruleIds.length?client.from("immigration_rules").select("id,status,documents!immigration_rules_document_id_fkey(sources(status,source_tier))").in("id",ruleIds):Promise.resolve({data:[],error:null}),
    occupationIds.length?client.from("occupations").select("id,status").in("id",occupationIds):Promise.resolve({data:[],error:null}),
    facts.some(f=>f.status==="reviewed"||f.status==="conflicted")?publicIds("facts",facts.map(f=>f.id)):Promise.resolve(new Set<string>()),
+   // Other claims from the same evidence document, for the selected claim only
+   // (lib/review/siblings.ts). Fetched in the same round as the lookups above,
+   // since each Supabase round trip is slow.
+   current?client.from("facts").select("id,subject,predicate,value,unit,status").eq("document_id",current.document_id).neq("id",current.id).order("created_at").limit(30):Promise.resolve({data:[],error:null}),
  ]);
+ // Editors' RLS shows every status; a failure is shown, not hidden.
+ if(sameDocument.error) logAccessError("facts_workspace_same_document");
+ const siblings:Sibling[]|null=sameDocument.error?null:sameDocument.data as Sibling[];
  if(linkedRules.error||linkedOccupations.error){logAccessError("facts_workspace_links");throw new Error("Không tải được dữ liệu biên tập.");}
  const rules=new Map((linkedRules.data as unknown as {id:string;status:string;documents:{sources:{status:string;source_tier:string|null}}}[]).map(r=>[r.id,{status:r.status,source:r.documents.sources}]));
  const occupations=new Map((linkedOccupations.data as {id:string;status:string}[]).map(o=>[o.id,o]));
@@ -98,17 +109,6 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    rule:f.immigration_rule_id?rules.get(f.immigration_rule_id) ?? {status:"",source:{status:"",source_tier:null}}:null,
    occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
  }));
- // Split view selection (?fact=…); falls back to the first item on this page.
- const requested=typeof params.fact==="string"&&uuidPattern.test(params.fact)?params.fact:undefined;
- const selection=selectItem(facts.map(f=>f.id),requested);
- const current=selection.index>=0?facts[selection.index]:null;
- // Other claims from the same evidence document, for the selected claim only
- // (lib/review/siblings.ts). Editors' RLS shows every status; a failure is shown, not hidden.
- let siblings:Sibling[]|null=[];
- if(current){
-   const sib=await client.from("facts").select("id,subject,predicate,value,unit,status").eq("document_id",current.document_id).neq("id",current.id).order("created_at").limit(30);
-   if(sib.error){logAccessError("facts_workspace_same_document");siblings=null;}else siblings=sib.data as Sibling[];
- }
  return <>
  <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}

@@ -41,7 +41,7 @@ it("lists decisions by item name with a plain label, not a code or an id", async
 });
 
 it("shows the three review steps with counts, marks the current one, and never shows a failed count as zero", async () => {
-  const { ReviewSteps } = await import("./review-steps");
+  const { ReviewStepsContent: ReviewSteps } = await import("./review-steps");
   // Fake client: every table has 2 pending rows except sources, whose count fails.
   const client = { from: (table: string) => ({ select: () => ({ eq: () => Promise.resolve(table === "sources" ? { count: null, error: new Error("x") } : { count: 2, error: null }) }) }) };
   const errors = console.error; console.error = () => {};
