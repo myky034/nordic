@@ -536,3 +536,34 @@ tiếng Anh và mã thô ("Source tier", "Crawl policy: not_reviewed").
   tiên còn lại được mở, như hàng chờ duyệt.
 
 Xem thử: `/dev/preview?section=sources-admin&src=s2`.
+
+## Cập nhật 2026-09-30 — Trang phân quyền `/admin/access`
+
+### Vấn đề
+
+Một trang dài gồm: danh sách vai trò (mỗi vai trò giấu form sửa), danh sách người dùng
+(mỗi người có hai ô chọn "vai trò" + "Gán / Gỡ" rất dễ bấm nhầm), và nhật ký hiện mã
+thao tác cùng UUID. Quyền hiện bằng mã (`facts.review`) và mô tả tiếng Anh.
+
+### Đã xây dựng
+
+- **Ba tab** (`?tab=users|roles|audit`), chỉ hiện tab người đó có quyền dùng.
+- **Người dùng** (chia đôi): danh sách email kèm vai trò (hoặc nhãn cam "Chưa có vai
+  trò"); bên phải là **Vai trò hiện có**, mỗi vai trò một thẻ có nút **Gỡ** riêng, và
+  **Thêm vai trò** chỉ liệt kê vai trò người đó chưa có và bạn được phép gán. Tài
+  khoản của chính bạn không sửa được (database cũng từ chối).
+- **Vai trò** (chia đôi): quyền chia nhóm (Thông tin và duyệt · Dữ liệu chuyên mục ·
+  Nguồn và tài liệu · Quản trị — `permissionGroups` trong `lib/rbac/labels.ts`), tên
+  tiếng Việt kèm mã nhỏ; quyền bạn không có thì bị khóa kèm lý do. **+ Tạo vai trò
+  mới** ở chân danh sách; thanh **Lưu vai trò** dính ở đáy cửa sổ.
+- **Nhật ký**: tên thao tác dễ hiểu (`auditActionLabel`: "Gán vai trò", "Lưu URL
+  crawl"…), "người thực hiện → đối tượng" hiện tên vai trò, email hoặc "Bạn" khi
+  trang đã biết; dữ liệu gốc (JSON) nằm trong "Chi tiết kỹ thuật".
+
+### Bảo mật
+
+Không đổi server action hay RPC: gỡ và thêm vẫn gọi `assign_access_role` như trước;
+việc khóa quyền trong form chỉ là hiển thị, database vẫn tự kiểm tra (không cấp được
+quyền mình không có, không tự đổi vai trò của mình).
+
+Xem thử: `/dev/preview?section=access-admin` (thêm `&atab=roles`).

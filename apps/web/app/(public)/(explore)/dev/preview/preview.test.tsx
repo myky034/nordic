@@ -6,6 +6,7 @@ vi.mock("@/lib/supabase/server", () => ({ createClient: () => { throw new Error(
 vi.mock("@/lib/supabase/public", () => ({ createPublicClient: () => { throw new Error("DB_ACCESS"); } }));
 // The admin source form imports a Server Action (server-only code); its own page renders it.
 vi.mock("@/app/(app)/admin/sources/forms", () => ({ SourceForm: () => null }));
+vi.mock("@/app/(app)/admin/access/forms", () => ({ RoleForm: () => null, UserRoles: () => null }));
 import PreviewPage from "./page";
 afterEach(() => { vi.unstubAllEnvs(); });
 const render = async (query: Record<string, string> = {}) => renderToStaticMarkup(await PreviewPage({ params: Promise.resolve({}), searchParams: Promise.resolve(query) }));
