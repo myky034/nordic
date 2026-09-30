@@ -6,6 +6,8 @@ import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
 import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
 import { selectItem } from "@/lib/review/selection";
+import { SamePageFacts } from "@/components/review/same-page-facts";
+import type { Sibling } from "@/lib/review/siblings";
 import { VisibilityNote } from "@/components/review/visibility-note";
 import { ReviewSteps } from "@/components/review/review-steps";
 import { DecisionHistory } from "@/components/review/decision-history";
@@ -100,6 +102,13 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  const requested=typeof params.fact==="string"&&uuidPattern.test(params.fact)?params.fact:undefined;
  const selection=selectItem(facts.map(f=>f.id),requested);
  const current=selection.index>=0?facts[selection.index]:null;
+ // Other claims from the same evidence document, for the selected claim only
+ // (lib/review/siblings.ts). Editors' RLS shows every status; a failure is shown, not hidden.
+ let siblings:Sibling[]|null=[];
+ if(current){
+   const sib=await client.from("facts").select("id,subject,predicate,value,unit,status").eq("document_id",current.document_id).neq("id",current.id).order("created_at").limit(30);
+   if(sib.error){logAccessError("facts_workspace_same_document");siblings=null;}else siblings=sib.data as Sibling[];
+ }
  return <>
  <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}
@@ -128,6 +137,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
      <FactCard fact={current}/>
      <div className="space-y-3 px-1">
      <VisibilityNote visibility={visibility(current)} publicHref="/facts"/>
+     <SamePageFacts current={current} others={siblings}/>
      {/* The decision sits right under the claim. After a decision the item leaves this tab and the next one opens (lib/review/selection.ts). */}
      {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"}/>}
      {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm key={current.id} id={current.id}/></Disclosure>}

@@ -31,6 +31,7 @@ import { CounterTile, TileLink } from "@/app/(app)/dashboard/tiles";
 import { ReviewFields } from "@/components/review/review-panel";
 import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
 import { selectItem } from "@/lib/review/selection";
+import { SamePageFacts } from "@/components/review/same-page-facts";
 import { ReviewStepsView } from "@/components/review/review-steps";
 import { DecisionHistory } from "@/components/review/decision-history";
 
@@ -135,6 +136,11 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
             nextHref={demoSelection.nextId ? `/dev/preview?section=review&item=${demoSelection.nextId}#review` : null} />
           <div className="space-y-4"><FactCard fact={demoSelected} />
             <div className="space-y-3 px-1"><VisibilityNote visibility={{ state: "will_be_public" }} />
+              <SamePageFacts current={demoSelected} others={[
+                { id: "s1", subject: demoSelected.subject, predicate: demoSelected.predicate, value: "DEMO other value", unit: null, status: "reviewed" },
+                { id: "s2", subject: "DEMO permit", predicate: "processing time", value: "0", unit: "demo weeks", status: "reviewed" },
+                { id: "s3", subject: "DEMO permit", predicate: "insurance requirement", value: "DEMO value", unit: null, status: "proposed" },
+              ]} />
               <fieldset disabled className="space-y-4 rounded-2xl bg-fill/50 p-4 opacity-90 sm:p-5"><ReviewFields checks={["DEMO: trích đoạn có nguyên văn trên trang gốc.", "DEMO: giá trị khớp trích đoạn."]} /></fieldset>
             </div></div>
         </>} />

@@ -483,3 +483,28 @@ cuộn lên để đổi tab.
   một cột; mục của chúng ngắn hơn nhiều. Có thể chuyển sang cùng bố cục nếu cần.
 - User Guide mục 5.4 vẫn mô tả danh sách một cột cho trang này; cần cập nhật hình 22
   và đoạn hướng dẫn.
+
+## Cập nhật 2026-09-30 — "Các thông tin khác từ cùng trang này"
+
+### Vì sao
+
+Khi duyệt lô Thụy Điển, 9 thông tin khác nhau (lương của các nghề khác nhau, các
+điều kiện visa khác nhau) bị từ chối với lý do "trùng" chỉ vì có chung trang nguồn.
+Truy vấn cho thấy không có thông tin nào trùng đối tượng và thuộc tính với chúng.
+Màn hình cũ không cho người duyệt thấy trang đó đã chứng minh những gì khác.
+
+### Đã xây dựng
+
+- Trong khung chi tiết của `/facts/workspace`, ngay trên khung quyết định: danh sách
+  các thông tin khác lấy từ **cùng tài liệu** (tối đa 30, bỏ qua mục đã từ chối), kèm
+  trạng thái và giá trị, cùng câu giải thích "cùng trang không có nghĩa là trùng".
+- Mục có **cùng đối tượng và thuộc tính** (không phân biệt hoa thường, khoảng trắng,
+  chuẩn hóa NFC) được tô cam và gắn nhãn **Có thể trùng**, xếp lên đầu. Đây chỉ là gợi
+  ý: hệ thống không tự từ chối hay gộp (AGENTS.md 1.4).
+- Không tải được thì ghi rõ "Không tải được…", không ẩn đi (AGENTS.md 13).
+
+### File
+
+`lib/review/siblings.ts` (quy tắc, có test) → `components/review/same-page-facts.tsx`
+(hiển thị) → `app/(app)/facts/workspace/page.tsx` (truy vấn cho mục đang chọn).
+Xem thử: `/dev/preview?section=review&item=f1`.

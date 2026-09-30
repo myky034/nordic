@@ -51,3 +51,16 @@ it("shows the three review steps with counts, marks the current one, and never s
     expect(html).not.toContain('href="/admin/sources"');
   } finally { console.error = errors; }
 });
+
+it("lists other claims from the same page, flags only same-claim ones, and says when they could not load", async () => {
+  const { SamePageFacts } = await import("./same-page-facts");
+  const current = { subject: "Professors", predicate: "average monthly salary" };
+  const html = renderToStaticMarkup(<SamePageFacts current={current} others={[
+    { id: "a", subject: "Specialist physicians", predicate: "average monthly salary", value: "1", unit: null, status: "reviewed" },
+    { id: "b", subject: "professors", predicate: "Average monthly salary", value: "2", unit: null, status: "proposed" },
+  ]} />);
+  for (const text of ["Các thông tin khác từ cùng trang này", "cùng trang không có nghĩa là trùng", "Specialist physicians", "Có thể trùng"]) expect(html).toContain(text);
+  expect(html.match(/Có thể trùng</g)?.length).toBe(1);
+  expect(renderToStaticMarkup(<SamePageFacts current={current} others={[]} />)).toBe("");
+  expect(renderToStaticMarkup(<SamePageFacts current={current} others={null} />)).toContain("Không tải được");
+});
