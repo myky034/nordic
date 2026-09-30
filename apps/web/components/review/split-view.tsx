@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Chevron } from "@/components/ui";
-import { LinkPending } from "@/components/ui/link-pending";
 
 /**
  * Master–detail layout in the style of Apple Mail: a compact list on the left
@@ -59,7 +58,7 @@ export function SplitRow({ href, selected, explicit = true, title, subtitle, bad
   return <li>
     <Link href={href} scroll={false} aria-current={selected ? "true" : undefined}
       className={`block px-4 py-3 transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-accent active:bg-fill/70 ${hl}`}>
-      <span className="flex items-center gap-2"><span className={`min-w-0 flex-1 truncate text-[15px] leading-snug ${selected ? "font-semibold text-ink" : "font-medium text-ink"}`}>{title}</span><LinkPending /></span>
+      <span className={`block truncate text-[15px] leading-snug ${selected ? "font-semibold text-ink" : "font-medium text-ink"}`}>{title}</span>
       {subtitle && <span className="mt-0.5 block truncate text-[13px] leading-snug text-ink-2">{subtitle}</span>}
       {badges && <span className="mt-1.5 flex flex-wrap gap-1.5">{badges}</span>}
     </Link>
@@ -88,10 +87,10 @@ export function SplitPager({ summary, href }: { summary: PageSummary; href: (pag
 export function ItemStepper({ index, count, prevHref, nextHref }: { index: number; count: number; prevHref: string | null; nextHref: string | null }) {
   const btn = "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium";
   return <div className="mb-4 flex items-center justify-end gap-2">
-    {prevHref ? <Link href={prevHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Trước<LinkPending /></Link>
+    {prevHref ? <Link href={prevHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Trước</Link>
       : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>Trước</span>}
     <span className="px-1 text-[13px] text-ink-3 tabular-nums">{index + 1} / {count}</span>
-    {nextHref ? <Link href={nextHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}><LinkPending />Sau<Chevron className="text-ink" /></Link>
+    {nextHref ? <Link href={nextHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}>Sau<Chevron className="text-ink" /></Link>
       : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>Sau</span>}
   </div>;
 }

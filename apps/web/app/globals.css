@@ -118,3 +118,13 @@ select {
   background-size: 0.7rem;
   padding-right: 2.25rem !important;
 }
+
+/* Top navigation progress bar (components/navigation-progress.tsx): grows fast
+   at first, then slows, never reaching the end until the page has arrived. */
+@keyframes nav-progress {
+  from { width: 0; }
+  to { width: 85%; }
+}
+@media (prefers-reduced-motion: reduce) {
+  @keyframes nav-progress { from { width: 85%; } to { width: 85%; } }
+}

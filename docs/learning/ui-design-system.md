@@ -650,10 +650,8 @@ nền khi mở khung trượt, tiêu đề dính của khung trượt, thanh "L�
   không phải đợi chúng. Khung trang giờ về trong ~0,03–0,14 giây.
 - **Trang duyệt thông tin**: truy vấn "cùng trang" chạy chung lượt với các truy vấn
   trạng thái công khai (bớt một lượt chờ).
-- **Phản hồi khi bấm**: `LinkPending` (`components/ui/link-pending.tsx`, dùng
-  `useLinkStatus` của `next/link`) hiện vòng xoay nhỏ trong dòng bảng, dòng danh sách,
-  tab và nút Trước/Sau cho đến khi trang mới sẵn sàng; dòng có hiệu ứng nhấn
-  (`active:`).
+- **Phản hồi khi bấm**: thanh tiến trình mảnh ở mép trên cửa sổ (xem mục kế tiếp);
+  dòng bảng và dòng danh sách có hiệu ứng nhấn (`active:`).
 
 ### Khi deploy
 
@@ -666,3 +664,29 @@ giây. Bản dev trên máy luôn chậm hơn bản production.
 - Các trang dùng Prisma trong giao dịch có `SET LOCAL ROLE` (ví dụ `/sources`,
   `/admin/sources`) cần nhiều lượt đi về trong một giao dịch; từ máy dev mỗi trang
   ~1,7 giây. Sẽ nhanh lên khi chạy cùng vùng; nếu vẫn chậm thì gộp truy vấn.
+
+## Cập nhật 2026-09-30 — Thanh tiến trình ở mép trên thay cho vòng xoay cạnh chữ
+
+Chủ dự án không muốn biểu tượng tải nằm cạnh từng dòng chữ. Thay bằng **một thanh
+mảnh chạy dọc mép trên cửa sổ** khi đang chuyển trang, giống Safari
+(`components/navigation-progress.tsx`, gắn một lần trong `app/layout.tsx`).
+
+- **Cách biết đang tải**: Next.js không có sự kiện toàn cục "đang chuyển trang", nên
+  thanh bắt đầu khi có cú bấm link cùng trang web (lắng nghe ở pha capture, trước khi
+  `<Link>` gọi `preventDefault`) hoặc khi gửi form GET (tìm kiếm, lọc); nó ghi lại URL
+  lúc bắt đầu. Còn đúng URL đó thì đang tải; URL đổi thì đã đến nơi và thanh mờ đi.
+  Trạng thái được suy ra khi render, không `setState` trong effect (quy tắc lint của
+  React 19). Quy tắc "cú bấm nào tính là chuyển trang" nằm trong
+  `lib/navigation/progress.ts` (có test: bỏ qua mở tab mới, nút giữa, tải file, trang
+  web khác, nhảy `#`).
+- **Không nhấp nháy**: thanh chỉ bắt đầu chạy sau 150 ms (keyframe `nav-progress`
+  trong `globals.css`), nên trang mở nhanh sẽ không thấy thanh; chạy chậm dần tới 85%
+  và chỉ chạy hết khi trang đã đến. Tự tắt sau 15 giây nếu có sự cố. Người dùng bật
+  "giảm chuyển động" thì thanh đứng yên ở 85%.
+- Trang có `loading.tsx` (các trang khám phá) chuyển ngay sang khung chờ, nên thanh kết
+  thúc ngay; thanh hữu ích nhất khi đổi tham số trên cùng trang (bấm dòng, tab trong
+  `/admin/access`), nơi không có khung chờ.
+- Kiểm tra bằng Chrome thật qua DevTools protocol với độ trễ mạng giả lập 1,5 giây:
+  giữa lúc tải thanh hiện và đang chạy; tải xong thanh chạy hết rồi mờ đi.
+- Cùng lúc: `<html lang="vi">` (trước là `en`), để trình đọc màn hình đọc đúng tiếng
+  Việt.

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { label as labelClass } from "./styles";
-import { LinkPending } from "./link-pending";
 
 // Small, dependency-free UI primitives (Apple-HIG-inspired):
 // large titles, inset grouped lists, hairline separators, restrained colour.
@@ -209,7 +208,7 @@ export function Segmented({ items, label }: { items: { href: string; label: Reac
   return <nav aria-label={label} className="mb-5 inline-flex max-w-full gap-1 overflow-x-auto rounded-full bg-fill p-1 [scrollbar-width:none]">
     {items.map((item, i) => <Link key={i} href={item.href} aria-current={item.active ? "page" : undefined}
       className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-4 py-1.5 text-[14px] font-medium transition ${item.active ? "bg-surface text-ink shadow-[0_1px_3px_rgb(0_0_0/0.12)]" : "text-ink-2 hover:text-ink"}`}>
-      {item.label}{item.count !== undefined && <span className={`text-[12px] tabular-nums ${item.active ? "text-ink-2" : "text-ink-3"}`}>{item.count}</span>}<LinkPending className="-ml-0.5" />
+      {item.label}{item.count !== undefined && <span className={`text-[12px] tabular-nums ${item.active ? "text-ink-2" : "text-ink-3"}`}>{item.count}</span>}
     </Link>)}
   </nav>;
 }

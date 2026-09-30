@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Chevron } from "./index";
-import { LinkPending } from "./link-pending";
 
 export type Column = { label: string; sortHref?: string; sorted?: "asc" | "desc" | null; className?: string };
 
@@ -37,7 +36,7 @@ export function DataTable({ label, columns, minWidth = "40rem", children, empty 
  */
 export function DataRow({ href, title, selected, children }: { href: string; title: React.ReactNode; selected?: boolean; children?: React.ReactNode }) {
   return <tr className={`relative ${selected ? "bg-accent/10" : "hover:bg-fill/40 active:bg-fill/70"}`}>
-    <td className="px-4 py-3"><Link scroll={false} href={href} className="inline-flex items-center gap-2 font-medium text-ink after:absolute after:inset-0 hover:text-accent">{title}<LinkPending /></Link></td>
+    <td className="px-4 py-3"><Link scroll={false} href={href} className="font-medium text-ink after:absolute after:inset-0 hover:text-accent">{title}</Link></td>
     {children}
     <td className="pr-4 text-right"><Chevron /></td>
   </tr>;
