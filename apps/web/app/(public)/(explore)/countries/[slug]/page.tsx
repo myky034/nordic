@@ -9,6 +9,8 @@ import { logAccessError } from "@/lib/rbac/access";
 import { Badge, BackLink, EmptyState, List, ListRow, PageHeader, Section } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 import { SourceList } from "../../source-list";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { canOpenFactsWorkspace } from "@/lib/rbac/ui";
 
 export default async function CountryPage({ params }: PageProps<"/countries/[slug]">) {
   const { slug } = await params;
@@ -25,6 +27,8 @@ export default async function CountryPage({ params }: PageProps<"/countries/[slu
   if (error) { logAccessError("country_facts"); throw new Error("Không tải được thông tin của quốc gia này."); }
   const facts = data as unknown as FactRow[];
   const save = await savedState("country", country.id);
+  // Visitors are told why the section is empty; only editors get the workspace link.
+  const canEdit = canOpenFactsWorkspace(await viewerPermissions());
   return <>
     <PageHeader back={<BackLink href="/countries">All countries</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Country" title={country.name}
       description={<span className="inline-flex items-center gap-2">Research status <Badge>{country.status.replaceAll("_", " ")}</Badge></span>} />
@@ -40,7 +44,7 @@ export default async function CountryPage({ params }: PageProps<"/countries/[slu
     {/* Latest few only; the full, paginated list is /facts?country=… */}
     <Section title="Evidence-backed facts" actions={facts.length > 5 ? <Link href={`/facts?country=${country.slug}`} className={`${textLink} text-[15px]`}>All facts</Link> : undefined}>
       {facts.length ? <div className="space-y-4">{facts.slice(0, 5).map((f) => <FactCard key={f.id} fact={f} />)}</div>
-        : <EmptyState>No evidence-backed facts for this country yet. Overview, cost of living, education, labour-market and immigration information will appear here only once reviewed through <Link href="/facts/workspace" className={textLink}>the facts workspace</Link> — never invented or inferred.</EmptyState>}
+        : <EmptyState>No evidence-backed facts for this country yet. Overview, cost of living, education, labour-market and immigration information will appear here only once checked against a source and reviewed — never invented or inferred.{canEdit && <> Add them in <Link href="/facts/workspace" className={textLink}>the facts workspace</Link>.</>}</EmptyState>}
     </Section>
     <Section title="Linked sources" actions={<Link href="/sources" className={`${textLink} text-[15px]`}>Full registry</Link>}>
       <SourceList sources={country.sources.map((source) => ({ ...source, country: { name: country.name, slug: country.slug } }))} />

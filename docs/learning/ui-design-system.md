@@ -390,3 +390,52 @@ vì hiện "chưa biết · chưa biết".
   trình duyệt), 5.4 (khung quyết định, trạng thái công khai, lịch sử), 6.1–6.3,
   hình 14, 15, 22, 22b, 24 chụp lại từ `/dev/preview`.
 - Chưa thử với database thật và tài khoản duyệt.
+
+## Cập nhật 2026-09-30 — Header và nút theo phân quyền
+
+### Đã xây dựng
+
+- **Header giống nhau ở mọi trang** (`components/account-actions.tsx`). Trước
+  đây trang công khai luôn hiện nút "Workspace" cố định và không có "Đăng xuất",
+  nên người dùng mất nút đăng xuất khi rời khu workspace.
+  - Chưa đăng nhập: **Đăng nhập**.
+  - Đã đăng nhập: **Không gian của tôi** (`/workspace`) và **Đăng xuất**.
+  - Biên tập viên: thêm **Biên tập** (`/dashboard`); người duyệt thấy số đề xuất
+    đang chờ trên nút đó. Trên màn hình hẹp, "Không gian của tôi" được ẩn (vẫn có
+    trong tile của dashboard) để header không bị tràn.
+- **Nút biên tập trên trang công khai chỉ hiện với người có quyền**:
+  "Thêm thông tin & bằng chứng" (trang tài liệu, cần `facts.propose`), "Biên tập
+  thông tin" (`/facts`) và link workspace trong trạng thái trống của trang quốc gia
+  (cần `facts.propose` hoặc `facts.review`).
+
+### Vì sao thiết kế như vậy
+
+- Quy tắc nằm trong `lib/rbac/ui.ts` (có test), không nằm trong component
+  (AGENTS.md 16). "Biên tập viên" = người thấy ít nhất một tile nhóm Biên tập hoặc
+  Quản trị trên dashboard, dùng chung danh sách `lib/dashboard/items.ts`, nên
+  header và dashboard không thể lệch nhau.
+- **Ẩn nút không phải là phân quyền.** Trang workspace, server action và RLS vẫn tự
+  kiểm tra quyền như trước; gõ thẳng URL vẫn bị chặn đúng như cũ. Việc ẩn chỉ để
+  người dùng không bấm vào chỗ họ không dùng được.
+- Nếu không đọc được quyền, người xem được coi là **không có quyền** (ẩn nút biên
+  tập) và lỗi được ghi log — hỏng thì đóng, không mở.
+
+### Khái niệm Next.js / React
+
+- **`cache()` của React** (`lib/rbac/viewer.ts`, `lib/review/pending-total.ts`):
+  header và trang cùng hỏi quyền trong một request; `cache()` gộp thành một lần gọi
+  `my_permissions` cho mỗi request (không lưu giữa các request).
+- Header đọc cookie phiên đăng nhập nên trang chủ `/` giờ render theo từng request
+  (dynamic) thay vì tĩnh; các trang khám phá vốn đã như vậy.
+- `server-only`: module nào gọi `createClient()` của server được đánh dấu
+  `server-only`. Phần đếm thuần (`lib/review/pending-counts.ts`) không có dấu này
+  để test và `/dev/preview` dùng được.
+
+### Kiểm thử
+
+- `lib/rbac/ui.test.ts`: ai là biên tập viên, đề xuất khác duyệt, link header theo
+  vai trò.
+- `components/account-actions.test.tsx`: khách, người dùng thường, người duyệt (có
+  số đếm), người đề xuất (không số đếm), đếm lỗi thì không hiện số.
+- Test trang tài liệu và trang quốc gia: khách không thấy link workspace; người có
+  quyền thì thấy.

@@ -4,6 +4,8 @@ import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { logAccessError } from "@/lib/rbac/access";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { canOpenFactsWorkspace } from "@/lib/rbac/ui";
 import { countrySlugs } from "@/lib/registry/domain";
 import { likePattern } from "@/lib/education/domain";
 import { isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
@@ -26,10 +28,11 @@ export default async function Page({ searchParams }: PageProps<"/facts">) {
   if (isPastLastPage(error)) redirect(withParams("/facts", query, { page: null }));
   if (error) { logAccessError("public_facts"); throw new Error("Không tải được thông tin."); }
   const facts = (data ?? []) as unknown as FactRow[];
+  const canEdit = canOpenFactsWorkspace(await viewerPermissions());
   return <>
     <PageHeader eyebrow="Facts" title="Thông tin có bằng chứng"
       description="Luôn kiểm tra nguồn và hiệu lực; mâu thuẫn chưa được tự động giải quyết."
-      actions={<Link href="/facts/workspace" className={buttonSecondary}>Biên tập thông tin</Link>} />
+      actions={canEdit ? <Link href="/facts/workspace" className={buttonSecondary}>Biên tập thông tin</Link> : undefined} />
     <Form action="/facts" className={filterBar}>
       <div className="sm:col-span-2"><Field label="Tìm theo đối tượng"><div className="mt-1.5"><SearchInput defaultValue={q} placeholder="Ví dụ: residence permit" /></div></Field></div>
       <Field label="Quốc gia"><select name="country" defaultValue={country} className={control}><option value="">Tất cả</option>{countrySlugs.map((slug) => <option key={slug} value={slug}>{slug[0].toUpperCase() + slug.slice(1)}</option>)}</select></Field>

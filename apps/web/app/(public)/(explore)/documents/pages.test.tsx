@@ -20,6 +20,9 @@ vi.mock("@/lib/documents/queries", () => ({
 // The internal-text section reads Supabase with the viewer's session; it has its own test.
 vi.mock("./[id]/internal-text", () => ({ InternalText: () => null }));
 vi.mock("./[id]/extraction-panel", () => ({ ExtractionPanel: () => null }));
+// Signed out by default; one test signs in as a proposer.
+const viewer = vi.hoisted(() => ({ perms: null as string[] | null }));
+vi.mock("@/lib/rbac/viewer", () => ({ viewerPermissions: async () => viewer.perms }));
 import DocumentsPage from "./page";
 import DocumentPage from "./[id]/page";
 it("renders an honest empty state instead of fictional documents", async () => {
@@ -68,6 +71,19 @@ it("renders escaped excerpts, attribution, unknown dates and unverified status",
     'href="https://example.com/document"',
   ])
     expect(html).toContain(text);
+});
+it("shows the add-evidence shortcut only to people who can propose facts", async () => {
+  get.mockResolvedValue({ id: "id", sourceId: "source", canonicalUrl: "https://example.com/document", title: "Fixture", excerpt: null,
+    retrievedAt: new Date("2026-01-01"), publishedAt: null, sourceUpdatedAt: null, documentType: "unknown",
+    source: { name: "Synthetic source", canonicalUrl: "https://example.com/", sourceTier: null, lastVerifiedAt: null } });
+  versions.mockResolvedValue([]);
+  const page = async () => renderToStaticMarkup(await DocumentPage({ params: Promise.resolve({ id: "id" }), searchParams: Promise.resolve({}) }));
+  expect(await page()).not.toContain("/facts/workspace?document=id");
+  viewer.perms = ["facts.review"];
+  expect(await page()).not.toContain("/facts/workspace?document=id");
+  viewer.perms = ["facts.propose"];
+  expect(await page()).toContain("/facts/workspace?document=id");
+  viewer.perms = null;
 });
 it("returns not found for unknown documents", async () => {
   get.mockResolvedValue(null);

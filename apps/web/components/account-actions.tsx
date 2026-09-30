@@ -1,27 +1,38 @@
 import Link from "next/link";
-import { getAuthClaims } from "@/lib/auth/session";
 import { signOut } from "@/app/(auth)/actions";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { accountLinks } from "@/lib/rbac/ui";
+import { pendingProposalTotal } from "@/lib/review/pending-total";
+
+const pill = "inline-flex items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[13px] font-medium transition";
 
 /**
- * Account area of the global header, the same on every page.
+ * Account area of the global header, the same on every page (public and
+ * signed-in), so sign-out never disappears.
  *
- * WHY here and not in each layout: the public layout used to render a fixed
- * "Workspace" link and only the (app) layout had "Sign out", so a signed-in
- * user lost the sign-out button as soon as they opened a public page.
- *
- * getAuthClaims() verifies the JWT locally (no network call). Reading the
- * session cookie makes pages under this header render per request, which the
- * explore pages already do.
+ * What is shown depends on the viewer (lib/rbac/ui.ts):
+ * - signed out: "Đăng nhập";
+ * - signed in: "Không gian của tôi" (own projects, saved items, plan);
+ * - editors: also "Biên tập" (the dashboard with work queues), with the number
+ *   of proposals waiting for reviewers.
+ * Display only: every editor page and action checks permissions itself.
  */
 export async function AccountActions() {
-  const claims = await getAuthClaims();
-  if (!claims) {
-    return <Link href="/login" className="inline-flex items-center rounded-full bg-ink px-4 py-1.5 text-[13px] font-medium text-canvas transition hover:opacity-85">Đăng nhập</Link>;
+  const links = accountLinks(await viewerPermissions());
+  if (!links.signedIn) {
+    return <Link href="/login" className={`${pill} bg-ink text-canvas hover:opacity-85`}>Đăng nhập</Link>;
   }
+  const pending = links.editor?.showPending ? await pendingProposalTotal() : null;
   return <div className="flex items-center gap-2">
-    <Link href="/dashboard" className="inline-flex items-center rounded-full bg-ink px-4 py-1.5 text-[13px] font-medium text-canvas transition hover:opacity-85">Workspace</Link>
+    {links.editor && <Link href={links.editor.href} className={`${pill} bg-ink text-canvas hover:opacity-85`}
+      aria-label={pending ? `${links.editor.label}, ${pending} đề xuất chờ duyệt` : undefined}>
+      {links.editor.label}
+      {!!pending && <span aria-hidden="true" className="min-w-5 rounded-full bg-accent px-1.5 text-center text-[11px] font-semibold leading-5 text-white tabular-nums">{pending > 99 ? "99+" : pending}</span>}
+    </Link>}
+    {/* With an editor button present, the personal link moves to the dashboard tiles on narrow screens. */}
+    <Link href={links.personal.href} className={`${pill} ${links.editor ? "hidden sm:inline-flex bg-fill text-ink hover:bg-fill-strong" : "bg-ink text-canvas hover:opacity-85"}`}>{links.personal.label}</Link>
     <form action={signOut}>
-      <button type="submit" className="rounded-full bg-fill px-3.5 py-1.5 text-[13px] font-medium text-ink transition hover:bg-fill-strong">Đăng xuất</button>
+      <button type="submit" className={`${pill} bg-fill text-ink hover:bg-fill-strong`}>Đăng xuất</button>
     </form>
   </div>;
 }

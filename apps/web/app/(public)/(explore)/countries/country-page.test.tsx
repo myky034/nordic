@@ -1,6 +1,8 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
-const { getCountry, result } = vi.hoisted(() => ({ getCountry: vi.fn(), result: { data: [] as unknown[], error: null as unknown } }));
+const { getCountry, result, perms } = vi.hoisted(() => ({ getCountry: vi.fn(), result: { data: [] as unknown[], error: null as unknown }, perms: { value: null as string[] | null } }));
+// Which buttons appear depends on the viewer's permissions (lib/rbac/ui.ts).
+vi.mock("@/lib/rbac/viewer", () => ({ viewerPermissions: async () => perms.value }));
 // Detail pages ask whether the visitor bookmarked the item; render as a guest here.
 vi.mock("@/lib/workspace/saved", () => ({ savedState: async () => ({ signedIn: false, saved: false }) }));
 vi.mock("@/components/save-button", () => ({ SaveButton: () => null }));
@@ -30,6 +32,15 @@ it("shows an honest empty state instead of an invented country profile", async (
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
   expect(html).toContain("No evidence-backed facts for this country yet");
   expect(html).not.toContain("Country profile data is not available yet");
+  // A visitor is not sent into the editors' workspace.
+  expect(html).not.toContain("/facts/workspace");
+});
+it("points editors to the facts workspace from the empty state", async () => {
+  getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "needs_research", sources: [] });
+  result.data = []; result.error = null; perms.value = ["facts.propose"];
+  const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
+  perms.value = null;
+  expect(html).toContain('href="/facts/workspace"');
 });
 it("renders reviewed facts scoped to this country instead of the placeholder", async () => {
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "active", sources: [] });

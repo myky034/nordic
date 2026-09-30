@@ -6,6 +6,8 @@ import { BackLink, Badge, DescriptionList, EmptyState, ExternalLink, List, ListR
 import { buttonPrimary, textLink } from "@/components/ui/styles";
 import { InternalText } from "./internal-text";
 import { ExtractionPanel } from "./extraction-panel";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { canProposeFacts } from "@/lib/rbac/ui";
 
 export default async function DocumentPage({ params }: PageProps<"/documents/[id]">) {
   const { id } = await params;
@@ -14,11 +16,13 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
   const versions = await documentVersions(document.sourceId, document.canonicalUrl);
   const url = canonicalSourceUrl(document.canonicalUrl);
   const sourceUrl = canonicalSourceUrl(document.source.canonicalUrl);
+  // Only people who can propose facts see the shortcut into the workspace.
+  const canPropose = canProposeFacts(await viewerPermissions());
   return <>
     <PageHeader back={<BackLink href="/documents">All documents</BackLink>} eyebrow="Document"
       title={<span className="break-words">{document.title ?? "Untitled document"}</span>}
       description={<div className="flex flex-wrap gap-2 pt-1"><Badge>Metadata stored · Claims not verified</Badge></div>}
-      actions={<Link href={`/facts/workspace?document=${id}`} className={buttonPrimary}>Thêm thông tin & bằng chứng</Link>} />
+      actions={canPropose ? <Link href={`/facts/workspace?document=${id}`} className={buttonPrimary}>Thêm thông tin & bằng chứng</Link> : undefined} />
     {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>Read original: {url}</ExternalLink></p>}
     <DescriptionList items={[
       ["Source", sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],

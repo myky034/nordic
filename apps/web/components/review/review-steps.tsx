@@ -1,36 +1,15 @@
 import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { reviewSteps, stepLinks, type CountId, type StepPage } from "@/lib/review/steps";
-
-type Head = PromiseLike<{ count: number | null; error: unknown }>;
+import { pendingCounts } from "@/lib/review/pending-counts";
 
 /**
  * "Where am I in the review work?" — three numbered steps with pending counts,
  * in the style of an Apple setup assistant / the /dashboard counters.
- *
- * Counts go through the signed-in user's client, so RLS scopes every number
- * (same rule as the dashboard). A failed count shows "—", never 0
- * (AGENTS.md 13).
+ * Counting (RLS-scoped, failed count = "—") lives in lib/review/pending-counts.ts.
  */
 export async function ReviewSteps({ client, permissions, current }: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
-  const head = (table: string, column: string, value: string): Head => client.from(table).select("id", { count: "exact", head: true }).eq(column, value);
-  const sum = async (...qs: Head[]) => {
-    const rs = await Promise.all(qs);
-    if (rs.some((r) => r.error)) return null;
-    return rs.reduce((n, r) => n + (r.count ?? 0), 0);
-  };
-  const queries: Record<CountId, () => Promise<number | null>> = {
-    sourcesUnverified: () => sum(head("sources", "status", "needs_verification")),
-    education: () => sum(head("universities", "status", "proposed"), head("programmes", "status", "proposed")),
-    immigration: () => sum(head("immigration_rules", "status", "proposed")),
-    labour: () => sum(head("occupations", "status", "proposed")),
-    facts: () => sum(head("facts", "status", "proposed")),
-  };
-  const ids = reviewSteps.flatMap((s) => s.links.map((l) => l.count));
-  const values = await Promise.all(ids.map((id) => queries[id]()));
-  if (values.some((v) => v === null)) console.error({ source: "review", operation: "review_steps_counts", timestamp: new Date().toISOString(), status: "failed", category: "count_failed" });
-  const counts = Object.fromEntries(ids.map((id, i) => [id, values[i]])) as Record<CountId, number | null>;
-  return <ReviewStepsView counts={counts} permissions={permissions} current={current} />;
+  return <ReviewStepsView counts={await pendingCounts(client)} permissions={permissions} current={current} />;
 }
 
 /** Rendering only (no data access), so /dev/preview can show it with DEMO counts. */
