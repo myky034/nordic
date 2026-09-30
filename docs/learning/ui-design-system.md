@@ -386,5 +386,7 @@ vì hiện "chưa biết · chưa biết".
 
 ### Còn lại
 
-- User Guide chưa cập nhật theo đợt 1–2.
+- User Guide đã cập nhật lên v2.1 (2026-09-30) theo đợt 0–2: mục 5 (thanh Quy
+  trình duyệt), 5.4 (khung quyết định, trạng thái công khai, lịch sử), 6.1–6.3,
+  hình 14, 15, 22, 22b, 24 chụp lại từ `/dev/preview`.
 - Chưa thử với database thật và tài khoản duyệt.

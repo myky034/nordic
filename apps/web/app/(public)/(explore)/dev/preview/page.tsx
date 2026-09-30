@@ -36,6 +36,8 @@ import { DecisionHistory } from "@/components/review/decision-history";
 const demoStepCounts = { sourcesUnverified: null, education: 12, immigration: 3, labour: 0, facts: 16 };
 import { VisibilityNote } from "@/components/review/visibility-note";
 import { entityStatuses } from "@/lib/education/domain";
+import { statuses as factStatuses } from "@/lib/facts/domain";
+import { sourceStatusLabels, sourceStatuses } from "@/lib/registry/domain";
 import type { Visibility } from "@/lib/review/visibility";
 
 // One DEMO row per visibility state a reviewer can meet (lib/review/visibility.ts).
@@ -78,8 +80,8 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
       <Card className="space-y-6">
         <div className="flex flex-wrap gap-3"><button className={buttonPrimary}>Primary</button><button className={buttonSecondary}>Secondary</button><button className={buttonDestructive}>Destructive</button><button className={buttonSmall}>Small</button><button className={buttonPrimary} disabled>Disabled</button><a href="#foundations" className={`${textLink} self-center text-[15px]`}>Text link</a></div>
         <div className="flex flex-wrap gap-2"><TierBadge tier="T1" /><TierBadge tier="T2" /><TierBadge tier="T3" /><TierBadge tier="T4" /><TierBadge tier={null} /></div>
-        <div className="flex flex-wrap gap-2">{["proposed", "reviewed", "conflicted", "rejected"].map((s) => <ReviewBadge key={s} status={s}>{s}</ReviewBadge>)}</div>
-        <div className="flex flex-wrap gap-2">{["verified", "needs_verification", "review_required"].map((s) => <SourceStatusBadge key={s} status={s}>{s}</SourceStatusBadge>)}<Badge tone="accent">Kỳ số liệu: 2025-Q2</Badge></div>
+        <div className="flex flex-wrap gap-2">{["proposed", "reviewed", "conflicted", "rejected"].map((s) => <ReviewBadge key={s} status={s}>{factStatuses[s]}</ReviewBadge>)}</div>
+        <div className="flex flex-wrap gap-2">{sourceStatuses.map((s) => <SourceStatusBadge key={s} status={s}>{sourceStatusLabels[s]}</SourceStatusBadge>)}<Badge tone="accent">Kỳ số liệu: 2025-Q2</Badge></div>
         <div className="grid gap-5 sm:grid-cols-2">
           <Field label="Text field" hint="Hint text under a field."><input className={control} placeholder="DEMO placeholder" /></Field>
           <Field label="Select"><select className={control} defaultValue="b"><option value="a">DEMO option A</option><option value="b">DEMO option B</option></select></Field>
