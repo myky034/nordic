@@ -34,6 +34,7 @@ import { selectItem } from "@/lib/review/selection";
 import { SamePageFacts } from "@/components/review/same-page-facts";
 import { SourceForm } from "@/app/(app)/admin/sources/forms";
 import { RoleForm, UserRoles } from "@/app/(app)/admin/access/forms";
+import { EffectivePermissions } from "@/app/(app)/admin/access/effective-permissions";
 import { Cell, DataRow, DataTable } from "@/components/ui/data-table";
 import { Inspector } from "@/components/ui/inspector";
 
@@ -193,7 +194,8 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
       {atab === "roles" && demoRoles.find((r) => r.id === aopen) && <Inspector title={demoRoles.find((r) => r.id === aopen)!.name} closeHref="/dev/preview?section=access-admin&atab=roles">
         <fieldset disabled><RoleForm role={demoRoles.find((r) => r.id === aopen)} permissions={demoPermissions} own={demoPermissions.map((p) => p.key)} /></fieldset></Inspector>}
       {atab !== "roles" && demoUsers.find((u) => u.id === aopen) && <Inspector title={demoUsers.find((u) => u.id === aopen)!.email} subtitle={<span className="font-mono">00000000-0000-4000-8000-000000000002</span>} closeHref="/dev/preview?section=access-admin">
-        <fieldset disabled><UserRoles user={aopen!} roles={demoRoles} current={demoUsers.find((u) => u.id === aopen)!.roles} own={demoPermissions.map((p) => p.key)} self={false} /></fieldset></Inspector>}
+        <fieldset disabled><UserRoles user={aopen!} roles={demoRoles} current={demoUsers.find((u) => u.id === aopen)!.roles} own={demoPermissions.map((p) => p.key)} self={false} /></fieldset>
+        <EffectivePermissions roles={demoRoles} roleIds={demoUsers.find((u) => u.id === aopen)!.roles} /></Inspector>}
     </Section>}
     {show("workspace") && <Section title="Workspace rows" description="Review queue: evidence and the decision are open; each row says whether the record is (or will be) public and why not. Forms here are inert." className="scroll-mt-24"><span id="workspace" />
       <ReviewStepsView counts={demoStepCounts} permissions={["facts.review"]} current="education" />

@@ -34,6 +34,10 @@ it("lists users in a table and opens one in the inspector from the URL", async (
   const open = await render({ user: other });
   expect(open).toContain('role="dialog"');
   expect(open).toContain(`USER_ROLES ${other}`);
+  // The signed-in admin's own inspector lists the permissions granted by their role.
+  const mine = await render({ user: me });
+  for (const text of ["Quyền hiện có", "Duyệt đề xuất", "roles.manage", "từ Alpha admin"]) expect(mine).toContain(text);
+  expect(open).toContain("Không có quyền đặc biệt");
 });
 
 it("sorts roles by the chosen column and opens the new-role form", async () => {

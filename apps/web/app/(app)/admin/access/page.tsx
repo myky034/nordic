@@ -10,6 +10,7 @@ import { Cell, DataRow, DataTable } from "@/components/ui/data-table";
 import { Inspector } from "@/components/ui/inspector";
 import { buttonPrimary, control } from "@/components/ui/styles";
 import { RoleForm, UserRoles } from "./forms";
+import { EffectivePermissions } from "./effective-permissions";
 
 // Three tabs (?tab=users|roles|audit), each a sortable table (Numbers-style,
 // components/ui/data-table.tsx). Clicking a row opens the item in a slide-over
@@ -72,6 +73,7 @@ export default async function AccessPage({ searchParams }: PageProps<"/admin/acc
     </>;
     if (open) panel = <Inspector title={open.email ?? "Chưa có email"} subtitle={<span className="font-mono">{open.user_id}</span>} closeHref={here({ user: null })}>
       <UserRoles user={open.user_id} roles={roles} current={open.role_ids} own={context.permissions} self={open.user_id === context.userId} />
+      <EffectivePermissions roles={roles} roleIds={open.role_ids} />
     </Inspector>;
   } else if (tab === "roles") {
     const sort = readSort(["name", "permissions"] as const, params.sort, params.dir, "name");

@@ -607,3 +607,7 @@ bố cục chia đôi.
   `components/key-nav.tsx`). Khung cuộn riêng nên thanh "Lưu vai trò" luôn hiện.
   Trên điện thoại khung trượt từ dưới lên.
 - Server action và RPC không đổi. Test: `app/(app)/admin/access/access-page.test.tsx`.
+- 2026-09-30: khung người dùng có thêm **Quyền hiện có**: hợp các quyền từ mọi vai trò
+  người đó đang có, chia nhóm như trình sửa vai trò, mỗi quyền ghi "từ <vai trò>"
+  (`lib/rbac/effective.ts`, có test; `app/(app)/admin/access/effective-permissions.tsx`).
+  Chỉ để xem: quyền thật do database tính (`has_permission`).
