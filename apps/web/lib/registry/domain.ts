@@ -6,6 +6,19 @@ export const tiers = { T1: "Cơ quan nhà nước", T2: "Tổ chức / trường
 export const tierShort = { T1: "Nhà nước", T2: "Tổ chức", T3: "Chuyên môn", T4: "Cộng đồng" } as const;
 export type Tier = keyof typeof tiers;
 export const countrySlugs = ["sweden", "denmark", "finland", "norway", "netherlands"] as const;
+/**
+ * Vietnamese names for the five registered countries (the UI language is
+ * Vietnamese, PROJECT_SPEC.md 21). The database keeps the English name, which
+ * stays visible next to it; unknown slugs fall back to the stored name.
+ */
+const countryNamesVi: Record<string, string> = { sweden: "Thụy Điển", denmark: "Đan Mạch", finland: "Phần Lan", norway: "Na Uy", netherlands: "Hà Lan" };
+export function countryName(slug: string | null | undefined, stored: string) {
+  return (slug && countryNamesVi[slug]) || stored;
+}
+/** countries.status (CHECK: needs_research | active | archived), in plain words. */
+export const countryStatusLabels: Record<string, string> = {
+  needs_research: "Đang thu thập dữ liệu", active: "Đã có dữ liệu được duyệt", archived: "Đã lưu trữ",
+};
 export const sourceStatuses = ["needs_verification", "verified", "review_required"] as const;
 export const sourceStatusLabels: Record<(typeof sourceStatuses)[number], string> = {
   needs_verification: "Chưa xác minh", verified: "Đã xác minh", review_required: "Cần xem xét lại",

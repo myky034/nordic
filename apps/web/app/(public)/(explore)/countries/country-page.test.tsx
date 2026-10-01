@@ -30,7 +30,7 @@ it("shows an honest empty state instead of an invented country profile", async (
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "needs_research", sources: [] });
   result.data = []; result.error = null;
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
-  expect(html).toContain("No evidence-backed facts for this country yet");
+  expect(html).toContain("Chưa có thông tin nào được duyệt");
   expect(html).not.toContain("Country profile data is not available yet");
   // A visitor is not sent into the editors' workspace.
   expect(html).not.toContain("/facts/workspace");
@@ -54,7 +54,7 @@ it("renders reviewed facts scoped to this country instead of the placeholder", a
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
   expect(html).toContain("Student residence permit");
   expect(html).toContain("Migrationsverket");
-  expect(html).not.toContain("No evidence-backed facts for this country yet");
+  expect(html).not.toContain("Chưa có thông tin nào được duyệt");
 });
 it("fails closed on a database error instead of showing a silently empty profile", async () => {
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "active", sources: [] });

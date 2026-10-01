@@ -22,3 +22,12 @@ describe("registry rules", () => {
     expect(registryFilters({ country: "' OR 1=1", tier: "toString", status: ["verified"] })).toEqual({ country: "", tier: "", status: "" });
   });
 });
+
+describe("country display names", () => {
+  it("shows the Vietnamese name for registered countries and falls back to the stored one", async () => {
+    const { countryName } = await import("./domain");
+    expect(countryName("sweden", "Sweden")).toBe("Thụy Điển");
+    expect(countryName("atlantis", "Atlantis")).toBe("Atlantis");
+    expect(countryName(null, "Sweden")).toBe("Sweden");
+  });
+});

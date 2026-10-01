@@ -3,6 +3,7 @@ import { SaveButton } from "@/components/save-button";
 import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { getCountry } from "@/lib/registry/queries";
+import { countryName, countryStatusLabels } from "@/lib/registry/domain";
 import { createClient } from "@/lib/supabase/server";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { logAccessError } from "@/lib/rbac/access";
@@ -29,24 +30,25 @@ export default async function CountryPage({ params }: PageProps<"/countries/[slu
   const save = await savedState("country", country.id);
   // Visitors are told why the section is empty; only editors get the workspace link.
   const canEdit = canOpenFactsWorkspace(await viewerPermissions());
+  const name = countryName(country.slug, country.name);
   return <>
-    <PageHeader back={<BackLink href="/countries">All countries</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Country" title={country.name}
-      description={<span className="inline-flex items-center gap-2">Research status <Badge>{country.status.replaceAll("_", " ")}</Badge></span>} />
-    <Section title="Explore">
+    <PageHeader back={<BackLink href="/countries">Tất cả quốc gia</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow={country.name} title={name}
+      description={<span className="inline-flex items-center gap-2">Trạng thái nghiên cứu <Badge tone={country.status === "active" ? "accent" : "neutral"}>{countryStatusLabels[country.status] ?? country.status}</Badge></span>} />
+    <Section title="Khám phá">
       <List>
-        <ListRow href={`/universities?country=${country.slug}`} title={`Reviewed universities in ${country.name}`} />
-        <ListRow href={`/programmes?country=${country.slug}`} title={`Reviewed programmes in ${country.name}`} />
-        <ListRow href={`/immigration?country=${country.slug}`} title={`Immigration rules in ${country.name}`} subtitle="Research information, not immigration advice." />
-        <ListRow href={`/compare?c=${country.slug}`} title={`Compare ${country.name} with other countries`} subtitle="Side by side, with sources — no scores or rankings." />
-        <ListRow href="/occupations" title="Occupations & labour-market figures" subtitle={`Pick an occupation, then filter its figures by ${country.name}.`} />
+        <ListRow href={`/universities?country=${country.slug}`} title={`Trường đại học tại ${name}`} subtitle="Chỉ các trường đã được đối chiếu với nguồn." />
+        <ListRow href={`/programmes?country=${country.slug}`} title={`Chương trình học tại ${name}`} />
+        <ListRow href={`/immigration?country=${country.slug}`} title={`Quy định nhập cư của ${name}`} subtitle="Thông tin nghiên cứu, không phải tư vấn di trú." />
+        <ListRow href={`/compare?c=${country.slug}`} title={`So sánh ${name} với nước khác`} subtitle="Đặt cạnh nhau, kèm nguồn; không chấm điểm hay xếp hạng." />
+        <ListRow href="/occupations" title="Nghề nghiệp và số liệu lao động" subtitle={`Chọn một nghề, rồi lọc số liệu theo ${name}.`} />
       </List>
     </Section>
     {/* Latest few only; the full, paginated list is /facts?country=… */}
-    <Section title="Evidence-backed facts" actions={facts.length > 5 ? <Link href={`/facts?country=${country.slug}`} className={`${textLink} text-[15px]`}>All facts</Link> : undefined}>
+    <Section title="Thông tin có bằng chứng" actions={facts.length > 5 ? <Link href={`/facts?country=${country.slug}`} className={`${textLink} text-[15px]`}>Xem tất cả</Link> : undefined}>
       {facts.length ? <div className="space-y-4">{facts.slice(0, 5).map((f) => <FactCard key={f.id} fact={f} />)}</div>
-        : <EmptyState>No evidence-backed facts for this country yet. Overview, cost of living, education, labour-market and immigration information will appear here only once checked against a source and reviewed — never invented or inferred.{canEdit && <> Add them in <Link href="/facts/workspace" className={textLink}>the facts workspace</Link>.</>}</EmptyState>}
+        : <EmptyState title="Chưa có thông tin nào được duyệt">Thông tin về chi phí sinh hoạt, giáo dục, lao động và nhập cư của nước này chỉ xuất hiện ở đây sau khi được đối chiếu với nguồn và duyệt; không bao giờ được tự điền hay suy đoán.{canEdit && <> Bạn có thể thêm ở <Link href="/facts/workspace" className={textLink}>trang biên tập thông tin</Link>.</>}</EmptyState>}
     </Section>
-    <Section title="Linked sources" actions={<Link href="/sources" className={`${textLink} text-[15px]`}>Full registry</Link>}>
+    <Section title="Nguồn của quốc gia này" actions={<Link href="/sources" className={`${textLink} text-[15px]`}>Tất cả nguồn</Link>}>
       <SourceList sources={country.sources.map((source) => ({ ...source, country: { name: country.name, slug: country.slug } }))} />
     </Section>
   </>;

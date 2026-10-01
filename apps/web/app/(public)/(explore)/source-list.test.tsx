@@ -13,11 +13,11 @@ const source: Source = {
 it("renders compact rows that link to the source page, with unknowns stated", () => {
   const html = renderToStaticMarkup(<SourceList sources={[source]} />);
   expect(html).toContain('href="/sources/test"');
-  for (const text of ["Test fixture", "example.com", "Chưa phân loại", "Chưa xác minh", "Not assigned"]) expect(html).toContain(text);
+  for (const text of ["Test fixture", "example.com", "Chưa phân loại", "Chưa xác minh", "Chưa gán quốc gia"]) expect(html).toContain(text);
 });
 it("renders empty states and rejects unsafe source links", () => {
-  expect(renderToStaticMarkup(<SourceList sources={[]} />)).toContain("No sources found");
+  expect(renderToStaticMarkup(<SourceList sources={[]} />)).toContain("Không có nguồn nào");
   const html = renderToStaticMarkup(<SourceList sources={[{ ...source, canonicalUrl: "javascript:alert(1)" }]} />);
   expect(html).not.toContain("javascript:");
-  expect(html).toContain("Source URL needs verification");
+  expect(html).toContain("URL nguồn cần được xác minh");
 });
