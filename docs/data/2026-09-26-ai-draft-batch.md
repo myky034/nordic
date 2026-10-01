@@ -95,3 +95,25 @@ Ghi chú:
   chỉnh prompt của Slice 10a.
 - Giao diện duyệt nên cho thấy các thông tin khác lấy từ cùng trang, để người duyệt
   phân biệt "cùng trang" với "trùng thông tin".
+
+## Cập nhật 2026-10-01 — xử lý các điểm "Cần xác nhận"
+
+Thực hiện theo yêu cầu của chủ dự án; script do Claude soạn, chạy thử (rollback)
+trước, chủ dự án chạy bản ghi thật.
+
+- **9 thông tin bị từ chối với lý do "trùng"**: đã tạo lại thành 9 đề xuất mới
+  (trạng thái `proposed`, tài khoản "AI draft"), chép nguyên từng trường từ bản cũ
+  (tài liệu, chủ đề, đối tượng, thuộc tính, giá trị, đơn vị, quốc gia, liên kết
+  nghề/quy định, kỳ số liệu, trích đoạn). Không có đề xuất nào được tự duyệt; chúng
+  chờ người duyệt ở `/facts/workspace`.
+  - Sự cố: script chạy hai lần (04:28 và 06:49 UTC) nên mỗi đề xuất có hai bản. Chín
+    bản sau đã bị từ chối dưới tài khoản chủ dự án với ghi chú "Bản trùng: script tạo
+    lại đề xuất đã chạy hai lần (2026-10-01). Giữ bản tạo lúc 04:28 UTC để duyệt."
+    Script đã được sửa để tự dừng khi bản sao đã tồn tại.
+- **EURES**: chuyển từ T1 sang **T2**. Căn cứ ghi: trang
+  https://eures.europa.eu/index_en và https://eures.europa.eu/eures-legal-notice_en
+  ghi nguyên văn "This site is managed by: European Labour Authority" (kiểm tra
+  2026-10-01); tổ chức EU xếp T2 theo PROJECT_SPEC.md 2.5. Nội dung cũ trong ô căn cứ
+  là một đoạn văn bản trang web dán nhầm, không phải căn cứ.
+- **Study in Sweden**: chủ dự án đã chuyển sang T2 kèm căn cứ (Swedish Institute,
+  cơ quan nhà nước Thụy Điển); giữ nguyên.
