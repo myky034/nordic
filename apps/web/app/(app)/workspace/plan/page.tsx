@@ -2,6 +2,10 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { compareHref } from "@/lib/compare/domain";
+import { countryName } from "@/lib/registry/domain";
+import { targetDegrees } from "@/lib/workspace/domain";
+
+const degreeName = (d: string) => targetDegrees[d as keyof typeof targetDegrees] ?? d;
 import { Card, List, ListRow, Notice, PageHeader, Section, BackLink } from "@/components/ui";
 import { PlanForm } from "../forms";
 
@@ -20,10 +24,10 @@ export default async function PlanPage() {
   // Shortcuts are plain links built from the user's own answers. They filter
   // public lists; they do not rank, score or recommend anything.
   const shortcuts: [string, string, string][] = [];
-  if (chosen.length >= 2) shortcuts.push([compareHref(chosen.map((c) => c.countries.slug)), "So sánh các nước bạn quan tâm", chosen.map((c) => c.countries.name).join(", ")]);
+  if (chosen.length >= 2) shortcuts.push([compareHref(chosen.map((c) => c.countries.slug)), "So sánh các nước bạn quan tâm", chosen.map((c) => countryName(c.countries.slug, c.countries.name)).join(", ")]);
   for (const c of chosen) {
-    shortcuts.push([`/programmes?country=${c.countries.slug}${plan?.target_degree ? `&degree=${plan.target_degree}` : ""}`, `Chương trình${plan?.target_degree ? ` ${plan.target_degree}` : ""} tại ${c.countries.name}`, "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]);
-    shortcuts.push([`/immigration?country=${c.countries.slug}`, `Quy định nhập cư tại ${c.countries.name}`, "Chỉ quy định có nguồn chính thức đã xác minh"]);
+    shortcuts.push([`/programmes?country=${c.countries.slug}${plan?.target_degree ? `&degree=${plan.target_degree}` : ""}`, `Chương trình${plan?.target_degree ? ` ${degreeName(plan.target_degree).toLowerCase()}` : ""} tại ${countryName(c.countries.slug, c.countries.name)}`, "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]);
+    shortcuts.push([`/immigration?country=${c.countries.slug}`, `Quy định nhập cư tại ${countryName(c.countries.slug, c.countries.name)}`, "Chỉ quy định có nguồn chính thức đã xác minh"]);
   }
   if (plan?.target_role) shortcuts.push([`/occupations?q=${encodeURIComponent(plan.target_role)}`, `Nghề: ${plan.target_role}`, "Tìm nghề theo vai trò mong muốn"]);
   return <>
