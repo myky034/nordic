@@ -18,13 +18,13 @@ it("shows full registry metadata with unknowns stated, and the original link", a
   getSource.mockResolvedValue(base);
   const html = await render();
   expect(html).toContain('href="https://example.com/"');
-  for (const text of ["Chưa phân loại", "Chưa có", "Chưa xác minh", "Disabled", "Not assigned", "Not reviewed", "No documents have been imported"]) expect(html).toContain(text);
+  for (const text of ["Chưa phân loại", "Chưa có", "Chưa xác minh", "Đang tắt", "Chưa gán quốc gia", "Chưa kiểm tra", "Chưa có tài liệu nào được nhập"]) expect(html).toContain(text);
 });
 it("never renders an unsafe URL as a link and 404s unknown sources", async () => {
   getSource.mockResolvedValue({ ...base, canonicalUrl: "javascript:alert(1)" });
   const html = await render();
   expect(html).not.toContain("javascript:");
-  expect(html).toContain("Source URL needs verification");
+  expect(html).toContain("URL nguồn cần được xác minh");
   getSource.mockResolvedValue(null);
   await expect(render()).rejects.toThrow("NOT_FOUND");
 });

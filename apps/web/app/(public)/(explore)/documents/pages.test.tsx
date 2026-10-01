@@ -28,7 +28,7 @@ import DocumentPage from "./[id]/page";
 it("renders an honest empty state instead of fictional documents", async () => {
   list.mockResolvedValue({ rows: [], total: 0 });
   const html = renderToStaticMarkup(await DocumentsPage({ params: Promise.resolve({}), searchParams: Promise.resolve({}) }));
-  expect(html).toContain("No documents yet");
+  expect(html).toContain("Chưa có tài liệu nào");
 });
 it("passes the sanitised search and page to the query and shows pagination", async () => {
   list.mockResolvedValue({ rows: [{ id: "d1", title: "Synthetic doc", retrievedAt: new Date("2026-09-19"), source: { name: "Synthetic source", sourceTier: "T1" } }], total: 60 });
@@ -65,8 +65,8 @@ it("renders escaped excerpts, attribution, unknown dates and unverified status",
   expect(html).not.toContain("<script>");
   for (const text of [
     "Chưa có",
-    "Claims not verified",
-    "Metadata stored",
+    "Nội dung chưa được kiểm chứng",
+    "Đã lưu thông tin trang",
     "Synthetic source",
     'href="https://example.com/document"',
   ])

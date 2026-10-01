@@ -1,5 +1,5 @@
 import type { Source } from "@nordic/db";
-import { canonicalSourceUrl, verificationLabel } from "@/lib/registry/domain";
+import { canonicalSourceUrl, countryName, verificationLabel } from "@/lib/registry/domain";
 import { EmptyState, List, ListRow } from "@/components/ui";
 import { SourceStatusBadge, TierBadge } from "@/components/ui/badges";
 
@@ -15,6 +15,6 @@ export function SourceList({ sources }: { sources: (Source & { country?: { name:
     const host = hostLabel(canonicalSourceUrl(source.canonicalUrl));
     return <ListRow key={source.id} href={`/sources/${source.id}`} title={source.name}
       badges={<><TierBadge tier={source.sourceTier} /><SourceStatusBadge status={source.status}>{verificationLabel(source.status, source.lastVerifiedAt)}</SourceStatusBadge></>}
-      subtitle={`${host ?? "URL nguồn cần được xác minh."} · ${source.country?.name ?? "Chưa gán quốc gia"}${source.topics.length ? ` · ${source.topics.join(", ")}` : ""}`} />;
+      subtitle={`${host ?? "URL nguồn cần được xác minh."} · ${source.country ? countryName(source.country.slug, source.country.name) : "Chưa gán quốc gia"}${source.topics.length ? ` · ${source.topics.join(", ")}` : ""}`} />;
   })}</List>;
 }

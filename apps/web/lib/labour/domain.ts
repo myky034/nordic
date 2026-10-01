@@ -17,7 +17,8 @@ export function isOfficialStatisticsTier(tier: string | null | undefined) {
 }
 
 export function classificationLabel(system: string | null, code: string | null) {
-  return system && code ? `${system} ${code}` : "Chưa ghi nhận mã phân loại";
+  // "national" is our category, not a name a reader would recognise; ISCO-08 / ESCO are shown as is.
+  return system && code ? `${system === "national" ? "Mã quốc gia" : system} ${code}` : "Chưa ghi nhận mã phân loại";
 }
 
 const errors: Record<string, string> = {

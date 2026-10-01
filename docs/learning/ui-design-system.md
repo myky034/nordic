@@ -690,3 +690,30 @@ mảnh chạy dọc mép trên cửa sổ** khi đang chuyển trang, giống Sa
   giữa lúc tải thanh hiện và đang chạy; tải xong thanh chạy hết rồi mờ đi.
 - Cùng lúc: `<html lang="vi">` (trước là `en`), để trình đọc màn hình đọc đúng tiếng
   Việt.
+
+## Cập nhật 2026-10-01 — Đợt 3: các trang công khai bằng tiếng Việt
+
+Tất cả trang người xem gặp đều đã chuyển sang tiếng Việt (5 commit, phần A–E):
+thanh điều hướng, chân trang, phân trang, đăng nhập/đăng ký, trang lỗi, tìm kiếm,
+trang chủ, quốc gia, trường, chương trình, quy định nhập cư, nghề, thông tin, so sánh,
+nguồn và tài liệu.
+
+- **Trang chủ** hỏi "Bạn muốn làm gì?" với 4 thẻ mục tiêu (du học, đi làm, visa và cư
+  trú, so sánh), liệt kê 5 quốc gia và 3 nguyên tắc. Vẫn không hiển thị dữ liệu nào
+  không có nguồn.
+- **Lưới thẻ** (kiểu 5 trong `/dev/preview/patterns`) cho danh sách quốc gia (xếp theo
+  tên tiếng Việt) và danh sách trường đại học.
+- **Tên quốc gia tiếng Việt** qua `countryName(slug, tênLưu)` trong
+  `lib/registry/domain.ts` (Thụy Điển, Đan Mạch, Phần Lan, Na Uy, Hà Lan); database
+  vẫn giữ tên tiếng Anh, tên đó hiện nhỏ phía trên trên thẻ quốc gia.
+- Nhãn dùng chung đã dịch trong domain module: loại quy định nhập cư
+  (`ruleTypes`), nhóm chỉ số so sánh (`metricCategories`), hệ phân loại nghề
+  (`classificationSystems`; mã "national" hiện là "Mã quốc gia …"), trạng thái
+  nghiên cứu của quốc gia (`countryStatusLabels`), thông báo đăng nhập và lỗi xác thực.
+- `countLabel(n, danhTừ)` không còn thêm "s" số nhiều.
+- **Không dịch**: tên trường, quy định, nghề, nguồn và trích đoạn — chúng là nội dung
+  của nguồn (PROJECT_SPEC.md 21, 2026-09-29).
+- `<html lang="vi">`.
+
+Còn lại: trang quản trị Crawler, Trích xuất AI, Chỉ số so sánh, Nhập tài liệu và không
+gian cá nhân (đợt 4); User Guide cần cập nhật theo giao diện mới.

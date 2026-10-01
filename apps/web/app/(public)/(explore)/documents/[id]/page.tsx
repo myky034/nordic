@@ -19,32 +19,32 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
   // Only people who can propose facts see the shortcut into the workspace.
   const canPropose = canProposeFacts(await viewerPermissions());
   return <>
-    <PageHeader back={<BackLink href="/documents">All documents</BackLink>} eyebrow="Document"
-      title={<span className="break-words">{document.title ?? "Untitled document"}</span>}
-      description={<div className="flex flex-wrap gap-2 pt-1"><Badge>Metadata stored · Claims not verified</Badge></div>}
+    <PageHeader back={<BackLink href="/documents">Tất cả tài liệu</BackLink>} eyebrow="Tài liệu"
+      title={<span className="break-words">{document.title ?? "Tài liệu chưa có tiêu đề"}</span>}
+      description={<div className="flex flex-wrap gap-2 pt-1"><Badge>Đã lưu thông tin trang · Nội dung chưa được kiểm chứng</Badge></div>}
       actions={canPropose ? <Link href={`/facts/workspace?document=${id}`} className={buttonPrimary}>Thêm thông tin & bằng chứng</Link> : undefined} />
-    {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>Read original: {url}</ExternalLink></p>}
+    {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>Mở trang gốc: {url}</ExternalLink></p>}
     <DescriptionList items={[
-      ["Source", sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],
-      ["Source tier", tierLabel(document.source.sourceTier)],
-      ["Retrieved", dateLabel(document.retrievedAt)],
-      ["Published", dateLabel(document.publishedAt)],
-      ["Source updated", dateLabel(document.sourceUpdatedAt)],
-      ["Document type", document.documentType],
-      ["Document verification", "Not verified; current validity unknown"],
-      ["Registry metadata last reviewed", dateLabel(document.source.lastVerifiedAt)],
+      ["Nguồn", sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],
+      ["Mức độ nguồn (tier)", tierLabel(document.source.sourceTier)],
+      ["Ngày lấy trang", dateLabel(document.retrievedAt)],
+      ["Ngày nguồn đăng", dateLabel(document.publishedAt)],
+      ["Ngày nguồn cập nhật", dateLabel(document.sourceUpdatedAt)],
+      ["Loại tài liệu", document.documentType],
+      ["Kiểm chứng nội dung", "Chưa kiểm chứng; hiệu lực hiện tại chưa rõ"],
+      ["Nguồn xác minh gần nhất", dateLabel(document.source.lastVerifiedAt)],
     ]} />
-    <Section title="Source excerpt" description="An excerpt records source text; it is not a verified fact or legal advice.">
-      {document.excerpt ? <Quote>{document.excerpt}</Quote> : <EmptyState>No excerpt supplied. Read the original source for context.</EmptyState>}
+    <Section title="Trích đoạn" description="Trích đoạn chép lại chữ của nguồn; nó không phải thông tin đã kiểm chứng hay tư vấn pháp lý.">
+      {document.excerpt ? <Quote>{document.excerpt}</Quote> : <EmptyState>Chưa có trích đoạn. Hãy đọc trang gốc để biết ngữ cảnh.</EmptyState>}
     </Section>
     <InternalText documentId={id} />
     <ExtractionPanel documentId={id} />
-    <Section title="Recorded versions" description={<>Versions preserve changes without selecting one as authoritative.{versions.length > 20 ? " Showing the 20 most recently retrieved versions." : ""}</>}>
-      {versions.length ? <List label="Versions">{versions.slice(0, 20).map((version) => <ListRow key={version.id} href={`/documents/${version.id}`}
-        title={`Retrieved ${dateLabel(version.retrievedAt)}`}
-        badges={version.id === id ? <Badge tone="accent">This version</Badge> : undefined}
+    <Section title="Các phiên bản đã lưu" description={<>Mỗi lần trang nguồn đổi nội dung là một phiên bản mới; hệ thống giữ tất cả, không chọn bản nào là đúng.{versions.length > 20 ? " Đang hiện 20 phiên bản mới nhất." : ""}</>}>
+      {versions.length ? <List label="Phiên bản">{versions.slice(0, 20).map((version) => <ListRow key={version.id} href={`/documents/${version.id}`}
+        title={`Lấy trang ngày ${dateLabel(version.retrievedAt)}`}
+        badges={version.id === id ? <Badge tone="accent">Phiên bản này</Badge> : undefined}
         meta={<span className="font-mono">{version.contentHash.slice(0, 12)}</span>} />)}</List>
-        : <EmptyState>No other versions recorded.</EmptyState>}
+        : <EmptyState>Chưa có phiên bản nào khác.</EmptyState>}
     </Section>
   </>;
 }

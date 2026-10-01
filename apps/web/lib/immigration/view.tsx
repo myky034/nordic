@@ -32,13 +32,13 @@ export const day = (value: string | null) => value ? new Date(value).toISOString
 // Recommendation 4 (2026-09-23): always visible on immigration pages.
 export function LegalDisclaimer() {
   return <Notice tone="caution" title="Thông tin nghiên cứu, không phải tư vấn di trú.">
-    Research information, not immigration or legal advice. Rules change; always confirm on the official authority&apos;s website before applying or making decisions.
+    Đây là thông tin nghiên cứu, không phải tư vấn di trú hay pháp lý. Quy định có thể thay đổi; luôn kiểm tra lại trên trang của cơ quan có thẩm quyền trước khi nộp hồ sơ hay ra quyết định.
   </Notice>;
 }
 
 // SRS/UserFlow 2.3: warn instead of silently choosing between sources.
 export function ConflictBanner() {
   return <Notice tone="critical" role="alert" title="Thông tin đang có mâu thuẫn giữa các nguồn.">
-    Sources currently disagree on at least one requirement below; both claims are shown and neither has been chosen as correct.
+    Các nguồn đang khác nhau ở ít nhất một điều kiện bên dưới; cả hai đều được hiển thị và hệ thống không chọn bên nào là đúng.
   </Notice>;
 }
