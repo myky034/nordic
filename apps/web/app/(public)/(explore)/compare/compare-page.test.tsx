@@ -31,7 +31,7 @@ it("shows every value per cell with its own source and period, and never a score
   for (const t of ["Synthetic monthly cost", "100 EUR", "120 EUR", "2025-Q1", "Source a", "Mâu thuẫn", "Chưa có dữ liệu", "không phải tổng số"]) expect(html).toContain(t);
   expect(html.indexOf("120 EUR")).toBeLessThan(html.indexOf("100 EUR"));
   // The page states that there is no score; it must never render one.
-  expect(html).toContain("no overall score or ranking");
+  expect(html).toContain("Không có điểm tổng hay xếp hạng");
   expect(html.toLowerCase()).not.toMatch(/\baverage\b|score:|ranked #|\bbest\b|\bwinner\b/);
   expect(calls).toContainEqual(["facts", "in", "status", ["reviewed", "conflicted"]]);
 });

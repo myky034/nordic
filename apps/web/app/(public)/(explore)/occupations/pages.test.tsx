@@ -33,7 +33,7 @@ it("lists only reviewed occupations and states that figures are not forecasts", 
   const html = renderToStaticMarkup(await OccupationsPage({ params: Promise.resolve({}), searchParams: Promise.resolve({ q: "anal" }) }));
   expect(calls).toContainEqual(["eq", "status", "reviewed"]);
   expect(calls).toContainEqual(["ilike", "name", "%anal%"]);
-  expect(html).toContain("not a forecast");
+  expect(html).toContain("không phải dự báo");
 });
 it("requires a verified source, shows reference periods, labels non-official figures and warns on conflicts", async () => {
   calls.length = 0;
@@ -43,7 +43,7 @@ it("requires a verified source, shows reference periods, labels non-official fig
   const html = renderToStaticMarkup(await OccupationPage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({ country: "sweden" }) }));
   expect(calls).toContainEqual(["eq", "documents.sources.status", "verified"]);
   expect(calls).toContainEqual(["eq", "countries.slug", "sweden"]);
-  for (const text of ["Synthetic analyst", "ISCO-08 0000", "International definition", "Kỳ số liệu: 2024", "Sources disagree", "Không phải số liệu thống kê chính thức"]) expect(html).toContain(text);
+  for (const text of ["Synthetic analyst", "ISCO-08 0000", "Định nghĩa quốc tế", "Kỳ số liệu: 2024", "Các nguồn khác nhau", "Không phải số liệu thống kê chính thức"]) expect(html).toContain(text);
   expect(html.match(/Không phải số liệu thống kê chính thức/g)).toHaveLength(1);
 });
 it("404s unknown or unpublished occupations and redirects a page past the end", async () => {

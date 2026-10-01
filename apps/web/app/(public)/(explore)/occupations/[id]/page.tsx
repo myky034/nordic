@@ -5,7 +5,7 @@ import { notFound, redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
 import { uuidPattern } from "@/lib/documents/domain";
-import { countrySlugs } from "@/lib/registry/domain";
+import { countryName, countrySlugs } from "@/lib/registry/domain";
 import { FactCard, type FactRow } from "@/lib/facts/view";
 import { ExistenceEvidence } from "@/lib/education/view";
 import { classificationLabel } from "@/lib/labour/domain";
@@ -41,25 +41,25 @@ export default async function OccupationPage({ params, searchParams }: PageProps
   const facts = (figuresResult.data ?? []) as unknown as FactRow[];
   const counts = countryCounts.map((r) => r.count ?? 0);
   const total = counts.reduce((a, b) => a + b, 0);
-  const name = (slug: string) => slug[0].toUpperCase() + slug.slice(1);
+  const name = (slug: string) => countryName(slug, slug);
   const save = await savedState("occupation", occupation.id);
   return <>
-    <PageHeader back={<BackLink href="/occupations">All occupations</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Occupation" title={occupation.name} />
+    <PageHeader back={<BackLink href="/occupations">Tất cả nghề</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Nghề nghiệp" title={occupation.name} />
     <DescriptionList items={[
-      ["Classification", classificationLabel(occupation.classification_system, occupation.classification_code)],
-      ["Scope", occupation.countries ? <Link key="c" href={`/countries/${occupation.countries.slug}`} className="text-accent hover:underline">{occupation.countries.name}</Link> : "International definition"],
+      ["Mã phân loại", classificationLabel(occupation.classification_system, occupation.classification_code)],
+      ["Phạm vi", occupation.countries ? <Link key="c" href={`/countries/${occupation.countries.slug}`} className="text-accent hover:underline">{countryName(occupation.countries.slug, occupation.countries.name)}</Link> : "Định nghĩa quốc tế"],
     ]} />
-    <Section title="Labour-market figures" description="Each figure states its country and reference period. Figures from different periods or sources are not directly comparable.">
-      <Segmented label="Country" items={[
-        { href: withParams(`/occupations/${id}`, {}, {}), label: "All", count: total, active: !country },
+    <Section title="Số liệu thị trường lao động" description="Mỗi số liệu ghi rõ quốc gia và kỳ số liệu. Số liệu khác kỳ hoặc khác nguồn không so sánh trực tiếp được.">
+      <Segmented label="Quốc gia" items={[
+        { href: withParams(`/occupations/${id}`, {}, {}), label: "Tất cả", count: total, active: !country },
         ...countrySlugs.map((slug, i) => ({ href: withParams(`/occupations/${id}`, {}, { country: slug }), label: name(slug), count: counts[i], active: country === slug })),
       ]} />
-      {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title="Sources disagree on at least one figure.">Both claims are shown; neither has been chosen as correct.</Notice></div>}
+      {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title="Các nguồn khác nhau ở ít nhất một số liệu.">Cả hai đều được hiển thị; hệ thống không chọn bên nào là đúng.</Notice></div>}
       {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} />)}</div>
-        : <EmptyState>No reviewed figures with a verified source{country ? ` for ${name(country)}` : ""} yet. Nothing is estimated here.</EmptyState>}
+        : <EmptyState>Chưa có số liệu nào được duyệt với nguồn đã xác minh{country ? ` cho ${name(country)}` : ""}. Ở đây không có gì được ước lượng.</EmptyState>}
       <Pagination summary={pageSummary(figuresResult.count ?? facts.length, page)} href={(p) => withParams(`/occupations/${id}`, query, { page: p })} />
     </Section>
-    <Section title="Why this occupation is listed">
+    <Section title="Vì sao nghề này có trong danh sách">
       <Card><ExistenceEvidence excerpt={occupation.evidence_excerpt} document={occupation.documents} reviewedAt={occupation.reviewed_at} /></Card>
     </Section>
   </>;

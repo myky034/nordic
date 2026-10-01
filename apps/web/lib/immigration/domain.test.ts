@@ -10,8 +10,8 @@ it("treats only T1 as official", () => {
   for (const tier of ["T2", "T3", "T4", null, undefined]) expect(isOfficialTier(tier)).toBe(false);
 });
 it("labels unknown rule types as Other and never leaks raw errors", () => {
-  expect(ruleTypeLabel("post_study")).toBe("Post-study stay");
-  expect(ruleTypeLabel("golden_visa")).toBe("Other");
+  expect(ruleTypeLabel("post_study")).toBe("Ở lại sau khi học");
+  expect(ruleTypeLabel("golden_visa")).toBe("Khác");
   expect(immigrationError("immigration_requires_t1")).toContain("T1");
   expect(immigrationError("password=secret")).not.toContain("secret");
 });

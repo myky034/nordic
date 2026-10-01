@@ -35,12 +35,12 @@ it("always shows the disclaimer and requires reviewed rules from verified T1 sou
   expect(html).toContain("không phải tư vấn di trú");
   for (const c of [["eq", "status", "reviewed"], ["eq", "documents.sources.status", "verified"], ["eq", "documents.sources.source_tier", "T1"], ["eq", "countries.slug", "sweden"]]) expect(calls).toContainEqual(c);
   expect(calls.some((c) => c[1] === "rule_type")).toBe(false);
-  expect(html).toContain("No reviewed rules backed by a verified official source");
+  expect(html).toContain("Chưa có quy định nào đã duyệt và có nguồn nhà nước đã xác minh");
 });
 it("shows verification dates, a conflict banner and labels non-T1 requirements", async () => {
   results.push({ data: rule, error: null }, { data: [fact("conflicted", "T1"), fact("reviewed", "T3")], error: null });
   const html = renderToStaticMarkup(await ImmigrationRulePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
-  for (const text of ["không phải tư vấn di trú", "Synthetic work permit", "Source last verified: 2026-09-20", "mâu thuẫn giữa các nguồn", "Không phải nguồn chính thức (T1)"]) expect(html).toContain(text);
+  for (const text of ["không phải tư vấn di trú", "Synthetic work permit", "2026-09-20", "mâu thuẫn giữa các nguồn", "Không phải nguồn chính thức (T1)"]) expect(html).toContain(text);
   expect(html.match(/Không phải nguồn chính thức/g)).toHaveLength(1);
 });
 it("returns not found for unpublished rules and fails closed on errors", async () => {

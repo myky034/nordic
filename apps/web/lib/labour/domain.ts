@@ -1,6 +1,6 @@
 // Mirrors occupations.classification_system. A code is stored only when the
 // source states one; there is deliberately no "guessed" option.
-export const classificationSystems = { "ISCO-08": "ISCO-08", ESCO: "ESCO", national: "National classification", other: "Other" } as const;
+export const classificationSystems = { "ISCO-08": "ISCO-08", ESCO: "ESCO", national: "Phân loại quốc gia", other: "Khác" } as const;
 export type ClassificationSystem = keyof typeof classificationSystems;
 
 // Mirrors the facts.reference_period CHECK: YYYY, YYYY-Qn, YYYY-Hn or YYYY-MM.
@@ -17,7 +17,7 @@ export function isOfficialStatisticsTier(tier: string | null | undefined) {
 }
 
 export function classificationLabel(system: string | null, code: string | null) {
-  return system && code ? `${system} ${code}` : "No classification code recorded";
+  return system && code ? `${system} ${code}` : "Chưa ghi nhận mã phân loại";
 }
 
 const errors: Record<string, string> = {

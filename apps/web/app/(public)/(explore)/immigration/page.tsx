@@ -3,7 +3,7 @@ import Link from "next/link";
 import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
-import { countrySlugs, verificationLabel } from "@/lib/registry/domain";
+import { countryName, countrySlugs, verificationLabel } from "@/lib/registry/domain";
 import { immigrationFilters, ruleTypeLabel, ruleTypes } from "@/lib/immigration/domain";
 import { authoritySelect, day, LegalDisclaimer, ruleListSelect, type AuthorityRow, type RuleListRow } from "@/lib/immigration/view";
 import { Badge, EmptyState, ExternalLink, Field, List, ListRow, PageHeader, Pagination, SearchInput, Section, filterBar } from "@/components/ui";
@@ -37,26 +37,26 @@ export default async function ImmigrationPage({ searchParams }: PageProps<"/immi
   const list = (ruleResult.data ?? []) as unknown as RuleListRow[];
   const authorityList = authorityResult.data as unknown as AuthorityRow[];
   return <>
-    <PageHeader eyebrow="Immigration" title="Residence and permit rules" />
+    <PageHeader eyebrow="Làm việc & Visa" title="Quy định nhập cư" description="Quy định về giấy phép du học, lao động và cư trú, chỉ lấy từ trang của cơ quan nhà nước (nguồn T1) đã được xác minh." />
     <div className="-mt-4 mb-10"><LegalDisclaimer /></div>
     <Form action="/immigration" className={filterBar}>
-      <div className="sm:col-span-2 lg:col-span-4"><SearchInput defaultValue={q} placeholder="Search rule names" /></div>
-      <Field label="Country"><select name="country" defaultValue={filters.country} className={control}><option value="">All countries</option>{countrySlugs.map((slug) => <option key={slug} value={slug}>{slug[0].toUpperCase() + slug.slice(1)}</option>)}</select></Field>
-      <Field label="Rule type"><select name="type" defaultValue={filters.type} className={control}><option value="">All types</option>{Object.entries(ruleTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
-      <div className="flex items-center gap-4"><button className={buttonPrimary}>Apply</button><Link href="/immigration" className={`${textLink} text-[15px]`}>Reset</Link></div>
+      <div className="sm:col-span-2 lg:col-span-4"><SearchInput defaultValue={q} placeholder="Tên quy định" /></div>
+      <Field label="Quốc gia"><select name="country" defaultValue={filters.country} className={control}><option value="">Tất cả quốc gia</option>{countrySlugs.map((slug) => <option key={slug} value={slug}>{countryName(slug, slug)}</option>)}</select></Field>
+      <Field label="Loại quy định"><select name="type" defaultValue={filters.type} className={control}><option value="">Tất cả loại</option>{Object.entries(ruleTypes).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></Field>
+      <div className="flex items-center gap-4"><button className={buttonPrimary}>Lọc</button><Link href="/immigration" className={`${textLink} text-[15px]`}>Bỏ lọc</Link></div>
     </Form>
     {list.length
-      ? <List label="Immigration rules">{list.map((r) => <ListRow key={r.id} href={`/immigration/${r.id}`} title={r.title}
+      ? <List label="Quy định nhập cư">{list.map((r) => <ListRow key={r.id} href={`/immigration/${r.id}`} title={r.title}
           badges={<Badge tone="accent">{ruleTypeLabel(r.rule_type)}</Badge>}
-          subtitle={`${r.countries.name} · ${r.documents.sources.name} (T1) · Source last verified ${day(r.documents.sources.last_verified_at)}`} />)}</List>
-      : <EmptyState>No reviewed rules backed by a verified official source for this selection yet. Use the official authority links below. Nothing here is inferred.</EmptyState>}
+          subtitle={`${countryName(r.countries.slug, r.countries.name)} · ${r.documents.sources.name} (T1) · Nguồn xác minh ${day(r.documents.sources.last_verified_at)}`} />)}</List>
+      : <EmptyState>Chưa có quy định nào đã duyệt và có nguồn nhà nước đã xác minh cho lựa chọn này. Hãy xem trang của các cơ quan di trú bên dưới; ở đây không có gì được suy đoán.</EmptyState>}
     <Pagination summary={pageSummary(ruleResult.count ?? list.length, page)} href={(p) => withParams("/immigration", params, { page: p })} />
-    <Section title="Official immigration authorities">
+    <Section title="Cơ quan di trú (nguồn T1)">
       {authorityList.length
-        ? <List label="Authorities">{authorityList.map((a) => <ListRow key={a.id} title={a.name}
+        ? <List label="Cơ quan di trú">{authorityList.map((a) => <ListRow key={a.id} title={a.name}
             badges={<SourceStatusBadge status={a.status}>{verificationLabel(a.status, a.last_verified_at ? new Date(a.last_verified_at) : null)}</SourceStatusBadge>}
-            subtitle={<><ExternalLink quiet href={a.canonical_url}>{a.canonical_url}</ExternalLink> · {a.countries.name} · last registry verification {day(a.last_verified_at)}</>} />)}</List>
-        : <EmptyState>No T1 immigration authority registered for this selection.</EmptyState>}
+            subtitle={<><ExternalLink quiet href={a.canonical_url}>{a.canonical_url}</ExternalLink> · {countryName(a.countries.slug, a.countries.name)} · xác minh gần nhất {day(a.last_verified_at)}</>} />)}</List>
+        : <EmptyState>Chưa có cơ quan di trú (T1) nào được đăng ký cho lựa chọn này.</EmptyState>}
     </Section>
   </>;
 }

@@ -2,7 +2,7 @@ import Link from "next/link";
 import Form from "next/form";
 import { createPublicClient } from "@/lib/supabase/public";
 import { logAccessError } from "@/lib/rbac/access";
-import { countrySlugs } from "@/lib/registry/domain";
+import { countryName, countrySlugs } from "@/lib/registry/domain";
 import { buildCells, categoryParam, compareCountries, compareHref, MAX_COUNTRIES, metricCategories } from "@/lib/compare/domain";
 import { ruleTypes } from "@/lib/immigration/domain";
 import { uuidPattern } from "@/lib/documents/domain";
@@ -17,7 +17,7 @@ type Rule = { id: string; title: string; rule_type: string; country_id: string; 
 
 const valueSelect = "id,document_id,metric_id,occupation_id,country_id,predicate,value,unit,reference_period,status,created_at,evidence(retrieved_at),documents!facts_document_id_fkey(sources(name,source_tier))";
 const day = (v: string | null) => v ? new Date(v).toISOString().slice(0, 10) : "not available";
-const name = (slug: string) => slug[0].toUpperCase() + slug.slice(1);
+const name = (slug: string) => countryName(slug, slug);
 const Cell = CompareCell;
 
 export default async function ComparePage({ searchParams }: PageProps<"/compare">) {
@@ -51,11 +51,11 @@ export default async function ComparePage({ searchParams }: PageProps<"/compare"
     <div className="flex items-end"><button className={buttonPrimary}>So sánh</button></div>
   </Form>;
 
-  const header = <PageHeader eyebrow="Country comparison" title="Compare countries"
-    description="Side by side, every value keeps its own source, tier, period and date. There is no overall score or ranking." />;
+  const header = <PageHeader eyebrow="So sánh" title="So sánh quốc gia"
+    description="Đặt các nước cạnh nhau; mỗi giá trị giữ nguồn, mức độ nguồn, kỳ số liệu và ngày riêng. Không có điểm tổng hay xếp hạng." />;
   if (!ready) return <>
     {header}{selector}
-    <EmptyState title="Chọn ít nhất 2 quốc gia">Ví dụ: <Link href={compareHref(["sweden", "denmark"])} className={textLink}>Sweden và Denmark</Link>.</EmptyState>
+    <EmptyState title="Chọn ít nhất 2 quốc gia">Ví dụ: <Link href={compareHref(["sweden", "denmark"])} className={textLink}>Thụy Điển và Đan Mạch</Link>.</EmptyState>
   </>;
 
   const ids = countries.map((c) => c.id);

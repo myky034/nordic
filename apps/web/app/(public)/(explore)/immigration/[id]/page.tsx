@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
 import { uuidPattern } from "@/lib/documents/domain";
 import { FactCard, type FactRow } from "@/lib/facts/view";
-import { tierLabel } from "@/lib/registry/domain";
+import { countryName, tierLabel } from "@/lib/registry/domain";
 import { ruleTypeLabel } from "@/lib/immigration/domain";
 import { ConflictBanner, day, LegalDisclaimer, ruleDetailSelect, ruleFactSelect, type RuleDetailRow } from "@/lib/immigration/view";
 import { BackLink, Card, DescriptionList, EmptyState, ExternalLink, PageHeader, Quote, Section } from "@/components/ui";
@@ -31,8 +31,8 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
   const source = rule.documents.sources;
   const save = await savedState("immigration_rule", rule.id);
   return <>
-    <PageHeader back={<BackLink href="/immigration">All immigration rules</BackLink>} actions={<SaveButton kind="immigration_rule" id={rule.id} signedIn={save.signedIn} initialSaved={save.saved} />}
-      eyebrow={<>{ruleTypeLabel(rule.rule_type)} · <Link href={`/countries/${rule.countries.slug}`} className="hover:underline">{rule.countries.name}</Link></>}
+    <PageHeader back={<BackLink href="/immigration">Tất cả quy định</BackLink>} actions={<SaveButton kind="immigration_rule" id={rule.id} signedIn={save.signedIn} initialSaved={save.saved} />}
+      eyebrow={<>{ruleTypeLabel(rule.rule_type)} · <Link href={`/countries/${rule.countries.slug}`} className="hover:underline">{countryName(rule.countries.slug, rule.countries.name)}</Link></>}
       title={rule.title} />
     <div className="-mt-4 space-y-4">
       <LegalDisclaimer />
@@ -40,21 +40,21 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
     </div>
     <div className="mt-8">
       <DescriptionList items={[
-        ["Official page", <ExternalLink key="o" href={rule.official_url}>{rule.official_url}</ExternalLink>],
-        ["Source", `${source.name} · ${tierLabel(source.source_tier)}`],
-        ["Source last verified", `Source last verified: ${day(source.last_verified_at)}`],
-        ["Evidence retrieved", day(rule.documents.retrieved_at)],
-        ["Evidence reviewed", day(rule.reviewed_at)],
+        ["Trang chính thức", <ExternalLink key="o" href={rule.official_url}>{rule.official_url}</ExternalLink>],
+        ["Nguồn", `${source.name} · ${tierLabel(source.source_tier)}`],
+        ["Nguồn xác minh gần nhất", day(source.last_verified_at)],
+        ["Ngày lấy trang bằng chứng", day(rule.documents.retrieved_at)],
+        ["Ngày duyệt bằng chứng", day(rule.reviewed_at)],
       ]} />
     </div>
-    <Section title="Requirements">
+    <Section title="Điều kiện">
       {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} />)}</div>
-        : <EmptyState>No reviewed requirements with a verified source for this rule yet. Read the official page above; nothing is summarised or inferred here.</EmptyState>}
+        : <EmptyState>Chưa có điều kiện nào của quy định này được duyệt với nguồn đã xác minh. Hãy đọc trang chính thức ở trên; ở đây không có gì được tóm tắt hay suy đoán.</EmptyState>}
     </Section>
-    <Section title="Why this rule is listed">
+    <Section title="Vì sao quy định này có trong danh sách">
       <Card className="space-y-3">
         <Quote>{rule.evidence_excerpt}</Quote>
-        <p className="text-[13px] text-ink-3"><ExternalLink href={rule.documents.canonical_url}>Open original source</ExternalLink></p>
+        <p className="text-[13px] text-ink-3"><ExternalLink href={rule.documents.canonical_url}>Mở trang gốc</ExternalLink></p>
       </Card>
     </Section>
   </>;

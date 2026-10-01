@@ -2,8 +2,8 @@ import { countrySlugs } from "../registry/domain";
 
 // Mirrors comparison_metrics.category (PROJECT_SPEC.md Section 2.10 list).
 export const metricCategories = {
-  education: "Education", tuition: "Tuition", living_cost: "Living cost", labour_market: "Labour market",
-  immigration: "Immigration", housing: "Housing", language: "Language", quality_of_life: "Quality of life", other: "Other",
+  education: "Giáo dục", tuition: "Học phí", living_cost: "Chi phí sinh hoạt", labour_market: "Thị trường lao động",
+  immigration: "Nhập cư", housing: "Nhà ở", language: "Ngôn ngữ", quality_of_life: "Chất lượng sống", other: "Khác",
 } as const;
 export type MetricCategory = keyof typeof metricCategories;
 export const metricKeyPattern = /^[a-z][a-z0-9_]{1,59}$/;

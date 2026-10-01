@@ -11,7 +11,7 @@ it("treats T1/T2 as official statistics and labels the rest", () => {
   for (const t of ["T3", "T4", null]) expect(isOfficialStatisticsTier(t)).toBe(false);
 });
 it("never invents a classification code or leaks raw errors", () => {
-  expect(classificationLabel(null, null)).toContain("No classification");
+  expect(classificationLabel(null, null)).toContain("Chưa ghi nhận mã phân loại");
   expect(classificationLabel("ISCO-08", "2512")).toBe("ISCO-08 2512");
   expect(labourError("postgres://secret")).not.toContain("secret");
 });

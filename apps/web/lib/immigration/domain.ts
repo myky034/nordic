@@ -3,16 +3,16 @@ import { countrySlugs } from "../registry/domain";
 // Mirrors immigration_rules.rule_type. "other" exists so an operator never has
 // to force a rule into a category the source does not use.
 export const ruleTypes = {
-  student_residence_permit: "Student residence permit",
-  work_permit: "Work permit",
-  post_study: "Post-study stay",
-  permanent_residence: "Permanent residence",
-  citizenship: "Citizenship",
-  other: "Other",
+  student_residence_permit: "Giấy phép cư trú du học",
+  work_permit: "Giấy phép lao động",
+  post_study: "Ở lại sau khi học",
+  permanent_residence: "Thường trú",
+  citizenship: "Quốc tịch",
+  other: "Khác",
 } as const;
 export type RuleType = keyof typeof ruleTypes;
 export function ruleTypeLabel(value: string) {
-  return Object.hasOwn(ruleTypes, value) ? ruleTypes[value as RuleType] : "Other";
+  return Object.hasOwn(ruleTypes, value) ? ruleTypes[value as RuleType] : "Khác";
 }
 
 // AGENTS.md Section 10: only T1 evidence counts as the official/authoritative

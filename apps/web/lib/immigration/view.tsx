@@ -27,7 +27,7 @@ export type RuleDetailRow = Omit<RuleListRow, "documents"> & {
 };
 export type AuthorityRow = { id: string; name: string; canonical_url: string; status: string; last_verified_at: string | null; countries: { slug: string; name: string } };
 
-export const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "not available";
+export const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "chưa có";
 
 // Recommendation 4 (2026-09-23): always visible on immigration pages.
 export function LegalDisclaimer() {

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { countryName } from "@/lib/registry/domain";
 import { isOfficialStatisticsTier } from "@/lib/labour/domain";
 import { Badge } from "@/components/ui";
 import { ReviewBadge, TierBadge } from "@/components/ui/badges";
@@ -35,7 +36,7 @@ export function CompareTable({ countries, rows }: { countries: CompareCountry[];
     <table className="w-full min-w-[640px] border-collapse text-left">
       <thead><tr className="border-b border-hairline">
         <th scope="col" className="sticky left-0 z-10 w-56 bg-surface px-5 py-3 text-[13px] font-medium text-ink-3">Tiêu chí</th>
-        {countries.map((c) => <th key={c.id} scope="col" className="px-5 py-3 text-[15px] font-semibold text-ink"><Link href={`/countries/${c.slug}`} className="hover:underline">{c.name}</Link></th>)}
+        {countries.map((c) => <th key={c.id} scope="col" className="px-5 py-3 text-[15px] font-semibold text-ink"><Link href={`/countries/${c.slug}`} className="hover:underline">{countryName(c.slug, c.name)}</Link></th>)}
       </tr></thead>
       <tbody>{rows.map((r) => <tr key={r.key} className="border-b border-hairline align-top last:border-b-0">
         <th scope="row" className="sticky left-0 z-10 w-56 bg-surface px-5 py-4 text-[14px] font-medium text-ink">{r.head}</th>

@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
 import { likePattern } from "@/lib/education/domain";
 import { classificationLabel } from "@/lib/labour/domain";
+import { countryName } from "@/lib/registry/domain";
 import { occupationListSelect, type OccupationListRow } from "@/lib/labour/view";
 import { isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
 import { Badge, EmptyState, List, ListRow, Notice, PageHeader, Pagination, SearchInput } from "@/components/ui";
@@ -23,18 +24,18 @@ export default async function OccupationsPage({ searchParams }: PageProps<"/occu
   if (error) { logAccessError("public_occupations"); throw new Error("Không tải được danh sách nghề."); }
   const occupations = (data ?? []) as unknown as OccupationListRow[];
   return <>
-    <PageHeader eyebrow="Labour market" title="Occupations"
-      description="Occupations whose definition was reviewed against a source. Salary, demand and other figures appear on each occupation only with evidence, a country and a reference period." />
-    <div className="-mt-4 mb-8"><Notice tone="neutral">Figures describe a past reference period. They are research information, not a forecast, a salary offer or career advice.</Notice></div>
+    <PageHeader eyebrow="Làm việc & Visa" title="Nghề nghiệp"
+      description="Các nghề đã được đối chiếu định nghĩa với nguồn. Lương, nhu cầu tuyển dụng và số liệu khác chỉ hiện ở từng nghề khi có bằng chứng, quốc gia và kỳ số liệu." />
+    <div className="-mt-4 mb-8"><Notice tone="neutral">Số liệu mô tả một kỳ đã qua. Đây là thông tin nghiên cứu, không phải dự báo, mức lương được đề nghị hay lời khuyên nghề nghiệp.</Notice></div>
     <Form action="/occupations" className="mb-6 flex gap-3">
-      <div className="flex-1"><SearchInput defaultValue={q} placeholder="Search occupations" /></div>
-      <button className={buttonPrimary}>Search</button>
+      <div className="flex-1"><SearchInput defaultValue={q} placeholder="Tên nghề" /></div>
+      <button className={buttonPrimary}>Tìm</button>
     </Form>
     {occupations.length
-      ? <List label="Occupations">{occupations.map((o) => <ListRow key={o.id} href={`/occupations/${o.id}`} title={o.name}
+      ? <List label="Nghề nghiệp">{occupations.map((o) => <ListRow key={o.id} href={`/occupations/${o.id}`} title={o.name}
           badges={o.classification_code ? <Badge>{classificationLabel(o.classification_system, o.classification_code)}</Badge> : undefined}
-          subtitle={o.countries ? `Defined for ${o.countries.name}` : "International definition"} />)}</List>
-      : <EmptyState>{q ? `No reviewed occupations match “${q}”.` : "No reviewed occupations yet. Occupations are entered from source documents by operators — none are generated."}</EmptyState>}
+          subtitle={o.countries ? `Định nghĩa cho ${countryName(o.countries.slug, o.countries.name)}` : "Định nghĩa quốc tế"} />)}</List>
+      : <EmptyState>{q ? `Chưa có nghề đã duyệt nào khớp “${q}”.` : "Chưa có nghề nào được duyệt. Nghề được biên tập viên nhập từ tài liệu nguồn; không có nghề nào được tự tạo."}</EmptyState>}
     <Pagination summary={pageSummary(count ?? occupations.length, page)} href={(p) => withParams("/occupations", params, { page: p })} />
   </>;
 }
