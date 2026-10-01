@@ -19,7 +19,7 @@ it("returns 404 in production builds", async () => {
 it("renders only clearly labelled DEMO data, without database access, and paginates", async () => {
   const html = await render({ page: "3" });
   expect(html).toContain("DEMO — dữ liệu giả");
-  expect(html).toContain("51–60 of 60");
+  expect(html).toContain("51–60 / 60");
   expect(html).toContain("DEMO Programme 60");
   expect(html).not.toContain("DEMO Programme 01<");
   // Every external link in the fixtures points to the reserved test domain.

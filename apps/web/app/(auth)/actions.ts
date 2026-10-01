@@ -26,11 +26,11 @@ export async function signIn(_previous: AuthState, form: FormData): Promise<Auth
     const { error } = await supabase.auth.signInWithPassword(credentials);
     if (error) {
       logAuthFailure("sign_in", error);
-      return { error: error.status === 429 ? "Too many attempts. Please try again later." : "Unable to sign in. Check your email and password, and confirm your email if required." };
+      return { error: error.status === 429 ? "Bạn thử quá nhiều lần. Vui lòng thử lại sau ít phút." : "Chưa đăng nhập được. Kiểm tra email và mật khẩu, và xác nhận email nếu được yêu cầu." };
     }
   } catch {
     logAuthFailure("sign_in", null);
-    return { error: "Sign in is temporarily unavailable. Please try again." };
+    return { error: "Tạm thời chưa đăng nhập được. Bạn thử lại nhé." };
   }
   // Next.js redirect throws internally, so it must stay outside the catch block.
   redirect("/dashboard");
@@ -49,17 +49,17 @@ export async function signUp(_previous: AuthState, form: FormData): Promise<Auth
     });
     if (error) {
       logAuthFailure("sign_up", error);
-      return { error: error.status === 429 ? "Too many attempts. Please try again later." : error.code === "weak_password" ? "Choose a stronger password that meets the account security requirements." : "Unable to create an account. Try again, or sign in if you already have an account." };
+      return { error: error.status === 429 ? "Bạn thử quá nhiều lần. Vui lòng thử lại sau ít phút." : error.code === "weak_password" ? "Mật khẩu chưa đủ mạnh. Hãy chọn mật khẩu dài hơn, khó đoán hơn." : "Chưa tạo được tài khoản. Bạn thử lại, hoặc đăng nhập nếu đã có tài khoản." };
     }
     // A user object alone is not proof of a session (or of a new account).
-    if (!data.session) return { message: "Check your inbox for a confirmation link if your email is eligible. Open it in this browser, then sign in. If you already have an account, sign in instead." };
+    if (!data.session) return { message: "Hãy kiểm tra hộp thư để lấy liên kết xác nhận, mở liên kết trên trình duyệt này rồi đăng nhập. Nếu bạn đã có tài khoản, hãy đăng nhập." };
   } catch (error) {
     if (error instanceof AuthConfigurationError) {
       logAuthFailure("sign_up_configuration", null);
-      return { error: "Account creation is not configured yet. Please contact the site administrator." };
+      return { error: "Chức năng tạo tài khoản chưa được cấu hình. Vui lòng liên hệ quản trị viên." };
     }
     logAuthFailure("sign_up", null);
-    return { error: "Account creation is temporarily unavailable. Please try again." };
+    return { error: "Tạm thời chưa tạo được tài khoản. Bạn thử lại nhé." };
   }
   redirect("/dashboard");
 }

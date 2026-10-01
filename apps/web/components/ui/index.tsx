@@ -176,9 +176,9 @@ export function NoAccess({ title, children, back = "/dashboard", backLabel = "V�
   </section>;
 }
 
-/** "1 programme" / "3 programmes" — counts read naturally in result lines. */
-export function countLabel(n: number, singular: string, plural = `${singular}s`) {
-  return `${n} ${n === 1 ? singular : plural}`;
+/** "3 nguồn" — Vietnamese nouns do not change in the plural, so one label serves every count. */
+export function countLabel(n: number, noun: string) {
+  return `${n.toLocaleString("vi-VN")} ${noun}`;
 }
 
 /**
@@ -191,14 +191,14 @@ export function Pagination({ summary, href }: {
 }) {
   if (summary.total === 0) return null;
   const link = "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-medium transition";
-  return <nav aria-label="Pagination" className="mt-5 flex flex-wrap items-center justify-between gap-3 px-1">
-    <p className="text-[13px] text-ink-3">{summary.first}–{summary.last} of {summary.total}</p>
+  return <nav aria-label="Phân trang" className="mt-5 flex flex-wrap items-center justify-between gap-3 px-1">
+    <p className="text-[13px] text-ink-3">{summary.first}–{summary.last} / {summary.total}</p>
     {summary.pages > 1 && <div className="flex items-center gap-2">
-      {summary.hasPrev ? <Link href={href(summary.current - 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Previous</Link>
-        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Previous</span>}
-      <span className="px-2 text-[13px] text-ink-2">Page {summary.current} of {summary.pages}</span>
-      {summary.hasNext ? <Link href={href(summary.current + 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}>Next<Chevron className="text-ink" /></Link>
-        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Next</span>}
+      {summary.hasPrev ? <Link href={href(summary.current - 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Trang trước</Link>
+        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Trang trước</span>}
+      <span className="px-2 text-[13px] text-ink-2">Trang {summary.current} / {summary.pages}</span>
+      {summary.hasNext ? <Link href={href(summary.current + 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}>Trang sau<Chevron className="text-ink" /></Link>
+        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Trang sau</span>}
     </div>}
   </nav>;
 }

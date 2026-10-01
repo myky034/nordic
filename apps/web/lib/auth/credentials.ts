@@ -7,16 +7,16 @@ export function readCredentials(form: FormData, signup = false) {
   const email = form.get("email");
   const password = form.get("password");
   if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254) {
-    return { error: "Enter a valid email address." } as const;
+    return { error: "Nhập địa chỉ email hợp lệ." } as const;
   }
   if (typeof password !== "string" || !password || password.length > 1024) {
-    return { error: "Enter a password (up to 1024 characters)." } as const;
+    return { error: "Nhập mật khẩu (tối đa 1024 ký tự)." } as const;
   }
   if (signup && password.length < MIN_PASSWORD_LENGTH) {
-    return { error: `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.` } as const;
+    return { error: `Mật khẩu cần ít nhất ${MIN_PASSWORD_LENGTH} ký tự.` } as const;
   }
   if (signup && password !== form.get("confirmPassword")) {
-    return { error: "Passwords do not match." } as const;
+    return { error: "Hai mật khẩu chưa khớp nhau." } as const;
   }
   // Never trim passwords: spaces can be intentional credentials.
   return { email: email.trim(), password } as const;

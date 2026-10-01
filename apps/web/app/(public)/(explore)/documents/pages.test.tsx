@@ -34,7 +34,7 @@ it("passes the sanitised search and page to the query and shows pagination", asy
   list.mockResolvedValue({ rows: [{ id: "d1", title: "Synthetic doc", retrievedAt: new Date("2026-09-19"), source: { name: "Synthetic source", sourceTier: "T1" } }], total: 60 });
   const html = renderToStaticMarkup(await DocumentsPage({ params: Promise.resolve({}), searchParams: Promise.resolve({ q: "  kth ", page: "2" }) }));
   expect(list).toHaveBeenLastCalledWith("kth", 2);
-  for (const text of ["Synthetic doc", "26–50 of 60", "Page 2 of 3", 'href="/documents?q=kth"', 'href="/documents?q=kth&amp;page=3"']) expect(html).toContain(text);
+  for (const text of ["Synthetic doc", "26–50 / 60", "Trang 2 / 3", 'href="/documents?q=kth"', 'href="/documents?q=kth&amp;page=3"']) expect(html).toContain(text);
 });
 it("renders escaped excerpts, attribution, unknown dates and unverified status", async () => {
   get.mockResolvedValue({

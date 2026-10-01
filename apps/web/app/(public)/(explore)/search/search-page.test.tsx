@@ -9,7 +9,7 @@ const render = async (q?: string) => renderToStaticMarkup(await SearchPage({ par
 
 it("does not query the database without a search term", async () => {
   rpc.mockClear();
-  expect(await render()).toContain("Accents are optional");
+  expect(await render()).toContain("Không cần gõ dấu");
   expect(rpc).not.toHaveBeenCalled();
 });
 it("searches through the anonymous public RPC and groups results", async () => {
@@ -19,12 +19,12 @@ it("searches through the anonymous public RPC and groups results", async () => {
   ], error: null });
   const html = await render("  msc ");
   expect(rpc).toHaveBeenLastCalledWith("search_public", { p_query: "msc", p_per_type: 5 });
-  expect(html.indexOf("Countries")).toBeLessThan(html.indexOf("Programmes"));
+  expect(html.indexOf("Quốc gia")).toBeLessThan(html.indexOf("Chương trình học"));
   for (const t of ['href="/countries/sweden"', 'href="/programmes/p1"', 'href="/programmes?q=msc"', "Synthetic MSc"]) expect(html).toContain(t);
 });
 it("shows an honest empty state and fails closed on errors", async () => {
   rpc.mockResolvedValue({ data: [], error: null });
-  expect(await render("zzz")).toContain("No public results");
+  expect(await render("zzz")).toContain("Không có kết quả công khai");
   rpc.mockResolvedValue({ data: null, error: { message: "down" } });
   await expect(render("x")).rejects.toThrow("Không tìm kiếm được");
 });

@@ -1,9 +1,9 @@
 // Presentation rules for search results: group order, labels and where each
 // hit links to. Pure functions so they are testable without the database.
 export const searchGroups = [
-  ["country", "Countries"], ["programme", "Programmes"], ["university", "Universities"],
-  ["immigration_rule", "Immigration rules"], ["occupation", "Occupations"], ["fact", "Facts"],
-  ["source", "Sources"], ["document", "Documents"],
+  ["country", "Quốc gia"], ["programme", "Chương trình học"], ["university", "Trường đại học"],
+  ["immigration_rule", "Quy định nhập cư"], ["occupation", "Nghề nghiệp"], ["fact", "Thông tin"],
+  ["source", "Nguồn"], ["document", "Tài liệu"],
 ] as const;
 export type SearchEntity = (typeof searchGroups)[number][0];
 

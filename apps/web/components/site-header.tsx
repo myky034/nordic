@@ -6,7 +6,7 @@ import { AccountActions } from "./account-actions";
 // One global navigation bar for public and signed-in pages. A light
 // translucent surface with backdrop blur, used only here (spec: blur sparingly).
 function SearchLink() {
-  return <Link href="/search" aria-label="Search" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-2 transition hover:bg-fill hover:text-ink">
+  return <Link href="/search" aria-label="Tìm kiếm" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-2 transition hover:bg-fill hover:text-ink">
     <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4"><circle cx="7" cy="7" r="5" fill="none" stroke="currentColor" strokeWidth="1.6" /><path d="M11 11l3.5 3.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" /></svg>
   </Link>;
 }
@@ -31,8 +31,8 @@ export function SiteHeader() {
 export function SiteFooter() {
   return <footer className="mt-24 border-t border-hairline">
     <div className="mx-auto max-w-6xl px-5 py-8 text-[13px] leading-relaxed text-ink-3 sm:px-8">
-      <p>Nordic is a research tool. Every claim links to its source; nothing here is legal, immigration or financial advice.</p>
-      <p className="mt-1">Thông tin nghiên cứu — luôn kiểm tra lại tại nguồn chính thức.</p>
+      <p>Nordic là công cụ nghiên cứu. Mỗi thông tin đều dẫn về nguồn gốc; không có nội dung nào là tư vấn pháp lý, di trú hay tài chính.</p>
+      <p className="mt-1">Luôn kiểm tra lại tại trang chính thức trước khi quyết định.</p>
     </div>
   </footer>;
 }

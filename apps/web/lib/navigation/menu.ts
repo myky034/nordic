@@ -8,20 +8,20 @@ export type NavLink = { href: string; label: string; description: string };
 export type NavEntry = { id: string; label: string; href?: string; links?: NavLink[] };
 
 export const navigation: NavEntry[] = [
-  { id: "countries", label: "Countries", href: "/countries" },
-  { id: "study", label: "Study", links: [
-    { href: "/universities", label: "Universities", description: "Institutions with reviewed evidence" },
-    { href: "/programmes", label: "Programmes", description: "Degrees, language, tuition and deadlines" },
+  { id: "countries", label: "Quốc gia", href: "/countries" },
+  { id: "study", label: "Du học", links: [
+    { href: "/universities", label: "Trường đại học", description: "Các trường đã được đối chiếu với nguồn" },
+    { href: "/programmes", label: "Chương trình học", description: "Bậc học, ngôn ngữ, học phí và hạn nộp" },
   ] },
-  { id: "work", label: "Work & Immigration", links: [
-    { href: "/immigration", label: "Immigration", description: "Study, work and residence permits" },
-    { href: "/occupations", label: "Occupations", description: "Jobs and labour-market figures" },
+  { id: "work", label: "Làm việc & Visa", links: [
+    { href: "/immigration", label: "Quy định nhập cư", description: "Giấy phép du học, lao động và cư trú" },
+    { href: "/occupations", label: "Nghề nghiệp", description: "Nghề và số liệu thị trường lao động" },
   ] },
-  { id: "compare", label: "Compare", href: "/compare" },
-  { id: "evidence", label: "Evidence", links: [
-    { href: "/facts", label: "Facts", description: "Every published claim with its excerpt" },
-    { href: "/sources", label: "Sources", description: "Registry, tiers and verification" },
-    { href: "/documents", label: "Documents", description: "Recorded source pages and versions" },
+  { id: "compare", label: "So sánh", href: "/compare" },
+  { id: "evidence", label: "Bằng chứng", links: [
+    { href: "/facts", label: "Thông tin", description: "Mọi thông tin đã công khai, kèm trích đoạn" },
+    { href: "/sources", label: "Nguồn", description: "Danh sách nguồn, mức độ và xác minh" },
+    { href: "/documents", label: "Tài liệu", description: "Các trang nguồn đã lưu và phiên bản" },
   ] },
 ];
 

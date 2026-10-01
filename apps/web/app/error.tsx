@@ -32,10 +32,10 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8 text-center">
-      <h1 className="text-[28px] font-semibold tracking-tight text-ink">Something went wrong</h1>
-      <p className="mt-2 text-[17px] text-ink-2">An unexpected error occurred. Please try again.</p>
+      <h1 className="text-[28px] font-semibold tracking-tight text-ink">Đã có lỗi xảy ra</h1>
+      <p className="mt-2 text-[17px] text-ink-2">Hệ thống gặp lỗi ngoài dự kiến. Bạn thử lại nhé.</p>
       <button onClick={reset} className="mt-8 rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-accent-hover">
-        Try again
+        Thử lại
       </button>
     </div>
   );

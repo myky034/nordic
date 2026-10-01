@@ -22,7 +22,7 @@ beforeEach(() => {
 describe("email authentication", () => {
   it.each([undefined, "", "not-a-url", "javascript:alert(1)"])("reports invalid app origin %s before signup", async (origin) => {
     vi.stubEnv("NEXT_PUBLIC_APP_URL", origin);
-    expect((await signUp({}, form())).error).toContain("not configured");
+    expect((await signUp({}, form())).error).toContain("chưa được cấu hình");
     expect(auth.signUp).not.toHaveBeenCalled();
   });
   it("rejects malformed email before contacting Supabase", async () => {
@@ -31,7 +31,7 @@ describe("email authentication", () => {
     expect(auth.signInWithPassword).not.toHaveBeenCalled();
   });
   it("rejects mismatched and short signup passwords", async () => {
-    expect((await signUp({}, form("long password", "different"))).error).toContain("match");
+    expect((await signUp({}, form("long password", "different"))).error).toContain("chưa khớp");
     expect((await signUp({}, form("short"))).error).toContain("8");
     expect(auth.signUp).not.toHaveBeenCalled();
   });
@@ -46,16 +46,16 @@ describe("email authentication", () => {
   });
   it("returns a safe error and does not log credentials", async () => {
     auth.signInWithPassword.mockResolvedValue({ error: { status: 400, message: "user@example.com secret" } });
-    expect((await signIn({}, form())).error).toContain("Unable to sign in");
+    expect((await signIn({}, form())).error).toContain("Chưa đăng nhập được");
     expect(JSON.stringify(vi.mocked(console.error).mock.calls)).not.toContain("user@example.com");
   });
   it("handles network failures", async () => {
     auth.signInWithPassword.mockRejectedValue(new Error("network"));
-    expect((await signIn({}, form())).error).toContain("temporarily unavailable");
+    expect((await signIn({}, form())).error).toContain("Tạm thời chưa đăng nhập được");
   });
   it("shows confirmation instructions without granting access", async () => {
     auth.signUp.mockResolvedValue({ data: { session: null }, error: null });
-    expect((await signUp({}, form())).message).toContain("Check your inbox");
+    expect((await signUp({}, form())).message).toContain("kiểm tra hộp thư");
     expect(auth.signUp).toHaveBeenCalledWith(expect.objectContaining({ options: { emailRedirectTo: "http://localhost:3000/auth/callback" } }));
   });
   it("redirects signup only when Supabase returns a session", async () => {
@@ -64,7 +64,7 @@ describe("email authentication", () => {
   });
   it("handles signup rate limiting", async () => {
     auth.signUp.mockResolvedValue({ data: {}, error: { status: 429 } });
-    expect((await signUp({}, form())).error).toContain("Too many attempts");
+    expect((await signUp({}, form())).error).toContain("thử quá nhiều lần");
   });
   it("provides an email fallback after Google fails", async () => {
     auth.signInWithOAuth.mockResolvedValue({ data: {}, error: { status: 400 } });

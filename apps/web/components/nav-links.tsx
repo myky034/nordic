@@ -97,7 +97,7 @@ export function MobileMenu() {
   }, [open]);
 
   return <div className="lg:hidden">
-    <button type="button" aria-expanded={open} aria-controls={panel} aria-label={open ? "Close menu" : "Open menu"} onClick={() => setOpen(!open)}
+    <button type="button" aria-expanded={open} aria-controls={panel} aria-label={open ? "Đóng menu" : "Mở menu"} onClick={() => setOpen(!open)}
       className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-2 transition hover:bg-fill hover:text-ink">
       <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4">
         {open ? <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -112,7 +112,7 @@ export function MobileMenu() {
 
 /** Every destination, grouped; the content of the narrow-screen sheet. */
 export function MobileNavList({ path }: { path: string }) {
-  return <nav aria-label="Main">
+  return <nav aria-label="Điều hướng chính">
     {navigation.map((entry) => entry.href
       ? <Link key={entry.id} href={entry.href} aria-current={isActive(path, entry.href) ? "page" : undefined}
           className={`block border-b border-hairline py-3 text-[21px] font-semibold ${isActive(path, entry.href) ? "text-accent" : "text-ink"}`}>{entry.label}</Link>
