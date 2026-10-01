@@ -737,4 +737,10 @@ gian cá nhân (đợt 4); User Guide cần cập nhật theo giao diện mới.
   Nhãn nhỏ đầu trang "Workspace" → "Biên tập" (trang biên tập) hoặc "Không gian của
   tôi" (trang cá nhân); tile "Source Registry" → "Quản lý nguồn".
 
-Còn lại: User Guide (nhiều tên và màn hình đã đổi từ v2.1).
+User Guide đã cập nhật lên **v3.0** (2026-10-01): tên nút và menu theo giao diện
+tiếng Việt, nút tài khoản và thanh tiến trình (2.1–2.2), khu cá nhân đổi tên (chương 4),
+Tổng quan và phân quyền dạng bảng (5.1), Quản lý nguồn chia đôi (5.2), trang duyệt chia
+đôi và khung "Các thông tin khác từ cùng trang này" (5.4), crawler / trích xuất AI /
+chỉ số dạng bảng (5.8–5.11). Chụp lại hình 1–13, 16–22; thêm hình 21b, 21c; bỏ hình
+minh họa crawler cũ vì nó còn bố cục trước đợt 4 (chưa có bản DEMO mới để chụp lại).
+Mục lục trong Word cần "Update Field" sau khi mở.
