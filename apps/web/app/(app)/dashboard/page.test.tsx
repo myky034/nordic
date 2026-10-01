@@ -17,7 +17,7 @@ const client = (counts: Record<string, number | "error">) => ({
 it("shows a plain member only their own and explore tiles, with no counters", async () => {
   ctx.mockResolvedValue({ client: client({}), permissions: [] });
   const html = renderToStaticMarkup(await Page());
-  expect(html).toContain("My workspace");
+  expect(html).toContain("Không gian của tôi");
   expect(html).toContain("Khám phá");
   expect(html).not.toContain("Cần xử lý");
   expect(html).not.toContain("/admin/");

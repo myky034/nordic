@@ -23,14 +23,14 @@ export function ProjectForm({ countries, project }: { countries: Option[]; proje
   return <form action={action} className="space-y-5">
     {project && <input type="hidden" name="id" value={project.id} />}
     <div className="grid gap-5 sm:grid-cols-2">
-      <Field label="Tên project" hint="Ví dụ: Sweden 2028"><input name="name" required maxLength={120} defaultValue={project?.name} className={control} /></Field>
+      <Field label="Tên dự án" hint="Ví dụ: Sweden 2028"><input name="name" required maxLength={120} defaultValue={project?.name} className={control} /></Field>
       <Field label="Năm mục tiêu"><input name="targetYear" inputMode="numeric" maxLength={4} placeholder="2028" defaultValue={project?.target_year ?? ""} className={control} /></Field>
       <Field label="Vai trò / mục tiêu nghề nghiệp" className="sm:col-span-2"><input name="targetRole" maxLength={120} placeholder="Ví dụ: Software Engineer" defaultValue={project?.target_role ?? ""} className={control} /></Field>
     </div>
     <CountryPicker countries={countries} selected={project?.countries ?? []} />
     <Field label="Mô tả (tùy chọn)"><textarea name="description" maxLength={2000} rows={2} defaultValue={project?.description ?? ""} className={control} /></Field>
     <Msg s={s} />
-    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : project ? "Lưu thay đổi" : "Tạo project"}</button>
+    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : project ? "Lưu thay đổi" : "Tạo dự án"}</button>
   </form>;
 }
 
@@ -47,10 +47,10 @@ export function DeleteProjectForm({ id }: { id: string }) {
   const [s, action, pending] = useActionState(deleteProject, {});
   return <form action={action} className="space-y-3">
     <input type="hidden" name="id" value={id} />
-    <p className="text-[15px] text-ink-2">Xóa project cùng các ghi chú trong project. Các mục đã lưu vẫn còn, chỉ được bỏ khỏi project. Không hoàn tác được.</p>
+    <p className="text-[15px] text-ink-2">Xóa dự án cùng các ghi chú trong dự án. Các mục đã lưu vẫn còn, chỉ được bỏ khỏi dự án. Không hoàn tác được.</p>
     <Field label={`Gõ ${DELETE_CONFIRMATION} để xác nhận`}><input name="confirm" autoComplete="off" className={`${control} max-w-40`} /></Field>
     <Msg s={s} />
-    <button disabled={pending} className="rounded-full bg-critical px-5 py-2.5 text-[15px] font-medium text-white disabled:opacity-50">Xóa project</button>
+    <button disabled={pending} className="rounded-full bg-critical px-5 py-2.5 text-[15px] font-medium text-white disabled:opacity-50">Xóa dự án</button>
   </form>;
 }
 
@@ -59,9 +59,9 @@ export function FileSavedSelect({ id, current, projects }: { id: string; current
   const [s, action] = useActionState(fileSavedItem, {});
   return <form action={action} className="inline-flex items-center gap-2">
     <input type="hidden" name="id" value={id} />
-    <label className="sr-only" htmlFor={`file-${id}`}>Project</label>
+    <label className="sr-only" htmlFor={`file-${id}`}>Dự án</label>
     <select id={`file-${id}`} name="project" defaultValue={current ?? ""} onChange={(e) => e.currentTarget.form?.requestSubmit()} className={`${control} mt-0 w-auto py-1.5 text-[13px]`}>
-      <option value="">Chưa gắn project</option>{projects.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
+      <option value="">Chưa gắn dự án</option>{projects.map((p) => <option key={p.id} value={p.id}>{p.label}</option>)}
     </select>
     {s.error && <span role="alert" className="text-[12px] text-critical">{s.error}</span>}
   </form>;
@@ -121,14 +121,14 @@ export function PlanForm({ plan, countries, selected }: { plan: Plan | null; cou
       </div>
     </fieldset>
     <Msg s={s} />
-    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : "Lưu My Europe Plan"}</button>
+    <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : "Lưu kế hoạch"}</button>
   </form>;
 }
 
 export function DeleteWorkspaceForm() {
   const [s, action, pending] = useActionState(deleteMyWorkspace, {});
   return <form action={action} className="space-y-3">
-    <p className="text-[15px] text-ink-2">Xóa vĩnh viễn toàn bộ project, mục đã lưu, ghi chú và My Europe Plan của bạn. Không ảnh hưởng tới tài khoản hay dữ liệu nghiên cứu công khai. Không hoàn tác được.</p>
+    <p className="text-[15px] text-ink-2">Xóa vĩnh viễn toàn bộ dự án, mục đã lưu, ghi chú và Kế hoạch châu Âu của bạn. Không ảnh hưởng tới tài khoản hay dữ liệu nghiên cứu công khai. Không hoàn tác được.</p>
     <Field label={`Gõ ${DELETE_CONFIRMATION} để xác nhận`}><input name="confirm" autoComplete="off" className={`${control} max-w-40`} /></Field>
     <Msg s={s} />
     <button disabled={pending} className="rounded-full bg-critical px-5 py-2.5 text-[15px] font-medium text-white disabled:opacity-50">Xóa toàn bộ dữ liệu workspace</button>

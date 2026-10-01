@@ -717,3 +717,24 @@ nguồn và tài liệu.
 
 Còn lại: trang quản trị Crawler, Trích xuất AI, Chỉ số so sánh, Nhập tài liệu và không
 gian cá nhân (đợt 4); User Guide cần cập nhật theo giao diện mới.
+
+## Cập nhật 2026-10-01 — Đợt 4: trang quản trị và khu cá nhân
+
+- **Crawler** (`/admin/crawler`): hai tab *URL theo dõi* và *Lần chạy*, mỗi tab là
+  bảng (`DataTable`); bấm dòng mở khung trượt (`Inspector`) để sửa URL (kèm tình
+  trạng sẵn sàng và tài liệu mới nhất) hoặc xem các URL của một lần chạy. Nút
+  *Đăng ký URL mới*. Lý do "chưa lấy được" viết bằng lời thường; cách chạy
+  (`lib/runs.ts`: Theo lịch / Chạy tay / Chạy trên máy).
+- **Trích xuất AI** (`/admin/extraction`): tab *Yêu cầu đang mở*, *Lần chạy* và
+  *Cài đặt* (chỉ quản trị viên). Khung trượt của một lần chạy liệt kê mọi gợi ý; gợi ý
+  bị loại có **giải thích tiếng Việt** (`reasonLabel` trong `lib/extraction/domain.ts`),
+  câu gốc tiếng Anh vẫn hiện nhỏ bên dưới để đối chiếu với log.
+- **Chỉ số so sánh** (`/admin/metrics`): bảng sắp xếp theo tên hoặc nhóm; sửa/tạo
+  trong khung trượt.
+- **Nhập tài liệu**: mô tả viết lại bằng lời thường; thông báo quyền dùng tên dễ hiểu.
+- **Khu cá nhân**: "My workspace" → **Không gian của tôi**, "My Europe Plan" →
+  **Kế hoạch châu Âu**, "Research projects / project" → **Dự án nghiên cứu / dự án**.
+  Nhãn nhỏ đầu trang "Workspace" → "Biên tập" (trang biên tập) hoặc "Không gian của
+  tôi" (trang cá nhân); tile "Source Registry" → "Quản lý nguồn".
+
+Còn lại: User Guide (nhiều tên và màn hình đã đổi từ v2.1).

@@ -50,7 +50,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Workspace" title="Tổng quan"
+      <PageHeader eyebrow="Nordic" title="Tổng quan"
         description={<>Đăng nhập với <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
       {shown.length > 0 && <Section title="Cần xử lý">
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">

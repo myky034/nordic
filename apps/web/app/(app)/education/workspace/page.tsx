@@ -58,7 +58,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   const visible = status === "reviewed" ? await publicIds(table, rows.map((r) => r.id)) : new Set<string>();
   const base = { kind: kind === "university" ? null : kind };
   return <>
-    <PageHeader eyebrow="Workspace" title="Trường & chương trình"
+    <PageHeader eyebrow="Biên tập" title="Trường & chương trình"
       description="Duyệt ở đây chỉ xác nhận trường hoặc chương trình có tồn tại theo nguồn. Học phí và hạn nộp là thông tin riêng, được duyệt ở “Thông tin & bằng chứng”. Một chương trình chỉ hiển thị công khai khi trường của nó đã được duyệt."
       actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập học phí / deadline</Link></>} />
     {review && <ReviewSteps client={client} permissions={permissions} current="education" />}

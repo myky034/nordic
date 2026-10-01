@@ -69,7 +69,7 @@ export async function saveProject(_: WorkspaceState, form: FormData): Promise<Wo
       if (ins.error) throw ins.error;
     }
     refresh(`/workspace/projects/${pid}`);
-    return { message: projectId ? "Đã lưu thay đổi." : "Đã tạo project." };
+    return { message: projectId ? "Đã lưu thay đổi." : "Đã tạo dự án." };
   } catch (e) { return fail("save_project", e); }
 }
 
@@ -81,7 +81,7 @@ export async function setProjectStatus(_: WorkspaceState, form: FormData): Promi
     const { error } = await client.from("research_projects").update({ status }).eq("id", projectId);
     if (error) throw error;
     refresh(`/workspace/projects/${projectId}`);
-    return { message: status === "archived" ? "Đã lưu trữ project." : "Đã mở lại project." };
+    return { message: status === "archived" ? "Đã lưu trữ dự án." : "Đã mở lại dự án." };
   } catch (e) { return fail("project_status", e); }
 }
 
@@ -94,7 +94,7 @@ export async function deleteProject(_: WorkspaceState, form: FormData): Promise<
     const { error } = await client.from("research_projects").delete().eq("id", projectId);
     if (error) throw error;
     refresh();
-    return { message: "Đã xóa project." };
+    return { message: "Đã xóa dự án." };
   } catch (e) { return fail("delete_project", e); }
 }
 
@@ -106,7 +106,7 @@ export async function fileSavedItem(_: WorkspaceState, form: FormData): Promise<
     const { error } = await client.from("saved_items").update({ project_id: projectId }).eq("id", savedId);
     if (error) throw error;
     refresh(...(projectId ? [`/workspace/projects/${projectId}`] : []));
-    return { message: projectId ? "Đã thêm vào project." : "Đã bỏ khỏi project." };
+    return { message: projectId ? "Đã thêm vào dự án." : "Đã bỏ khỏi dự án." };
   } catch (e) { return fail("file_saved", e); }
 }
 
@@ -177,7 +177,7 @@ export async function savePlan(_: WorkspaceState, form: FormData): Promise<Works
       if (ins.error) throw ins.error;
     }
     refresh("/workspace/plan");
-    return { message: "Đã lưu My Europe Plan." };
+    return { message: "Đã lưu Kế hoạch châu Âu." };
   } catch (e) { return fail("save_plan", e); }
 }
 

@@ -49,7 +49,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
   // to explain; the check still comes from the database, not from the status.
   const visible = status === "reviewed" ? await publicIds("occupations", rows.map((r) => r.id)) : new Set<string>();
   return <>
-    <PageHeader eyebrow="Workspace" title="Thị trường lao động"
+    <PageHeader eyebrow="Biên tập" title="Thị trường lao động"
       description="Ở đây chỉ lưu tên và mã phân loại của nghề. Số liệu như lương hay nhu cầu tuyển dụng được nhập và duyệt ở “Thông tin & bằng chứng”, và chỉ hiển thị công khai khi nguồn của số liệu đã được xác minh."
       actions={<><Link className={`${textLink} text-[15px]`} href="/occupations">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập số liệu</Link></>} />
     {review && <ReviewSteps client={client} permissions={permissions} current="labour" />}

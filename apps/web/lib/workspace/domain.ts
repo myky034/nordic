@@ -64,7 +64,7 @@ export const DELETE_CONFIRMATION = "XÓA";
 const errors: Record<string, string> = {
   access_unauthenticated: "Phiên đăng nhập đã hết hạn. Hãy đăng nhập lại.",
   "23505": "Mục này đã có trong danh sách đã lưu.",
-  "42501": "Không thể thực hiện: mục không công khai, hoặc project không thuộc về bạn.",
+  "42501": "Không thể thực hiện: mục không công khai, hoặc dự án không thuộc về bạn.",
 };
 export function workspaceError(code: string) {
   return errors[code] ?? "Không lưu được. Kiểm tra lại dữ liệu và thử lại.";

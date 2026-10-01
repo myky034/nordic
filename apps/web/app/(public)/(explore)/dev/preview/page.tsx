@@ -229,11 +229,11 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
       <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Đã lưu</h3>
       <Segmented label="DEMO kinds" items={[["Tất cả", 4, true], ["Quốc gia", 1, false], ["Chương trình", 2, false], ["Quy định nhập cư", 1, false]].map(([l, n, a]) => ({ href: "#personal", label: l as string, count: n as number, active: a as boolean }))} />
       <List>{[["DEMO Saved Programme", "Chương trình", "DEMO Sweden 2028"], ["DEMO University A", "Trường", ""]].map(([t, k, proj]) => <ListRow key={t} title={t} badges={<Badge>{k}</Badge>} meta="Lưu ngày 2026-01-15">
-        <div className="flex flex-wrap items-center gap-4"><select disabled defaultValue={proj} className={`${control} mt-0 w-auto py-1.5 text-[13px]`}><option value="">Chưa gắn project</option><option value="DEMO Sweden 2028">DEMO Sweden 2028</option></select><span className="text-[13px] text-critical">Bỏ lưu</span></div>
+        <div className="flex flex-wrap items-center gap-4"><select disabled defaultValue={proj} className={`${control} mt-0 w-auto py-1.5 text-[13px]`}><option value="">Chưa gắn dự án</option><option value="DEMO Sweden 2028">DEMO Sweden 2028</option></select><span className="text-[13px] text-critical">Bỏ lưu</span></div>
       </ListRow>)}</List>
       <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Ghi chú gần đây</h3>
       <List><ListRow title={<span className="font-normal">DEMO note: prepare transcripts before November.</span>} badges={<Badge>Ghi chú của bạn</Badge>} meta="DEMO Sweden 2028 · DEMO Saved Programme · sửa ngày 2026-01-15" /></List>
-      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Lối tắt theo hồ sơ (My Europe Plan)</h3>
+      <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Lối tắt theo hồ sơ (Kế hoạch châu Âu)</h3>
       <div className="mb-3"><Notice tone="neutral">Đây là các liên kết lọc sẵn theo câu trả lời của bạn — <strong>không phải khuyến nghị</strong>, không xếp hạng và không dự đoán khả năng trúng tuyển.</Notice></div>
       <List>{[["So sánh các nước bạn quan tâm", "Sweden, Denmark"], ["Chương trình master tại Sweden", "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]].map(([t, sub]) => <ListRow key={t} href="#personal" title={t} subtitle={sub} />)}</List>
     </Section>}

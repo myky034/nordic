@@ -12,8 +12,8 @@ export function MetricForm({ metric }: { metric?: Metric }) {
   return <form action={action} className="space-y-5">
     <input type="hidden" name="id" value={metric?.id ?? ""} />
     {metric && <><input type="hidden" name="key" value={metric.key} /><input type="hidden" name="category" value={metric.category} /></>}
-    <div className="grid gap-5 sm:grid-cols-2">
-      <Field label="Key (không đổi được sau khi tạo)" hint="Chữ thường, số, dấu gạch dưới. Ví dụ: living_cost_student_month.">
+    <div className="grid gap-5">
+      <Field label="Mã chỉ số (không đổi được sau khi tạo)" hint="Chữ thường, số, dấu gạch dưới; bắt đầu bằng chữ. Ví dụ: living_cost_student_month.">
         <input name={metric ? undefined : "key"} defaultValue={metric?.key} disabled={!!metric} required pattern="[a-z][a-z0-9_]{1,59}" maxLength={60} className={control} />
       </Field>
       <Field label="Nhóm (không đổi được sau khi tạo)">
@@ -27,7 +27,7 @@ export function MetricForm({ metric }: { metric?: Metric }) {
     <Field label="Định nghĩa: đo chính xác điều gì?" hint="Viết đủ rõ để hai người nhập độc lập chọn cùng một con số từ nguồn (ví dụ: sinh viên độc thân, không gồm học phí).">
       <textarea name="description" defaultValue={metric?.description} required maxLength={1000} rows={3} className={control} />
     </Field>
-    <label className="flex items-center gap-3 text-[15px]"><input type="checkbox" name="active" defaultChecked={metric?.active ?? true} className="h-4 w-4 accent-[var(--accent)]" /> Đang dùng (bỏ chọn để ngừng nhận giá trị mới; giá trị cũ được giữ)</label>
+    <label className="flex items-center gap-3 text-[15px]"><input type="checkbox" name="active" defaultChecked={metric?.active ?? true} className="h-4 w-4 accent-accent" /> Đang dùng (bỏ chọn để ngừng nhận giá trị mới; giá trị cũ được giữ)</label>
     <FormMessage error={state.error} message={state.message} />
     <button disabled={pending} className={buttonPrimary}>{pending ? "Đang lưu…" : metric ? "Lưu thay đổi" : "Tạo chỉ số"}</button>
   </form>;

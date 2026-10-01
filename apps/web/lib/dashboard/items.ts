@@ -9,8 +9,8 @@ export type Group = { id: string; title: string; tiles: Tile[] };
 
 export const dashboardGroups: Group[] = [
   { id: "mine", title: "Của bạn", tiles: [
-    { href: "/workspace", title: "My workspace", description: "Research project, mục đã lưu và ghi chú riêng", icon: "person", tint: "blue", anyOf: [] },
-    { href: "/workspace/plan", title: "My Europe Plan", description: "Vai trò, bậc học, năm, quốc gia, ngân sách", icon: "plan", tint: "indigo", anyOf: [] },
+    { href: "/workspace", title: "Không gian của tôi", description: "Dự án nghiên cứu, mục đã lưu và ghi chú riêng", icon: "person", tint: "blue", anyOf: [] },
+    { href: "/workspace/plan", title: "Kế hoạch châu Âu", description: "Vai trò, bậc học, năm, quốc gia, ngân sách", icon: "plan", tint: "indigo", anyOf: [] },
   ] },
   { id: "editing", title: "Biên tập", tiles: [
     { href: "/facts/workspace", title: "Thông tin & bằng chứng", description: "Đề xuất, duyệt và xử lý nguồn đã đổi", icon: "facts", tint: "blue", anyOf: ["facts.propose", "facts.review"] },
@@ -20,7 +20,7 @@ export const dashboardGroups: Group[] = [
     { href: "/documents/import", title: "Nhập tài liệu", description: "Thêm tài liệu từ nguồn đã đăng ký", icon: "import", tint: "green", anyOf: ["documents.ingest"] },
   ] },
   { id: "admin", title: "Quản trị", tiles: [
-    { href: "/admin/sources", title: "Source Registry", description: "Thêm, xác minh nguồn và bật/tắt crawl", icon: "registry", tint: "gray", anyOf: ["sources.manage"] },
+    { href: "/admin/sources", title: "Quản lý nguồn", description: "Thêm, phân loại, xác minh nguồn và bật/tắt crawl", icon: "registry", tint: "gray", anyOf: ["sources.manage"] },
     { href: "/admin/crawler", title: "Crawler", description: "URL được crawl và kết quả từng lần chạy", icon: "crawler", tint: "teal", anyOf: ["crawler.manage"] },
     { href: "/admin/extraction", title: "Trích xuất AI", description: "Yêu cầu, lần chạy và lý do đề xuất bị loại", icon: "sparkles", tint: "purple", anyOf: ["facts.propose", "facts.review"] },
     { href: "/admin/metrics", title: "Chỉ số so sánh", description: "Định nghĩa chỉ số cho bảng so sánh quốc gia", icon: "chart", tint: "pink", anyOf: ["metrics.manage"] },

@@ -24,7 +24,7 @@ export default async function ProjectPage({ params }: PageProps<"/workspace/proj
     client.from("countries").select("id,name").order("name"),
     client.from("research_projects").select("id,name").eq("status", "active").order("name"),
   ]);
-  if (projectResult.error || savedResult.error || notesResult.error || countriesResult.error || projectsResult.error) throw new Error("Không tải được project.");
+  if (projectResult.error || savedResult.error || notesResult.error || countriesResult.error || projectsResult.error) throw new Error("Không tải được dự án.");
   // RLS returns nothing for someone else's project: indistinguishable from "does not exist".
   if (!projectResult.data) notFound();
   const project = projectResult.data as unknown as Project;
@@ -33,7 +33,7 @@ export default async function ProjectPage({ params }: PageProps<"/workspace/proj
   const notes = (notesResult.data ?? []) as unknown as (Parameters<typeof describeItem>[0] & { id: string; content: string; updated_at: string })[];
   const projects = (projectsResult.data as { id: string; name: string }[]).map((p) => ({ id: p.id, label: p.name }));
   return <>
-    <PageHeader back={<BackLink href="/workspace">My workspace</BackLink>} eyebrow={project.status === "archived" ? "Project · đã lưu trữ" : "Project"} title={project.name}
+    <PageHeader back={<BackLink href="/workspace">Không gian của tôi</BackLink>} eyebrow={project.status === "archived" ? "Dự án · đã lưu trữ" : "Dự án"} title={project.name}
       description={[project.target_year, project.target_role].filter(Boolean).join(" · ") || undefined}
       actions={<ProjectStatusButton id={project.id} status={project.status} />} />
     {project.description && <p className="-mt-4 mb-8 max-w-2xl whitespace-pre-wrap px-1 text-[15px] text-ink-2">{project.description}</p>}
@@ -42,17 +42,17 @@ export default async function ProjectPage({ params }: PageProps<"/workspace/proj
       {targetCountries.length ? <div className="flex flex-wrap gap-2">
         {targetCountries.map((c) => <Link key={c.id} href={`/countries/${c.slug}`} className="rounded-full bg-fill px-3.5 py-1.5 text-[14px] hover:bg-fill-strong">{c.name}</Link>)}
         {targetCountries.length >= 2 && <Link href={compareHref(targetCountries.map((c) => c.slug))} className="rounded-full bg-accent px-3.5 py-1.5 text-[14px] text-white hover:bg-accent-hover">So sánh các nước này</Link>}
-      </div> : <EmptyState>Chưa chọn quốc gia. Sửa project để thêm.</EmptyState>}
+      </div> : <EmptyState>Chưa chọn quốc gia. Sửa dự án để thêm.</EmptyState>}
     </Section>
 
-    <Section title="Mục đã lưu trong project">
+    <Section title="Mục đã lưu trong dự án">
       {saved.length ? <List>{saved.map((row) => {
         const item = describeItem(row);
         if (!item) return null;
         return <ListRow key={row.id} title={<Link href={item.href} className="hover:underline">{item.title}</Link>} badges={<Badge>{itemKinds[item.kind].label}</Badge>}>
           <div className="flex flex-wrap items-center gap-4"><FileSavedSelect id={row.id} current={row.project_id} projects={projects} /><RemoveSavedButton id={row.id} /></div>
         </ListRow>;
-      })}</List> : <EmptyState>Chưa có mục nào. Lưu mục ở các trang công khai, rồi chọn project này ở <Link href="/workspace" className={textLink}>My workspace</Link>.</EmptyState>}
+      })}</List> : <EmptyState>Chưa có mục nào. Lưu mục ở các trang công khai, rồi chọn dự án này ở <Link href="/workspace" className={textLink}>Không gian của tôi</Link>.</EmptyState>}
     </Section>
 
     <Section title="Ghi chú" description="Chỉ bạn xem được. Ghi chú không phải thông tin đã kiểm chứng.">
@@ -66,11 +66,11 @@ export default async function ProjectPage({ params }: PageProps<"/workspace/proj
       })}</List></div>}
     </Section>
 
-    <Section title="Cài đặt project">
+    <Section title="Cài đặt dự án">
       <div className="space-y-3">
-        <Disclosure summary="Sửa project"><Card><ProjectForm countries={(countriesResult.data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }))}
+        <Disclosure summary="Sửa dự án"><Card><ProjectForm countries={(countriesResult.data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }))}
           project={{ id: project.id, name: project.name, description: project.description, target_year: project.target_year, target_role: project.target_role, countries: targetCountries.map((c) => c.id) }} /></Card></Disclosure>
-        <Disclosure summary="Xóa project"><Card><DeleteProjectForm id={project.id} /></Card></Disclosure>
+        <Disclosure summary="Xóa dự án"><Card><DeleteProjectForm id={project.id} /></Card></Disclosure>
       </div>
     </Section>
   </>;

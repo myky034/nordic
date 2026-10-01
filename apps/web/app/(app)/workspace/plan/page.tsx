@@ -13,7 +13,7 @@ export default async function PlanPage() {
     client.from("user_plan_countries").select("country_id,countries(slug,name)"),
     client.from("countries").select("id,name,slug").order("name"),
   ]);
-  if (planResult.error || planCountries.error || countriesResult.error) throw new Error("Không tải được My Europe Plan.");
+  if (planResult.error || planCountries.error || countriesResult.error) throw new Error("Không tải được Kế hoạch châu Âu.");
   const plan = planResult.data;
   const chosen = (planCountries.data ?? []) as unknown as { country_id: string; countries: { slug: string; name: string } }[];
   const countries = countriesResult.data as { id: string; name: string; slug: string }[];
@@ -27,7 +27,7 @@ export default async function PlanPage() {
   }
   if (plan?.target_role) shortcuts.push([`/occupations?q=${encodeURIComponent(plan.target_role)}`, `Nghề: ${plan.target_role}`, "Tìm nghề theo vai trò mong muốn"]);
   return <>
-    <PageHeader back={<BackLink href="/workspace">My workspace</BackLink>} eyebrow="Workspace" title="My Europe Plan"
+    <PageHeader back={<BackLink href="/workspace">Không gian của tôi</BackLink>} eyebrow="Không gian của tôi" title="Kế hoạch châu Âu"
       description="Hồ sơ mục tiêu của bạn. Chỉ bạn xem được; bạn có thể sửa hoặc xóa bất kỳ lúc nào." />
     <Section title="Lối tắt theo hồ sơ của bạn">
       <div className="mb-4"><Notice tone="neutral">Đây là các liên kết lọc sẵn theo câu trả lời của bạn — <strong>không phải khuyến nghị</strong>, không xếp hạng và không dự đoán khả năng trúng tuyển.</Notice></div>
@@ -37,6 +37,6 @@ export default async function PlanPage() {
     <Section title="Hồ sơ mục tiêu">
       <Card><PlanForm plan={plan} countries={countries.map((c) => ({ id: c.id, label: c.name }))} selected={chosen.map((c) => c.country_id)} /></Card>
     </Section>
-    <p className="mt-8 px-1 text-[13px] text-ink-3">Muốn xóa toàn bộ dữ liệu cá nhân? Xem mục “Dữ liệu của bạn” ở <Link href="/workspace" className="text-accent hover:underline">My workspace</Link>.</p>
+    <p className="mt-8 px-1 text-[13px] text-ink-3">Muốn xóa toàn bộ dữ liệu cá nhân? Xem mục “Dữ liệu của bạn” ở <Link href="/workspace" className="text-accent hover:underline">Không gian của tôi</Link>.</p>
   </>;
 }

@@ -41,16 +41,16 @@ export default async function WorkspacePage({ searchParams }: PageProps<"/worksp
   const total = kindCounts.reduce((a, b) => a + b, 0);
 
   return <>
-    <PageHeader eyebrow="Workspace" title="My workspace"
-      description="Project, mục đã lưu và ghi chú của riêng bạn. Không ai khác xem được, kể cả quản trị viên."
-      actions={<Link href="/workspace/plan" className={buttonSecondary}>My Europe Plan</Link>} />
+    <PageHeader eyebrow="Không gian của tôi" title="Không gian của tôi"
+      description="Dự án, mục đã lưu và ghi chú của riêng bạn. Không ai khác xem được, kể cả quản trị viên."
+      actions={<Link href="/workspace/plan" className={buttonSecondary}>Kế hoạch châu Âu</Link>} />
 
-    <Section title="Research projects">
-      <Segmented label="Trạng thái project" items={[["active", "Đang làm"], ["archived", "Đã lưu trữ"]].map(([v, l]) => ({ href: withParams("/workspace", { kind: kind === "all" ? "" : kind }, { projects: v === "active" ? null : v }), label: l, active: projectTab === v }))} />
+    <Section title="Dự án nghiên cứu">
+      <Segmented label="Trạng thái dự án" items={[["active", "Đang làm"], ["archived", "Đã lưu trữ"]].map(([v, l]) => ({ href: withParams("/workspace", { kind: kind === "all" ? "" : kind }, { projects: v === "active" ? null : v }), label: l, active: projectTab === v }))} />
       {projects.length ? <List>{projects.map((p) => <ListRow key={p.id} href={`/workspace/projects/${p.id}`} title={p.name}
         subtitle={[p.target_year, p.target_role, p.research_project_countries.map((c) => c.countries.name).join(", ")].filter(Boolean).join(" · ") || "Chưa đặt mục tiêu"} />)}</List>
-        : <EmptyState>{projectTab === "active" ? "Chưa có project nào. Tạo một project như “Sweden 2028” để gom trường, chương trình và ghi chú cho một kế hoạch." : "Chưa có project nào được lưu trữ."}</EmptyState>}
-      <div className="mt-4 px-1"><Disclosure summary="Tạo project mới"><Card><ProjectForm countries={countries} /></Card></Disclosure></div>
+        : <EmptyState>{projectTab === "active" ? "Chưa có dự án nào. Tạo một dự án như “Sweden 2028” để gom trường, chương trình và ghi chú cho một kế hoạch." : "Chưa có dự án nào được lưu trữ."}</EmptyState>}
+      <div className="mt-4 px-1"><Disclosure summary="Tạo dự án mới"><Card><ProjectForm countries={countries} /></Card></Disclosure></div>
     </Section>
 
     <Section title="Đã lưu" description="Bấm ☆ Lưu trên trang quốc gia, trường, chương trình, quy định, nghề hoặc nguồn để thêm vào đây.">

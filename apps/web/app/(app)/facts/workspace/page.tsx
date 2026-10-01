@@ -110,7 +110,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
  }));
  return <>
- <PageHeader eyebrow="Workspace" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
+ <PageHeader eyebrow="Biên tập" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
  {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
  {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}

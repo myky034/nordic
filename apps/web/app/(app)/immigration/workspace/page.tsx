@@ -51,7 +51,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
   // Only reviewed rules can be public; ask the database (as anon) which are.
   const visible = status === "reviewed" ? await publicIds("immigration_rules", rules.map((r) => r.id)) : new Set<string>();
   return <>
-    <PageHeader eyebrow="Workspace" title="Quy định nhập cư"
+    <PageHeader eyebrow="Biên tập" title="Quy định nhập cư"
       description="Mỗi quy định phải có trên trang của một cơ quan nhà nước (nguồn T1). Quy định chỉ hiển thị công khai khi đã được duyệt và nguồn T1 đó đã được xác minh."
       actions={<><Link className={`${textLink} text-[15px]`} href="/immigration">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập điều kiện</Link><Link className={`${textLink} text-[15px]`} href="/admin/sources">Xác minh nguồn</Link></>} />
     {review && <ReviewSteps client={client} permissions={permissions} current="immigration" />}
