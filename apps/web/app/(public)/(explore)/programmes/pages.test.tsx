@@ -33,12 +33,12 @@ it("applies only allowlisted filters and always restricts to reviewed rows", asy
   expect(calls).toContainEqual(["eq", "universities.countries.slug", "sweden"]);
   expect(calls).toContainEqual(["ilike", "field", "%50\\%%"]);
   expect(calls.some((c) => c[1] === "degree_type")).toBe(false);
-  expect(html).toContain("No reviewed programmes match");
+  expect(html).toContain("Chưa có chương trình đã duyệt nào khớp");
 });
 it("shows existence evidence and an honest empty state for tuition/deadlines", async () => {
   results.push({ data: programme, error: null }, { data: [], error: null });
   const html = renderToStaticMarkup(await ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
-  for (const text of ["Synthetic Programme", "Synthetic University", "Synthetic source", "T2", "2026-09-19", "Not stated", "No reviewed tuition, deadline"]) expect(html).toContain(text);
+  for (const text of ["Synthetic Programme", "Synthetic University", "Synthetic source", "T2", "2026-09-19", "Nguồn không nêu", "Chưa có học phí, hạn nộp"]) expect(html).toContain(text);
 });
 it("returns not found for malformed ids and unpublished programmes, and fails closed on errors", async () => {
   await expect(ProgrammePage({ params: Promise.resolve({ id: "x" }), searchParams: Promise.resolve({}) })).rejects.toThrow("NOT_FOUND");

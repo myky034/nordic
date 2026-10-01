@@ -27,7 +27,7 @@ export type UniversityRow = {
   countries: { slug: string; name: string }; documents: EvidenceDocument;
 };
 
-const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "not available";
+const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "chưa có";
 
 // "Why do we believe this entity exists?" — the document, source, tier and
 // retrieval date behind it (AGENTS.md Section 23). It says nothing about
@@ -35,7 +35,7 @@ const day = (value: string | null) => value ? new Date(value).toISOString().slic
 export function ExistenceEvidence({ excerpt, document, reviewedAt }: { excerpt: string; document: EvidenceDocument; reviewedAt: string | null }) {
   return <div className="space-y-3">
     <Quote>{excerpt}</Quote>
-    <p className="flex flex-wrap items-center gap-2 text-[15px] text-ink">Source: {document.sources.name} <TierBadge tier={document.sources.source_tier} /></p>
-    <p className="text-[13px] text-ink-3">Retrieved: {day(document.retrieved_at)} · Evidence reviewed: {day(reviewedAt)} · <ExternalLink href={document.canonical_url}>Open original source</ExternalLink></p>
+    <p className="flex flex-wrap items-center gap-2 text-[15px] text-ink">Nguồn: {document.sources.name} <TierBadge tier={document.sources.source_tier} /></p>
+    <p className="text-[13px] text-ink-3">Ngày lấy trang: {day(document.retrieved_at)} · Ngày duyệt bằng chứng: {day(reviewedAt)} · <ExternalLink href={document.canonical_url}>Mở trang gốc</ExternalLink></p>
   </div>;
 }

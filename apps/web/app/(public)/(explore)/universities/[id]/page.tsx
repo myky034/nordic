@@ -6,6 +6,7 @@ import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
 import { uuidPattern } from "@/lib/documents/domain";
 import { degreeLabel } from "@/lib/education/domain";
+import { countryName } from "@/lib/registry/domain";
 import { ExistenceEvidence, universityListSelect, type UniversityRow } from "@/lib/education/view";
 import { BackLink, Badge, Card, DescriptionList, EmptyState, ExternalLink, List, ListRow, PageHeader, Section } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
@@ -26,16 +27,16 @@ export default async function UniversityPage({ params }: PageProps<"/universitie
   const total = programmesResult.count ?? programmes.length;
   const save = await savedState("university", uni.id);
   return <>
-    <PageHeader back={<BackLink href="/universities">All universities</BackLink>} actions={<SaveButton kind="university" id={uni.id} signedIn={save.signedIn} initialSaved={save.saved} />}
-      eyebrow={<Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{uni.countries.name}</Link>} title={uni.name} />
-    <DescriptionList items={[["Official website", <ExternalLink key="w" href={uni.official_url}>{uni.official_url}</ExternalLink>]]} />
-    <Section title="Programmes" actions={total > programmes.length ? <Link href={`/programmes?university=${uni.id}`} className={`${textLink} text-[15px]`}>All {total}</Link> : undefined}>
-      {programmes.length ? <List label="Programmes">{programmes.map((p) => <ListRow key={p.id} href={`/programmes/${p.id}`} title={p.name}
+    <PageHeader back={<BackLink href="/universities">Tất cả trường</BackLink>} actions={<SaveButton kind="university" id={uni.id} signedIn={save.signedIn} initialSaved={save.saved} />}
+      eyebrow={<Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{countryName(uni.countries.slug, uni.countries.name)}</Link>} title={uni.name} />
+    <DescriptionList items={[["Trang web chính thức", <ExternalLink key="w" href={uni.official_url}>{uni.official_url}</ExternalLink>]]} />
+    <Section title="Chương trình học" actions={total > programmes.length ? <Link href={`/programmes?university=${uni.id}`} className={`${textLink} text-[15px]`}>Xem tất cả {total}</Link> : undefined}>
+      {programmes.length ? <List label="Chương trình học">{programmes.map((p) => <ListRow key={p.id} href={`/programmes/${p.id}`} title={p.name}
         badges={<Badge tone="accent">{degreeLabel(p.degree_type)}</Badge>}
-        subtitle={`${p.field ?? "Field not stated"} · ${p.language ?? "Language not stated"}`} />)}</List>
-        : <EmptyState>No reviewed programmes for this university yet.</EmptyState>}
+        subtitle={`${p.field ?? "Nguồn không nêu ngành"} · ${p.language ?? "Nguồn không nêu ngôn ngữ"}`} />)}</List>
+        : <EmptyState>Chưa có chương trình nào của trường này được duyệt.</EmptyState>}
     </Section>
-    <Section title="Why this university is listed">
+    <Section title="Vì sao trường này có trong danh sách">
       <Card><ExistenceEvidence excerpt={uni.evidence_excerpt} document={uni.documents} reviewedAt={uni.reviewed_at} /></Card>
     </Section>
   </>;
