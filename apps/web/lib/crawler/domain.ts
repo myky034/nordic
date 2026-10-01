@@ -14,18 +14,18 @@ export const runStatuses: Record<string, { label: string; tone: "positive" | "ne
 };
 /** Why a source's targets will or will not be fetched on the next run. */
 export function crawlReadiness(source: { crawl_enabled: boolean; crawl_policy: string; status: string }) {
-  if (source.crawl_enabled && source.crawl_policy === "approved" && source.status === "verified") return { ready: true, reason: "Sẽ được crawl ở lần chạy tới" };
+  if (source.crawl_enabled && source.crawl_policy === "approved" && source.status === "verified") return { ready: true, reason: "Sẽ được lấy ở lần chạy tới" };
   const missing = [
-    source.status !== "verified" && "nguồn chưa verified",
-    source.crawl_policy !== "approved" && "crawl policy chưa approved",
+    source.status !== "verified" && "nguồn chưa xác minh",
+    source.crawl_policy !== "approved" && "chính sách crawl chưa là “Được phép crawl”",
     !source.crawl_enabled && "chưa bật crawl",
   ].filter(Boolean);
-  return { ready: false, reason: `Chưa crawl: ${missing.join(", ")}` };
+  return { ready: false, reason: `Chưa lấy được: ${missing.join(", ")}` };
 }
 const errors: Record<string, string> = {
-  crawler_forbidden: "Bạn cần quyền crawler.manage.",
-  access_forbidden: "Bạn cần quyền crawler.manage.",
-  crawler_url_not_source: "URL phải cùng domain với canonical URL của nguồn.",
+  crawler_forbidden: "Bạn cần quyền Quản lý crawler (crawler.manage).",
+  access_forbidden: "Bạn cần quyền Quản lý crawler (crawler.manage).",
+  crawler_url_not_source: "URL phải cùng tên miền với URL gốc của nguồn.",
   crawler_duplicate: "URL này đã được đăng ký cho nguồn.",
 };
 export function crawlerError(code: string) {

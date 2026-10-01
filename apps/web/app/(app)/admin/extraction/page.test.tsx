@@ -3,7 +3,9 @@ import { expect, it, vi } from "vitest";
 const { ctx } = vi.hoisted(() => ({ ctx: vi.fn() }));
 vi.mock("@/lib/rbac/access", () => ({ accessContext: ctx, logAccessError: vi.fn() }));
 vi.mock("./forms", () => ({ AccountForm: () => <form data-testid="account-form" /> }));
+vi.mock("@/components/key-nav", () => ({ KeyNav: () => null }));
 import Page from "./page";
+const page = (q: Record<string, string> = {}) => Page({ params: Promise.resolve({}), searchParams: Promise.resolve(q) });
 
 const rows: Record<string, unknown> = {
   extraction_settings: null,
@@ -17,11 +19,22 @@ const chain = (table: string) => { const q = { select: () => q, in: () => q, ord
 
 it("refuses users who are neither editors nor admins", async () => {
   ctx.mockResolvedValue({ client: {}, permissions: ["documents.read"] });
-  expect(renderToStaticMarkup(await Page())).toContain("Không có quyền");
+  expect(renderToStaticMarkup(await page())).toContain("Không có quyền");
 });
-it("warns when no AI account is set and explains why candidates were refused", async () => {
+it("warns when no AI account is set, lists open requests, and explains why candidates were refused", async () => {
   ctx.mockResolvedValue({ client: { from: chain }, permissions: ["facts.review"] });
-  const html = renderToStaticMarkup(await Page());
-  for (const v of ["Chưa cấu hình tài khoản AI", "Synthetic page", "Có lỗi một phần", "synthetic-model", "not found verbatim", "1.200 token vào"]) expect(html).toContain(v);
-  expect(html).not.toContain("account-form");
+  const requests = renderToStaticMarkup(await page());
+  for (const v of ["Chưa chọn tài khoản AI", "Synthetic page", "Đang chờ lần chạy tới"]) expect(requests).toContain(v);
+  expect(requests).not.toContain("Cài đặt");
+  const runs = renderToStaticMarkup(await page({ tab: "runs" }));
+  for (const v of ["Có lỗi một phần", "synthetic-model", "Chạy tay"]) expect(runs).toContain(v);
+  const r1 = { ...(rows.extraction_runs as object[])[0], id: "33333333-3333-4333-8333-333333333333" };
+  rows.extraction_runs = [r1];
+  const open = renderToStaticMarkup(await page({ tab: "runs", run: "33333333-3333-4333-8333-333333333333" }));
+  for (const v of ['role="dialog"', "không có nguyên văn", "not found verbatim", "1.200 / 300"]) expect(open).toContain(v);
+  expect(open).not.toContain("account-form");
+});
+it("shows the AI account settings to administrators only", async () => {
+  ctx.mockResolvedValue({ client: { from: chain }, permissions: ["roles.manage"] });
+  expect(renderToStaticMarkup(await page({ tab: "settings" }))).toContain("account-form");
 });

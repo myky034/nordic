@@ -240,7 +240,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
 
     {show("automation") && <Section title="Crawler & AI extraction" description="Inert DEMO copies of /admin/crawler, the document-page AI panel and /admin/extraction." className="scroll-mt-24"><span id="automation" />
       <h3 className="mb-3 px-1 text-[17px] font-semibold">Crawler — URL đã đăng ký</h3>
-      <div className="mb-2 flex flex-wrap items-center gap-2 px-1"><span className="text-[15px] font-semibold">DEMO Government Agency</span><Badge tone="positive">Sẽ được crawl ở lần chạy tới</Badge></div>
+      <div className="mb-2 flex flex-wrap items-center gap-2 px-1"><span className="text-[15px] font-semibold">DEMO Government Agency</span><Badge tone="positive">Sẽ được lấy ở lần chạy tới</Badge></div>
       <List>{([["https://demo.example.test/permits", "created", "Trang"], ["https://demo.example.test/sitemap.xml", "unchanged", "Sitemap /study/"], ["https://demo.example.test/fees", "robots_disallowed", "Trang"]] as const).map(([u, o, k]) =>
         <ListRow key={u} title={<span className="break-all">{u}</span>} badges={<><Badge>{k}</Badge><Badge tone={crawlOutcomes[o].tone}>{crawlOutcomes[o].label}</Badge></>} meta="Lần lấy gần nhất: 2026-01-15 08:00 · HTTP 200 · selector main" />)}</List>
       <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Crawler — lần chạy gần nhất</h3>

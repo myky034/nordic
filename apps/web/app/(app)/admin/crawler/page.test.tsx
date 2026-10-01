@@ -14,16 +14,30 @@ const rows: Record<string, unknown[]> = {
 };
 const chain = (table: string) => { const q = { select: () => q, order: () => q, limit: () => q, then: (r: (v: unknown) => unknown) => r({ data: rows[table], error: null }) }; return q; };
 
+vi.mock("@/components/key-nav", () => ({ KeyNav: () => null }));
+const page = (q: Record<string, string> = {}) => Page({ params: Promise.resolve({}), searchParams: Promise.resolve(q) });
 it("refuses users without crawler.manage", async () => {
   ctx.mockResolvedValue({ client: {}, permissions: ["facts.review"] });
-  expect(renderToStaticMarkup(await Page())).toContain("crawler.manage");
+  expect(renderToStaticMarkup(await page())).toContain("crawler.manage");
 });
 it("explains why a registered source is not crawled and summarises runs", async () => {
   ctx.mockResolvedValue({ client: { from: chain }, permissions: ["crawler.manage"] });
-  const html = renderToStaticMarkup(await Page());
-  expect(html).toContain("chưa bật crawl");
-  expect(html).toContain("https://agency.example.test/permits");
-  expect(html).toContain("Có lỗi một phần");
-  expect(html).toContain("2 fact cần xem lại");
-  expect(html).toContain("/documents/d1");
+  const urls = renderToStaticMarkup(await page());
+  expect(urls).toContain("chưa bật crawl");
+  expect(urls).toContain("https://agency.example.test/permits");
+  expect(urls).toContain("Phiên bản mới");
+  const target = renderToStaticMarkup(await page({ target: "00000000-0000-4000-8000-000000000000" }));
+  expect(target).not.toContain('role="dialog"');
+  const runs = renderToStaticMarkup(await page({ tab: "runs" }));
+  for (const text of ["Có lỗi một phần", "Theo lịch", "2 thông tin"]) expect(runs).toContain(text);
+});
+it("opens a target and a run in the inspector", async () => {
+  ctx.mockResolvedValue({ client: { from: chain }, permissions: ["crawler.manage"] });
+  rows.crawl_targets = [{ ...(rows.crawl_targets[0] as object), id: "11111111-1111-4111-8111-111111111111" }];
+  rows.crawler_runs = [{ ...(rows.crawler_runs[0] as object), id: "22222222-2222-4222-8222-222222222222" }];
+  const target = renderToStaticMarkup(await page({ target: "11111111-1111-4111-8111-111111111111" }));
+  expect(target).toContain('role="dialog"');
+  expect(target).toContain("/documents/d1");
+  const run = renderToStaticMarkup(await page({ tab: "runs", run: "22222222-2222-4222-8222-222222222222" }));
+  expect(run).toContain("2 thông tin cần xem lại");
 });
