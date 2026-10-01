@@ -744,3 +744,51 @@ Tổng quan và phân quyền dạng bảng (5.1), Quản lý nguồn chia đôi
 chỉ số dạng bảng (5.8–5.11). Chụp lại hình 1–13, 16–22; thêm hình 21b, 21c; bỏ hình
 minh họa crawler cũ vì nó còn bố cục trước đợt 4 (chưa có bản DEMO mới để chụp lại).
 Mục lục trong Word cần "Update Field" sau khi mở.
+
+## Bảng điều khiển quản trị (`/admin`, 2026-10-01)
+
+**Làm gì:** một trang chỉ đọc cho người có quyền **Quản lý vai trò** (`roles.manage`), gồm
+ba phần: *Tình trạng hệ thống* (crawler, trích xuất AI), *Độ phủ dữ liệu* (bảng theo
+quốc gia) và *Hoạt động duyệt* (quyết định trong 7/30 ngày, mục chờ lâu nhất). Lối tắt ở
+nhóm Quản trị của trang Tổng quan.
+
+**Vì sao thiết kế như vậy:**
+- **Đọc bằng quyền của người xem, không thêm migration.** Mỗi phần dùng client của người
+  đang đăng nhập nên RLS quyết định được đếm gì. Không dùng service role, không viết
+  hàm `SECURITY DEFINER` mới (AGENTS.md §5). Vai trò Administrator có mọi quyền nên
+  thấy đủ; nếu một admin thiếu quyền đọc (ví dụ không có `crawler.manage`), phần đó ghi
+  "Cần quyền …" thay vì hiện số 0 sai.
+- **Không có điểm số.** Chỉ có số đếm và quy tắc rõ ràng (§11, §15). Quy tắc nằm ở
+  `lib/admin/overview.ts` (có test): crawler bị coi là "lâu chưa chạy" khi quá
+  `CRAWLER_STALE_DAYS = 8` ngày (lịch chạy hằng tuần); URL "cần xem lại" là URL có kết
+  quả gần nhất thuộc `problemOutcomes`; trường, chương trình, quy định, nghề chỉ đếm mục
+  đã duyệt.
+- **Không im lặng khi thiếu dữ liệu.** Mỗi bảng tải tối đa `ROW_LIMIT = 5000` dòng kèm
+  `count: "exact"`. Nếu số dòng nhỏ hơn tổng thật, trang hiện "Chưa đếm đủ" (`complete()`).
+  Truy vấn lỗi được ghi log (`logAccessError`) và phần đó hiện "Không tải được" (§13).
+  Khi dữ liệu vượt mức này, cần chuyển sang đếm trong SQL (một view hoặc hàm có migration).
+- **Mỗi phần nằm trong một `<Suspense>`.** Phần nào chậm (DB ở Sydney) chỉ làm chậm khối
+  của nó, phần còn lại vẫn hiện.
+
+**File quan trọng:** `lib/admin/overview.ts` (quy tắc) → `app/(app)/admin/sections.tsx`
+(mỗi phần = hàm async tải dữ liệu + View thuần) → `app/(app)/admin/page.tsx` (bố cục,
+chặn quyền). Test: `lib/admin/overview.test.ts`, `app/(app)/admin/page.test.tsx` (gọi
+thẳng từng hàm async vì `renderToStaticMarkup` không render được component async lồng
+trong Suspense).
+
+### Biểu đồ trên `/admin`
+
+- **Không thêm thư viện biểu đồ.** `components/ui/charts.tsx` có `ColumnChart` (cột chồng,
+  ví dụ theo ngày) và `BarChart` (thanh ngang chồng), vẽ bằng `div` trên server: không
+  thêm JavaScript cho trình duyệt, màu lấy từ token (`bg-positive`, `bg-caution`…) nên tự
+  đổi theo dark mode. Lớp màu phải viết nguyên văn (`swatch: "bg-positive"`) để Tailwind
+  quét được. Cần biểu đồ tương tác (zoom, tooltip phức tạp) thì mới cân nhắc thư viện.
+- **Biểu đồ không phải nơi duy nhất có số.** Mỗi biểu đồ là `role="img"` với câu tóm tắt,
+  kèm một bảng ẩn (`sr-only`) cùng số liệu cho trình đọc màn hình; rê chuột lên cột/thanh
+  thấy số (`title`). Cột không có trục nên ghi "Cao nhất: N" làm thang đo.
+- **Bốn biểu đồ:** URL theo kết quả lần lấy gần nhất (crawler), token AI theo ngày (30 ngày),
+  thông tin theo quốc gia (đã duyệt / chờ duyệt / mâu thuẫn), quyết định duyệt theo ngày
+  (7/30 ngày). Gom theo ngày bằng `dayKeys` + `perDay` (ngày UTC, ngày trống vẫn hiện là 0;
+  dòng không có thời gian hợp lệ bị bỏ qua thay vì làm hỏng trang).
+- **Xem không cần đăng nhập:** `/dev/preview?section=admin-overview` (dữ liệu DEMO đi qua
+  đúng các hàm trong `lib/admin/overview.ts`).

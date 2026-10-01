@@ -37,6 +37,8 @@ import { RoleForm, UserRoles } from "@/app/(app)/admin/access/forms";
 import { EffectivePermissions } from "@/app/(app)/admin/access/effective-permissions";
 import { Cell, DataRow, DataTable } from "@/components/ui/data-table";
 import { Inspector } from "@/components/ui/inspector";
+import { ActivityView, CoverageView, CrawlerView, ExtractionView } from "@/app/(app)/admin/sections";
+import { activity, coverage, crawlerState, dayKeys, extractionState, perDay } from "@/lib/admin/overview";
 
 // DEMO roles and users for the access screen (reserved example.test addresses).
 const demoPermissions = ["facts.propose", "facts.review", "education.manage", "immigration.manage", "labour.manage", "metrics.manage", "sources.manage", "documents.read", "documents.ingest", "crawler.manage", "roles.manage", "users.assign_roles"].map((key) => ({ key, description: "" }));
@@ -75,7 +77,7 @@ export const metadata = { title: "UI preview (DEMO)", robots: { index: false, fo
 
 const toc = [
   ["foundations", "Foundations"], ["lists", "Long list + pagination"], ["sources", "Source rows"], ["facts", "Fact cards"],
-  ["dashboard", "Dashboard"], ["review", "Review split view"], ["sources-admin", "Sources admin"], ["access-admin", "Access admin"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
+  ["dashboard", "Dashboard"], ["admin-overview", "Admin overview"], ["review", "Review split view"], ["sources-admin", "Sources admin"], ["access-admin", "Access admin"], ["workspace", "Workspace rows"], ["personal", "Personal workspace"], ["automation", "Crawler & AI"], ["compare", "Comparison table"], ["search", "Search results"], ["detail", "Detail blocks"], ["states", "Empty & loading"],
 ] as const;
 
 export default async function PreviewPage({ searchParams }: PageProps<"/dev/preview">) {
@@ -147,6 +149,33 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{g.tiles.map((t) => <TileLink key={t.href} tile={{ ...t, href: "#dashboard" }} />)}</div></div>)}
     </Section>}
 
+    {show("admin-overview") && (() => {
+      // DEMO rows run through the real rules in lib/admin/overview.ts.
+      const now = new Date("2026-10-01T12:00:00Z");
+      const day = (i: number) => new Date(now.getTime() - i * 86_400_000).toISOString();
+      const countries = [{ id: "a", slug: "demo-a", name: "DEMO Country A" }, { id: "b", slug: "demo-b", name: "DEMO Country B" }, { id: "c", slug: "demo-c", name: "DEMO Country C" }];
+      const many = (n: number, country_id: string | null, status: string) => Array.from({ length: n }, () => ({ country_id, status }));
+      const cov = coverage(countries, {
+        sources: [...many(6, "a", "verified"), ...many(2, "a", "needs_verification"), ...many(3, "b", "verified"), ...many(1, "c", "review_required")],
+        facts: [...many(24, "a", "reviewed"), ...many(9, "a", "proposed"), ...many(2, "a", "conflicted"), ...many(7, "b", "reviewed"), ...many(4, "b", "proposed"), ...many(3, null, "proposed")],
+        universities: many(5, "a", "reviewed"), programmes: many(12, "a", "reviewed"), rules: [...many(4, "a", "reviewed"), ...many(2, "b", "reviewed")], occupations: many(3, null, "reviewed"),
+      });
+      const reviews = Array.from({ length: 40 }, (_, i) => ({ decision: ["reviewed", "reviewed", "rejected", "revalidated", "conflicted"][i % 5], created_at: day((i * 7) % 30) }));
+      const runs = Array.from({ length: 12 }, (_, i) => ({ status: i === 3 ? "partial" : "succeeded", started_at: day(i * 2 + 1), input_tokens: 4000 + i * 900, output_tokens: 600 + i * 120 }));
+      const states = [...Array(14).fill({ last_outcome: "unchanged" }), ...Array(5).fill({ last_outcome: "created" }), ...Array(2).fill({ last_outcome: "error" }), { last_outcome: "robots_disallowed" }];
+      return <Section title="Admin overview" description="/admin: charts and tables built from DEMO rows by lib/admin/overview.ts." className="scroll-mt-24"><span id="admin-overview" />
+        <div className="grid gap-4 lg:grid-cols-2">
+          <CrawlerView state={crawlerState({ status: "succeeded", started_at: day(3) }, states, now)} activeTargets={18} complete />
+          <ExtractionView state={extractionState(runs)} daily={perDay(runs, (r) => r.started_at, dayKeys(30, now), (r) => ({ input: r.input_tokens, output: r.output_tokens }))} pending={2} accountSet complete now={now} />
+        </div>
+        <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Độ phủ dữ liệu</h3>
+        <CoverageView {...cov} complete />
+        <h3 className="mb-3 mt-8 px-1 text-[17px] font-semibold">Hoạt động duyệt (30 ngày)</h3>
+        <ActivityView rows={activity({ facts: reviews, education: reviews.slice(0, 6).filter((r) => r.decision === "reviewed" || r.decision === "rejected"), immigration: [], labour: [] })}
+          daily={perDay(reviews, (r) => r.created_at, dayKeys(30, now), (r) => ({ [r.decision]: 1 }))} days={30} complete
+          pending={[{ table: "facts", label: "Thông tin", href: "#admin-overview", count: 16, oldestDays: 12 }, { table: "universities", label: "Trường", href: "#admin-overview", count: 0, oldestDays: null }]} />
+      </Section>;
+    })()}
     {show("review") && <Section title="Review split view" description="/facts/workspace: compact list on the left (own scroll, sticky), the selected claim and its decision on the right. ?item= selects; forms are inert." className="scroll-mt-24"><span id="review" />
       <SplitView detailKey={demoSelected.id} detailOnMobile={!!item} backHref="/dev/preview?section=review#review"
         list={<SplitList label="DEMO list" footer={<SplitPager summary={{ pages: 3, current: 1, first: 1, last: demoFacts.length, total: 60, hasPrev: false, hasNext: true }} href={(p) => `/dev/preview?section=review&page=${p}#review`} />}>

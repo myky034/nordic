@@ -41,7 +41,7 @@ export default function LandingPage() {
       <section className="py-16 text-center sm:py-24">
         <p className="text-[13px] font-semibold uppercase tracking-[0.12em] text-ink-3">Nghiên cứu du học & làm việc tại châu Âu</p>
         <h1 className="mx-auto mt-4 max-w-3xl text-[40px] font-semibold leading-[1.08] tracking-[-0.03em] text-ink sm:text-[60px]">
-          Tìm hiểu châu Âu bằng bằng chứng.
+          Mỗi thông tin đều có nguồn.
         </h1>
         <p className="mx-auto mt-6 max-w-xl text-[19px] leading-relaxed text-ink-2">
           Thông tin về học tập, làm việc và visa tại năm nước Bắc Âu và Hà Lan, mỗi điều đều dẫn về nguồn gốc để bạn tự kiểm chứng.

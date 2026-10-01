@@ -3,7 +3,7 @@
 // when the user holds ANY of its `anyOf` permissions; `anyOf: []` = everyone.
 export type Tint = "blue" | "green" | "orange" | "indigo" | "teal" | "purple" | "pink" | "gray" | "red" | "brown";
 export type IconName = "person" | "plan" | "facts" | "education" | "immigration" | "labour" | "import" | "registry" | "sparkles"
-  | "crawler" | "chart" | "access" | "globe" | "document" | "books";
+  | "crawler" | "chart" | "access" | "globe" | "document" | "books" | "gauge";
 export type Tile = { href: string; title: string; description: string; icon: IconName; tint: Tint; anyOf: string[] };
 export type Group = { id: string; title: string; tiles: Tile[] };
 
@@ -20,6 +20,7 @@ export const dashboardGroups: Group[] = [
     { href: "/documents/import", title: "Nhập tài liệu", description: "Thêm tài liệu từ nguồn đã đăng ký", icon: "import", tint: "green", anyOf: ["documents.ingest"] },
   ] },
   { id: "admin", title: "Quản trị", tiles: [
+    { href: "/admin", title: "Bảng điều khiển quản trị", description: "Crawler và AI, độ phủ dữ liệu, hoạt động duyệt", icon: "gauge", tint: "indigo", anyOf: ["roles.manage"] },
     { href: "/admin/sources", title: "Quản lý nguồn", description: "Thêm, phân loại, xác minh nguồn và bật/tắt crawl", icon: "registry", tint: "gray", anyOf: ["sources.manage"] },
     { href: "/admin/crawler", title: "Crawler", description: "URL được crawl và kết quả từng lần chạy", icon: "crawler", tint: "teal", anyOf: ["crawler.manage"] },
     { href: "/admin/extraction", title: "Trích xuất AI", description: "Yêu cầu, lần chạy và lý do đề xuất bị loại", icon: "sparkles", tint: "purple", anyOf: ["facts.propose", "facts.review"] },
