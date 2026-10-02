@@ -792,3 +792,109 @@ trong Suspense).
   dòng không có thời gian hợp lệ bị bỏ qua thay vì làm hỏng trang).
 - **Xem không cần đăng nhập:** `/dev/preview?section=admin-overview` (dữ liệu DEMO đi qua
   đúng các hàm trong `lib/admin/overview.ts`).
+
+## Trang Nguồn công khai (`/sources`) dạng bảng + khung chi tiết (2026-10-02)
+
+- Danh sách đổi từ dạng list sang **bảng** (tên, mức độ, xác minh, quốc gia, tên miền).
+  Bấm một hàng mở **khung chi tiết bên phải** (`?source=<id>`, cùng `Inspector` với các
+  trang quản trị; trên điện thoại là khung trượt từ dưới lên), bộ lọc và trang hiện tại
+  giữ nguyên. Esc hoặc ✕ để đóng.
+- Cột "Xác minh" trong bảng dùng nhãn ngắn (`sourceStatusLabels`); câu đầy đủ ("đã xác
+  minh nguồn · nội dung chưa kiểm tra hiệu lực") hiện trong khung chi tiết, để bảng
+  không bị ép chữ.
+- `/sources/[id]` **vẫn giữ** làm trang riêng để chia sẻ link (thông tin, tìm kiếm, mục đã
+  lưu trỏ tới đây); khung chi tiết có link "Mở trang riêng của nguồn này". Cả hai dùng
+  chung `sources/source-details.tsx`, nên cách ghi "chưa có / chưa kiểm tra" giống nhau.
+- `?source=` không phải UUID thì `getSource()` trả `null` và không mở gì.
+
+**Bài học (2026-10-02):** `dev/preview` từng import `app/(app)/admin/sections.tsx`, file
+này kéo theo `lib/rbac/access` (`server-only`), nên test của preview hỏng ở commit
+`faafb8c`. Đã tách phần hiển thị thuần sang `app/(app)/admin/views.tsx`; `sections.tsx`
+chỉ còn tải dữ liệu và kiểm tra quyền. Quy tắc: preview và test chỉ import component
+thuần, không import file có truy cập dữ liệu. Sau khi sửa preview phải chạy **toàn bộ**
+test, không chỉ test của trang đang làm.
+
+## Thông tin vận hành chỉ hiện với biên tập viên (2026-10-02)
+
+Quyết định của chủ dự án, ghi ở Decision Log của `PROJECT_SPEC.md`. Quy tắc nằm ở **một
+chỗ**: `seesInternalDetails(permissions)` trong `lib/rbac/ui.ts` (= có khu Biên tập hoặc
+Quản trị). Trang công khai đọc `viewerPermissions()` rồi truyền cờ `internal` xuống:
+
+| Ẩn với người xem thường | Ở đâu |
+|---|---|
+| Lần crawl gần nhất, Crawl (bật/tắt · chính sách), Tần suất crawl, Căn cứ xác minh, Ghi chú nội bộ | `SourceDetails` (`/sources`, `/sources/[id]`) |
+| Nhãn "Trích bởi AI… · <mô hình>", nhãn "Đã duyệt bằng chứng" | `FactCard` (`lib/facts/view.tsx`) |
+| Trạng thái nghiên cứu ("Đang thu thập dữ liệu"…) | `/countries`, `/countries/[slug]` |
+
+**Vẫn hiện với mọi người** vì là quy tắc bắt buộc (AGENTS.md §1.5, §12, §23): nguồn, URL,
+tier, ngày xác minh nguồn, ngày lấy trang, ngày duyệt, hiệu lực, nhãn **Có mâu thuẫn**,
+ghi chú "không phải nguồn chính thức", cảnh báo "Trang nguồn đã thay đổi".
+
+**Mặc định là ẩn** (`internal = false`): một trang mới quên truyền cờ thì cũng không lộ
+thông tin nội bộ. Trang biên tập (`/facts/workspace`) và `/dev/preview` truyền `internal`.
+Đây chỉ là hiển thị; quyền đọc dữ liệu vẫn do RLS quyết định.
+
+## Trang quốc gia (`/countries/[slug]`) — phương án A "tổng quan quốc gia" (2026-10-02)
+
+**Vấn đề cũ:** 5 dòng link giống nhau (không biết bên trong có gì), khối "chưa có thông tin"
+to giữa trang, nguồn là list với nhãn dài.
+
+**Bố cục mới (từ trên xuống):**
+1. Tiêu đề + **"Duyệt gần nhất: <ngày>"** (ngày duyệt mới nhất của thông tin, trường, chương
+   trình, quy định — `latestReview()`) + "x/y nguồn đã xác minh". Trạng thái nghiên cứu chỉ
+   hiện với biên tập viên.
+2. **Ba thẻ chủ đề** (`topic-card.tsx`): Du học, Visa & cư trú, Làm việc. Mỗi thẻ có **số
+   đếm thật**, tối đa 3 mục mới duyệt, và link vào danh sách đã lọc theo nước. Dưới thẻ ghi
+   rõ: chỉ đếm nội dung đã duyệt, không phải tổng số thực tế của quốc gia.
+3. Dải **So sánh** với nước khác.
+4. ~~Thông tin mới nhất có tab~~ → **nhóm theo câu hỏi** (2026-10-02, xem mục dưới).
+5. ~~Bảng nguồn~~ — **đã bỏ** (chủ dự án, 2026-10-02): người dùng thường không cần danh mục
+   nguồn của cả nước. Nguồn của **từng thông tin** vẫn nằm trên thẻ thông tin (bắt buộc,
+   AGENTS.md §1.5, §23). Dòng "x/y nguồn đã xác minh" ở đầu trang là link sang
+   `/sources?country=…` cho ai cần danh mục đầy đủ.
+
+**Số đếm phải khớp với trang danh sách** mà thẻ trỏ tới: mỗi truy vấn đếm lặp lại điều kiện
+công khai của trang đó (trường/chương trình `reviewed`, chương trình cần trường `reviewed`;
+quy định cần nguồn T1 đã xác minh như `/immigration`; số liệu lao động cần nguồn đã xác
+minh như `/occupations/[id]`). Kiểm tra ngày 2026-10-02: Thụy Điển 12 trường, 1 chương
+trình, 3 quy định, khớp với `/universities`, `/programmes`, `/immigration?country=sweden`.
+Số 0 ghi thành câu "Chưa có … được duyệt"; đếm lỗi ghi "Không tải được số liệu" và vào log
+(`countLine()` trong `lib/countries/overview.ts`).
+
+
+## Thẻ thông tin gọn cho người xem + nhóm theo câu hỏi (2026-10-02)
+
+**Vì sao:** chủ dự án nhận xét thẻ thông tin "không mang lại giá trị" cho người đi du học hay
+đi làm. Thẻ cũ được thiết kế cho **người duyệt kiểm bằng chứng**: trích đoạn, 4 ô ngày/hiệu
+lực và 3 link chiếm gần hết thẻ, còn câu trả lời thì nhỏ.
+
+**Thẻ cho người xem** (`PublicFactCard` trong `lib/facts/view.tsx`, dùng khi `internal = false`):
+- Câu trả lời trước: nhãn chủ đề (hoặc tên chỉ số so sánh tiếng Việt nếu có), đối tượng —
+  thuộc tính, rồi **giá trị**.
+- **Một dòng nguồn luôn hiện**: tên nguồn (link ra trang gốc) · tier · ngày lấy trang ·
+  hiệu lực rút gọn (`validityShort`). Đây là phần AGENTS.md §1.5, §12, §23 bắt buộc nên
+  **không được gấp lại**.
+- **"Xem bằng chứng"** (`<details>`, không cần JavaScript): trích đoạn, hiệu lực đầy đủ, ngày
+  lấy trang · ngày duyệt, link tài liệu và mục liên quan, câu "không phải tư vấn pháp lý".
+- Cảnh báo **không bao giờ gấp**: nguồn không chính thức, trang nguồn đã đổi, nhãn mâu thuẫn
+  (`FactNotes`, dùng chung cho cả hai loại thẻ).
+- Biên tập viên vẫn thấy thẻ đầy đủ như cũ (`internal`).
+
+**Nhóm theo câu hỏi** (`questionGroups` trong `lib/countries/overview.ts`): trang quốc gia
+không còn "Thông tin mới nhất" (sắp theo ngày nhập), thay bằng 4 câu hỏi người dùng thật sự
+hỏi: *Học ở đây tốn bao nhiêu?* (học phí, học bổng, chi phí sinh hoạt, nhà ở) · *Nộp hồ sơ
+thế nào, khi nào?* (giáo dục, tuyển sinh, hạn nộp, ngôn ngữ) · *Cần visa, giấy phép gì?*
+(nhập cư) · *Làm việc ở đây: lương và nhu cầu?* (thị trường lao động). Mỗi câu hỏi hiện tối đa
+3 thông tin mới duyệt và "Xem tất cả N" sang `/facts?country=…&group=…` (bộ lọc **Chủ đề** mới
+của `/facts`). Chủ đề tự do do biên tập viên gõ rơi vào "Thông tin khác", nhóm này chỉ hiện
+khi có nội dung. `topicFilter()` bảo đảm mỗi thông tin thuộc đúng một nhóm (có test).
+
+**Chưa giải quyết (cần quyết định riêng):** đối tượng/thuộc tính vẫn là tiếng Anh theo nguồn,
+và giá trị đôi khi chứa ghi chú của người nhập (ví dụ "(currency not stated in the source
+table)"). Đề xuất: cột "tiêu đề hiển thị tiếng Việt" do người duyệt viết (cần migration), và
+hướng dẫn nhập liệu để giá trị chỉ chứa đúng điều nguồn nêu.
+
+**Đổi sang tab (cùng ngày, theo góp ý "đỡ phải cuộn"):** 4 câu hỏi là các tab dưới tiêu đề
+"Bạn muốn biết gì?" (`Segmented scroll={false}`, `?group=`), mỗi tab ghi số thông tin. Tab mở
+sẵn là câu hỏi **đầu tiên có dữ liệu** (`openGroup()`), để người xem không gặp ngay một tab
+trống; tab "Khác" chỉ có khi có nội dung. Mỗi tab hiện tối đa 5 thông tin + "Xem tất cả N".

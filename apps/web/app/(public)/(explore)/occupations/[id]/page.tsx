@@ -11,6 +11,8 @@ import { ExistenceEvidence } from "@/lib/education/view";
 import { classificationLabel } from "@/lib/labour/domain";
 import { figureSelect, occupationDetailSelect, type OccupationDetailRow } from "@/lib/labour/view";
 import { isPastLastPage, pageParam, pageSummary, pageWindow, withParams } from "@/lib/pagination";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { seesInternalDetails } from "@/lib/rbac/ui";
 import { BackLink, Card, DescriptionList, EmptyState, Notice, PageHeader, Pagination, Section, Segmented } from "@/components/ui";
 
 export default async function OccupationPage({ params, searchParams }: PageProps<"/occupations/[id]">) {
@@ -43,6 +45,8 @@ export default async function OccupationPage({ params, searchParams }: PageProps
   const total = counts.reduce((a, b) => a + b, 0);
   const name = (slug: string) => countryName(slug, slug);
   const save = await savedState("occupation", occupation.id);
+  // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
+  const internal = seesInternalDetails(await viewerPermissions());
   return <>
     <PageHeader back={<BackLink href="/occupations">Tất cả nghề</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Nghề nghiệp" title={occupation.name} />
     <DescriptionList items={[
@@ -55,7 +59,7 @@ export default async function OccupationPage({ params, searchParams }: PageProps
         ...countrySlugs.map((slug, i) => ({ href: withParams(`/occupations/${id}`, {}, { country: slug }), label: name(slug), count: counts[i], active: country === slug })),
       ]} />
       {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title="Các nguồn khác nhau ở ít nhất một số liệu.">Cả hai đều được hiển thị; hệ thống không chọn bên nào là đúng.</Notice></div>}
-      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} />)}</div>
+      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} />)}</div>
         : <EmptyState>Chưa có số liệu nào được duyệt với nguồn đã xác minh{country ? ` cho ${name(country)}` : ""}. Ở đây không có gì được ước lượng.</EmptyState>}
       <Pagination summary={pageSummary(figuresResult.count ?? facts.length, page)} href={(p) => withParams(`/occupations/${id}`, query, { page: p })} />
     </Section>

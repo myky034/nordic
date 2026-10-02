@@ -4,7 +4,8 @@ import { permissionName } from "@/lib/rbac/labels";
 import { readWindow } from "@/lib/admin/overview";
 import { withParams } from "@/lib/pagination";
 import { NoAccess, PageHeader, Section, Segmented } from "@/components/ui";
-import { ActivitySection, CoverageSection, CrawlerSection, ExtractionSection, SectionPlaceholder } from "./sections";
+import { ActivitySection, CoverageSection, CrawlerSection, ExtractionSection } from "./sections";
+import { SectionPlaceholder } from "./views";
 
 // Admin overview: system state, data coverage and review activity on one
 // page, for administrators (roles.manage). Read-only; every figure links to

@@ -3,6 +3,7 @@ import { expect, it, vi } from "vitest";
 const { calls, results } = vi.hoisted(() => ({ calls: [] as unknown[][], results: [] as { data: unknown; error: unknown }[] }));
 // Detail pages ask whether the visitor bookmarked the item; render as a guest here.
 vi.mock("@/lib/workspace/saved", () => ({ savedState: async () => ({ signedIn: false, saved: false }) }));
+vi.mock("@/lib/rbac/viewer", () => ({ viewerPermissions: async () => null }));
 vi.mock("@/components/save-button", () => ({ SaveButton: () => null }));
 vi.mock("next/navigation", () => ({ notFound: () => { throw new Error("NOT_FOUND"); } }));
 vi.mock("next/form", () => ({ default: (props: { children: React.ReactNode }) => <form>{props.children}</form> }));

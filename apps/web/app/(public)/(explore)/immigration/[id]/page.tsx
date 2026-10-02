@@ -9,6 +9,8 @@ import { FactCard, type FactRow } from "@/lib/facts/view";
 import { countryName, tierLabel } from "@/lib/registry/domain";
 import { ruleTypeLabel } from "@/lib/immigration/domain";
 import { ConflictBanner, day, LegalDisclaimer, ruleDetailSelect, ruleFactSelect, type RuleDetailRow } from "@/lib/immigration/view";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { seesInternalDetails } from "@/lib/rbac/ui";
 import { BackLink, Card, DescriptionList, EmptyState, ExternalLink, PageHeader, Quote, Section } from "@/components/ui";
 
 export default async function ImmigrationRulePage({ params }: PageProps<"/immigration/[id]">) {
@@ -30,6 +32,8 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
   const facts = factsResult.data as unknown as FactRow[];
   const source = rule.documents.sources;
   const save = await savedState("immigration_rule", rule.id);
+  // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
+  const internal = seesInternalDetails(await viewerPermissions());
   return <>
     <PageHeader back={<BackLink href="/immigration">Tất cả quy định</BackLink>} actions={<SaveButton kind="immigration_rule" id={rule.id} signedIn={save.signedIn} initialSaved={save.saved} />}
       eyebrow={<>{ruleTypeLabel(rule.rule_type)} · <Link href={`/countries/${rule.countries.slug}`} className="hover:underline">{countryName(rule.countries.slug, rule.countries.name)}</Link></>}
@@ -48,7 +52,7 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
       ]} />
     </div>
     <Section title="Điều kiện">
-      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} />)}</div>
+      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} />)}</div>
         : <EmptyState>Chưa có điều kiện nào của quy định này được duyệt với nguồn đã xác minh. Hãy đọc trang chính thức ở trên; ở đây không có gì được tóm tắt hay suy đoán.</EmptyState>}
     </Section>
     <Section title="Vì sao quy định này có trong danh sách">

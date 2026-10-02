@@ -18,6 +18,17 @@ export type ViewerPermissions = readonly string[] | null;
 export function isEditor(p: ViewerPermissions) {
   return !!p && visibleGroups([...p]).some((g) => g.id === "editing" || g.id === "admin");
 }
+/**
+ * Operational details on public pages — crawl state and schedule, authority
+ * notes and internal source notes, the AI model and AI origin of a fact, the
+ * "reviewed" badge, a country's research status — are for the people who run
+ * the registry: anyone with an editing or admin area (owner decision,
+ * 2026-10-02). Visitors still see everything the rules require: source, URL,
+ * tier, verification and retrieval dates, validity, conflicts and changed-
+ * source warnings (AGENTS.md §1.5, §12, §23). Display only; nothing here is
+ * a permission check.
+ */
+export const seesInternalDetails = (p: ViewerPermissions) => isEditor(p);
 export const canProposeFacts = (p: ViewerPermissions) => !!p?.includes("facts.propose");
 export const canReview = (p: ViewerPermissions) => !!p?.includes("facts.review");
 export const canOpenFactsWorkspace = (p: ViewerPermissions) => canProposeFacts(p) || canReview(p);

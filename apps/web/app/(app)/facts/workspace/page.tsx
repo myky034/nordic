@@ -134,7 +134,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
        prevHref={selection.prevId?withParams("/facts/workspace",params,{fact:selection.prevId}):null}
        nextHref={selection.nextId?withParams("/facts/workspace",params,{fact:selection.nextId}):null}/>
      <div className="space-y-4">
-     <FactCard fact={current}/>
+     <FactCard fact={current} internal/>
      <div className="space-y-3 px-1">
      <VisibilityNote visibility={visibility(current)} publicHref="/facts"/>
      <SamePageFacts current={current} others={siblings}/>

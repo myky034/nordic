@@ -1457,3 +1457,130 @@ Decided by the project owner.
   1 review forms and public-visibility feedback; 2 guidance for reviewers;
   3 public pages; 4 admin pages. Visual direction unchanged: Apple-HIG-inspired
   and as clear as the `/dashboard` overview.
+
+### 2026-10-02 — Operational details on public pages: editors only
+
+Decided by the project owner.
+
+- **Hidden from visitors** (anyone without an editing or admin area,
+  `seesInternalDetails()` in `apps/web/lib/rbac/ui.ts`): a source's crawl state,
+  crawl policy, crawl frequency and last crawl date; its authority notes and
+  internal notes; a fact's AI origin and model ("Trích bởi AI, đã qua người
+  duyệt · <model>"); the "Đã duyệt bằng chứng" badge (every fact a visitor sees
+  is reviewed); a country's research status.
+- **Supersedes** the Slice 10a line "The AI origin stays visible after review":
+  the AI origin is still stored (`facts.origin`, `ai_model`) and shown to
+  editors on public pages and in the workspaces, but no longer to visitors.
+- **Still shown to everyone** (AGENTS.md §1.5, §12, §23): source name, URL and
+  tier, verification and retrieval dates, review date, validity, the
+  "Có mâu thuẫn" badge, "not official" notes and the changed-source warning.
+- This is display only. RLS and page permissions are unchanged.
+
+### 2026-10-02 — Field-of-study focus for education data (PROPOSED, not approved, not built)
+
+Raised by the project owner: study research should cover universities and
+programmes broadly, but be organised by field, so a user can look only at what
+they care about — e.g. IT and programmes leading to product owner / project
+manager (PO/PM) roles. Analysis and proposal below; nothing here is decided
+until the owner approves it and the open questions are answered.
+
+**What exists today (gap analysis)**
+
+- `programmes.field` is free text copied from the source; `/programmes` only
+  filters "field contains …". There is no field taxonomy, so "all IT
+  programmes" cannot be listed reliably, and "PO/PM" is not a field at all.
+- Universities and programmes are entered by editors by hand (Slice 5). AI
+  extraction (Slice 10a) proposes facts only and links nothing but the country.
+- The crawler re-fetches registered URLs only: sitemap targets are capped at
+  100 URLs, in-page links are never followed (Slice 9). It was not designed to
+  discover whole programme catalogues.
+- `user_plans` stores target degree and role, not fields of interest.
+
+**Proposal**
+
+1. *Scope by focus, not "everything".* Each programme still needs a human
+   review (AGENTS.md §1.3), and one country lists thousands of programmes.
+   Collect programmes only in focus fields chosen by the owner (initially IT
+   and PO/PM-related), and widen later. Every programme still requires its own
+   evidence document and excerpt (Slice 5).
+2. *Two kinds of classification, never mixed up* (AGENTS.md §15):
+   - **Official field of study**: ISCED-F 2013 (UNESCO) codes — e.g. the
+     "06 Information and Communication Technologies" family and "0413
+     Management and administration". Codes and names to be seeded from the
+     official ISCED-F 2013 document after verification, not from memory.
+   - **Nordic focus tags** (product-defined, labelled as Nordic's grouping, not
+     official): e.g. "Quản lý sản phẩm / dự án (PO/PM)". Each tag has a written
+     inclusion rule decided by the owner (e.g. the programme page states
+     project/product management as a core subject), stored with the tag.
+   A programme may have several codes/tags. Assignments live in a join table
+   (programme ↔ field/tag) with evidence (excerpt from the programme page),
+   who assigned it and review status — the free-text `field` stays as the
+   source's own wording.
+3. *Who classifies.* An editor proposes; a reviewer approves (same rules as
+   facts). Later, AI may *propose* a classification with a verbatim excerpt,
+   never assign one silently (AGENTS.md §9).
+4. *Discovery (later phase).* Per country, research and register official
+   programme catalogues (national admissions/study portals, university
+   catalogue pages) source by source (Section 18) — no URL is guessed. Extend
+   AI extraction to propose **programme candidates** (name, university, degree,
+   language, URL, excerpt) from crawled catalogue pages, filtered to the focus
+   fields; out-of-scope candidates are recorded as such, not silently dropped.
+   Secondary portals (e.g. Hotcourses, T3) may hint at a programme, but the
+   programme is confirmed on the university's own page (Section 7).
+5. *User side.* Fields of interest in "Kế hoạch châu Âu" (user_plans), a field
+   filter on `/programmes` and on the country page's study card, and plan
+   shortcuts such as "Chương trình CNTT ở Thụy Điển" — labelled as a filter
+   by the user's choice, not a recommendation (AGENTS.md §15).
+
+**Applying one field list to every university** (approach approved by the
+owner on 2026-10-02; the list's content is still a draft, see below)
+
+Universities name and group programmes differently, so the owner's list is a
+**Nordic-controlled vocabulary**, never matched against programme names
+directly. Four layers:
+
+1. *Category definitions* (owner-provided): display name, definition,
+   **inclusion criteria**, **exclusion criteria**, search keywords (English
+   plus the local languages), related ISCED-F codes, and a version number.
+   The criteria — not the name — decide membership, so two reviewers reach
+   the same result for the same programme.
+2. *Keywords only find candidates.* They select programmes worth looking at;
+   a reviewer decides against the criteria after reading the programme page,
+   and records the deciding excerpt. A name that merely sounds right is never
+   enough.
+3. *Per-source crosswalk.* Most catalogues already group programmes (faculty,
+   subject area). For each registered catalogue source, a reviewer maps the
+   source's own groups to Nordic categories once (or marks a group "decide per
+   programme" when it is ambiguous). New programmes from that source then get
+   a *suggested* category; a reviewer still confirms each one. How each source
+   groups programmes is checked on that source when it is registered, never
+   assumed.
+4. *Versioned categories.* Changing a category's criteria creates a new
+   version; assignments made under an older version are listed for re-review
+   instead of being silently re-labelled.
+
+Draft definitions for the first two categories (IT; product/project
+management, PO/PM) — written by Claude for the owner to edit, not yet
+approved: `docs/data/field-taxonomy-draft.md`.
+
+**Suggested phasing**
+
+- Phase 1: taxonomy (ISCED-F subset + owner-defined focus tags), manual
+  classification by editors with review, `/programmes` field filter, fields of
+  interest in the plan. Needs one migration; no crawler change.
+- Phase 2: AI proposes classifications for existing programmes (reviewed).
+- Phase 3: programme discovery from registered catalogues (crawler + AI
+  programme candidates). Changes Slice 9/10a rules (sitemap cap, candidate
+  type) and needs its own decision.
+
+**Open questions for the owner**
+
+1. Exact focus list for Phase 1: which ISCED-F codes, and the written
+   inclusion rule for the PO/PM tag (which programmes count, which do not).
+2. Degree levels in scope (Master's only, as in Section 1, or Bachelor's too).
+3. Which official catalogue sources per country to research first (manual
+   research task; nothing inferred).
+4. Review capacity: how many programme proposals per week reviewers can
+   handle — this sets how fast discovery may run.
+5. Whether a programme outside the focus fields that is already in Nordic
+   stays visible (recommended: yes, just unclassified).

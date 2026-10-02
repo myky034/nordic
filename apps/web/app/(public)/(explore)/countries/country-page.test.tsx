@@ -16,7 +16,7 @@ vi.mock("@/lib/rbac/access", () => ({ logAccessError: vi.fn() }));
 // or `await createClient()` would unwrap straight to `result`.
 function builder(): Record<string, unknown> {
   const self: Record<string, unknown> = { then: (resolve: (v: unknown) => void) => resolve(result) };
-  for (const method of ["select", "eq", "in", "order", "limit"]) self[method] = () => self;
+  for (const method of ["select", "eq", "in", "not", "order", "limit"]) self[method] = () => self;
   return self;
 }
 vi.mock("@/lib/supabase/server", () => ({ createClient: async () => ({ from: () => builder() }) }));
@@ -32,8 +32,9 @@ it("shows an honest empty state instead of an invented country profile", async (
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
   expect(html).toContain("Chưa có thông tin nào được duyệt");
   expect(html).not.toContain("Country profile data is not available yet");
-  // A visitor is not sent into the editors' workspace.
+  // A visitor is not sent into the editors' workspace, nor shown the research status.
   expect(html).not.toContain("/facts/workspace");
+  expect(html).not.toContain("Đang thu thập dữ liệu");
 });
 it("points editors to the facts workspace from the empty state", async () => {
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "needs_research", sources: [] });
@@ -41,6 +42,7 @@ it("points editors to the facts workspace from the empty state", async () => {
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
   perms.value = null;
   expect(html).toContain('href="/facts/workspace"');
+  expect(html).toContain("Đang thu thập dữ liệu");
 });
 it("renders reviewed facts scoped to this country instead of the placeholder", async () => {
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "active", sources: [] });
@@ -60,4 +62,19 @@ it("fails closed on a database error instead of showing a silently empty profile
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "active", sources: [] });
   result.data = []; result.error = { message: "connection refused" };
   await expect(CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) })).rejects.toThrow();
+});
+
+it("says per topic that nothing is reviewed yet instead of showing empty cards, and links to the country's sources", async () => {
+  const source = { id: "11111111-1111-4111-8111-111111111111", name: "Synthetic agency", canonicalUrl: "https://agency.example.test/", sourceTier: "T1", status: "verified", lastVerifiedAt: null };
+  getCountry.mockResolvedValue({ id: "c1", slug: "denmark", name: "Denmark", status: "needs_research", sources: [source] });
+  result.data = []; result.error = null;
+  const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "denmark" }), searchParams: Promise.resolve({ group: "permits" }) }));
+  for (const v of ["Chưa có nội dung nào được duyệt", "1/1 nguồn đã xác minh", 'href="/sources?country=denmark"', "Chưa có trường nào được duyệt", "Chưa có quy định nào được duyệt",
+    "Chưa có số liệu lao động nào được duyệt", 'href="/immigration?country=denmark"',
+    "Học phí &amp; chi phí", "Visa &amp; giấy phép", "Lương &amp; việc làm", 'href="/countries/denmark?group=work"',
+    // ?group=permits was asked for: its question is the open tab.
+    "Cần visa, giấy phép gì?", "Chưa có thông tin nào được duyệt cho câu hỏi này"]) expect(html).toContain(v);
+  // The source list itself lives on /sources, not on the country page.
+  // "Thông tin khác" appears only when it holds something.
+  for (const v of ["Synthetic agency", "Nguồn của quốc gia này", "Học ở đây tốn bao nhiêu?", ">Khác<"]) expect(html).not.toContain(v);
 });

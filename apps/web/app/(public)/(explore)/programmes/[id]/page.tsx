@@ -10,6 +10,8 @@ import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { degreeLabel } from "@/lib/education/domain";
 import { ExistenceEvidence, programmeDetailSelect, type ProgrammeDetailRow } from "@/lib/education/view";
 import { BackLink, Card, DescriptionList, EmptyState, ExternalLink, PageHeader, Section } from "@/components/ui";
+import { viewerPermissions } from "@/lib/rbac/viewer";
+import { seesInternalDetails } from "@/lib/rbac/ui";
 import { textLink } from "@/components/ui/styles";
 
 export default async function ProgrammePage({ params }: PageProps<"/programmes/[id]">) {
@@ -30,6 +32,8 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
   const facts = factsResult.data as unknown as FactRow[];
   const uni = programme.universities;
   const save = await savedState("programme", programme.id);
+  // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
+  const internal = seesInternalDetails(await viewerPermissions());
   return <>
     <PageHeader back={<BackLink href="/programmes">Tất cả chương trình</BackLink>} actions={<SaveButton kind="programme" id={programme.id} signedIn={save.signedIn} initialSaved={save.saved} />}
       eyebrow={<>{degreeLabel(programme.degree_type)} · <Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{countryName(uni.countries.slug, uni.countries.name)}</Link></>}
@@ -42,7 +46,7 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
       ["Trang nộp hồ sơ", programme.application_url ? <ExternalLink key="a" href={programme.application_url}>{programme.application_url}</ExternalLink> : "Chưa ghi nhận"],
     ]} />
     <Section title="Học phí, hạn nộp và thông tin khác">
-      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} />)}</div>
+      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} />)}</div>
         : <EmptyState>Chưa có học phí, hạn nộp hay thông tin nào khác của chương trình này được duyệt. Hãy xem trang chính thức ở trên; ở đây không có gì được ước lượng.</EmptyState>}
     </Section>
     <Section title="Vì sao chương trình này có trong danh sách">

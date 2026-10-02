@@ -37,7 +37,7 @@ import { RoleForm, UserRoles } from "@/app/(app)/admin/access/forms";
 import { EffectivePermissions } from "@/app/(app)/admin/access/effective-permissions";
 import { Cell, DataRow, DataTable } from "@/components/ui/data-table";
 import { Inspector } from "@/components/ui/inspector";
-import { ActivityView, CoverageView, CrawlerView, ExtractionView } from "@/app/(app)/admin/sections";
+import { ActivityView, CoverageView, CrawlerView, ExtractionView } from "@/app/(app)/admin/views";
 import { activity, coverage, crawlerState, dayKeys, extractionState, perDay } from "@/lib/admin/overview";
 
 // DEMO roles and users for the access screen (reserved example.test addresses).
@@ -139,7 +139,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
     </Section>}
 
     {show("facts") && <Section title="Fact cards" description="Each visual state a claim can take." className="scroll-mt-24"><span id="facts" />
-      <div className="space-y-6">{demoFacts.filter(({ fact }) => !factIds.length || factIds.includes(fact.id)).map(({ label, fact }) => <div key={fact.id}><p className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</p><FactCard fact={fact} /></div>)}</div>
+      <div className="space-y-6">{demoFacts.filter(({ fact }) => !factIds.length || factIds.includes(fact.id)).map(({ label, fact }) => <div key={fact.id}><p className="mb-2 px-1 text-[13px] font-medium text-ink-3">{label}</p><FactCard fact={fact} internal /></div>)}</div>
     </Section>}
 
     {show("dashboard") && <Section title="Dashboard" description="Every tile an administrator sees, with DEMO counts (one unloadable)." className="scroll-mt-24"><span id="dashboard" />
@@ -187,7 +187,7 @@ export default async function PreviewPage({ searchParams }: PageProps<"/dev/prev
           <ItemStepper index={demoSelection.index} count={demoFacts.length}
             prevHref={demoSelection.prevId ? `/dev/preview?section=review&item=${demoSelection.prevId}#review` : null}
             nextHref={demoSelection.nextId ? `/dev/preview?section=review&item=${demoSelection.nextId}#review` : null} />
-          <div className="space-y-4"><FactCard fact={demoSelected} />
+          <div className="space-y-4"><FactCard fact={demoSelected} internal />
             <div className="space-y-3 px-1"><VisibilityNote visibility={{ state: "will_be_public" }} />
               <SamePageFacts current={demoSelected} others={[
                 { id: "s1", subject: demoSelected.subject, predicate: demoSelected.predicate, value: "DEMO other value", unit: null, status: "reviewed" },

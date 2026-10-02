@@ -149,7 +149,7 @@ function PatternFocus({ q }: { q: Query }) {
       <Link href="/dev/preview?section=review" className={`${textLink} text-[13px]`}>Thoát chế độ tập trung</Link>
     </div>
     {done && <p role="status" className="mb-4 rounded-xl bg-fill/60 px-4 py-2 text-[13px] text-ink-2">DEMO: mục trước được ghi “{decisionLabel(done).label}” (không lưu gì).</p>}
-    <div className="mx-auto max-w-2xl"><FactCard fact={fact} /></div>
+    <div className="mx-auto max-w-2xl"><FactCard fact={fact} internal /></div>
     <div className="fixed inset-x-0 bottom-0 z-30 border-t border-hairline bg-canvas">
       <div className="mx-auto flex max-w-3xl flex-wrap items-center gap-3 px-5 py-3">
         <input aria-label="Ghi chú kiểm tra" placeholder="Ghi chú kiểm tra (bắt buộc trên trang thật)" className={`${control} mt-0 min-w-0 flex-1 basis-60`} />
@@ -198,7 +198,7 @@ function PatternThree({ q }: { q: Query }) {
         </Link></li>)}
       </ul>
       <div className="min-w-0">
-        {fact && <FactCard fact={fact} />}
+        {fact && <FactCard fact={fact} internal />}
         {source && <div className="space-y-3"><div className="flex flex-wrap gap-2"><SourceBadges s={source} /></div>
           <DescriptionList items={[["Tên", source.name], ["URL", source.url], ["Quốc gia", source.country ?? "Chưa gán"], ["Xác minh gần nhất", source.verifiedAt ?? "Chưa có"]]} /></div>}
       </div>

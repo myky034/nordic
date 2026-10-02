@@ -5,6 +5,14 @@ export function validity(from: string | null, until: string | null, now = new Da
   if (until && until < today) return "Đã quá thời hạn được ghi nhận";
   return "Hiệu lực hiện tại chưa được xác minh";
 }
+/** One-phrase validity for the compact source line on public fact cards;
+ *  same rules as validity(), the full wording sits under "Xem bằng chứng". */
+export function validityShort(from: string | null, until: string | null, now = new Date()) {
+  const today = now.toISOString().slice(0, 10);
+  if (from && from > today) return "chưa đến thời gian áp dụng";
+  if (until && until < today) return "đã quá thời hạn ghi nhận";
+  return "hiệu lực hiện tại chưa xác minh";
+}
 export function factError(code: string) {
   if (code === "facts_forbidden" || code === "access_forbidden") return "Bạn chưa có quyền thực hiện thao tác này.";
   if (code === "facts_already_decided") return "Đề xuất đã được xử lý. Hãy tải lại trang; không ghi đè quyết định cũ.";

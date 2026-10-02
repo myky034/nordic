@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { accountLinks, canOpenFactsWorkspace, canProposeFacts, isEditor } from "./ui";
+import { accountLinks, canOpenFactsWorkspace, canProposeFacts, isEditor, seesInternalDetails } from "./ui";
 
 it("treats signed-out and permission-less viewers as non-editors", () => {
   expect(isEditor(null)).toBe(false);
@@ -19,4 +19,11 @@ it("builds the header links per role", () => {
   expect(accountLinks([])).toMatchObject({ signedIn: true, personal: { href: "/workspace" }, editor: null });
   expect(accountLinks(["sources.manage"])).toMatchObject({ editor: { href: "/dashboard", showPending: false } });
   expect(accountLinks(["facts.review"])).toMatchObject({ editor: { showPending: true } });
+});
+
+it("shows operational details on public pages to editors and admins only", () => {
+  expect(seesInternalDetails(null)).toBe(false);
+  expect(seesInternalDetails([])).toBe(false);
+  expect(seesInternalDetails(["documents.read"])).toBe(false);
+  for (const p of ["facts.review", "sources.manage", "crawler.manage", "roles.manage"]) expect(seesInternalDetails([p])).toBe(true);
 });
