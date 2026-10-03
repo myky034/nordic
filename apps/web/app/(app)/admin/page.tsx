@@ -29,7 +29,7 @@ export default async function AdminOverviewPage({ searchParams }: PageProps<"/ad
     <Section title="Độ phủ dữ liệu" description="Nguồn: số đã xác minh / tổng số. Trường, chương trình, quy định và nghề: chỉ đếm mục đã duyệt. Bấm một quốc gia để mở hồ sơ công khai.">
       <Suspense fallback={<SectionPlaceholder />}><CoverageSection client={client} permissions={permissions} /></Suspense>
     </Section>
-    <Section title="Hoạt động duyệt" actions={<Segmented label="Khoảng thời gian" items={[
+    <Section title="Hoạt động duyệt" actions={<Segmented label="Khoảng thời gian" scroll={false} items={[
       { href: withParams("/admin", params, { days: null }), label: "7 ngày", active: days === 7 },
       { href: withParams("/admin", params, { days: "30" }), label: "30 ngày", active: days === 30 },
     ]} />}>

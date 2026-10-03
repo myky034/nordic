@@ -898,3 +898,8 @@ hướng dẫn nhập liệu để giá trị chỉ chứa đúng điều nguồ
 "Bạn muốn biết gì?" (`Segmented scroll={false}`, `?group=`), mỗi tab ghi số thông tin. Tab mở
 sẵn là câu hỏi **đầu tiên có dữ liệu** (`openGroup()`), để người xem không gặp ngay một tab
 trống; tab "Khác" chỉ có khi có nội dung. Mỗi tab hiện tối đa 5 thông tin + "Xem tất cả N".
+
+User Guide đã cập nhật lên **v3.1** (2026-10-03): trang quốc gia mới (3.1), thẻ thông tin gọn,
+bộ lọc Chủ đề và thẻ đầy đủ cho biên tập viên (3.8), trang Nguồn dạng bảng + khung chi tiết
+(3.9), thông tin vận hành chỉ biên tập viên thấy (1.1, 6.1, 6.3), mục mới 5.12 Bảng điều khiển
+quản trị. Hình mới: 3, 4, 13b, 13c, 16, 17, 22c.

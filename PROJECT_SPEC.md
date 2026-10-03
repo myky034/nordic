@@ -1498,7 +1498,7 @@ until the owner approves it and the open questions are answered.
 
 **Proposal**
 
-1. *Scope by focus, not "everything".* Each programme still needs a human
+1. *(Superseded 2026-10-03 — see "Open taxonomy" below.)* *Scope by focus, not "everything".* Each programme still needs a human
    review (AGENTS.md §1.3), and one country lists thousands of programmes.
    Collect programmes only in focus fields chosen by the owner (initially IT
    and PO/PM-related), and widen later. Every programme still requires its own
@@ -1559,9 +1559,9 @@ directly. Four layers:
    version; assignments made under an older version are listed for re-review
    instead of being silently re-labelled.
 
-Draft definitions for the first two categories (IT; product/project
-management, PO/PM) — written by Claude for the owner to edit, not yet
-approved: `docs/data/field-taxonomy-draft.md`.
+Draft definitions (IT with subcategories; PO/PM; Business Analysis) —
+written by Claude for the owner to edit, not yet approved:
+`docs/data/field-taxonomy-draft.md`.
 
 **Suggested phasing**
 
@@ -1573,7 +1573,19 @@ approved: `docs/data/field-taxonomy-draft.md`.
   programme candidates). Changes Slice 9/10a rules (sitemap cap, candidate
   type) and needs its own decision.
 
-**Open questions for the owner**
+**Owner answers (2026-10-03)** — supersede the matching open questions below:
+
+- Categories: **IT** (with subcategories from the start), **PO/PM**, and a new
+  **Business Analysis** category.
+- PO/PM counts **only IT** projects/products; project management in other
+  domains is excluded.
+- Degree levels: **Master's and above** (`master`, `phd`) only.
+- Search keywords: **English only**.
+- Draft 0.2 of the definitions: `docs/data/field-taxonomy-draft.md`; the owner
+  still confirms the Business Analysis definition and the IT subcategories,
+  and ISCED-F codes are verified against the official document in Phase 1.
+
+**Open questions for the owner** (as first written; see answers above)
 
 1. Exact focus list for Phase 1: which ISCED-F codes, and the written
    inclusion rule for the PO/PM tag (which programmes count, which do not).
@@ -1584,3 +1596,66 @@ approved: `docs/data/field-taxonomy-draft.md`.
    handle — this sets how fast discovery may run.
 5. Whether a programme outside the focus fields that is already in Nordic
    stays visible (recommended: yes, just unclassified).
+
+
+### 2026-10-03 — Open taxonomy: every field of study and every career path (owner direction; PROPOSED design)
+
+The owner wants the system built for **all** fields and careers: whatever a
+user filters for, the matching universities and programmes should be findable.
+IT and PO/PM were only the first examples, not the limit. This supersedes
+"Scope by focus" in the 2026-10-02 entry; the four-layer approach, the
+evidence and review rules, Master's-and-above and English-only keywords stay.
+
+**Design changes**
+
+1. *Full field-of-study backbone.* The whole **ISCED-F 2013** hierarchy (broad
+   → narrow → detailed fields) is the official dimension, so every programme
+   has a place. The list is imported from the official UNESCO document and
+   checked before use; nothing is written from memory. A programme is
+   classified at the most detailed level its page supports.
+2. *Career paths as a second, separate dimension.* "PO/PM", "Business Analyst",
+   "Data Analyst"… are **career paths** (Nordic-defined, labelled as such, AGENTS.md
+   §15), not fields of study. Each has a definition, inclusion/exclusion rules
+   and English keywords (same format as the draft), unlimited in number, and
+   may later be linked to occupations (ISCO-coded where the source states it)
+   so programmes connect to labour-market data. A programme may match several
+   fields and several career paths, each with its own evidence.
+3. *Taxonomy managed in the app.* Admins add, edit (new version) and retire
+   fields and career paths on an admin page (proposed permission
+   `taxonomy.manage`); no migration or developer is needed to add a career.
+   ISCED-F entries are imported once and only changed if UNESCO changes them.
+4. *Scale needs assisted classification early.* Classifying every programme by
+   hand is not feasible, so the per-source crosswalk and AI-proposed
+   classifications (always reviewed, with an excerpt) move into the core plan
+   instead of "later". Coverage grows source by source (registered catalogues),
+   not field by field.
+5. *Search and filters.* `/programmes` and `/universities` filter by field
+   (tree with search) and by career path; a university matches when it has a
+   reviewed, classified programme in that field. Unclassified programmes stay
+   visible in normal lists and are never shown as belonging to a field.
+
+**Revised phasing** (details: `docs/architecture/field-taxonomy-phase1-plan.md`)
+
+- Phase 1: taxonomy tables (fields + career paths), ISCED-F import from the
+  verified document, admin page for career paths, manual classification with
+  review, filters, fields/careers of interest in "Kế hoạch châu Âu".
+- Phase 2: per-source crosswalk + AI-proposed classifications (reviewed).
+- Phase 3: programme discovery from registered catalogues (crawler + AI
+  programme candidates); needs its own decision on Slice 9/10a limits.
+
+**Owner answers (2026-10-03, later the same day)**
+
+- Career paths are managed only by holders of a new permission
+  `taxonomy.manage`: complete administrator roles receive it through the
+  migration (same rule as earlier permissions), and an admin can grant it to
+  any other role on the access page.
+- No career path is decided in chat or seeded by migration: the owner creates
+  and adjusts every career path on the admin page. PO/PM and Business Analysis
+  in the draft are only examples of the format.
+
+**Open questions for the owner**
+
+1. ~~Who may manage career paths~~ — answered above.
+2. ~~Which career paths to define first~~ — answered above (owner, in the UI).
+3. Review capacity per week (sets how fast coverage can grow).
+4. Which countries / catalogue sources to start with.
