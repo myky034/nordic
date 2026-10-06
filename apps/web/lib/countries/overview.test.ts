@@ -18,10 +18,16 @@ it("puts every topic in exactly one group: listed topics in theirs, everything e
 });
 
 it("words a zero as 'not reviewed yet' and a failed count as unknown, never as a number", () => {
-  expect(countLine(4, "trường", "Chưa có trường nào được duyệt")).toBe("4 trường");
-  expect(countLine(1200, "số liệu", "x")).toBe("1.200 số liệu");
-  expect(countLine(0, "trường", "Chưa có trường nào được duyệt")).toBe("Chưa có trường nào được duyệt");
-  expect(countLine(null, "trường", "x")).toBe("Không tải được số liệu");
+  const truong = (s: string) => `${s} trường`;
+  expect(countLine(4, truong, "Chưa có trường nào được duyệt")).toBe("4 trường");
+  expect(countLine(1200, (s) => `${s} số liệu`, "x")).toBe("1.200 số liệu");
+  expect(countLine(0, truong, "Chưa có trường nào được duyệt")).toBe("Chưa có trường nào được duyệt");
+  expect(countLine(null, truong, "x")).toBe("Không tải được số liệu");
+  // English: own plural and number format.
+  const uni = (s: string, n: number) => `${s} ${n === 1 ? "university" : "universities"}`;
+  expect(countLine(1, uni, "x", "en")).toBe("1 university");
+  expect(countLine(1200, uni, "x", "en")).toBe("1,200 universities");
+  expect(countLine(null, uni, "x", "en")).toBe("Could not load the count");
 });
 
 it("picks the latest review date and says nothing when none exists", () => {

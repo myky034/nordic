@@ -1,5 +1,9 @@
 "use client";
 import { ErrorState } from "@/components/ui/states";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { useHtmlLocale } from "@/lib/i18n/client";
+
 export default function RegistryError({ reset }: { reset: () => void }) {
-  return <ErrorState title="Không tải được dữ liệu" text="Hệ thống chưa lấy được thông tin lúc này. Bạn thử lại sau ít phút nhé." reset={reset} />;
+  const t = dictionaries[useHtmlLocale()].common;
+  return <ErrorState title={t.loadErrorTitle} text={t.loadErrorText} retryLabel={t.retry} reset={reset} />;
 }

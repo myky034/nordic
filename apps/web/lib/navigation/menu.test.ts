@@ -1,5 +1,8 @@
 import { expect, it } from "vitest";
-import { entryActive, navigation } from "./menu";
+import { en } from "@/lib/i18n/dictionaries/en";
+import { vi } from "@/lib/i18n/dictionaries/vi";
+import { entryActive, navigationFor } from "./menu";
+const navigation = navigationFor(vi.nav);
 
 it("keeps every public module reachable exactly once", () => {
   const hrefs = navigation.flatMap((e) => (e.href ? [e.href] : (e.links ?? []).map((l) => l.href)));
@@ -12,4 +15,11 @@ it("marks a group active for any page inside it, but not for look-alike paths", 
   expect(entryActive("/universities", study)).toBe(true);
   expect(entryActive("/programmes-archive", study)).toBe(false);
   expect(entryActive("/facts", study)).toBe(false);
+});
+
+it("builds the same destinations in every language, with translated labels", () => {
+  const english = navigationFor(en.nav);
+  const hrefs = (n: typeof navigation) => n.flatMap((e) => (e.href ? [e.href] : (e.links ?? []).map((l) => l.href)));
+  expect(hrefs(english)).toEqual(hrefs(navigation));
+  expect(english.map((e) => e.label)).toEqual(["Countries", "Study", "Work & Visas", "Compare", "Evidence"]);
 });

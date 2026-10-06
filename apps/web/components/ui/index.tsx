@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, intlLocale, type Locale } from "@/lib/i18n/locales";
 import { label as labelClass } from "./styles";
 
 // Small, dependency-free UI primitives (Apple-HIG-inspired):
@@ -176,29 +178,32 @@ export function NoAccess({ title, children, back = "/dashboard", backLabel = "V�
   </section>;
 }
 
-/** "3 nguồn" — Vietnamese nouns do not change in the plural, so one label serves every count. */
-export function countLabel(n: number, noun: string) {
-  return `${n.toLocaleString("vi-VN")} ${noun}`;
+/** "3 nguồn" — Vietnamese nouns do not change in the plural, so one label serves every count.
+ *  In English the caller passes the noun already in the right number. */
+export function countLabel(n: number, noun: string, locale: Locale = defaultLocale) {
+  return `${n.toLocaleString(intlLocale[locale])} ${noun}`;
 }
 
 /**
  * Page navigation for server-paginated lists. Links (not buttons) so every page
  * has a shareable URL and the browser Back button returns to the same page.
  */
-export function Pagination({ summary, href }: {
+export function Pagination({ summary, href, locale = defaultLocale }: {
   summary: { pages: number; current: number; first: number; last: number; total: number; hasPrev: boolean; hasNext: boolean };
   href: (page: number) => string;
+  locale?: Locale;
 }) {
   if (summary.total === 0) return null;
+  const t = dictionaries[locale].common;
   const link = "inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[15px] font-medium transition";
-  return <nav aria-label="Phân trang" className="mt-5 flex flex-wrap items-center justify-between gap-3 px-1">
+  return <nav aria-label={t.pagination} className="mt-5 flex flex-wrap items-center justify-between gap-3 px-1">
     <p className="text-[13px] text-ink-3">{summary.first}–{summary.last} / {summary.total}</p>
     {summary.pages > 1 && <div className="flex items-center gap-2">
-      {summary.hasPrev ? <Link href={href(summary.current - 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Trang trước</Link>
-        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Trang trước</span>}
-      <span className="px-2 text-[13px] text-ink-2">Trang {summary.current} / {summary.pages}</span>
-      {summary.hasNext ? <Link href={href(summary.current + 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}>Trang sau<Chevron className="text-ink" /></Link>
-        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>Trang sau</span>}
+      {summary.hasPrev ? <Link href={href(summary.current - 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />{t.previous}</Link>
+        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>{t.previous}</span>}
+      <span className="px-2 text-[13px] text-ink-2">{t.pageOf(summary.current, summary.pages)}</span>
+      {summary.hasNext ? <Link href={href(summary.current + 1)} className={`${link} bg-fill text-ink hover:bg-fill-strong`}>{t.next}<Chevron className="text-ink" /></Link>
+        : <span aria-disabled="true" className={`${link} bg-fill/50 text-ink-3`}>{t.next}</span>}
     </div>}
   </nav>;
 }

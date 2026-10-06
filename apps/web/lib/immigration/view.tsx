@@ -1,5 +1,7 @@
 import { factSelect } from "../facts/view";
 import { Notice } from "@/components/ui";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
 // Public selects. The !inner embeds let the page filter on the evidence
 // source's status/tier, mirroring the RLS rule explicitly so editors (who can
@@ -27,18 +29,16 @@ export type RuleDetailRow = Omit<RuleListRow, "documents"> & {
 };
 export type AuthorityRow = { id: string; name: string; canonical_url: string; status: string; last_verified_at: string | null; countries: { slug: string; name: string } };
 
-export const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "chưa có";
+export const day = (value: string | null, locale: Locale = defaultLocale) => value ? new Date(value).toISOString().slice(0, 10) : dictionaries[locale].common.notYet;
 
 // Recommendation 4 (2026-09-23): always visible on immigration pages.
-export function LegalDisclaimer() {
-  return <Notice tone="caution" title="Thông tin nghiên cứu, không phải tư vấn di trú.">
-    Đây là thông tin nghiên cứu, không phải tư vấn di trú hay pháp lý. Quy định có thể thay đổi; luôn kiểm tra lại trên trang của cơ quan có thẩm quyền trước khi nộp hồ sơ hay ra quyết định.
-  </Notice>;
+export function LegalDisclaimer({ locale = defaultLocale }: { locale?: Locale }) {
+  const t = dictionaries[locale].immigrationNotes;
+  return <Notice tone="caution" title={t.legalTitle}>{t.legalText}</Notice>;
 }
 
 // SRS/UserFlow 2.3: warn instead of silently choosing between sources.
-export function ConflictBanner() {
-  return <Notice tone="critical" role="alert" title="Thông tin đang có mâu thuẫn giữa các nguồn.">
-    Các nguồn đang khác nhau ở ít nhất một điều kiện bên dưới; cả hai đều được hiển thị và hệ thống không chọn bên nào là đúng.
-  </Notice>;
+export function ConflictBanner({ locale = defaultLocale }: { locale?: Locale }) {
+  const t = dictionaries[locale].immigrationNotes;
+  return <Notice tone="critical" role="alert" title={t.conflictTitle}>{t.conflictText}</Notice>;
 }

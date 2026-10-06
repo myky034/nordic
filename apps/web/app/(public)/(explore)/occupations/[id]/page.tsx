@@ -9,6 +9,7 @@ import { countryName, countrySlugs } from "@/lib/registry/domain";
 import { FactCard, type FactRow } from "@/lib/facts/view";
 import { ExistenceEvidence } from "@/lib/education/view";
 import { classificationLabel } from "@/lib/labour/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { figureSelect, occupationDetailSelect, type OccupationDetailRow } from "@/lib/labour/view";
 import { isPastLastPage, pageParam, pageSummary, pageWindow, withParams } from "@/lib/pagination";
 import { viewerPermissions } from "@/lib/rbac/viewer";
@@ -43,28 +44,30 @@ export default async function OccupationPage({ params, searchParams }: PageProps
   const facts = (figuresResult.data ?? []) as unknown as FactRow[];
   const counts = countryCounts.map((r) => r.count ?? 0);
   const total = counts.reduce((a, b) => a + b, 0);
-  const name = (slug: string) => countryName(slug, slug);
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const [t, c] = [dict.occupations, dict.common];
+  const name = (slug: string) => dict.countryNames[slug] ?? slug;
   const save = await savedState("occupation", occupation.id);
   // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
   const internal = seesInternalDetails(await viewerPermissions());
   return <>
-    <PageHeader back={<BackLink href="/occupations">Tất cả nghề</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow="Nghề nghiệp" title={occupation.name} />
+    <PageHeader back={<BackLink href="/occupations">{t.back}</BackLink>} actions={<SaveButton kind="occupation" id={occupation.id} signedIn={save.signedIn} initialSaved={save.saved} locale={locale} />} eyebrow={t.title} title={occupation.name} />
     <DescriptionList items={[
-      ["Mã phân loại", classificationLabel(occupation.classification_system, occupation.classification_code)],
-      ["Phạm vi", occupation.countries ? <Link key="c" href={`/countries/${occupation.countries.slug}`} className="text-accent hover:underline">{countryName(occupation.countries.slug, occupation.countries.name)}</Link> : "Định nghĩa quốc tế"],
+      [t.classification, classificationLabel(occupation.classification_system, occupation.classification_code, locale)],
+      [t.scope, occupation.countries ? <Link key="c" href={`/countries/${occupation.countries.slug}`} className="text-accent hover:underline">{countryName(occupation.countries.slug, occupation.countries.name, locale)}</Link> : t.international],
     ]} />
-    <Section title="Số liệu thị trường lao động" description="Mỗi số liệu ghi rõ quốc gia và kỳ số liệu. Số liệu khác kỳ hoặc khác nguồn không so sánh trực tiếp được.">
-      <Segmented label="Quốc gia" items={[
-        { href: withParams(`/occupations/${id}`, {}, {}), label: "Tất cả", count: total, active: !country },
+    <Section title={t.figures} description={t.figuresDescription}>
+      <Segmented label={c.country} items={[
+        { href: withParams(`/occupations/${id}`, {}, {}), label: c.all, count: total, active: !country },
         ...countrySlugs.map((slug, i) => ({ href: withParams(`/occupations/${id}`, {}, { country: slug }), label: name(slug), count: counts[i], active: country === slug })),
       ]} />
-      {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title="Các nguồn khác nhau ở ít nhất một số liệu.">Cả hai đều được hiển thị; hệ thống không chọn bên nào là đúng.</Notice></div>}
-      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} />)}</div>
-        : <EmptyState>Chưa có số liệu nào được duyệt với nguồn đã xác minh{country ? ` cho ${name(country)}` : ""}. Ở đây không có gì được ước lượng.</EmptyState>}
-      <Pagination summary={pageSummary(figuresResult.count ?? facts.length, page)} href={(p) => withParams(`/occupations/${id}`, query, { page: p })} />
+      {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title={t.conflictTitle}>{t.conflictText}</Notice></div>}
+      {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} locale={locale} />)}</div>
+        : <EmptyState>{t.noFigures(country ? name(country) : null)}</EmptyState>}
+      <Pagination summary={pageSummary(figuresResult.count ?? facts.length, page)} href={(p) => withParams(`/occupations/${id}`, query, { page: p })} locale={locale} />
     </Section>
-    <Section title="Vì sao nghề này có trong danh sách">
-      <Card><ExistenceEvidence excerpt={occupation.evidence_excerpt} document={occupation.documents} reviewedAt={occupation.reviewed_at} /></Card>
+    <Section title={t.why}>
+      <Card><ExistenceEvidence excerpt={occupation.evidence_excerpt} document={occupation.documents} reviewedAt={occupation.reviewed_at} locale={locale} /></Card>
     </Section>
   </>;
 }

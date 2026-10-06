@@ -52,20 +52,9 @@ hệ thống thông tin, dữ liệu hoặc hạ tầng CNTT.
   trừ khi trang nêu CNTT là lĩnh vực chính.
 - Chỉ có **vài môn CNTT tự chọn** trong chương trình thuộc lĩnh vực khác.
 
-**Nhóm con** (chủ dự án chọn dùng ngay từ đầu). Chương trình thuộc CNTT được gán **ít nhất
-một** nhóm con; có thể nhiều hơn một. Mỗi nhóm con cũng cần trích đoạn.
-
-| Nhóm con | Tính khi trang chương trình nêu là trọng tâm… | Từ khóa tìm ứng viên |
-|---|---|---|
-| Khoa học máy tính | thuật toán, lý thuyết tính toán, khoa học máy tính tổng quát | computer science, computing, theoretical computer science, algorithms |
-| Kỹ thuật phần mềm | thiết kế, phát triển, kiểm thử, kiến trúc phần mềm | software engineering, software development, software architecture |
-| Hệ thống thông tin | hệ thống thông tin trong tổ chức, quản trị hệ thống thông tin | information systems, informatics, business information systems |
-| Khoa học dữ liệu / Trí tuệ nhân tạo | phân tích dữ liệu, học máy, AI | data science, artificial intelligence, machine learning, data analytics |
-| An ninh mạng | bảo mật thông tin, an ninh hệ thống | cyber security, information security, cybersecurity |
-| Mạng và hạ tầng | mạng máy tính, hệ phân tán, điện toán đám mây, hạ tầng CNTT | computer networks, distributed systems, cloud computing, networking |
-
-Không khớp nhóm con nào nhưng vẫn đạt tiêu chí CNTT thì gán **"CNTT khác"** và ghi lý do,
-để chủ dự án cân nhắc thêm nhóm con.
+**Nhóm con:** ~~6 nhóm con do Nordic đặt~~ — **bỏ** (chủ dự án, 2026-10-06). Ngành học chỉ dùng
+các cấp của ISCED-F 2013 (cấp chi tiết của nhóm 06 đã chia nhỏ lĩnh vực CNTT). Nếu cần lọc theo
+"An ninh mạng", "Khoa học dữ liệu"… thì chủ dự án tạo chúng thành **hướng nghề** trên giao diện.
 
 **Mã ISCED-F 2013 liên quan [cần đối chiếu tài liệu ISCED-F 2013 chính thức của UNESCO]:**
 nhóm **06 — Công nghệ thông tin và truyền thông** (các mã chi tiết như 0611, 0612, 0613,
@@ -162,7 +151,7 @@ một mã nhóm 06 (hệ thống thông tin). Không có mã riêng cho Business
 
 ## Còn cần chủ dự án xác nhận
 
-- **Nhóm con CNTT:** khi nhập trọn ISCED-F 2013, cấp *chi tiết* của ISCED đã chia nhỏ lĩnh vực
+- ~~**Nhóm con CNTT**~~ — đã quyết 2026-10-06: dùng cấp chi tiết ISCED, bỏ 6 nhóm con. Ghi chú cũ: khi nhập trọn ISCED-F 2013, cấp *chi tiết* của ISCED đã chia nhỏ lĩnh vực
   CNTT. Cần quyết: dùng cấp chi tiết của ISCED thay cho 6 nhóm con ở trên, hay giữ 6 nhóm con
   này như **hướng nghề** (ví dụ "An ninh mạng", "Khoa học dữ liệu"). Không nên có hai danh sách
   song song cho cùng một ý.

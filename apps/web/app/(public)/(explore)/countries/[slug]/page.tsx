@@ -3,10 +3,11 @@ import { SaveButton } from "@/components/save-button";
 import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
 import { getCountry } from "@/lib/registry/queries";
-import { countryName, countryStatusLabels } from "@/lib/registry/domain";
+import { countryName, countryStatusLabel } from "@/lib/registry/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { createClient } from "@/lib/supabase/server";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
-import { countLine, latestReview, openGroup, otherGroup, questionGroups, topicFilter, type GroupKey } from "@/lib/countries/overview";
+import { countLine, groupText, latestReview, openGroup, otherGroup, questionGroups, topicFilter, type GroupKey } from "@/lib/countries/overview";
 import { withParams } from "@/lib/pagination";
 import { logAccessError } from "@/lib/rbac/access";
 import { Badge, BackLink, Chevron, PageHeader, Section, Segmented } from "@/components/ui";
@@ -72,36 +73,38 @@ export default async function CountryPage({ params, searchParams }: PageProps<"/
   const canEdit = canOpenFactsWorkspace(permissions);
   // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
   const internal = seesInternalDetails(permissions);
-  const name = countryName(country.slug, country.name);
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.country;
+  const name = countryName(country.slug, country.name, locale);
   const verified = country.sources.filter((s) => s.status === "verified").length;
 
   return <>
-    <PageHeader back={<BackLink href="/countries">Tất cả quốc gia</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} />} eyebrow={country.name} title={name}
+    <PageHeader back={<BackLink href="/countries">{t.back}</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} locale={locale} />} eyebrow={locale === "vi" ? country.name : undefined} title={name}
       description={<span className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[15px]">
-        <span>{latest ? `Duyệt gần nhất: ${latest}` : "Chưa có nội dung nào được duyệt"}</span>
+        <span>{latest ? t.latest(latest) : t.nothingReviewed}</span>
         <span aria-hidden="true" className="text-ink-3">·</span>
-        <Link href={`/sources?country=${country.slug}`} className={textLink}>{verified}/{country.sources.length} nguồn đã xác minh</Link>
-        {internal && <Badge tone={country.status === "active" ? "accent" : "neutral"}>{countryStatusLabels[country.status] ?? country.status}</Badge>}
+        <Link href={`/sources?country=${country.slug}`} className={textLink}>{t.sourcesVerified(verified, country.sources.length)}</Link>
+        {internal && <Badge tone={country.status === "active" ? "accent" : "neutral"}>{countryStatusLabel(country.status, locale)}</Badge>}
       </span>} />
 
     <div className="grid gap-4 md:grid-cols-3">
-      <TopicCard title="Du học" icon="education" tint="orange"
-        lines={[countLine(counts.unis, "trường đại học", "Chưa có trường nào được duyệt"), countLine(counts.programmes, "chương trình học", "Chưa có chương trình nào được duyệt")]}
+      <TopicCard title={t.study} icon="education" tint="orange" recentLabel={t.recent}
+        lines={[countLine(counts.unis, t.universities, t.noUniversities, locale), countLine(counts.programmes, t.programmes, t.noProgrammes, locale)]}
         items={(unis.data ?? []).map((u) => ({ href: `/universities/${u.id}`, label: u.name }))}
-        links={[{ href: `/universities?country=${country.slug}`, label: "Trường" }, { href: `/programmes?country=${country.slug}`, label: "Chương trình" }]} />
-      <TopicCard title="Visa & cư trú" icon="immigration" tint="teal"
-        lines={[countLine(counts.rules, "quy định nhập cư", "Chưa có quy định nào được duyệt")]}
+        links={[{ href: `/universities?country=${country.slug}`, label: t.linkUniversities }, { href: `/programmes?country=${country.slug}`, label: t.linkProgrammes }]} />
+      <TopicCard title={t.permits} icon="immigration" tint="teal" recentLabel={t.recent}
+        lines={[countLine(counts.rules, t.rules, t.noRules, locale)]}
         items={(rules.data ?? []).map((r) => ({ href: `/immigration/${r.id}`, label: r.title }))}
-        links={[{ href: `/immigration?country=${country.slug}`, label: "Quy định nhập cư" }]} />
-      <TopicCard title="Làm việc" icon="labour" tint="brown"
-        lines={[countLine(counts.figures, "số liệu thị trường lao động", "Chưa có số liệu lao động nào được duyệt")]}
+        links={[{ href: `/immigration?country=${country.slug}`, label: t.linkRules }]} />
+      <TopicCard title={t.work} icon="labour" tint="brown" recentLabel={t.recent}
+        lines={[countLine(counts.figures, t.figures, t.noFigures, locale)]}
         items={[]}
-        links={[{ href: "/occupations", label: "Nghề nghiệp" }]} />
+        links={[{ href: "/occupations", label: t.linkOccupations }]} />
     </div>
-    <p className="mt-2 px-1 text-[13px] text-ink-3">Chỉ đếm nội dung đã được đối chiếu với nguồn và duyệt, không phải tổng số thực tế của {name}.</p>
+    <p className="mt-2 px-1 text-[13px] text-ink-3">{t.countsNote(name)}</p>
     <Link href={`/compare?c=${country.slug}`} className="group mt-4 flex items-center justify-between gap-4 rounded-2xl bg-surface px-5 py-4 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline transition hover:shadow-[0_6px_18px_rgb(0_0_0/0.08)]">
-      <span><span className="block text-[15px] font-semibold text-ink">So sánh {name} với nước khác</span>
-        <span className="block text-[13px] text-ink-2">Đặt cạnh nhau, kèm nguồn và kỳ số liệu; không chấm điểm hay xếp hạng.</span></span>
+      <span><span className="block text-[15px] font-semibold text-ink">{t.compareTitle(name)}</span>
+        <span className="block text-[13px] text-ink-2">{t.compareText}</span></span>
       <Chevron className="transition-transform group-hover:translate-x-0.5" />
     </Link>
 
@@ -110,22 +113,22 @@ export default async function CountryPage({ params, searchParams }: PageProps<"/
       const totals = Object.fromEntries(answers.map((a) => [a.key, a.total]));
       const active = openGroup(query.group, totals);
       const shown = answers.find((a) => a.key === active)!;
-      const g = active === otherGroup.key ? otherGroup : questionGroups.find((x) => x.key === active)!;
+      const g = groupText(active, locale);
       // "Khác" is a tab only when it holds something (or was asked for by URL).
       const tabs = answers.filter((a) => a.key !== otherGroup.key || a.total > 0 || active === otherGroup.key);
-      return <Section title="Bạn muốn biết gì?">
-        <Segmented label="Câu hỏi" scroll={false} items={tabs.map((a) => ({
+      return <Section title={t.questionsTitle}>
+        <Segmented label={t.questionsLabel} scroll={false} items={tabs.map((a) => ({
           href: withParams(`/countries/${country.slug}`, query, { group: a.key }),
-          label: a.key === otherGroup.key ? otherGroup.label : questionGroups.find((x) => x.key === a.key)!.label,
+          label: groupText(a.key, locale).label,
           count: a.total, active: a.key === active }))} />
         <div className="mb-3 flex flex-wrap items-end justify-between gap-3 px-1">
           <h3 className="text-[17px] font-semibold text-ink">{g.question}</h3>
-          {shown.total > shown.facts.length && <Link href={`/facts?country=${country.slug}&group=${active}`} className={`${textLink} text-[15px]`}>Xem tất cả {shown.total}</Link>}
+          {shown.total > shown.facts.length && <Link href={`/facts?country=${country.slug}&group=${active}`} className={`${textLink} text-[15px]`}>{dict.common.seeAllCount(shown.total)}</Link>}
         </div>
-        {shown.facts.length ? <div className="space-y-3">{shown.facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} />)}</div>
+        {shown.facts.length ? <div className="space-y-3">{shown.facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} locale={locale} />)}</div>
           : <p className="rounded-2xl bg-surface px-5 py-4 text-[15px] text-ink-2 ring-1 ring-hairline">
-            Chưa có thông tin nào được duyệt cho câu hỏi này. Thông tin chỉ xuất hiện sau khi được đối chiếu với nguồn; không bao giờ được tự điền hay suy đoán.
-            {canEdit && <> <Link href="/facts/workspace" className={textLink}>Thêm ở trang biên tập</Link>.</>}</p>}
+            {t.emptyQuestion}
+            {canEdit && <> <Link href="/facts/workspace" className={textLink}>{t.addInEditor}</Link>.</>}</p>}
       </Section>;
     })()}
 

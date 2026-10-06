@@ -29,8 +29,9 @@ bằng chứng và được duyệt.
 
 1. Có bản **ISCED-F 2013 chính thức** (tài liệu UNESCO) để nhập; người nhập ghi lại nguồn và ngày
    lấy. Mã nào chưa đối chiếu được thì không nhập. Tên tiếng Việt là bản dịch của Nordic, ghi rõ.
-2. Chủ dự án duyệt hai hướng nghề đầu tiên (PO/PM, Business Analysis) và quyết chuyện nhóm con
-   CNTT (dùng cấp chi tiết ISCED hay giữ thành hướng nghề — xem bản nháp 0.3).
+2. ~~Nhóm con CNTT~~ — **đã quyết (2026-10-06):** chỉ dùng cấp của ISCED; chủ đề như an ninh mạng
+   hay khoa học dữ liệu được tạo thành hướng nghề trên giao diện. Hướng nghề do chủ dự án tự tạo.
+   Người duyệt: chủ dự án, khi có thời gian; bắt đầu với **Thụy Điển**.
 3. ~~Ai được quản lý hướng nghề~~ — **đã trả lời (2026-10-03):** người có quyền mới
    `taxonomy.manage`; vai trò quản trị viên đầy đủ được cấp sẵn qua migration, admin cấp thêm
    cho vai trò khác ở trang phân quyền. **Không seed hướng nghề nào**: chủ dự án tự tạo và chỉnh

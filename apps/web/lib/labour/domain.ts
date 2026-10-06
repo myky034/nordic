@@ -1,5 +1,6 @@
 // Mirrors occupations.classification_system. A code is stored only when the
 // source states one; there is deliberately no "guessed" option.
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 export const classificationSystems = { "ISCO-08": "ISCO-08", ESCO: "ESCO", national: "Phân loại quốc gia", other: "Khác" } as const;
 export type ClassificationSystem = keyof typeof classificationSystems;
 
@@ -16,9 +17,14 @@ export function isOfficialStatisticsTier(tier: string | null | undefined) {
   return tier === "T1" || tier === "T2";
 }
 
-export function classificationLabel(system: string | null, code: string | null) {
+const classificationText = {
+  vi: { national: "Mã quốc gia", none: "Chưa ghi nhận mã phân loại" },
+  en: { national: "National code", none: "No classification code recorded" },
+} as const;
+export function classificationLabel(system: string | null, code: string | null, locale: Locale = defaultLocale) {
   // "national" is our category, not a name a reader would recognise; ISCO-08 / ESCO are shown as is.
-  return system && code ? `${system === "national" ? "Mã quốc gia" : system} ${code}` : "Chưa ghi nhận mã phân loại";
+  const t = classificationText[locale];
+  return system && code ? `${system === "national" ? t.national : system} ${code}` : t.none;
 }
 
 const errors: Record<string, string> = {

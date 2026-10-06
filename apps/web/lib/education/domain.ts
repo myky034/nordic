@@ -1,23 +1,35 @@
 import { canonicalSourceUrl, countrySlugs } from "../registry/domain";
 import { uuidPattern } from "../documents/domain";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
+
 
 // Mirrors the programmes.degree_type CHECK. "unknown" exists so an operator
 // never has to guess a level the source does not state.
-export const degreeTypes = { bachelor: "Cử nhân", master: "Thạc sĩ", phd: "Tiến sĩ", other: "Khác", unknown: "Nguồn không nêu" } as const;
+const degreeNames = {
+  vi: { bachelor: "Cử nhân", master: "Thạc sĩ", phd: "Tiến sĩ", other: "Khác", unknown: "Nguồn không nêu" },
+  en: { bachelor: "Bachelor's", master: "Master's", phd: "PhD", other: "Other", unknown: "Not stated by the source" },
+} as const;
+export const degreeTypes = degreeNames.vi;
 export type DegreeType = keyof typeof degreeTypes;
 // Mirrors facts.deadline_type (SRS FR-ED-01). Rolling / year-round deadlines
 // have no single date; the UI must not render one.
-export const deadlineTypes = { fixed: "Ngày cố định", rolling: "Xét tuyển liên tục", year_round: "Mở quanh năm" } as const;
+const deadlineNames = {
+  vi: { fixed: "Ngày cố định", rolling: "Xét tuyển liên tục", year_round: "Mở quanh năm" },
+  en: { fixed: "Fixed date", rolling: "Rolling admission", year_round: "Open all year" },
+} as const;
+export const deadlineTypes = deadlineNames.vi;
 export type DeadlineType = keyof typeof deadlineTypes;
 export const entityStatuses: Record<string, string> = {
   proposed: "Chờ duyệt", reviewed: "Đã duyệt bằng chứng", rejected: "Đã từ chối",
 };
 
-export function degreeLabel(value: string) {
-  return Object.hasOwn(degreeTypes, value) ? degreeTypes[value as DegreeType] : "Nguồn không nêu";
+/** Degree levels as [value, label] pairs for filters, in the viewer's language. */
+export const degreeOptions = (locale: Locale = defaultLocale) => Object.entries(degreeNames[locale]) as [DegreeType, string][];
+export function degreeLabel(value: string, locale: Locale = defaultLocale) {
+  return degreeNames[locale][Object.hasOwn(degreeTypes, value) ? value as DegreeType : "unknown"];
 }
-export function deadlineLabel(value: string | null | undefined) {
-  return value && Object.hasOwn(deadlineTypes, value) ? deadlineTypes[value as DeadlineType] : null;
+export function deadlineLabel(value: string | null | undefined, locale: Locale = defaultLocale) {
+  return value && Object.hasOwn(deadlineTypes, value) ? deadlineNames[locale][value as DeadlineType] : null;
 }
 
 type Query = Record<string, string | string[] | undefined>;

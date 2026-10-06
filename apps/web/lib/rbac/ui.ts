@@ -35,7 +35,7 @@ export const canOpenFactsWorkspace = (p: ViewerPermissions) => canProposeFacts(p
 
 export type AccountLinks =
   | { signedIn: false }
-  | { signedIn: true; personal: { href: string; label: string }; editor: { href: string; label: string; showPending: boolean } | null };
+  | { signedIn: true; personal: { href: string }; editor: { href: string; showPending: boolean } | null };
 
 /**
  * Header account area. Everyone signed in gets "Không gian của tôi" (their
@@ -46,7 +46,7 @@ export function accountLinks(p: ViewerPermissions): AccountLinks {
   if (!p) return { signedIn: false };
   return {
     signedIn: true,
-    personal: { href: "/workspace", label: "Không gian của tôi" },
-    editor: isEditor(p) ? { href: "/dashboard", label: "Biên tập", showPending: canReview(p) } : null,
+    personal: { href: "/workspace" },
+    editor: isEditor(p) ? { href: "/dashboard", showPending: canReview(p) } : null,
   };
 }

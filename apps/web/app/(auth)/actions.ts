@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "../../lib/supabase/server";
 import { readCredentials, logAuthFailure, type AuthState } from "../../lib/auth/credentials";
+import { getDictionary, getLocale } from "../../lib/i18n/server";
 
 class AuthConfigurationError extends Error {}
 
@@ -19,26 +20,29 @@ function callbackUrl() {
 }
 
 export async function signIn(_previous: AuthState, form: FormData): Promise<AuthState> {
-  const credentials = readCredentials(form);
-  if (credentials.error) return { error: credentials.error };
+  // Messages follow the visitor's interface language (lib/i18n).
+  const [locale, t] = [await getLocale(), (await getDictionary()).auth];
+  const credentials = readCredentials(form, false, locale);
+  if ("error" in credentials) return { error: credentials.error };
   try {
     const supabase = await createClient();
     const { error } = await supabase.auth.signInWithPassword(credentials);
     if (error) {
       logAuthFailure("sign_in", error);
-      return { error: error.status === 429 ? "Bạn thử quá nhiều lần. Vui lòng thử lại sau ít phút." : "Chưa đăng nhập được. Kiểm tra email và mật khẩu, và xác nhận email nếu được yêu cầu." };
+      return { error: error.status === 429 ? t.tooManyAttempts : t.signInFailed };
     }
   } catch {
     logAuthFailure("sign_in", null);
-    return { error: "Tạm thời chưa đăng nhập được. Bạn thử lại nhé." };
+    return { error: t.signInUnavailable };
   }
   // Next.js redirect throws internally, so it must stay outside the catch block.
   redirect("/dashboard");
 }
 
 export async function signUp(_previous: AuthState, form: FormData): Promise<AuthState> {
-  const credentials = readCredentials(form, true);
-  if (credentials.error) return { error: credentials.error };
+  const [locale, t] = [await getLocale(), (await getDictionary()).auth];
+  const credentials = readCredentials(form, true, locale);
+  if ("error" in credentials) return { error: credentials.error };
   try {
     const emailRedirectTo = callbackUrl();
     const supabase = await createClient();
@@ -49,17 +53,17 @@ export async function signUp(_previous: AuthState, form: FormData): Promise<Auth
     });
     if (error) {
       logAuthFailure("sign_up", error);
-      return { error: error.status === 429 ? "Bạn thử quá nhiều lần. Vui lòng thử lại sau ít phút." : error.code === "weak_password" ? "Mật khẩu chưa đủ mạnh. Hãy chọn mật khẩu dài hơn, khó đoán hơn." : "Chưa tạo được tài khoản. Bạn thử lại, hoặc đăng nhập nếu đã có tài khoản." };
+      return { error: error.status === 429 ? t.tooManyAttempts : error.code === "weak_password" ? t.weakPassword : t.signUpFailed };
     }
     // A user object alone is not proof of a session (or of a new account).
-    if (!data.session) return { message: "Hãy kiểm tra hộp thư để lấy liên kết xác nhận, mở liên kết trên trình duyệt này rồi đăng nhập. Nếu bạn đã có tài khoản, hãy đăng nhập." };
+    if (!data.session) return { message: t.checkEmail };
   } catch (error) {
     if (error instanceof AuthConfigurationError) {
       logAuthFailure("sign_up_configuration", null);
-      return { error: "Chức năng tạo tài khoản chưa được cấu hình. Vui lòng liên hệ quản trị viên." };
+      return { error: t.signUpNotConfigured };
     }
     logAuthFailure("sign_up", null);
-    return { error: "Tạm thời chưa tạo được tài khoản. Bạn thử lại nhé." };
+    return { error: t.signUpUnavailable };
   }
   redirect("/dashboard");
 }

@@ -1,11 +1,22 @@
 import { countrySlugs } from "../registry/domain";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
+
 
 // Mirrors comparison_metrics.category (PROJECT_SPEC.md Section 2.10 list).
-export const metricCategories = {
-  education: "Giáo dục", tuition: "Học phí", living_cost: "Chi phí sinh hoạt", labour_market: "Thị trường lao động",
-  immigration: "Nhập cư", housing: "Nhà ở", language: "Ngôn ngữ", quality_of_life: "Chất lượng sống", other: "Khác",
+const metricCategoryNames = {
+  vi: {
+    education: "Giáo dục", tuition: "Học phí", living_cost: "Chi phí sinh hoạt", labour_market: "Thị trường lao động",
+    immigration: "Nhập cư", housing: "Nhà ở", language: "Ngôn ngữ", quality_of_life: "Chất lượng sống", other: "Khác",
+  },
+  en: {
+    education: "Education", tuition: "Tuition", living_cost: "Cost of living", labour_market: "Labour market",
+    immigration: "Immigration", housing: "Housing", language: "Language", quality_of_life: "Quality of life", other: "Other",
+  },
 } as const;
+export const metricCategories = metricCategoryNames.vi;
 export type MetricCategory = keyof typeof metricCategories;
+export const metricCategoryLabel = (category: string, locale: Locale = defaultLocale) =>
+  Object.hasOwn(metricCategories, category) ? metricCategoryNames[locale][category as MetricCategory] : category;
 export const metricKeyPattern = /^[a-z][a-z0-9_]{1,59}$/;
 export const MIN_COUNTRIES = 2;
 export const MAX_COUNTRIES = 5;

@@ -1,11 +1,20 @@
 // Presentation rules for search results: group order, labels and where each
 // hit links to. Pure functions so they are testable without the database.
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 export const searchGroups = [
   ["country", "Quốc gia"], ["programme", "Chương trình học"], ["university", "Trường đại học"],
   ["immigration_rule", "Quy định nhập cư"], ["occupation", "Nghề nghiệp"], ["fact", "Thông tin"],
   ["source", "Nguồn"], ["document", "Tài liệu"],
 ] as const;
 export type SearchEntity = (typeof searchGroups)[number][0];
+const searchGroupNamesEn: Record<SearchEntity, string> = {
+  country: "Countries", programme: "Programmes", university: "Universities", immigration_rule: "Immigration rules",
+  occupation: "Occupations", fact: "Facts", source: "Sources", document: "Documents",
+};
+/** Group heading in the viewer's language (order and keys stay in searchGroups). */
+export function searchGroupLabel(entity: SearchEntity, locale: Locale = defaultLocale) {
+  return locale === "en" ? searchGroupNamesEn[entity] : searchGroups.find(([e]) => e === entity)![1];
+}
 
 export type SearchHit = { entity_type: string; id: string; title: string; subtitle: string | null; link_key: string; rank: number; total: number };
 

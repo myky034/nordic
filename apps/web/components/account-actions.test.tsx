@@ -6,6 +6,7 @@ const pending = vi.fn();
 vi.mock("@/lib/rbac/viewer", () => ({ viewerPermissions: () => perms() }));
 vi.mock("@/lib/review/pending-total", () => ({ pendingProposalTotal: () => pending() }));
 vi.mock("@/app/(auth)/actions", () => ({ signOut: async () => {} }));
+import { setTestLocale } from "@/test/i18n";
 import { AccountActions, PendingBadge } from "./account-actions";
 
 beforeEach(() => { perms.mockReset(); pending.mockReset(); });
@@ -47,4 +48,13 @@ it("shows the editor entry to a proposer without asking for the count", async ()
   perms.mockResolvedValue(["education.manage"]);
   expect(await render()).toContain("Biên tập");
   expect(pending).not.toHaveBeenCalled();
+});
+
+it("labels the account buttons in the viewer's language", async () => {
+  perms.mockResolvedValue(["facts.review"]); pending.mockResolvedValue(0); setTestLocale("en");
+  const html = await render();
+  for (const text of ["Editing", "My workspace", "Sign out"]) expect(html).toContain(text);
+  perms.mockResolvedValue(null);
+  expect(await render()).toContain("Sign in");
+  setTestLocale("vi");
 });

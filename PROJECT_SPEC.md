@@ -1653,12 +1653,23 @@ evidence and review rules, Master's-and-above and English-only keywords stay.
   and adjusts every career path on the admin page. PO/PM and Business Analysis
   in the draft are only examples of the format.
 
+**Owner answers (2026-10-06)**
+
+- IT subcategories: the draft's six Nordic subgroups are dropped. Fields of
+  study use only ISCED-F 2013's own levels; topics such as cyber security or
+  data science, if wanted, are created as career paths in the UI.
+- Reviewer: the owner, as time allows (no fixed weekly capacity). Start with
+  **Sweden**.
+- No Vietnamese display-title column for facts (proposal of 2026-10-02 dropped).
+  Instead: a Vietnamese/English language switch for the whole site — see the
+  separate entry below.
+
 **Open questions for the owner**
 
 1. ~~Who may manage career paths~~ — answered above.
 2. ~~Which career paths to define first~~ — answered above (owner, in the UI).
-3. Review capacity per week (sets how fast coverage can grow).
-4. Which countries / catalogue sources to start with.
+3. ~~Review capacity~~ — owner reviews as time allows.
+4. ~~Which countries first~~ — Sweden.
 
 ### 2026-10-03 — Production gets its own database with clean data
 
@@ -1675,3 +1686,31 @@ used the dev Supabase project for both Production and Preview).
   database; crawler/extractor GitHub Actions stay on dev until their prod
   login roles and schedule are decided.
 - Steps: `docs/architecture/prod-environment-setup.md`.
+
+### 2026-10-06 — Vietnamese / English language switch for the whole site (approved; in progress)
+
+Requested by the project owner, replacing the dropped "Vietnamese display
+title" idea. Implements the "Later" item of the 2026-09-29 language entry.
+
+- Scope: every UI string Nordic writes (public, personal, editor, admin),
+  plus number/date formatting. Source-derived content is never translated
+  (names as the source writes them, excerpts, values, codes) — unchanged rule
+  from 2026-09-29.
+- Proposed design: dictionaries per locale with identical keys enforced by
+  TypeScript; locale chosen with a header switch and stored in a cookie
+  (same URLs), Vietnamese by default; domain label modules take a locale.
+  English UI text is drafted by Claude and reviewed by the owner.
+- Delivered in waves: foundation + header + home; public pages; personal
+  area; editor/admin.
+- Owner decisions (2026-10-06): **cookie** (same URLs), **Vietnamese by
+  default** (no browser-language guessing), editor and admin pages **included**;
+  bilingual auth emails and an English User Guide **not now**.
+- Details: `docs/architecture/i18n-plan.md`. Wave 1 (foundation, header,
+  menu, footer, home, 404/error) built 2026-10-06.
+
+ISCED-F 2013 source for the taxonomy (found 2026-10-06, to be registered as a
+source and imported through the normal pipeline): UNESCO Institute for
+Statistics, ISCED page https://www.uis.unesco.org/en/methods-and-tools/isced
+and "ISCED-F 2013 – Detailed field descriptions" (2015). UIS lists a revision
+of ISCED-F 2013 in progress (2025–2026); ISCED-F 2013 remains the version in
+force, so the taxonomy must record which version it uses.

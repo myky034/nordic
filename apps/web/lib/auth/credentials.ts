@@ -1,25 +1,31 @@
+import { dictionaries } from "../i18n/dictionaries";
+import { defaultLocale, type Locale } from "../i18n/locales";
+
 export type AuthState = { error?: string; message?: string };
 
 // This is the app's signup minimum; Supabase may enforce a stricter policy.
 export const MIN_PASSWORD_LENGTH = 8;
 
-export function readCredentials(form: FormData, signup = false) {
+/** Either a validation message or the credentials; check with `"error" in result`. */
+export type Credentials = { error: string } | { email: string; password: string };
+export function readCredentials(form: FormData, signup = false, locale: Locale = defaultLocale): Credentials {
+  const t = dictionaries[locale].auth;
   const email = form.get("email");
   const password = form.get("password");
   if (typeof email !== "string" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) || email.trim().length > 254) {
-    return { error: "Nhập địa chỉ email hợp lệ." } as const;
+    return { error: t.invalidEmail };
   }
   if (typeof password !== "string" || !password || password.length > 1024) {
-    return { error: "Nhập mật khẩu (tối đa 1024 ký tự)." } as const;
+    return { error: t.invalidPassword };
   }
   if (signup && password.length < MIN_PASSWORD_LENGTH) {
-    return { error: `Mật khẩu cần ít nhất ${MIN_PASSWORD_LENGTH} ký tự.` } as const;
+    return { error: t.shortPassword(MIN_PASSWORD_LENGTH) };
   }
   if (signup && password !== form.get("confirmPassword")) {
-    return { error: "Hai mật khẩu chưa khớp nhau." } as const;
+    return { error: t.passwordsDiffer };
   }
   // Never trim passwords: spaces can be intentional credentials.
-  return { email: email.trim(), password } as const;
+  return { email: email.trim(), password };
 }
 
 const diagnosticCodes = new Set([

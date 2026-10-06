@@ -78,3 +78,14 @@ it("says per topic that nothing is reviewed yet instead of showing empty cards, 
   // "Thông tin khác" appears only when it holds something.
   for (const v of ["Synthetic agency", "Nguồn của quốc gia này", "Học ở đây tốn bao nhiêu?", ">Khác<"]) expect(html).not.toContain(v);
 });
+
+it("renders the country page in English when the visitor chose English", async () => {
+  const { setTestLocale } = await import("@/test/i18n");
+  setTestLocale("en");
+  getCountry.mockResolvedValue({ id: "c1", slug: "denmark", name: "Denmark", status: "needs_research", sources: [] });
+  result.data = []; result.error = null;
+  const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "denmark" }), searchParams: Promise.resolve({}) }));
+  setTestLocale("vi");
+  for (const v of ["Denmark", "Nothing reviewed yet", "No universities reviewed yet", "What would you like to know?", "Tuition &amp; costs", "How much does it cost to study here?"]) expect(html).toContain(v);
+  for (const v of ["Đan Mạch", "Chưa có trường nào"]) expect(html).not.toContain(v);
+});

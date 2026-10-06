@@ -1,18 +1,33 @@
 import { countrySlugs } from "../registry/domain";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
+
 
 // Mirrors immigration_rules.rule_type. "other" exists so an operator never has
 // to force a rule into a category the source does not use.
-export const ruleTypes = {
-  student_residence_permit: "Giấy phép cư trú du học",
-  work_permit: "Giấy phép lao động",
-  post_study: "Ở lại sau khi học",
-  permanent_residence: "Thường trú",
-  citizenship: "Quốc tịch",
-  other: "Khác",
+const ruleTypeNames = {
+  vi: {
+    student_residence_permit: "Giấy phép cư trú du học",
+    work_permit: "Giấy phép lao động",
+    post_study: "Ở lại sau khi học",
+    permanent_residence: "Thường trú",
+    citizenship: "Quốc tịch",
+    other: "Khác",
+  },
+  en: {
+    student_residence_permit: "Student residence permit",
+    work_permit: "Work permit",
+    post_study: "Staying after studies",
+    permanent_residence: "Permanent residence",
+    citizenship: "Citizenship",
+    other: "Other",
+  },
 } as const;
+export const ruleTypes = ruleTypeNames.vi;
 export type RuleType = keyof typeof ruleTypes;
-export function ruleTypeLabel(value: string) {
-  return Object.hasOwn(ruleTypes, value) ? ruleTypes[value as RuleType] : "Khác";
+/** Rule types as [value, label] pairs for filters, in the viewer's language. */
+export const ruleTypeOptions = (locale: Locale = defaultLocale) => Object.entries(ruleTypeNames[locale]) as [RuleType, string][];
+export function ruleTypeLabel(value: string, locale: Locale = defaultLocale) {
+  return ruleTypeNames[locale][Object.hasOwn(ruleTypes, value) ? value as RuleType : "other"];
 }
 
 // AGENTS.md Section 10: only T1 evidence counts as the official/authoritative

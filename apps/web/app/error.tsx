@@ -16,6 +16,8 @@
 // =============================================================================
 
 import { useEffect } from "react";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { useHtmlLocale } from "@/lib/i18n/client";
 
 interface ErrorPageProps {
   error: Error & { digest?: string };
@@ -23,6 +25,7 @@ interface ErrorPageProps {
 }
 
 export default function ErrorPage({ error, reset }: ErrorPageProps) {
+  const t = dictionaries[useHtmlLocale()].error;
   useEffect(() => {
     // Log to console (or a future error-reporting service).
     // 'digest' is the Next.js-generated anonymous error ID useful for
@@ -32,10 +35,10 @@ export default function ErrorPage({ error, reset }: ErrorPageProps) {
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center p-8 text-center">
-      <h1 className="text-[28px] font-semibold tracking-tight text-ink">Đã có lỗi xảy ra</h1>
-      <p className="mt-2 text-[17px] text-ink-2">Hệ thống gặp lỗi ngoài dự kiến. Bạn thử lại nhé.</p>
+      <h1 className="text-[28px] font-semibold tracking-tight text-ink">{t.title}</h1>
+      <p className="mt-2 text-[17px] text-ink-2">{t.text}</p>
       <button onClick={reset} className="mt-8 rounded-full bg-accent px-5 py-2.5 text-[15px] font-medium text-white transition hover:bg-accent-hover">
-        Thử lại
+        {t.retry}
       </button>
     </div>
   );

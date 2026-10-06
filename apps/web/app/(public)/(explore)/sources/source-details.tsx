@@ -1,6 +1,8 @@
 import Link from "next/link";
 import type { getSource } from "@/lib/registry/queries";
-import { canonicalSourceUrl, countryName, crawlPolicyLabels, dateLabel, tierLabel } from "@/lib/registry/domain";
+import { canonicalSourceUrl, countryName, crawlPolicyLabel, dateLabel, tierLabel } from "@/lib/registry/domain";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 import { DescriptionList, EmptyState, ExternalLink, List, ListRow, Section } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 import { hostLabel } from "../source-list";
@@ -13,34 +15,35 @@ export type SourceDetail = NonNullable<Awaited<ReturnType<typeof getSource>>>;
 // (narrower panel, smaller section heading).
 // `internal` adds crawl state, authority notes and internal notes (editors only,
 // seesInternalDetails() in lib/rbac/ui.ts).
-export function SourceDetails({ source, compact = false, internal = false }: { source: SourceDetail; compact?: boolean; internal?: boolean }) {
+export function SourceDetails({ source, compact = false, internal = false, locale = defaultLocale }: { source: SourceDetail; compact?: boolean; internal?: boolean; locale?: Locale }) {
+  const t = dictionaries[locale].sources.details, c = dictionaries[locale].common, s = dictionaries[locale].sources;
   const url = canonicalSourceUrl(source.canonicalUrl);
   const host = hostLabel(url);
   const more = source._count.documents > source.documents.length && host
-    ? <Link href={`/documents?q=${encodeURIComponent(host)}`} className={`${textLink} text-[15px]`}>Xem tất cả {source._count.documents}</Link> : undefined;
+    ? <Link href={`/documents?q=${encodeURIComponent(host)}`} className={`${textLink} text-[15px]`}>{c.seeAllCount(source._count.documents)}</Link> : undefined;
   const documents = source.documents.length
-    ? <List label="Tài liệu">{source.documents.map((d) => <ListRow key={d.id} href={`/documents/${d.id}`} title={d.title ?? "Tài liệu chưa có tiêu đề"} subtitle={`Lấy trang ngày ${dateLabel(d.retrievedAt)}`} />)}</List>
-    : <EmptyState>Chưa có tài liệu nào được nhập từ nguồn này.</EmptyState>;
+    ? <List label={t.documentsLabel}>{source.documents.map((d) => <ListRow key={d.id} href={`/documents/${d.id}`} title={d.title ?? c.untitledDocument} subtitle={c.retrievedOn(dateLabel(d.retrievedAt, locale))} />)}</List>
+    : <EmptyState>{t.noDocuments}</EmptyState>;
   return <>
     <DescriptionList items={[
       // canonicalSourceUrl() returns null for anything but http(s), so an unsafe stored URL is never a link.
-      ["URL", url ? <ExternalLink key="u" href={url}>{url}</ExternalLink> : "URL nguồn cần được xác minh."],
-      ["Mức độ nguồn (tier)", tierLabel(source.sourceTier)],
-      ["Quốc gia", source.country ? <Link key="c" href={`/countries/${source.country.slug}`} className={textLink}>{countryName(source.country.slug, source.country.name)}</Link> : "Chưa gán quốc gia"],
-      ["Loại / ngôn ngữ", `${source.sourceType ?? "Chưa rõ"} / ${source.language ?? "Chưa rõ"}`],
-      ["Chủ đề", source.topics.length ? source.topics.join(", ") : "Chưa phân loại"],
-      ["Xác minh gần nhất", dateLabel(source.lastVerifiedAt)],
+      [t.url, url ? <ExternalLink key="u" href={url}>{url}</ExternalLink> : s.sourceUrlUnverified],
+      [t.tier, tierLabel(source.sourceTier, locale)],
+      [t.country, source.country ? <Link key="c" href={`/countries/${source.country.slug}`} className={textLink}>{countryName(source.country.slug, source.country.name, locale)}</Link> : s.unassignedCountry],
+      [t.typeLanguage, `${source.sourceType ?? t.unknown} / ${source.language ?? t.unknown}`],
+      [t.topics, source.topics.length ? source.topics.join(", ") : t.unclassified],
+      [t.lastVerified, dateLabel(source.lastVerifiedAt, locale)],
       ...(internal ? [
-        ["Lần crawl gần nhất", dateLabel(source.lastCrawledAt)],
-        ["Crawl", `${source.crawlEnabled ? "Đang bật" : "Đang tắt"} · ${crawlPolicyLabels[source.crawlPolicy as keyof typeof crawlPolicyLabels] ?? source.crawlPolicy}`],
-        ["Tần suất crawl", source.crawlFrequency ?? "Chưa lên lịch"],
-        ["Căn cứ xác minh", source.authorityNotes ?? "Chưa kiểm tra"],
-        ...(source.notes ? [["Ghi chú nội bộ", source.notes] as [string, string]] : []),
+        [t.lastCrawled, dateLabel(source.lastCrawledAt, locale)],
+        [t.crawl, `${source.crawlEnabled ? t.crawlOn : t.crawlOff} · ${crawlPolicyLabel(source.crawlPolicy, locale)}`],
+        [t.crawlFrequency, source.crawlFrequency ?? t.notScheduled],
+        [t.authority, source.authorityNotes ?? t.notChecked],
+        ...(source.notes ? [[t.internalNotes, source.notes] as [string, string]] : []),
       ] as [string, React.ReactNode][] : []),
     ]} />
-    <p className="mt-3 px-1 text-[13px] text-ink-3">Tier và việc xác minh mô tả nguồn, không chứng minh mọi câu nguồn đăng đều đúng.</p>
+    <p className="mt-3 px-1 text-[13px] text-ink-3">{t.tierNote}</p>
     {compact
-      ? <div className="mt-8"><div className="mb-3 flex items-end justify-between gap-3 px-1"><h3 className="text-[17px] font-semibold text-ink">Tài liệu từ nguồn này</h3>{more}</div>{documents}</div>
-      : <Section title="Tài liệu từ nguồn này" actions={more}>{documents}</Section>}
+      ? <div className="mt-8"><div className="mb-3 flex items-end justify-between gap-3 px-1"><h3 className="text-[17px] font-semibold text-ink">{t.documents}</h3>{more}</div>{documents}</div>
+      : <Section title={t.documents} actions={more}>{documents}</Section>}
   </>;
 }

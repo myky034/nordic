@@ -27,3 +27,10 @@ it("labels AI proposals with the model and its self-reported confidence, and kee
  for(const v of ['href="https://example.com/"',"lấy trang 2026-09-19","hiệu lực hiện tại chưa xác minh","<details","Xem bằng chứng","Mở trang gốc"]) expect(pub).toContain(v);
  expect(renderToStaticMarkup(<FactCard fact={{...base,status:"conflicted"}}/>)).toContain("Có mâu thuẫn");
 });
+
+it("words the card in English but keeps the claim, excerpt and source as recorded",()=>{
+ const fact={id:"t",document_id:"doc",topic:"tuition",subject:"Tuition",predicate:"fee per year",value:"120 000",unit:"SEK",status:"conflicted",valid_from:null,valid_until:null,reviewed_at:"2026-09-30T00:00:00Z",evidence:{source_url:"https://example.com/",excerpt:"Avgiften är 120 000 kr",retrieved_at:"2026-09-19T00:00:00Z"},documents:{title:null,sources:{name:"Synthetic Source",source_tier:"T1"}}};
+ const html=renderToStaticMarkup(<FactCard fact={fact} locale="en"/>);
+ for(const v of ["Tuition","Conflicting sources","Source:","retrieved 2026-09-19","current validity not verified","Show evidence","T1 · Government","Avgiften är 120 000 kr","Synthetic Source"]) expect(html).toContain(v);
+ expect(html).not.toContain("Nguồn");
+});

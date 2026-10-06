@@ -1,17 +1,32 @@
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
+
 export type FactState = { error?: string; message?: string };
-export function validity(from: string | null, until: string | null, now = new Date()) {
+// Validity wording in both interface languages. The rule is the same in both:
+// a claim is never described as currently valid, only as not yet / no longer
+// within the dates the source states, or "not verified" (AGENTS.md §12).
+const validityText = {
+  vi: {
+    full: { future: "Chưa đến thời gian áp dụng được ghi nhận", past: "Đã quá thời hạn được ghi nhận", unknown: "Hiệu lực hiện tại chưa được xác minh" },
+    short: { future: "chưa đến thời gian áp dụng", past: "đã quá thời hạn ghi nhận", unknown: "hiệu lực hiện tại chưa xác minh" },
+  },
+  en: {
+    full: { future: "Not yet within the recorded validity period", past: "Past the recorded validity period", unknown: "Current validity not verified" },
+    short: { future: "not yet in force", past: "past the recorded end date", unknown: "current validity not verified" },
+  },
+} as const;
+function validityState(from: string | null, until: string | null, now: Date) {
   const today = now.toISOString().slice(0, 10);
-  if (from && from > today) return "Chưa đến thời gian áp dụng được ghi nhận";
-  if (until && until < today) return "Đã quá thời hạn được ghi nhận";
-  return "Hiệu lực hiện tại chưa được xác minh";
+  if (from && from > today) return "future";
+  if (until && until < today) return "past";
+  return "unknown";
+}
+export function validity(from: string | null, until: string | null, now = new Date(), locale: Locale = defaultLocale) {
+  return validityText[locale].full[validityState(from, until, now)];
 }
 /** One-phrase validity for the compact source line on public fact cards;
  *  same rules as validity(), the full wording sits under "Xem bằng chứng". */
-export function validityShort(from: string | null, until: string | null, now = new Date()) {
-  const today = now.toISOString().slice(0, 10);
-  if (from && from > today) return "chưa đến thời gian áp dụng";
-  if (until && until < today) return "đã quá thời hạn ghi nhận";
-  return "hiệu lực hiện tại chưa xác minh";
+export function validityShort(from: string | null, until: string | null, now = new Date(), locale: Locale = defaultLocale) {
+  return validityText[locale].short[validityState(from, until, now)];
 }
 export function factError(code: string) {
   if (code === "facts_forbidden" || code === "access_forbidden") return "Bạn chưa có quyền thực hiện thao tác này.";
@@ -26,15 +41,24 @@ export function factError(code: string) {
 // Readable names for the fixed AI topic codes (extraction_topics() in the
 // Slice 10a migration). Manually entered topics are free text written by an
 // editor, so anything not in this list is shown exactly as entered.
-const topicNames: Record<string,string> = {
-  education: "Giáo dục", admission: "Tuyển sinh", tuition: "Học phí", deadline: "Hạn nộp hồ sơ",
-  scholarship: "Học bổng", immigration: "Nhập cư", labour_market: "Thị trường lao động",
-  living_cost: "Chi phí sinh hoạt", housing: "Nhà ở", language: "Ngôn ngữ", other: "Khác",
+const topicNames: Record<Locale, Record<string,string>> = {
+  vi: {
+    education: "Giáo dục", admission: "Tuyển sinh", tuition: "Học phí", deadline: "Hạn nộp hồ sơ",
+    scholarship: "Học bổng", immigration: "Nhập cư", labour_market: "Thị trường lao động",
+    living_cost: "Chi phí sinh hoạt", housing: "Nhà ở", language: "Ngôn ngữ", other: "Khác",
+  },
+  en: {
+    education: "Education", admission: "Admission", tuition: "Tuition", deadline: "Application deadline",
+    scholarship: "Scholarship", immigration: "Immigration", labour_market: "Labour market",
+    living_cost: "Cost of living", housing: "Housing", language: "Language", other: "Other",
+  },
 };
-export function topicLabel(topic: string) {
-  return Object.hasOwn(topicNames, topic) ? topicNames[topic] : topic;
+export function topicLabel(topic: string, locale: Locale = defaultLocale) {
+  return Object.hasOwn(topicNames[locale], topic) ? topicNames[locale][topic] : topic;
 }
-export const statuses: Record<string,string> = {
-  proposed: "Chờ duyệt", reviewed: "Đã duyệt bằng chứng",
-  rejected: "Đã từ chối", conflicted: "Có mâu thuẫn",
+const statusNames: Record<Locale, Record<string,string>> = {
+  vi: { proposed: "Chờ duyệt", reviewed: "Đã duyệt bằng chứng", rejected: "Đã từ chối", conflicted: "Có mâu thuẫn" },
+  en: { proposed: "Awaiting review", reviewed: "Evidence reviewed", rejected: "Rejected", conflicted: "Conflicting sources" },
 };
+export const statuses = statusNames.vi;
+export const statusLabel = (status: string, locale: Locale = defaultLocale) => statusNames[locale][status] ?? status;

@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { Chevron } from "./index";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
 export type Column = { label: string; sortHref?: string; sorted?: "asc" | "desc" | null; className?: string };
 
@@ -9,8 +11,8 @@ export type Column = { label: string; sortHref?: string; sorted?: "asc" | "desc"
  * The header is not sticky: inside a horizontally scrolling box, sticky would
  * follow the box, not the window.
  */
-export function DataTable({ label, columns, minWidth = "40rem", children, empty }: {
-  label: string; columns: Column[]; minWidth?: string; children: React.ReactNode; empty?: React.ReactNode;
+export function DataTable({ label, columns, minWidth = "40rem", children, empty, locale = defaultLocale }: {
+  label: string; columns: Column[]; minWidth?: string; children: React.ReactNode; empty?: React.ReactNode; locale?: Locale;
 }) {
   return <div className="overflow-x-auto rounded-2xl bg-surface shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline">
     <table aria-label={label} className="w-full border-collapse text-[15px]" style={{ minWidth }}>
@@ -21,7 +23,7 @@ export function DataTable({ label, columns, minWidth = "40rem", children, empty 
             {c.label}{c.sorted && <span aria-hidden="true">{c.sorted === "desc" ? "↓" : "↑"}</span>}
           </Link> : c.label}
         </th>)}
-        <th scope="col" className="w-10"><span className="sr-only">Mở</span></th>
+        <th scope="col" className="w-10"><span className="sr-only">{dictionaries[locale].common.open}</span></th>
       </tr></thead>
       <tbody className="[&>tr+tr]:border-t [&>tr+tr]:border-hairline">{children}</tbody>
     </table>

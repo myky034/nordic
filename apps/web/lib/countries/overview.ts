@@ -1,3 +1,5 @@
+import { defaultLocale, intlLocale, type Locale } from "@/lib/i18n/locales";
+
 // Rules behind the country overview page (/countries/[slug]). Pure and tested
 // (AGENTS.md §16): which fact topics answer which visitor question, how a count is
 // worded, and how the page's "latest reviewed" date is chosen.
@@ -23,8 +25,22 @@ export function readQuestionGroup(value: unknown): GroupKey | null {
   if (value === otherGroup.key) return otherGroup.key;
   return questionGroups.find((g) => g.key === value)?.key ?? null;
 }
-export function groupLabel(key: GroupKey) {
-  return key === otherGroup.key ? otherGroup.label : questionGroups.find((g) => g.key === key)!.label;
+// English wording of the same groups (PROJECT_SPEC.md, Decision Log 2026-10-06).
+const groupTextEn: Record<GroupKey, { question: string; label: string }> = {
+  cost: { question: "How much does it cost to study here?", label: "Tuition & costs" },
+  admission: { question: "How and when do I apply?", label: "Admission & deadlines" },
+  permits: { question: "Which visa or permit do I need?", label: "Visas & permits" },
+  work: { question: "Working here: pay and demand?", label: "Pay & jobs" },
+  other: { question: "Other information", label: "Other" },
+};
+/** Question and tab label of a group in the viewer's language. */
+export function groupText(key: GroupKey, locale: Locale = defaultLocale) {
+  if (locale === "en") return groupTextEn[key];
+  const g = key === otherGroup.key ? otherGroup : questionGroups.find((x) => x.key === key)!;
+  return { question: g.question, label: g.label };
+}
+export function groupLabel(key: GroupKey, locale: Locale = defaultLocale) {
+  return groupText(key, locale).label;
 }
 
 /** The topic condition of a group: "in these topics", or for "other",
@@ -50,9 +66,12 @@ export function openGroup(requested: unknown, totals: Partial<Record<GroupKey, n
  * a zero is information ("not yet reviewed"), never an empty card or a guess
  * (AGENTS.md §1.1, §20).
  */
-export function countLine(count: number | null, noun: string, none: string) {
-  if (count === null) return "Không tải được số liệu";
-  return count > 0 ? `${count.toLocaleString("vi-VN")} ${noun}` : none;
+const countUnavailable = { vi: "Không tải được số liệu", en: "Could not load the count" } as const;
+/** `line(formatted, n)` words a positive count ("12 trường", "12 universities"),
+ *  so each language can handle its own plural. */
+export function countLine(count: number | null, line: (formatted: string, n: number) => string, none: string, locale: Locale = defaultLocale) {
+  if (count === null) return countUnavailable[locale];
+  return count > 0 ? line(count.toLocaleString(intlLocale[locale]), count) : none;
 }
 
 /** Latest of the review dates shown on the page (ISO strings), or null when

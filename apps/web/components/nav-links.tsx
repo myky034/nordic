@@ -3,11 +3,13 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
-import { entryActive, isActive, navigation, type NavEntry } from "@/lib/navigation/menu";
+import { entryActive, isActive, type NavEntry } from "@/lib/navigation/menu";
 
 // Client component: the active entry depends on the path, and the group menus
 // hold open/closed state. Menus open on click (not hover only) so they work
 // with touch and keyboard; Escape, an outside click or navigation closes them.
+// Entries and labels arrive already translated from the server header
+// (navigationFor + the dictionary), so these client components hold no text.
 
 const item = (active: boolean) =>
   `inline-flex items-center gap-1 whitespace-nowrap rounded-full px-3 py-1.5 text-[13px] transition-colors ${active ? "bg-fill text-ink" : "text-ink-2 hover:text-ink"}`;
@@ -18,7 +20,7 @@ function Chevron({ open }: { open: boolean }) {
 }
 
 /** Desktop bar (md and up): top-level entries with full-width group panels. */
-export function NavLinks() {
+export function NavLinks({ entries, label }: { entries: NavEntry[]; label: string }) {
   const path = usePathname();
   const [open, setOpen] = useState<string | null>(null);
   const ref = useRef<HTMLElement>(null);
@@ -38,9 +40,9 @@ export function NavLinks() {
     return () => { document.removeEventListener("keydown", onKey); document.removeEventListener("mousedown", onClick); };
   }, [open]);
 
-  return <nav ref={ref} aria-label="Main" className="hidden lg:block">
+  return <nav ref={ref} aria-label={label} className="hidden lg:block">
     <ul className="flex items-center gap-1">
-      {navigation.map((entry) => {
+      {entries.map((entry) => {
         const active = entryActive(path, entry);
         if (entry.href) return <li key={entry.id}><Link href={entry.href} aria-current={isActive(path, entry.href) ? "page" : undefined} className={item(active)}>{entry.label}</Link></li>;
         const isOpen = open === entry.id, panel = `${base}-${entry.id}`;
@@ -74,7 +76,9 @@ function GroupPanel({ id, entry, path, hidden }: { id: string; entry: NavEntry; 
 }
 
 /** Narrow screens: a Menu button opening every destination, grouped. */
-export function MobileMenu() {
+export type MenuLabels = { main: string; openMenu: string; closeMenu: string };
+/** `footer`: server-rendered extras for the sheet (the language switch on phones). */
+export function MobileMenu({ entries, labels, footer }: { entries: NavEntry[]; labels: MenuLabels; footer?: React.ReactNode }) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const [lastPath, setLastPath] = useState(path);
@@ -97,7 +101,7 @@ export function MobileMenu() {
   }, [open]);
 
   return <div className="lg:hidden">
-    <button type="button" aria-expanded={open} aria-controls={panel} aria-label={open ? "Đóng menu" : "Mở menu"} onClick={() => setOpen(!open)}
+    <button type="button" aria-expanded={open} aria-controls={panel} aria-label={open ? labels.closeMenu : labels.openMenu} onClick={() => setOpen(!open)}
       className="inline-flex h-8 w-8 items-center justify-center rounded-full text-ink-2 transition hover:bg-fill hover:text-ink">
       <svg aria-hidden="true" viewBox="0 0 16 16" className="h-4 w-4">
         {open ? <path d="M3.5 3.5l9 9M12.5 3.5l-9 9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
@@ -105,15 +109,16 @@ export function MobileMenu() {
       </svg>
     </button>
     {mounted && createPortal(<div id={panel} hidden={!open} className="fixed inset-x-0 bottom-0 top-[57px] z-30 overflow-y-auto bg-canvas px-5 pb-10 pt-4 lg:hidden">
-      <MobileNavList path={path} />
+      <MobileNavList path={path} entries={entries} label={labels.main} />
+      {footer && <div className="mt-6 flex justify-start sm:hidden">{footer}</div>}
     </div>, document.body)}
   </div>;
 }
 
 /** Every destination, grouped; the content of the narrow-screen sheet. */
-export function MobileNavList({ path }: { path: string }) {
-  return <nav aria-label="Điều hướng chính">
-    {navigation.map((entry) => entry.href
+export function MobileNavList({ path, entries, label }: { path: string; entries: NavEntry[]; label: string }) {
+  return <nav aria-label={label}>
+    {entries.map((entry) => entry.href
       ? <Link key={entry.id} href={entry.href} aria-current={isActive(path, entry.href) ? "page" : undefined}
           className={`block border-b border-hairline py-3 text-[21px] font-semibold ${isActive(path, entry.href) ? "text-accent" : "text-ink"}`}>{entry.label}</Link>
       : <div key={entry.id} className="border-b border-hairline py-3">

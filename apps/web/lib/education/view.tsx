@@ -1,5 +1,7 @@
 import { ExternalLink, Quote } from "@/components/ui";
 import { TierBadge } from "@/components/ui/badges";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
 // PostgREST select strings. FK hints (!constraint_name) are explicit because
 // documents is referenced by several tables (facts, evidence, universities,
@@ -27,15 +29,16 @@ export type UniversityRow = {
   countries: { slug: string; name: string }; documents: EvidenceDocument;
 };
 
-const day = (value: string | null) => value ? new Date(value).toISOString().slice(0, 10) : "chưa có";
+const day = (value: string | null, missing: string) => value ? new Date(value).toISOString().slice(0, 10) : missing;
 
 // "Why do we believe this entity exists?" — the document, source, tier and
 // retrieval date behind it (AGENTS.md Section 23). It says nothing about
 // tuition, deadlines or current validity; those are separate facts.
-export function ExistenceEvidence({ excerpt, document, reviewedAt }: { excerpt: string; document: EvidenceDocument; reviewedAt: string | null }) {
+export function ExistenceEvidence({ excerpt, document, reviewedAt, locale = defaultLocale }: { excerpt: string; document: EvidenceDocument; reviewedAt: string | null; locale?: Locale }) {
+  const t = dictionaries[locale].evidence, none = dictionaries[locale].common.notYet;
   return <div className="space-y-3">
     <Quote>{excerpt}</Quote>
-    <p className="flex flex-wrap items-center gap-2 text-[15px] text-ink">Nguồn: {document.sources.name} <TierBadge tier={document.sources.source_tier} /></p>
-    <p className="text-[13px] text-ink-3">Ngày lấy trang: {day(document.retrieved_at)} · Ngày duyệt bằng chứng: {day(reviewedAt)} · <ExternalLink href={document.canonical_url}>Mở trang gốc</ExternalLink></p>
+    <p className="flex flex-wrap items-center gap-2 text-[15px] text-ink">{t.source} {document.sources.name} <TierBadge tier={document.sources.source_tier} locale={locale} /></p>
+    <p className="text-[13px] text-ink-3">{t.retrieved} {day(document.retrieved_at, none)} · {t.reviewed} {day(reviewedAt, none)} · <ExternalLink href={document.canonical_url}>{t.openOriginal}</ExternalLink></p>
   </div>;
 }
