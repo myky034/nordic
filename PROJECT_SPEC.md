@@ -1659,3 +1659,19 @@ evidence and review rules, Master's-and-above and English-only keywords stay.
 2. ~~Which career paths to define first~~ — answered above (owner, in the UI).
 3. Review capacity per week (sets how fast coverage can grow).
 4. Which countries / catalogue sources to start with.
+
+### 2026-10-03 — Production gets its own database with clean data
+
+Decided by the project owner after the first Vercel deploy (which temporarily
+used the dev Supabase project for both Production and Preview).
+
+- Production uses a **separate Supabase project** (Sydney, next to Vercel
+  `syd1`). Local development and Vercel Preview keep the current dev project.
+- Production starts **clean**: only what the migrations insert (countries,
+  permissions/roles, seed sources as `needs_verification`). Nothing is copied
+  from dev; every public item on production is verified and reviewed on
+  production through the normal pipeline.
+- First administrator via `scripts/bootstrap-admin.mjs` against the prod
+  database; crawler/extractor GitHub Actions stay on dev until their prod
+  login roles and schedule are decided.
+- Steps: `docs/architecture/prod-environment-setup.md`.

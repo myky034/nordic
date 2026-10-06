@@ -52,6 +52,16 @@ Không bao giờ đặt Supabase **service role key** ở Vercel; ứng dụng k
 Trước khi deploy code cần migration mới: chạy `npm run db:migrate:deploy` (dùng `DIRECT_URL`)
 vào đúng database của môi trường đó. Migration là SQL có trong repo, chạy lại an toàn.
 
+## Cập nhật sau lần deploy đầu (2026-10-03)
+
+- Đã deploy `https://nordic-red.vercel.app`: kết nối database qua transaction pooler (cổng 6543)
+  hoạt động (`/api/health` → `db: ok`), hàm chạy ở `syd1`, đăng nhập được.
+- Chủ dự án quyết **tách database production với dữ liệu sạch** → các bước ở
+  `docs/architecture/prod-environment-setup.md`. Mục 1 bên dưới đã có câu trả lời; domain tạm
+  dùng `nordic-red.vercel.app`.
+- `/dev/preview` trên production hiện trang "Không tìm thấy" nhưng mã HTTP là 200 (khung tải
+  của nhóm trang được gửi trước khi trang báo 404); không lộ dữ liệu DEMO, sẽ sửa sau.
+
 ## Cần chủ dự án quyết trước khi deploy production
 
 1. **Tách môi trường.** PROJECT_SPEC §13 yêu cầu local / preview / production riêng. Hiện chỉ có
