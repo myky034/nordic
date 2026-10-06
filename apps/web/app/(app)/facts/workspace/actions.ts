@@ -2,10 +2,13 @@
 import { revalidatePath } from "next/cache";
 import { requirePermission, logAccessError } from "@/lib/rbac/access";
 import { factError, type FactState } from "@/lib/facts/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { uuidPattern } from "@/lib/documents/domain";
 import { deadlineTypes } from "@/lib/education/domain";
 import { isReferencePeriod } from "@/lib/labour/domain";
 export async function proposeFact(_: FactState, form: FormData): Promise<FactState> {
+  // Messages in the editor\'s interface language (lib/i18n).
+  const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("facts.propose");
     const get = (key: string) => typeof form.get(key) === "string" ? String(form.get(key)).trim() : "";
@@ -13,13 +16,13 @@ export async function proposeFact(_: FactState, form: FormData): Promise<FactSta
     // "university:<uuid>" or "immigration_rule:<uuid>" by a single select so
     // two links cannot be sent at once.
     const [kind, entity] = get("entity").split(":");
-    if (get("entity") && (!["programme","university","immigration_rule","occupation"].includes(kind) || !uuidPattern.test(entity ?? ""))) return {error:factError("facts_invalid")};
+    if (get("entity") && (!["programme","university","immigration_rule","occupation"].includes(kind) || !uuidPattern.test(entity ?? ""))) return {error:factError("facts_invalid", locale)};
     const deadline = get("deadlineType");
-    if (deadline && !Object.hasOwn(deadlineTypes, deadline)) return {error:factError("facts_invalid")};
+    if (deadline && !Object.hasOwn(deadlineTypes, deadline)) return {error:factError("facts_invalid", locale)};
     const period = get("referencePeriod");
     const metric = get("metric");
-    if (metric && !uuidPattern.test(metric)) return {error:factError("facts_invalid")};
-    if (period && !isReferencePeriod(period)) return {error:factError("facts_invalid_period")};
+    if (metric && !uuidPattern.test(metric)) return {error:factError("facts_invalid", locale)};
+    if (period && !isReferencePeriod(period)) return {error:factError("facts_invalid_period", locale)};
     const { error } = await client.rpc("propose_fact", {
       p_document:get("document"),p_topic:get("topic"),p_subject:get("subject"),
       p_predicate:get("predicate"),p_value:get("value"),p_unit:get("unit") || null,
@@ -28,10 +31,12 @@ export async function proposeFact(_: FactState, form: FormData): Promise<FactSta
     });
     if (error) throw new Error(error.message);
     revalidatePath("/facts/workspace");
-    return { message: "Đã lưu đề xuất và bằng chứng. Chưa công bố trước khi duyệt." };
-  } catch (e) { logAccessError("propose_fact"); return {error:factError(e instanceof Error ? e.message : "")}; }
+    return { message: dict.factsWorkspace.messages.proposed };
+  } catch (e) { logAccessError("propose_fact"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }
 export async function reviewFact(_: FactState, form: FormData): Promise<FactState> {
+  // Messages in the editor\'s interface language (lib/i18n).
+  const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("facts.review");
     const { error } = await client.rpc("review_fact",{
@@ -39,19 +44,21 @@ export async function reviewFact(_: FactState, form: FormData): Promise<FactStat
     });
     if(error) throw new Error(error.message);
     revalidatePath("/facts/workspace"); revalidatePath("/facts");
-    return {message:"Đã ghi nhận quyết định và lịch sử."};
-  } catch(e) { logAccessError("review_fact"); return {error:factError(e instanceof Error ? e.message : "")}; }
+    return {message:dict.editor.decisionRecorded};
+  } catch(e) { logAccessError("review_fact"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }
 // Slice 9: close a "source changed" flag. revalidated = the claim still
 // matches the new page version; rejected = withdraw it from public pages.
 export async function resolveSourceChange(_: FactState, form: FormData): Promise<FactState> {
+  // Messages in the editor\'s interface language (lib/i18n).
+  const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("facts.review");
     const decision = form.get("decision");
-    if (!uuidPattern.test(String(form.get("fact") ?? "")) || (decision !== "revalidated" && decision !== "rejected")) return {error:factError("facts_invalid")};
+    if (!uuidPattern.test(String(form.get("fact") ?? "")) || (decision !== "revalidated" && decision !== "rejected")) return {error:factError("facts_invalid", locale)};
     const { error } = await client.rpc("resolve_source_change",{p_fact:form.get("fact"),p_decision:decision,p_note:form.get("note")});
     if(error) throw new Error(error.message);
     revalidatePath("/facts/workspace"); revalidatePath("/facts");
-    return {message:decision==="revalidated"?"Đã xác nhận thông tin vẫn khớp với phiên bản mới.":"Đã từ chối; thông tin không còn hiển thị công khai."};
-  } catch(e) { logAccessError("resolve_source_change"); return {error:factError(e instanceof Error ? e.message : "")}; }
+    return {message:decision==="revalidated"?dict.factsWorkspace.messages.revalidated:dict.factsWorkspace.messages.withdrawn};
+  } catch(e) { logAccessError("resolve_source_change"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }

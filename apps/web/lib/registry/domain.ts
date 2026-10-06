@@ -67,12 +67,22 @@ export const crawlPolicyLabel = (policy: string, locale: Locale = defaultLocale)
  * AGENTS.md 10). A tier says WHO publishes; it is never proof that each
  * statement is correct, and an unknown publisher stays unclassified.
  */
-export const tierGuidance: Record<Tier, string> = {
-  T1: "Cơ quan nhà nước hoặc có thẩm quyền pháp lý (di trú, thống kê quốc gia, bộ ngành). Bắt buộc cho quy định nhập cư.",
-  T2: "Tổ chức EU hoặc quốc tế, trường đại học, tổ chức giáo dục chính thức.",
-  T3: "Báo chí, tạp chí chuyên ngành, trang tổng hợp, công ty tư vấn.",
-  T4: "Blog cá nhân, diễn đàn, mạng xã hội: chỉ là trải nghiệm, không phải chính sách.",
+const tierGuidanceText: Record<Locale, Record<Tier, string>> = {
+  vi: {
+    T1: "Cơ quan nhà nước hoặc có thẩm quyền pháp lý (di trú, thống kê quốc gia, bộ ngành). Bắt buộc cho quy định nhập cư.",
+    T2: "Tổ chức EU hoặc quốc tế, trường đại học, tổ chức giáo dục chính thức.",
+    T3: "Báo chí, tạp chí chuyên ngành, trang tổng hợp, công ty tư vấn.",
+    T4: "Blog cá nhân, diễn đàn, mạng xã hội: chỉ là trải nghiệm, không phải chính sách.",
+  },
+  en: {
+    T1: "Government body or legal authority (immigration, national statistics, ministries). Required for immigration rules.",
+    T2: "EU or international organisation, university, official education body.",
+    T3: "Press, trade journals, aggregator sites, consultancies.",
+    T4: "Personal blogs, forums, social media: experience only, not policy.",
+  },
 };
+export const tierGuidance = tierGuidanceText.vi;
+export const tierGuidanceFor = (locale: Locale = defaultLocale) => tierGuidanceText[locale];
 
 // Comma/newline/semicolon-separated free text -> a short, deduplicated topic list.
 // The RPC does its own length/shape validation; this only shapes the input.

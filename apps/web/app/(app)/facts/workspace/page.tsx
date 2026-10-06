@@ -1,3 +1,4 @@
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
@@ -23,14 +24,15 @@ import { textLink } from "@/components/ui/styles";
 
 // "source_changed" is not a status: it is the Slice 9 queue of published
 // claims whose evidence page changed (facts.source_changed_at is set).
-const tabs = [["proposed", "Chờ duyệt"], ["source_changed", "Nguồn đã đổi"], ["reviewed", "Đã duyệt"], ["conflicted", "Mâu thuẫn"], ["rejected", "Từ chối"]] as const;
-const statusValues = tabs.map(([value]) => value);
+const statusValues = ["proposed", "source_changed", "reviewed", "conflicted", "rejected"] as const;
 
 export default async function Page({searchParams}:PageProps<"/facts/workspace">) {
  await requireAuth();
  const {client,permissions}=await accessContext();
  const propose=permissions.includes("facts.propose"), review=permissions.includes("facts.review");
- if(!propose&&!review) return <NoAccess title="Bạn chưa có quyền biên tập thông tin" back="/facts" backLabel="Xem thông tin công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("facts.propose")}” hoặc “${permissionName("facts.review")}” ở trang Người dùng & phân quyền.`}</NoAccess>;
+ const [locale,dict]=[await getLocale(),await getDictionary()];
+ const t=dict.factsWorkspace, e=dict.editor;
+ if(!propose&&!review) return <NoAccess title={t.noAccessTitle} back="/facts" backLabel={t.seePublic}>{e.noAccessHelp(permissionName("facts.propose", locale),permissionName("facts.review", locale))}</NoAccess>;
  const params=await searchParams;
  const selected=typeof params.document==="string" && uuidPattern.test(params.document)?params.document:"";
  // Review queue first: the default tab is "proposed", one status per page of 25.
@@ -65,10 +67,10 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  type Named={subject:string;predicate:string}|null;
  const reviews=results[3].data as unknown as {id:string;decision:string;note:string;created_at:string;fact:Named;related:Named}[];
  const entities=[
-   ...(results[4].data as unknown as {id:string;name:string;universities:{name:string}}[]).map(p=>({value:`programme:${p.id}`,label:`Chương trình: ${p.name} · ${p.universities.name}`})),
-   ...(results[5].data as {id:string;name:string}[]).map(u=>({value:`university:${u.id}`,label:`Trường: ${u.name}`})),
-   ...(results[6].data as unknown as {id:string;title:string;countries:{name:string}}[]).map(r=>({value:`immigration_rule:${r.id}`,label:`Quy định nhập cư: ${r.title} · ${r.countries.name}`})),
-   ...(results[7].data as unknown as {id:string;name:string;countries:{name:string}|null}[]).map(o=>({value:`occupation:${o.id}`,label:`Nghề: ${o.name} · ${o.countries?.name ?? "Quốc tế"}`})),
+   ...(results[4].data as unknown as {id:string;name:string;universities:{name:string}}[]).map(p=>({value:`programme:${p.id}`,label:`${t.entity.programme}: ${p.name} · ${p.universities.name}`})),
+   ...(results[5].data as {id:string;name:string}[]).map(u=>({value:`university:${u.id}`,label:`${t.entity.university}: ${u.name}`})),
+   ...(results[6].data as unknown as {id:string;title:string;countries:{name:string}}[]).map(r=>({value:`immigration_rule:${r.id}`,label:`${t.entity.rule}: ${r.title} · ${r.countries.name}`})),
+   ...(results[7].data as unknown as {id:string;name:string;countries:{name:string}|null}[]).map(o=>({value:`occupation:${o.id}`,label:`${t.entity.occupation}: ${o.name} · ${o.countries?.name ?? e.international}`})),
  ];
  const metrics=results[8].data as {id:string;label:string;unit_hint:string|null}[];
  // Readable choices: "subject — predicate: value", not an id prefix.
@@ -110,45 +112,45 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    occupation:f.occupation_id?occupations.get(f.occupation_id) ?? {status:""}:null,
  }));
  return <>
- <PageHeader eyebrow="Biên tập" title="Thông tin & bằng chứng" description="Từng thông tin cụ thể (học phí, hạn nộp, điều kiện visa, số liệu lương…) kèm trích đoạn từ nguồn. “Đã duyệt” nghĩa là trích đoạn khớp trang gốc, không có nghĩa thông tin còn hiệu lực." actions={<Link className={`${textLink} text-[15px]`} href="/facts">Xem trang công khai</Link>}/>
- {review&&<ReviewSteps client={client} permissions={permissions} current="facts"/>}
+ <PageHeader eyebrow={e.eyebrow} title={t.title} description={t.description} actions={<Link className={`${textLink} text-[15px]`} href="/facts">{e.viewPublic}</Link>}/>
+ {review&&<ReviewSteps client={client} permissions={permissions} current="facts" locale={locale}/>}
  {/* Collapsed by default so the queue is visible; opened when arriving from a document. */}
- {propose&&<Disclosure open={!!selected} summary="Thêm thông tin đề xuất"><ProposalForm documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}
- <Section title="Đề xuất">
+ {propose&&<Disclosure open={!!selected} summary={t.addProposal}><ProposalForm locale={locale} documents={documents} countries={results[2].data as {id:string;name:string}[]} selected={selected} entities={entities} metrics={metrics}/></Disclosure>}
+ <Section title={t.proposals}>
  <div className="flex flex-wrap items-center justify-between gap-3">
- <Segmented label="Lọc theo trạng thái" items={tabs.map(([value,label],i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label,count:tabCounts[i],active:status===value}))}/>
- <form action="/facts/workspace" className="mb-5 w-full sm:w-72">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder="Tìm theo đối tượng"/></form>
+ <Segmented label={e.filterStatus} items={statusValues.map((value,i)=>({href:withParams("/facts/workspace",{q},{status:value==="proposed"?null:value}),label:t.tabs[value],count:tabCounts[i],active:status===value}))}/>
+ <form action="/facts/workspace" className="mb-5 w-full sm:w-72">{status!=="proposed"&&<input type="hidden" name="status" value={status}/>}<SearchInput defaultValue={q} placeholder={t.searchPlaceholder}/></form>
  </div>
  {facts.length?<SplitView detailKey={current?.id} detailOnMobile={!!requested} backHref={withParams("/facts/workspace",params,{fact:null})}
-   list={<SplitList label="Danh sách thông tin" footer={<SplitPager summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p,fact:null})}/>}>
+   list={<SplitList label={t.listLabel} footer={<SplitPager locale={locale} summary={pageSummary(results[0].count ?? facts.length,page)} href={p=>withParams("/facts/workspace",params,{page:p,fact:null})}/>}>
      {facts.map(f=>{const v=visibility(f);return <SplitRow key={f.id} href={withParams("/facts/workspace",params,{fact:f.id})} selected={f.id===current?.id} explicit={!!requested}
        title={`${f.subject} — ${f.predicate}`} subtitle={`${f.value}${f.unit?" "+f.unit:""} · ${f.documents.sources.name}`}
        badges={(f.origin==="ai"||f.source_changed_at||v?.state==="hidden"||v?.state==="will_stay_hidden")?<>
          {f.origin==="ai"&&<Badge tone="accent">AI</Badge>}
-         {f.source_changed_at&&<Badge tone="caution">Nguồn đã đổi</Badge>}
-         {(v?.state==="hidden"||v?.state==="will_stay_hidden")&&<Badge tone="caution">Chưa công khai</Badge>}
+         {f.source_changed_at&&<Badge tone="caution">{e.sourceChanged}</Badge>}
+         {(v?.state==="hidden"||v?.state==="will_stay_hidden")&&<Badge tone="caution">{e.notPublic}</Badge>}
        </>:undefined}/>;})}
    </SplitList>}
    detail={current&&<>
-     <ItemStepper index={selection.index} count={facts.length}
+     <ItemStepper locale={locale} index={selection.index} count={facts.length}
        prevHref={selection.prevId?withParams("/facts/workspace",params,{fact:selection.prevId}):null}
        nextHref={selection.nextId?withParams("/facts/workspace",params,{fact:selection.nextId}):null}/>
      <div className="space-y-4">
-     <FactCard fact={current} internal/>
+     <FactCard fact={current} internal locale={locale}/>
      <div className="space-y-3 px-1">
-     <VisibilityNote visibility={visibility(current)} publicHref="/facts"/>
-     <SamePageFacts current={current} others={siblings}/>
+     <VisibilityNote visibility={visibility(current)} publicHref="/facts" locale={locale}/>
+     <SamePageFacts current={current} others={siblings} locale={locale}/>
      {/* The decision sits right under the claim. After a decision the item leaves this tab and the next one opens (lib/review/selection.ts). */}
-     {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"}/>}
-     {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary="Đối chiếu với phiên bản mới"><SourceChangeForm key={current.id} id={current.id}/></Disclosure>}
-     {review&&status!=="source_changed"&&(current.status==="reviewed"||current.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary="Đánh dấu mâu thuẫn với thông tin khác"><ConflictForm key={current.id} id={current.id} others={conflictCandidates}/></Disclosure>}
+     {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"} locale={locale}/>}
+     {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary={t.compareNewVersion}><SourceChangeForm key={current.id} id={current.id} locale={locale}/></Disclosure>}
+     {review&&status!=="source_changed"&&(current.status==="reviewed"||current.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary={t.markConflict}><ConflictForm key={current.id} id={current.id} others={conflictCandidates} locale={locale}/></Disclosure>}
      </div></div>
    </>}/>
-  :<EmptyState>{status==="proposed"?"Không có đề xuất nào đang chờ duyệt.":status==="source_changed"?"Không có thông tin nào có nguồn vừa thay đổi.":"Không có mục nào trong nhóm này."}{q?` (tìm “${q}”)`:""}</EmptyState>}
+  :<EmptyState>{status==="proposed"?t.emptyProposed:status==="source_changed"?t.emptyChanged:e.emptyGroup}{q?e.searchSuffix(q):""}</EmptyState>}
  </Section>
  <Section>
- <DecisionHistory items={reviews.map(r=>({id:r.id,decision:r.decision,note:r.note,createdAt:r.created_at,title:factName(r.fact),
-   detail:r.related?`Mâu thuẫn với: ${factName(r.related)}`:undefined}))}/>
+ <DecisionHistory locale={locale} items={reviews.map(r=>({id:r.id,decision:r.decision,note:r.note,createdAt:r.created_at,title:factName(r.fact,locale),
+   detail:r.related?t.conflictWith(factName(r.related,locale)):undefined}))}/>
  </Section>
  </>;
 }

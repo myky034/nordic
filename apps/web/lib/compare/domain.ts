@@ -1,3 +1,4 @@
+import { lookupMessage, type MessageTable } from "@/lib/i18n/messages";
 import { countrySlugs } from "../registry/domain";
 import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
@@ -64,14 +65,25 @@ export function compareHref(countries: readonly string[], extra: Record<string, 
   return text ? `/compare?${text}` : "/compare";
 }
 
-const errors: Record<string, string> = {
+const errors: MessageTable = {
+  vi: {
   metrics_forbidden: "Bạn chưa có quyền quản lý chỉ số so sánh (cần metrics.manage).",
   access_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
   metrics_duplicate: "Key này đã tồn tại. Mỗi chỉ số cần một key riêng.",
   metrics_immutable: "Không thể đổi key hoặc nhóm của chỉ số đã tạo, vì các thông tin đã gắn sẽ bị đổi nghĩa. Hãy tạo chỉ số mới và ngừng dùng chỉ số cũ.",
   metrics_not_found: "Chỉ số không còn tồn tại. Hãy tải lại trang.",
+    fallback: "Không lưu được. Key chỉ gồm chữ thường, số, dấu gạch dưới (bắt đầu bằng chữ); cần tên và mô tả.",
+  },
+  en: {
+    metrics_forbidden: "You do not have permission to manage comparison metrics (needs metrics.manage).",
+    access_forbidden: "You do not have permission to do this.",
+    metrics_duplicate: "This key already exists. Each metric needs its own key.",
+    metrics_immutable: "The key or group of an existing metric cannot change, because the facts linked to it would change meaning. Create a new metric and retire the old one.",
+    metrics_not_found: "The metric no longer exists. Reload the page.",
+    fallback: "Could not save. The key may only contain lowercase letters, digits and underscores (starting with a letter); a name and description are required.",
+  },
 };
-export function metricError(code: string) {
-  return errors[code] ?? "Không lưu được. Key chỉ gồm chữ thường, số, dấu gạch dưới (bắt đầu bằng chữ); cần tên và mô tả.";
+export function metricError(code: string, locale: Locale = defaultLocale) {
+  return lookupMessage(errors, code, locale);
 }
 export type MetricState = { error?: string; message?: string };

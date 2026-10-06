@@ -1,3 +1,4 @@
+import { lookupMessage, type MessageTable } from "@/lib/i18n/messages";
 import { canonicalSourceUrl, countrySlugs } from "../registry/domain";
 import { uuidPattern } from "../documents/domain";
 import { defaultLocale, type Locale } from "@/lib/i18n/locales";
@@ -24,6 +25,8 @@ export const entityStatuses: Record<string, string> = {
 };
 
 /** Degree levels as [value, label] pairs for filters, in the viewer's language. */
+/** Deadline kinds as [value, label] pairs for the proposal form. */
+export const deadlineOptions = (locale: Locale = defaultLocale) => Object.entries(deadlineNames[locale]) as [DeadlineType, string][];
 export const degreeOptions = (locale: Locale = defaultLocale) => Object.entries(degreeNames[locale]) as [DegreeType, string][];
 export function degreeLabel(value: string, locale: Locale = defaultLocale) {
   return degreeNames[locale][Object.hasOwn(degreeTypes, value) ? value as DegreeType : "unknown"];
@@ -58,7 +61,8 @@ export function officialUrl(value: string) {
   return url && url.length <= 2048 ? url : null;
 }
 
-const errors: Record<string, string> = {
+const errors: MessageTable = {
+  vi: {
   education_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
   access_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
   education_document_missing: "Tài liệu bằng chứng không tồn tại. Hãy nhập tài liệu trước.",
@@ -66,8 +70,20 @@ const errors: Record<string, string> = {
   education_already_decided: "Mục này đã được xử lý. Hãy tải lại trang; không ghi đè quyết định cũ.",
   education_university_unreviewed: "Cần duyệt trường đại học trước khi duyệt chương trình của trường đó.",
   education_missing: "Mục không còn tồn tại. Hãy tải lại trang.",
+    fallback: "Không lưu được. Kiểm tra các trường bắt buộc, URL và trích đoạn bằng chứng rồi thử lại.",
+  },
+  en: {
+    education_forbidden: "You do not have permission to do this.",
+    access_forbidden: "You do not have permission to do this.",
+    education_document_missing: "The evidence document does not exist. Import the document first.",
+    education_duplicate: "An item with the same name already exists (not rejected). No duplicate was created.",
+    education_already_decided: "This item has already been decided. Reload the page; earlier decisions are never overwritten.",
+    education_university_unreviewed: "Review the university before reviewing its programmes.",
+    education_missing: "The item no longer exists. Reload the page.",
+    fallback: "Could not save. Check the required fields, URLs and evidence excerpt, then try again.",
+  },
 };
-export function educationError(code: string) {
-  return errors[code] ?? "Không lưu được. Kiểm tra các trường bắt buộc, URL và trích đoạn bằng chứng rồi thử lại.";
+export function educationError(code: string, locale: Locale = defaultLocale) {
+  return lookupMessage(errors, code, locale);
 }
 export type EducationState = { error?: string; message?: string };

@@ -1,3 +1,4 @@
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 // Rules behind the admin overview (/admin). Pure functions, kept out of the
 // page so every number on the dashboard is testable (AGENTS.md §16, §17).
 //
@@ -134,19 +135,29 @@ export function coverage(countries: Country[], data: CoverageInput): { rows: Cov
 // ---------------------------------------------------------------- review activity
 
 export type ReviewKind = "facts" | "education" | "immigration" | "labour";
-export const reviewKinds: { kind: ReviewKind; label: string; href: string }[] = [
-  { kind: "facts", label: "Thông tin", href: "/facts/workspace" },
-  { kind: "education", label: "Trường & chương trình", href: "/education/workspace" },
-  { kind: "immigration", label: "Quy định nhập cư", href: "/immigration/workspace" },
-  { kind: "labour", label: "Nghề", href: "/labour/workspace" },
+const reviewKindLabels: Record<Locale, Record<ReviewKind, string>> = {
+  vi: { facts: "Thông tin", education: "Trường & chương trình", immigration: "Quy định nhập cư", labour: "Nghề" },
+  en: { facts: "Facts", education: "Universities & programmes", immigration: "Immigration rules", labour: "Occupations" },
+};
+export const reviewKinds: { kind: ReviewKind; href: string }[] = [
+  { kind: "facts", href: "/facts/workspace" },
+  { kind: "education", href: "/education/workspace" },
+  { kind: "immigration", href: "/immigration/workspace" },
+  { kind: "labour", href: "/labour/workspace" },
 ];
 /** Decisions as stored (fact_reviews also has conflicted / revalidated). */
 export const decisions = ["reviewed", "rejected", "conflicted", "revalidated"] as const;
 export type Decision = (typeof decisions)[number];
-export const decisionLabels: Record<Decision, string> = { reviewed: "Duyệt", rejected: "Từ chối", conflicted: "Mâu thuẫn", revalidated: "Vẫn khớp nguồn mới" };
+const decisionNames: Record<Locale, Record<Decision, string>> = {
+  vi: { reviewed: "Duyệt", rejected: "Từ chối", conflicted: "Mâu thuẫn", revalidated: "Vẫn khớp nguồn mới" },
+  en: { reviewed: "Reviewed", rejected: "Rejected", conflicted: "Conflicting", revalidated: "Still matches new source" },
+};
+export const decisionLabels = decisionNames.vi;
+export function decisionNamesFor(locale: Locale = defaultLocale) { return decisionNames[locale]; }
 
-export function activity(reviews: Record<ReviewKind, { decision: string }[]>) {
-  return reviewKinds.map(({ kind, label, href }) => {
+export function activity(reviews: Record<ReviewKind, { decision: string }[]>, locale: Locale = defaultLocale) {
+  return reviewKinds.map(({ kind, href }) => {
+    const label = reviewKindLabels[locale][kind];
     const counts = Object.fromEntries(decisions.map((d) => [d, 0])) as Record<Decision, number>;
     for (const r of reviews[kind]) if ((decisions as readonly string[]).includes(r.decision)) counts[r.decision as Decision]++;
     return { kind, label, href, counts, total: Object.values(counts).reduce((a, n) => a + n, 0) };

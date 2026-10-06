@@ -1,7 +1,9 @@
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 import Link from "next/link";
 import { Suspense } from "react";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { reviewSteps, stepLinks, type CountId, type StepPage } from "@/lib/review/steps";
+import { localizedSteps, stepLinks, type CountId, type StepPage } from "@/lib/review/steps";
 import { pendingCounts } from "@/lib/review/pending-counts";
 
 /**
@@ -12,12 +14,12 @@ import { pendingCounts } from "@/lib/review/pending-counts";
  * The counts take several database round trips, so they stream: the page
  * (and the review list) renders first, with a placeholder of the same size.
  */
-export function ReviewSteps(props: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
+export function ReviewSteps(props: { client: SupabaseClient; permissions: readonly string[]; current: StepPage; locale?: Locale }) {
   return <Suspense fallback={<ReviewStepsPlaceholder />}><ReviewStepsContent {...props} /></Suspense>;
 }
 
-export async function ReviewStepsContent({ client, permissions, current }: { client: SupabaseClient; permissions: readonly string[]; current: StepPage }) {
-  return <ReviewStepsView counts={await pendingCounts(client)} permissions={permissions} current={current} />;
+export async function ReviewStepsContent({ client, permissions, current, locale }: { client: SupabaseClient; permissions: readonly string[]; current: StepPage; locale?: Locale }) {
+  return <ReviewStepsView counts={await pendingCounts(client)} permissions={permissions} current={current} locale={locale} />;
 }
 
 function ReviewStepsPlaceholder() {
@@ -28,22 +30,23 @@ function ReviewStepsPlaceholder() {
 }
 
 /** Rendering only (no data access), so /dev/preview can show it with DEMO counts. */
-export function ReviewStepsView({ counts, permissions, current }: { counts: Record<CountId, number | null>; permissions: readonly string[]; current: StepPage }) {
-  return <nav aria-label="Quy trình duyệt" className="mb-10">
-    <p className="mb-3 px-1 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-3">Quy trình duyệt</p>
+export function ReviewStepsView({ counts, permissions, current, locale = defaultLocale }: { counts: Record<CountId, number | null>; permissions: readonly string[]; current: StepPage; locale?: Locale }) {
+  const t = dictionaries[locale].review;
+  return <nav aria-label={t.steps} className="mb-10">
+    <p className="mb-3 px-1 text-[13px] font-semibold uppercase tracking-[0.06em] text-ink-3">{t.steps}</p>
     <ol className="grid gap-3 lg:grid-cols-3">
-      {reviewSteps.map((step) => {
+      {localizedSteps(locale).map((step) => {
         const here = step.links.some((l) => l.page === current);
         return <li key={step.number} className={`rounded-2xl bg-surface p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ${here ? "ring-accent/40" : "ring-hairline"}`}>
           <div className="flex items-center gap-3">
             <span aria-hidden="true" className={`inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[13px] font-semibold ${here ? "bg-accent text-white" : "bg-fill text-ink-2"}`}>{step.number}</span>
-            <p className="text-[15px] font-semibold text-ink">{step.title}{here && <span className="sr-only"> (bước hiện tại)</span>}</p>
+            <p className="text-[15px] font-semibold text-ink">{step.title}{here && <span className="sr-only">{t.currentStep}</span>}</p>
           </div>
           <p className="mt-1.5 text-[13px] leading-snug text-ink-2">{step.description}</p>
           <ul className="mt-3 space-y-1">
             {stepLinks(step, permissions).map((l) => {
               const n = counts[l.count];
-              const badge = <span className={`tabular-nums text-[13px] ${n ? "font-semibold text-accent" : "text-ink-3"}`}>{n === null ? "—" : n === 0 ? "Xong" : `${n} chờ`}</span>;
+              const badge = <span className={`tabular-nums text-[13px] ${n ? "font-semibold text-accent" : "text-ink-3"}`}>{n === null ? "—" : n === 0 ? t.done : t.waiting(n)}</span>;
               return <li key={l.href}>
                 {l.allowed
                   ? <Link href={l.href} aria-current={l.page === current ? "page" : undefined}
@@ -51,7 +54,7 @@ export function ReviewStepsView({ counts, permissions, current }: { counts: Reco
                       <span>{l.label}</span>{badge}
                     </Link>
                   : <div className="flex items-center justify-between gap-3 px-2 py-1.5 text-[15px] text-ink-2">
-                      <span>{l.label} <span className="block text-[12px] text-ink-3">Người quản lý nguồn thực hiện</span></span>{badge}
+                      <span>{l.label} <span className="block text-[12px] text-ink-3">{t.doneBySourceManager}</span></span>{badge}
                     </div>}
               </li>;
             })}

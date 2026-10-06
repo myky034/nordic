@@ -1,8 +1,10 @@
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { statusLabel } from "@/lib/facts/domain";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
-import { degreeLabel, entityStatuses, likePattern } from "@/lib/education/domain";
+import { degreeLabel, likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
 import { EducationReviewForm, ProgrammeForm, UniversityForm } from "./forms";
 import { Disclosure, EmptyState, List, ListRow, NoAccess, PageHeader, Pagination, Quote, SearchInput, Section, Segmented } from "@/components/ui";
@@ -17,16 +19,18 @@ import { programmeBlockers, visibilityOf } from "@/lib/review/visibility";
 
 type Row = { id: string; name: string; status: string; official_url: string; evidence_excerpt: string; document_id: string;
   countries?: { name: string }; degree_type?: string; universities?: { name: string; status: string } };
-const kinds = [["university", "Trường"], ["programme", "Chương trình"]] as const;
-const tabs = [["proposed", "Chờ duyệt"], ["reviewed", "Đã duyệt"], ["rejected", "Từ chối"]] as const;
+const kinds = ["university", "programme"] as const;
+const tabs = ["proposed", "reviewed", "rejected"] as const;
 
 export default async function Page({ searchParams }: PageProps<"/education/workspace">) {
   await requireAuth();
   const { client, permissions } = await accessContext();
   const manage = permissions.includes("education.manage"), review = permissions.includes("facts.review");
-  if (!manage && !review) return <NoAccess title="Bạn chưa có quyền biên tập giáo dục" back="/programmes" backLabel="Xem chương trình công khai">{`Nhờ quản trị viên cấp quyền “${permissionName("education.manage")}” để đề xuất, hoặc “${permissionName("facts.review")}” để duyệt, ở trang Người dùng & phân quyền.`}</NoAccess>;
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.educationWorkspace, e = dict.editor;
+  if (!manage && !review) return <NoAccess title={t.noAccessTitle} back="/programmes" backLabel={t.seePublic}>{t.noAccessHelp(permissionName("education.manage", locale), permissionName("facts.review", locale))}</NoAccess>;
   const params = await searchParams;
-  const kind = choiceParam(params, "kind", kinds.map(([v]) => v), "university");
+  const kind = choiceParam(params, "kind", [...kinds], "university");
   const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
   const q = searchParam(params);
   const page = pageParam(params);
@@ -58,44 +62,43 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   const visible = status === "reviewed" ? await publicIds(table, rows.map((r) => r.id)) : new Set<string>();
   const base = { kind: kind === "university" ? null : kind };
   return <>
-    <PageHeader eyebrow="Biên tập" title="Trường & chương trình"
-      description="Duyệt ở đây chỉ xác nhận trường hoặc chương trình có tồn tại theo nguồn. Học phí và hạn nộp là thông tin riêng, được duyệt ở “Thông tin & bằng chứng”. Một chương trình chỉ hiển thị công khai khi trường của nó đã được duyệt."
-      actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">Trang công khai</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">Nhập học phí / deadline</Link></>} />
-    {review && <ReviewSteps client={client} permissions={permissions} current="education" />}
+    <PageHeader eyebrow={e.eyebrow} title={t.title} description={t.description}
+      actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">{e.publicPage}</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">{t.enterTuition}</Link></>} />
+    {review && <ReviewSteps client={client} permissions={permissions} current="education" locale={locale} />}
     {manage && <div className="space-y-3">
-      <Disclosure summary="Đề xuất trường đại học"><UniversityForm countries={countries} documents={documents} /></Disclosure>
-      <Disclosure summary="Đề xuất chương trình học"><ProgrammeForm universities={liveUniversities} documents={documents} /></Disclosure>
+      <Disclosure summary={t.proposeUniversity}><UniversityForm countries={countries} documents={documents} locale={locale} /></Disclosure>
+      <Disclosure summary={t.proposeProgramme}><ProgrammeForm universities={liveUniversities} documents={documents} locale={locale} /></Disclosure>
     </div>}
-    <Section title="Danh sách">
+    <Section title={e.list}>
       <div className="flex flex-wrap items-start gap-3">
-        <Segmented label="Loại" items={kinds.map(([value, label]) => ({ href: withParams("/education/workspace", {}, { kind: value === "university" ? null : value }), label, active: kind === value }))} />
-        <Segmented label="Trạng thái" items={tabs.map(([value, label], i) => ({ href: withParams("/education/workspace", { q }, { ...base, status: value === "proposed" ? null : value }), label, count: tabCounts[i], active: status === value }))} />
+        <Segmented label={t.kind} items={kinds.map((value) => ({ href: withParams("/education/workspace", {}, { kind: value === "university" ? null : value }), label: t.kinds[value], active: kind === value }))} />
+        <Segmented label={e.status} items={tabs.map((value, i) => ({ href: withParams("/education/workspace", { q }, { ...base, status: value === "proposed" ? null : value }), label: e.statusTabs[value], count: tabCounts[i], active: status === value }))} />
       </div>
       <form action="/education/workspace" className="mb-5">
         {kind !== "university" && <input type="hidden" name="kind" value={kind} />}{status !== "proposed" && <input type="hidden" name="status" value={status} />}
-        <SearchInput defaultValue={q} placeholder={kind === "university" ? "Tìm tên trường" : "Tìm tên chương trình"} />
+        <SearchInput defaultValue={q} placeholder={kind === "university" ? t.searchUniversity : t.searchProgramme} />
       </form>
       {rows.length ? <List>{rows.map((r) => {
         const blocked = kind === "programme" && r.universities?.status !== "reviewed";
         return <ListRow key={r.id} title={r.name}
-          badges={<ReviewBadge status={r.status}>{entityStatuses[r.status]}</ReviewBadge>}
-          subtitle={kind === "university" ? `${r.countries?.name} · ${r.official_url}` : `${degreeLabel(r.degree_type ?? "")} · ${r.universities?.name} · ${r.official_url}`}>
+          badges={<ReviewBadge status={r.status}>{statusLabel(r.status, locale)}</ReviewBadge>}
+          subtitle={kind === "university" ? `${r.countries?.name} · ${r.official_url}` : `${degreeLabel(r.degree_type ?? "", locale)} · ${r.universities?.name} · ${r.official_url}`}>
           <div className="mb-2"><VisibilityNote visibility={visibilityOf(r.id, r.status, visible, kind === "programme" ? programmeBlockers({ universityStatus: r.universities?.status }) : [])}
-            publicHref={`/${kind === "university" ? "universities" : "programmes"}/${r.id}`} /></div>
-          <Disclosure small open={review && r.status === "proposed"} summary={review && r.status === "proposed" ? "Bằng chứng và quyết định" : "Bằng chứng"}>
+            publicHref={`/${kind === "university" ? "universities" : "programmes"}/${r.id}`} locale={locale} /></div>
+          <Disclosure small open={review && r.status === "proposed"} summary={review && r.status === "proposed" ? e.evidenceAndDecision : e.evidence}>
             <div className="space-y-3"><Quote>{r.evidence_excerpt}</Quote>
-              <Link className={`${textLink} text-[15px]`} href={`/documents/${r.document_id}`}>Tài liệu bằng chứng</Link>
+              <Link className={`${textLink} text-[15px]`} href={`/documents/${r.document_id}`}>{e.evidenceDocumentLink}</Link>
               {review && r.status === "proposed" && (blocked
-                ? <p className="text-[15px] text-caution">Cần duyệt trường trước khi duyệt chương trình này.</p>
-                : <EducationReviewForm kind={kind} id={r.id} />)}</div>
+                ? <p className="text-[15px] text-caution">{t.universityFirst}</p>
+                : <EducationReviewForm kind={kind} id={r.id} locale={locale} />)}</div>
           </Disclosure>
         </ListRow>;
-      })}</List> : <EmptyState>{status === "proposed" ? "Không có mục nào đang chờ duyệt." : "Không có mục nào trong nhóm này."}</EmptyState>}
-      <Pagination summary={pageSummary(results[0].count ?? rows.length, page)} href={(p) => withParams("/education/workspace", params, { page: p })} />
+      })}</List> : <EmptyState>{status === "proposed" ? t.emptyProposed : e.emptyGroup}</EmptyState>}
+      <Pagination summary={pageSummary(results[0].count ?? rows.length, page)} href={(p) => withParams("/education/workspace", params, { page: p })} locale={locale} />
     </Section>
     <Section>
-      <DecisionHistory items={reviews.map((r) => ({ id: r.id, decision: r.decision, note: r.note, createdAt: r.created_at,
-        title: (r.university_id ? r.universities?.name : r.programmes?.name) ?? "Mục không còn truy cập được", detail: r.university_id ? "Trường" : "Chương trình" }))} />
+      <DecisionHistory locale={locale} items={reviews.map((r) => ({ id: r.id, decision: r.decision, note: r.note, createdAt: r.created_at,
+        title: (r.university_id ? r.universities?.name : r.programmes?.name) ?? t.gone, detail: r.university_id ? t.form.university : dict.programmes.title }))} />
     </Section>
   </>;
 }

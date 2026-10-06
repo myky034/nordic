@@ -23,7 +23,7 @@ it("lists assigned roles with an explicit remove button and offers only grantabl
   expect(html).toContain("Importer (1 quyền)");expect(html).not.toContain("Admin (");
 });
 it("provides a preview action and keeps the source file out of submitted fields",()=>{
-  const html=renderToStaticMarkup(<ImportForm sources={[{id:"id",name:"Synthetic fixture",url:"https://example.com/",blocked:false}]}/>);
+  const html=renderToStaticMarkup(<ImportForm sources={[{id:"id",name:"Synthetic fixture",url:"https://example.com/",blocked:false}]} locale="vi"/>);
   expect(html).toContain("Xem trước");expect(html).toContain('type="file"');
   expect(html).not.toContain('name="sourceFile"');expect(html).not.toContain("INGESTION_API_TOKEN");
 });

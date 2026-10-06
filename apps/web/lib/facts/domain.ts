@@ -1,3 +1,4 @@
+import { lookupMessage, type MessageTable } from "@/lib/i18n/messages";
 import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
 export type FactState = { error?: string; message?: string };
@@ -28,15 +29,30 @@ export function validity(from: string | null, until: string | null, now = new Da
 export function validityShort(from: string | null, until: string | null, now = new Date(), locale: Locale = defaultLocale) {
   return validityText[locale].short[validityState(from, until, now)];
 }
-export function factError(code: string) {
-  if (code === "facts_forbidden" || code === "access_forbidden") return "Bạn chưa có quyền thực hiện thao tác này.";
-  if (code === "facts_already_decided") return "Đề xuất đã được xử lý. Hãy tải lại trang; không ghi đè quyết định cũ.";
-  if (code === "facts_conflict_requires_review") return "Chỉ đánh dấu mâu thuẫn giữa hai thông tin đã được duyệt bằng chứng. Hãy duyệt hoặc từ chối đề xuất trước.";
-  if (code === "facts_country_required") return "Số liệu gắn với một nghề phải có quốc gia. Hãy chọn quốc gia mà số liệu mô tả.";
-  if (code === "facts_not_flagged") return "Thông tin này không còn trong hàng chờ nguồn đã đổi. Hãy tải lại trang.";
-  if (code === "facts_invalid_period") return "Kỳ số liệu phải có dạng 2024, 2024-Q2, 2024-H1 hoặc 2024-09.";
-  if (code === "facts_country_mismatch") return "Quốc gia đã chọn khác quốc gia của trường/chương trình. Bỏ trống quốc gia hoặc chọn đúng.";
-  return "Không lưu được. Kiểm tra các trường bắt buộc, bằng chứng và ngày hiệu lực rồi thử lại.";
+const factErrors: MessageTable = {
+  vi: {
+    facts_forbidden: "Bạn chưa có quyền thực hiện thao tác này.", access_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
+    facts_already_decided: "Đề xuất đã được xử lý. Hãy tải lại trang; không ghi đè quyết định cũ.",
+    facts_conflict_requires_review: "Chỉ đánh dấu mâu thuẫn giữa hai thông tin đã được duyệt bằng chứng. Hãy duyệt hoặc từ chối đề xuất trước.",
+    facts_country_required: "Số liệu gắn với một nghề phải có quốc gia. Hãy chọn quốc gia mà số liệu mô tả.",
+    facts_not_flagged: "Thông tin này không còn trong hàng chờ nguồn đã đổi. Hãy tải lại trang.",
+    facts_invalid_period: "Kỳ số liệu phải có dạng 2024, 2024-Q2, 2024-H1 hoặc 2024-09.",
+    facts_country_mismatch: "Quốc gia đã chọn khác quốc gia của trường/chương trình. Bỏ trống quốc gia hoặc chọn đúng.",
+    fallback: "Không lưu được. Kiểm tra các trường bắt buộc, bằng chứng và ngày hiệu lực rồi thử lại.",
+  },
+  en: {
+    facts_forbidden: "You do not have permission to do this.", access_forbidden: "You do not have permission to do this.",
+    facts_already_decided: "This proposal has already been decided. Reload the page; earlier decisions are never overwritten.",
+    facts_conflict_requires_review: "A conflict can only be marked between two reviewed facts. Review or reject the proposal first.",
+    facts_country_required: "A figure linked to an occupation needs a country. Choose the country the figure describes.",
+    facts_not_flagged: "This fact is no longer in the changed-source queue. Reload the page.",
+    facts_invalid_period: "The reference period must look like 2024, 2024-Q2, 2024-H1 or 2024-09.",
+    facts_country_mismatch: "The chosen country differs from the university's or programme's country. Leave the country empty or choose the right one.",
+    fallback: "Could not save. Check the required fields, the evidence and the validity dates, then try again.",
+  },
+};
+export function factError(code: string, locale: Locale = defaultLocale) {
+  return lookupMessage(factErrors, code, locale);
 }
 // Readable names for the fixed AI topic codes (extraction_topics() in the
 // Slice 10a migration). Manually entered topics are free text written by an

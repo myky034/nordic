@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
-import { requestStatuses } from "@/lib/extraction/domain";
+import { requestStatus } from "@/lib/extraction/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { Badge, List, ListRow, Section } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 import { CancelExtractionForm, RequestExtractionForm } from "./extraction-forms";
@@ -25,18 +26,20 @@ export async function ExtractionPanel({ documentId }: { documentId: string }) {
   if (text.error || requests.error) { logAccessError("extraction_panel"); return null; }
   if (!text.data) return null;
   const rows = requests.data as Request[];
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.documentEditor;
   const open = rows.find((r) => r.status === "pending" || r.status === "running");
-  return <Section title="Trích xuất bằng AI" description="AI đọc văn bản nội bộ và tạo ĐỀ XUẤT. Mỗi đề xuất phải có đoạn trích nguyên văn từ trang; người duyệt quyết định. Không có gì được công bố tự động.">
+  return <Section title={t.aiTitle} description={t.aiDescription}>
     <div className="mb-4 flex flex-wrap items-center gap-4">
-      {open ? <p className="text-[15px] text-ink-2">Đã có yêu cầu {open.status === "pending" ? "đang chờ" : "đang xử lý"}.</p> : <RequestExtractionForm document={documentId} />}
-      <Link href="/facts/workspace" className={`${textLink} text-[15px]`}>Hàng chờ duyệt</Link>
-      <Link href="/admin/extraction" className={`${textLink} text-[15px]`}>Nhật ký trích xuất</Link>
+      {open ? <p className="text-[15px] text-ink-2">{t.openRequest(open.status === "running")}</p> : <RequestExtractionForm document={documentId} locale={locale} />}
+      <Link href="/facts/workspace" className={`${textLink} text-[15px]`}>{t.reviewQueue}</Link>
+      <Link href="/admin/extraction" className={`${textLink} text-[15px]`}>{t.extractionLog}</Link>
     </div>
     {rows.length > 0 && <List>{rows.map((r) => {
-      const st = requestStatuses[r.status] ?? requestStatuses.failed;
-      return <ListRow key={r.id} title={`Yêu cầu ${when(r.created_at)}`} badges={<><Badge tone={st.tone}>{st.label}</Badge>{r.truncated && <Badge tone="caution">Văn bản bị cắt</Badge>}</>}
-        subtitle={r.note ?? undefined} meta={r.finished_at ? `Xong ${when(r.finished_at)}` : undefined}>
-        {r.status === "pending" && <CancelExtractionForm document={documentId} request={r.id} />}
+      const st = requestStatus(r.status, locale);
+      return <ListRow key={r.id} title={t.request(when(r.created_at))} badges={<><Badge tone={st.tone}>{st.label}</Badge>{r.truncated && <Badge tone="caution">{t.truncated}</Badge>}</>}
+        subtitle={r.note ?? undefined} meta={r.finished_at ? t.finished(when(r.finished_at)) : undefined}>
+        {r.status === "pending" && <CancelExtractionForm document={documentId} request={r.id} locale={locale} />}
       </ListRow>;
     })}</List>}
   </Section>;

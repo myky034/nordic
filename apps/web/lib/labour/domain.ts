@@ -1,3 +1,4 @@
+import { lookupMessage, type MessageTable } from "@/lib/i18n/messages";
 // Mirrors occupations.classification_system. A code is stored only when the
 // source states one; there is deliberately no "guessed" option.
 import { defaultLocale, type Locale } from "@/lib/i18n/locales";
@@ -17,6 +18,12 @@ export function isOfficialStatisticsTier(tier: string | null | undefined) {
   return tier === "T1" || tier === "T2";
 }
 
+const classificationNames = {
+  vi: classificationSystems,
+  en: { "ISCO-08": "ISCO-08", ESCO: "ESCO", national: "National classification", other: "Other" },
+} as const;
+/** Classification systems as [value, label] pairs for the occupation form. */
+export const classificationOptions = (locale: Locale = defaultLocale) => Object.entries(classificationNames[locale]);
 const classificationText = {
   vi: { national: "Mã quốc gia", none: "Chưa ghi nhận mã phân loại" },
   en: { national: "National code", none: "No classification code recorded" },
@@ -27,15 +34,27 @@ export function classificationLabel(system: string | null, code: string | null, 
   return system && code ? `${system === "national" ? t.national : system} ${code}` : t.none;
 }
 
-const errors: Record<string, string> = {
+const errors: MessageTable = {
+  vi: {
   labour_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
   access_forbidden: "Bạn chưa có quyền thực hiện thao tác này.",
   labour_document_missing: "Tài liệu bằng chứng không tồn tại. Hãy nhập tài liệu trước.",
   labour_duplicate: "Đã có nghề cùng tên (chưa bị từ chối) trong cùng phạm vi quốc gia.",
   labour_already_decided: "Mục này đã được xử lý. Hãy tải lại trang; không ghi đè quyết định cũ.",
   labour_missing: "Nghề không còn tồn tại. Hãy tải lại trang.",
+    fallback: "Không lưu được. Kiểm tra tên, mã phân loại (phải đi kèm hệ phân loại) và trích đoạn bằng chứng.",
+  },
+  en: {
+    labour_forbidden: "You do not have permission to do this.",
+    access_forbidden: "You do not have permission to do this.",
+    labour_document_missing: "The evidence document does not exist. Import the document first.",
+    labour_duplicate: "An occupation with the same name already exists (not rejected) in the same country scope.",
+    labour_already_decided: "This item has already been decided. Reload the page; earlier decisions are never overwritten.",
+    labour_missing: "The occupation no longer exists. Reload the page.",
+    fallback: "Could not save. Check the name, the classification code (it needs a classification system) and the evidence excerpt.",
+  },
 };
-export function labourError(code: string) {
-  return errors[code] ?? "Không lưu được. Kiểm tra tên, mã phân loại (phải đi kèm hệ phân loại) và trích đoạn bằng chứng.";
+export function labourError(code: string, locale: Locale = defaultLocale) {
+  return lookupMessage(errors, code, locale);
 }
 export type LabourState = { error?: string; message?: string };

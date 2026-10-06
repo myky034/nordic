@@ -1,3 +1,4 @@
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 // Why a reviewed record is (or will be) hidden from the public.
 //
 // The database is the source of truth: public visibility is decided by the RLS
@@ -28,6 +29,16 @@ export const blockerLabels: Record<Blocker, string> = {
   occupation_not_reviewed: "Nghề được gắn với số liệu này chưa được duyệt.",
   university_not_reviewed: "Trường của chương trình này chưa được duyệt.",
 };
+
+const blockerLabelsEn: Record<Blocker, string> = {
+  source_unverified: "The evidence's source has not been verified under Manage sources.",
+  rule_not_reviewed: "The immigration rule linked to this fact has not been reviewed.",
+  rule_source_unverified: "The immigration rule's source has not been verified under Manage sources.",
+  rule_source_not_t1: "The immigration rule's source is not T1 (a government authority).",
+  occupation_not_reviewed: "The occupation linked to this figure has not been reviewed.",
+  university_not_reviewed: "This programme's university has not been reviewed.",
+};
+export const blockerLabel = (blocker: Blocker, locale: Locale = defaultLocale) => (locale === "en" ? blockerLabelsEn : blockerLabels)[blocker];
 
 /** Blockers that an operator fixes in the Source Registry, not by reviewing. */
 export function needsSourceVerification(blockers: readonly Blocker[]) {

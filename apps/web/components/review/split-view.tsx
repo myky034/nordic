@@ -1,3 +1,5 @@
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 import Link from "next/link";
 import { Chevron } from "@/components/ui";
 
@@ -68,29 +70,31 @@ export function SplitRow({ href, selected, explicit = true, title, subtitle, bad
 type PageSummary = { pages: number; current: number; first: number; last: number; total: number; hasPrev: boolean; hasNext: boolean };
 
 /** Compact pager for the list footer: "1–25 / 60" with previous/next. */
-export function SplitPager({ summary, href }: { summary: PageSummary; href: (page: number) => string }) {
+export function SplitPager({ summary, href, locale = defaultLocale }: { summary: PageSummary; href: (page: number) => string; locale?: Locale }) {
   if (summary.total === 0) return null;
+  const c = dictionaries[locale].common;
   const btn = "inline-flex h-8 w-8 items-center justify-center rounded-full";
-  return <nav aria-label="Phân trang" className="flex items-center justify-between gap-3">
+  return <nav aria-label={c.pagination} className="flex items-center justify-between gap-3">
     <span className="text-[13px] text-ink-3 tabular-nums">{summary.first}–{summary.last} / {summary.total}</span>
     {summary.pages > 1 && <span className="flex items-center gap-1">
-      {summary.hasPrev ? <Link href={href(summary.current - 1)} scroll={false} aria-label="Trang trước" className={`${btn} bg-fill hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" /></Link>
+      {summary.hasPrev ? <Link href={href(summary.current - 1)} scroll={false} aria-label={c.previous} className={`${btn} bg-fill hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" /></Link>
         : <span aria-disabled="true" className={`${btn} bg-fill/50`}><Chevron className="rotate-180 text-ink-3" /></span>}
       <span className="px-1 text-[13px] text-ink-2 tabular-nums">{summary.current}/{summary.pages}</span>
-      {summary.hasNext ? <Link href={href(summary.current + 1)} scroll={false} aria-label="Trang sau" className={`${btn} bg-fill hover:bg-fill-strong`}><Chevron className="text-ink" /></Link>
+      {summary.hasNext ? <Link href={href(summary.current + 1)} scroll={false} aria-label={c.next} className={`${btn} bg-fill hover:bg-fill-strong`}><Chevron className="text-ink" /></Link>
         : <span aria-disabled="true" className={`${btn} bg-fill/50`}><Chevron className="text-ink-3" /></span>}
     </span>}
   </nav>;
 }
 
 /** "‹ 3 / 25 ›" above the detail: move through the page without the list. */
-export function ItemStepper({ index, count, prevHref, nextHref }: { index: number; count: number; prevHref: string | null; nextHref: string | null }) {
+export function ItemStepper({ index, count, prevHref, nextHref, locale = defaultLocale }: { index: number; count: number; prevHref: string | null; nextHref: string | null; locale?: Locale }) {
+  const t = dictionaries[locale].review;
   const btn = "inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-[13px] font-medium";
   return <div className="mb-4 flex items-center justify-end gap-2">
-    {prevHref ? <Link href={prevHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />Trước</Link>
-      : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>Trước</span>}
+    {prevHref ? <Link href={prevHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}><Chevron className="rotate-180 text-ink" />{t.previous}</Link>
+      : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>{t.previous}</span>}
     <span className="px-1 text-[13px] text-ink-3 tabular-nums">{index + 1} / {count}</span>
-    {nextHref ? <Link href={nextHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}>Sau<Chevron className="text-ink" /></Link>
-      : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>Sau</span>}
+    {nextHref ? <Link href={nextHref} scroll={false} className={`${btn} bg-fill text-ink hover:bg-fill-strong`}>{t.next}<Chevron className="text-ink" /></Link>
+      : <span aria-disabled="true" className={`${btn} bg-fill/50 text-ink-3`}>{t.next}</span>}
   </div>;
 }

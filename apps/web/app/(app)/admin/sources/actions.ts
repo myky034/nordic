@@ -4,8 +4,10 @@ import { requirePermission, logAccessError } from "@/lib/rbac/access";
 import { accessMessage, type ActionState } from "@/lib/rbac/messages";
 import { canonicalSourceUrl, parseTopics, sourceStatuses, crawlPolicies, tiers } from "@/lib/registry/domain";
 import { uuidPattern } from "@/lib/documents/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 export async function saveSource(_state: ActionState, form: FormData): Promise<ActionState> {
+  const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("sources.manage");
     const get = (key: string) => { const v = form.get(key); return typeof v === "string" ? v.trim() : ""; };
@@ -19,7 +21,7 @@ export async function saveSource(_state: ActionState, form: FormData): Promise<A
       || !sourceStatuses.includes(status as typeof sourceStatuses[number])
       || !crawlPolicies.includes(policy as typeof crawlPolicies[number])
       || (country && !uuidPattern.test(country))) {
-      return { error: accessMessage("sources_invalid") };
+      return { error: accessMessage("sources_invalid", locale) };
     }
     const { error } = await client.rpc("save_source", {
       p_id: id || null, p_name: get("name"), p_canonical_url: url, p_country_id: country || null,
@@ -32,9 +34,9 @@ export async function saveSource(_state: ActionState, form: FormData): Promise<A
     if (error) {
       logAccessError("save_source");
       const duplicate = error.code === "23505" && error.message.includes("sources_canonical_url_key");
-      return { error: duplicate ? "URL này đã có trong Source Registry." : accessMessage(error.message) };
+      return { error: duplicate ? dict.adminSources.duplicateUrl : accessMessage(error.message, locale) };
     }
     revalidatePath("/admin/sources"); revalidatePath("/sources"); revalidatePath("/countries");
-    return { message: "Đã lưu nguồn." };
-  } catch (error) { logAccessError("save_source"); return { error: accessMessage(error instanceof Error ? error.message : "unknown") }; }
+    return { message: dict.adminSources.saved };
+  } catch (error) { logAccessError("save_source"); return { error: accessMessage(error instanceof Error ? error.message : "unknown", locale) }; }
 }

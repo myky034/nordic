@@ -33,7 +33,7 @@ export function FactCard({fact, internal=false, locale=defaultLocale}:{fact:Fact
      {(internal||fact.status!=="reviewed")&&<ReviewBadge status={fact.status}>{statusLabel(fact.status, locale)}</ReviewBadge>}
    </div>
    {/* Slice 10a: AI origin. Editors only since 2026-10-02 (owner decision, PROJECT_SPEC Decision Log). */}
-   {internal&&fact.origin==="ai"&&<p className="mt-2 flex flex-wrap gap-2"><Badge tone="accent">{fact.status==="proposed"?t.aiProposed:t.aiReviewed}{fact.ai_model?` · ${fact.ai_model}`:""}</Badge>{fact.status==="proposed"&&confidenceLabel(fact.ai_confidence)&&<Badge>{confidenceLabel(fact.ai_confidence)}</Badge>}</p>}
+   {internal&&fact.origin==="ai"&&<p className="mt-2 flex flex-wrap gap-2"><Badge tone="accent">{fact.status==="proposed"?t.aiProposed:t.aiReviewed}{fact.ai_model?` · ${fact.ai_model}`:""}</Badge>{fact.status==="proposed"&&confidenceLabel(fact.ai_confidence,locale)&&<Badge>{confidenceLabel(fact.ai_confidence,locale)}</Badge>}</p>}
    <h3 className="mt-2 text-[17px] font-medium leading-snug text-ink-2">{fact.subject} — {fact.predicate}</h3>
    <p className="mt-1 whitespace-pre-wrap break-words text-[22px] font-semibold leading-snug tracking-[-0.01em] text-ink">{fact.value}{fact.unit ? " "+fact.unit : ""}</p>
    <FactBadges fact={fact} locale={locale}/>

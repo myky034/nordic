@@ -170,11 +170,11 @@ export function Quote({ children }: { children: React.ReactNode }) {
 }
 
 /** Shown when a signed-in user lacks the capability for a workspace page. */
-export function NoAccess({ title, children, back = "/dashboard", backLabel = "Về workspace" }: { title: string; children: React.ReactNode; back?: string; backLabel?: string }) {
+export function NoAccess({ title, children, back = "/dashboard", backLabel, locale = defaultLocale }: { title: string; children: React.ReactNode; back?: string; backLabel?: string; locale?: Locale }) {
   return <section className="py-10">
     <h1 className="text-[28px] font-semibold tracking-tight text-ink">{title}</h1>
     <div className="mt-3 max-w-xl text-[17px] leading-relaxed text-ink-2">{children}</div>
-    <Link href={back} className="mt-6 inline-block text-[15px] text-accent hover:underline underline-offset-4">{backLabel}</Link>
+    <Link href={back} className="mt-6 inline-block text-[15px] text-accent hover:underline underline-offset-4">{backLabel ?? dictionaries[locale].common.backToWorkspace}</Link>
   </section>;
 }
 

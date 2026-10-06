@@ -1,4 +1,4 @@
-# Kế hoạch chuyển đổi ngôn ngữ Việt / Anh (đã duyệt, đang làm — 2026-10-06)
+# Kế hoạch chuyển đổi ngôn ngữ Việt / Anh (đã duyệt, đã làm xong — 2026-10-06)
 
 > Yêu cầu của chủ dự án (2026-10-06): một nút chuyển **tiếng Việt ↔ tiếng Anh cho toàn bộ trang
 > web**. Việc này đã được dự kiến ở Decision Log "2026-09-29 — UI language: Vietnamese now,
@@ -6,7 +6,7 @@
 >
 > **Chủ dự án đã chốt (2026-10-06):** 2.1 → cookie; 2.2 → luôn tiếng Việt; 2.3 → có, gồm cả khu
 > biên tập và quản trị; 2.4 → chưa làm email song ngữ và User Guide tiếng Anh.
-> **Tiến độ:** đợt 1–3 xong ngày 2026-10-06 (xem mục 4).
+> **Tiến độ:** cả bốn đợt xong ngày 2026-10-06 (xem mục 4). Bản tiếng Anh chờ chủ dự án duyệt câu chữ.
 > Đã đọc hướng dẫn Next.js đi kèm dự án: `node_modules/next/dist/docs/01-app/02-guides/internationalization.md`.
 
 ## 1. Phạm vi
@@ -72,8 +72,12 @@ theo thứ tự ở mục 4 để có bản dùng được sớm.
 2. ✅ **Trang công khai (xong 2026-10-06):** quốc gia, trường, chương trình, quy định, nghề, so sánh, tìm kiếm, nguồn,
    tài liệu, thông tin, thẻ thông tin, đăng nhập / đăng ký.
 3. ✅ **Khu cá nhân (xong 2026-10-06, kèm trang Tổng quan `/dashboard`):** Không gian của tôi, dự án, Kế hoạch châu Âu.
-4. **Khu biên tập và quản trị:** các trang duyệt, nhập tài liệu, quản lý nguồn, phân quyền, crawler,
+4. ✅ **Khu biên tập và quản trị (xong 2026-10-06):** các trang duyệt, nhập tài liệu, quản lý nguồn, phân quyền, crawler,
    trích xuất AI, chỉ số, bảng điều khiển.
+
+**Còn lại (đã chấp nhận):** phụ đề kết quả tìm kiếm tạo từ SQL chưa dịch; thông báo lỗi nội bộ
+(`throw new Error`) chỉ ghi log, không hiện cho người dùng; trang đăng nhập/đăng ký chưa có nút
+chuyển; trang DEV preview giữ tiếng Việt; email Supabase và User Guide chưa có bản tiếng Anh (mục 2.4).
 
 Khối lượng: khoảng 130 file có chữ giao diện; đợt 1–2 là phần lớn giá trị cho người dùng. Mỗi đợt
 có test hiển thị cả hai ngôn ngữ và kiểm tra "không còn chữ tiếng Việt cứng trong file đã chuyển".

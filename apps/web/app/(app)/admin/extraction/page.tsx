@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { permissionName } from "@/lib/rbac/labels";
-import { itemOutcomes, reasonLabel, requestStatuses, runStatuses } from "@/lib/extraction/domain";
+import { itemOutcome, reasonLabel, requestStatus, runStatus } from "@/lib/extraction/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+import { intlLocale } from "@/lib/i18n/locales";
 import { triggerLabel } from "@/lib/runs";
 import { uuidPattern } from "@/lib/documents/domain";
 import { withParams } from "@/lib/pagination";
@@ -16,7 +18,6 @@ type Item = { id: string; outcome: string; reason: string | null; fact_id: strin
 type Run = { id: string; trigger: string; provider: string; model: string; prompt_version: string; status: string; started_at: string; note: string | null;
   input_tokens: number; output_tokens: number; counts: Record<string, number> | null; extraction_items: Item[] };
 const when = (v: string) => new Date(v).toISOString().replace("T", " ").slice(0, 16);
-const n = (v: number) => v.toLocaleString("vi-VN");
 
 // Tabs (?tab=requests|runs|settings): open requests and runs are tables; a run
 // opens in the slide-over Inspector (?run=) with every candidate and, for a
@@ -26,7 +27,10 @@ export default async function ExtractionAdminPage({ searchParams }: PageProps<"/
   const { client, permissions } = await accessContext();
   const editor = permissions.includes("facts.propose") || permissions.includes("facts.review");
   const admin = permissions.includes("roles.manage");
-  if (!editor && !admin) return <NoAccess title="Không có quyền xem trích xuất AI">{`Cần quyền “${permissionName("facts.propose")}” hoặc “${permissionName("facts.review")}”.`}</NoAccess>;
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.adminExtraction, crawler = dict.adminCrawler;
+  const n = (v: number) => v.toLocaleString(intlLocale[locale]);
+  if (!editor && !admin) return <NoAccess title={t.noAccessTitle} locale={locale}>{t.noAccessHelp(permissionName("facts.propose", locale), permissionName("facts.review", locale))}</NoAccess>;
   const params = await searchParams;
   const tab = params.tab === "runs" ? "runs" : params.tab === "settings" && admin ? "settings" : "requests";
   const results = await Promise.all([
@@ -44,62 +48,61 @@ export default async function ExtractionAdminPage({ searchParams }: PageProps<"/
 
   let body: React.ReactNode;
   if (tab === "requests") {
-    body = <DataTable label="Yêu cầu đang mở" minWidth="40rem" columns={[{ label: "Tài liệu" }, { label: "Trạng thái" }, { label: "Yêu cầu lúc (UTC)" }]}
-      empty={!open.length && <EmptyState>Không có yêu cầu nào đang chờ. Mở một tài liệu do crawler lấy và bấm “Yêu cầu trích xuất bằng AI”.</EmptyState>}>
-      {open.map((r) => <DataRow key={r.id} href={`/documents/${r.document_id}`} title={r.documents?.title ?? r.documents?.canonical_url ?? "Tài liệu chưa có tiêu đề"}>
-        <Cell><Badge tone={requestStatuses[r.status]?.tone ?? "neutral"}>{requestStatuses[r.status]?.label ?? r.status}</Badge></Cell>
+    body = <DataTable locale={locale} label={t.tabs.requests} minWidth="40rem" columns={[{ label: t.document }, { label: crawler.status }, { label: t.requestedAt }]}
+      empty={!open.length && <EmptyState>{t.noRequests}</EmptyState>}>
+      {open.map((r) => <DataRow key={r.id} href={`/documents/${r.document_id}`} title={r.documents?.title ?? r.documents?.canonical_url ?? dict.common.untitledDocument}>
+        <Cell><Badge tone={requestStatus(r.status, locale).tone}>{requestStatus(r.status, locale).label}</Badge></Cell>
         <Cell className="whitespace-nowrap tabular-nums">{when(r.created_at)}</Cell>
       </DataRow>)}
     </DataTable>;
   } else if (tab === "runs") {
-    body = <DataTable label="Lần chạy" minWidth="52rem" columns={[{ label: "Bắt đầu (UTC)" }, { label: "Trạng thái" }, { label: "Cách chạy" }, { label: "Kết quả" }, { label: "Mô hình" }]}
-      empty={!runs.length && <EmptyState>Chưa có lần chạy nào.</EmptyState>}>
+    body = <DataTable locale={locale} label={t.tabs.runs} minWidth="52rem" columns={[{ label: crawler.started }, { label: crawler.status }, { label: crawler.trigger }, { label: crawler.result }, { label: t.model }]}
+      empty={!runs.length && <EmptyState>{crawler.noRuns}</EmptyState>}>
       {runs.map((r) => {
-        const st = runStatuses[r.status] ?? runStatuses.failed;
-        const summary = Object.entries(r.counts ?? {}).map(([k, c]) => `${itemOutcomes[k]?.label ?? k}: ${c}`).join(" · ");
+        const st = runStatus(r.status, locale);
+        const summary = Object.entries(r.counts ?? {}).map(([k, c]) => `${itemOutcome(k, locale).label}: ${c}`).join(" · ");
         return <DataRow key={r.id} href={here({ run: r.id })} selected={r.id === selectedRun?.id} title={<span className="tabular-nums">{when(r.started_at)}</span>}>
           <Cell><Badge tone={st.tone}>{st.label}</Badge></Cell>
-          <Cell>{triggerLabel(r.trigger)}</Cell>
-          <Cell className="max-w-72 truncate">{summary || r.note || "Không có tài liệu nào"}</Cell>
+          <Cell>{triggerLabel(r.trigger, locale)}</Cell>
+          <Cell className="max-w-72 truncate">{summary || r.note || t.noDocuments}</Cell>
           <Cell className="whitespace-nowrap">{r.model}</Cell>
         </DataRow>;
       })}
     </DataTable>;
   } else {
-    body = <Card><AccountForm current={account?.ai_user_id ?? null} /></Card>;
+    body = <Card><AccountForm current={account?.ai_user_id ?? null} locale={locale} /></Card>;
   }
 
   let panel: React.ReactNode = null;
   if (tab === "runs" && selectedRun) {
     const r = selectedRun;
-    const st = runStatuses[r.status] ?? runStatuses.failed;
-    panel = <Inspector title={`Lần chạy ${when(r.started_at)} UTC`} subtitle={`${st.label} · ${triggerLabel(r.trigger)}`} closeHref={here({ run: null })}>
+    const st = runStatus(r.status, locale);
+    panel = <Inspector locale={locale} title={crawler.run(when(r.started_at))} subtitle={`${st.label} · ${triggerLabel(r.trigger, locale)}`} closeHref={here({ run: null })}>
       <dl className="mb-5 grid grid-cols-2 gap-x-4 gap-y-2 text-[14px]">
-        <dt className="text-ink-3">Mô hình</dt><dd className="text-ink">{r.model}</dd>
-        <dt className="text-ink-3">Nhà cung cấp</dt><dd className="break-all text-ink">{r.provider}</dd>
-        <dt className="text-ink-3">Phiên bản prompt</dt><dd className="text-ink">{r.prompt_version}</dd>
-        <dt className="text-ink-3">Token vào / ra</dt><dd className="tabular-nums text-ink">{n(r.input_tokens)} / {n(r.output_tokens)}</dd>
+        <dt className="text-ink-3">{t.model}</dt><dd className="text-ink">{r.model}</dd>
+        <dt className="text-ink-3">{t.provider}</dt><dd className="break-all text-ink">{r.provider}</dd>
+        <dt className="text-ink-3">{t.promptVersion}</dt><dd className="text-ink">{r.prompt_version}</dd>
+        <dt className="text-ink-3">{dict.adminOverview.tokensInOut}</dt><dd className="tabular-nums text-ink">{n(r.input_tokens)} / {n(r.output_tokens)}</dd>
       </dl>
       {r.note && <p className="mb-4 text-[15px] text-ink-2">{r.note}</p>}
-      {r.extraction_items.length ? <List label="Gợi ý của AI">{r.extraction_items.map((i) => <ListRow key={i.id}
+      {r.extraction_items.length ? <List label={t.suggestions}>{r.extraction_items.map((i) => <ListRow key={i.id}
         title={<span className="text-[14px] font-normal">{i.candidate.subject ?? "?"} — {i.candidate.predicate ?? "?"}: {i.candidate.value ?? "?"}</span>}
-        badges={<Badge tone={itemOutcomes[i.outcome]?.tone ?? "neutral"}>{itemOutcomes[i.outcome]?.label ?? i.outcome}</Badge>}
-        subtitle={reasonLabel(i.reason) ?? undefined} meta={i.reason && reasonLabel(i.reason) !== i.reason ? i.reason : undefined} />)}</List>
-        : <EmptyState>Lần chạy này không có gợi ý nào.</EmptyState>}
+        badges={<Badge tone={itemOutcome(i.outcome, locale).tone}>{itemOutcome(i.outcome, locale).label}</Badge>}
+        subtitle={reasonLabel(i.reason, locale) ?? undefined} meta={i.reason && reasonLabel(i.reason, locale) !== i.reason ? i.reason : undefined} />)}</List>
+        : <EmptyState>{t.noSuggestions}</EmptyState>}
     </Inspector>;
   }
 
   return <>
-    <PageHeader eyebrow="Quản trị" title="Trích xuất AI"
-      description="AI chỉ đọc những tài liệu được biên tập viên yêu cầu, và chỉ tạo đề xuất để người duyệt. Mỗi gợi ý được kiểm tra tự động: câu trích phải có nguyên văn trong trang, mọi con số phải có trong câu trích."
-      actions={<Link href="/facts/workspace" className={`${textLink} text-[15px]`}>Hàng chờ duyệt</Link>} />
-    {!account && <div className="mb-6"><Notice tone="caution" title="Chưa chọn tài khoản AI">AI sẽ không chạy cho tới khi quản trị viên chọn tài khoản đứng tên các đề xuất của AI{admin ? " (tab Cài đặt)" : ""}.</Notice></div>}
-    <Segmented label="Phần" items={[
-      { href: withParams("/admin/extraction", {}, {}), label: "Yêu cầu đang mở", count: open.length, active: tab === "requests" },
-      { href: withParams("/admin/extraction", {}, { tab: "runs" }), label: "Lần chạy", active: tab === "runs" },
-      ...(admin ? [{ href: withParams("/admin/extraction", {}, { tab: "settings" }), label: "Cài đặt", active: tab === "settings" }] : []),
+    <PageHeader eyebrow={dict.adminOverview.eyebrow} title={t.title} description={t.description}
+      actions={<Link href="/facts/workspace" className={`${textLink} text-[15px]`}>{dict.documentEditor.reviewQueue}</Link>} />
+    {!account && <div className="mb-6"><Notice tone="caution" title={dict.adminOverview.noAccountTitle}>{t.noAccountText(admin)}</Notice></div>}
+    <Segmented label={dict.adminAccess.part} items={[
+      { href: withParams("/admin/extraction", {}, {}), label: t.tabs.requests, count: open.length, active: tab === "requests" },
+      { href: withParams("/admin/extraction", {}, { tab: "runs" }), label: t.tabs.runs, active: tab === "runs" },
+      ...(admin ? [{ href: withParams("/admin/extraction", {}, { tab: "settings" }), label: t.tabs.settings, active: tab === "settings" }] : []),
     ]} />
-    {tab === "requests" && <p className="mb-3 px-1 text-[13px] text-ink-3">Yêu cầu được xử lý ở lần chạy tới (hằng ngày theo lịch, tối đa 5 tài liệu mỗi lần). Bấm một dòng để mở tài liệu.</p>}
+    {tab === "requests" && <p className="mb-3 px-1 text-[13px] text-ink-3">{t.requestsHelp}</p>}
     <div className="mt-1">{body}</div>
     {panel}
   </>;

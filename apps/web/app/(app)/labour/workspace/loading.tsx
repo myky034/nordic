@@ -1,2 +1,6 @@
 import { LoadingState } from "@/components/ui/loading";
-export default function Loading() { return <LoadingState label="Đang tải thông tin và bằng chứng…" />; }
+import { getDictionary } from "@/lib/i18n/server";
+
+export default async function Loading() {
+  return <LoadingState label={(await getDictionary()).common.loading} />;
+}
