@@ -28,3 +28,13 @@ it("shows reviewer counts, and an unloadable count as unknown rather than zero",
   for (const v of ["Cần xử lý", "Đề xuất chờ duyệt", ">7<", "Nguồn đã đổi", "Không tải được", "reviewer@example.test"]) expect(html).toContain(v);
   expect(html).not.toContain("Nguồn cần xác minh");
 });
+
+it("shows the overview in English when the viewer chose English", async () => {
+  const { setTestLocale } = await import("@/test/i18n");
+  setTestLocale("en");
+  ctx.mockResolvedValue({ client: client({ facts: 2 }), permissions: ["facts.review"] });
+  const html = renderToStaticMarkup(await Page());
+  setTestLocale("vi");
+  for (const v of ["Overview", "Signed in as", "Needs attention", "Proposals awaiting review", "My workspace", "Facts &amp; evidence"]) expect(html).toContain(v);
+  expect(html).not.toContain("Tổng quan");
+});

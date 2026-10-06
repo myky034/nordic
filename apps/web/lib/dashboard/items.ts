@@ -1,3 +1,5 @@
+import { defaultLocale, type Locale } from "@/lib/i18n/locales";
+
 // What the workspace dashboard offers to whom. Kept out of the page so the
 // permission rules are explicit and testable (AGENTS.md §16). A tile is shown
 // when the user holds ANY of its `anyOf` permissions; `anyOf: []` = everyone.
@@ -52,4 +54,37 @@ export const counters: Counter[] = [
 ];
 export function visibleCounters(permissions: string[]) {
   return counters.filter((c) => c.anyOf.some((p) => permissions.includes(p)));
+}
+
+// English wording of the groups, tiles (by href) and counters; the Vietnamese
+// text stays in the lists above, which also hold the permission rules.
+const groupTitlesEn: Record<string, string> = { mine: "Yours", editing: "Editing", admin: "Admin", explore: "Explore" };
+const tileTextEn: Record<string, { title: string; description: string }> = {
+  "/workspace": { title: "My workspace", description: "Research projects, saved items and private notes" },
+  "/workspace/plan": { title: "My Europe plan", description: "Role, degree, year, countries, budget" },
+  "/facts/workspace": { title: "Facts & evidence", description: "Propose, review and handle changed sources" },
+  "/education/workspace": { title: "Universities & programmes", description: "Propose and review universities and programmes" },
+  "/immigration/workspace": { title: "Immigration rules", description: "Only from T1 government sources" },
+  "/labour/workspace": { title: "Labour market", description: "Occupations; figures are entered under Facts & evidence" },
+  "/documents/import": { title: "Import a document", description: "Add a document from a registered source" },
+  "/admin": { title: "Admin overview", description: "Crawler and AI, data coverage, review activity" },
+  "/admin/sources": { title: "Manage sources", description: "Add, classify and verify sources; turn crawling on or off" },
+  "/admin/crawler": { title: "Crawler", description: "Crawled URLs and the result of each run" },
+  "/admin/extraction": { title: "AI extraction", description: "Requests, runs and why proposals were rejected" },
+  "/admin/metrics": { title: "Comparison metrics", description: "Metric definitions for the country comparison" },
+  "/admin/access": { title: "Users & permissions", description: "Roles, permissions and the change log" },
+  "/countries": { title: "Countries", description: "Profiles of the five countries and comparison" },
+  "/documents": { title: "Documents", description: "Recorded source pages and their versions" },
+  "/sources": { title: "Sources", description: "Sources, their tier and verification status" },
+};
+const counterLabelsEn: Record<CounterId, string> = {
+  proposed: "Proposals awaiting review", sourceChanged: "Changed sources", extractionPending: "AI requests waiting", sourcesUnverified: "Sources to verify",
+};
+/** Groups with their titles and tiles in the viewer's language. */
+export function localizeGroups(groups: Group[], locale: Locale = defaultLocale): Group[] {
+  if (locale === "vi") return groups;
+  return groups.map((g) => ({ ...g, title: groupTitlesEn[g.id] ?? g.title, tiles: g.tiles.map((t) => ({ ...t, ...(tileTextEn[t.href] ?? {}) })) }));
+}
+export function counterLabel(counter: Counter, locale: Locale = defaultLocale) {
+  return locale === "en" ? counterLabelsEn[counter.id] : counter.label;
 }

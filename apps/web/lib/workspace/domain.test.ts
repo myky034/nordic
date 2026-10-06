@@ -26,3 +26,17 @@ it("maps database codes to safe messages", () => {
   expect(workspaceError("23505")).toContain("đã có");
   expect(workspaceError("postgres://secret")).not.toContain("secret");
 });
+
+it("words workspace labels and errors in English and accepts either language's delete word", async () => {
+  const { itemKindLabel, targetDegreeLabel, applicationStatusOptions, deleteConfirmation, isDeleteConfirmation } = await import("./domain");
+  expect(itemKindLabel("immigration_rule", "en")).toBe("Immigration rule");
+  expect(itemKindLabel("immigration_rule")).toBe("Quy định nhập cư");
+  expect(targetDegreeLabel("master", "en")).toBe("Master's");
+  expect(applicationStatusOptions("en")).toContainEqual(["awaiting_decision", "Awaiting a decision"]);
+  expect(workspaceError("23505", "en")).toBe("This item is already in your saved list.");
+  // Unknown codes, including Object.prototype names, never leak or crash.
+  for (const code of ["constructor", "toString", "postgres://secret"]) expect(workspaceError(code, "en")).toBe("Could not save. Check the data and try again.");
+  expect(deleteConfirmation("en")).toBe("DELETE");
+  expect(isDeleteConfirmation("XÓA") && isDeleteConfirmation("DELETE")).toBe(true);
+  expect(isDeleteConfirmation("delete") || isDeleteConfirmation("")).toBe(false);
+});

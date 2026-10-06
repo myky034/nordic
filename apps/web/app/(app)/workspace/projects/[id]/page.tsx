@@ -4,7 +4,10 @@ import { requireAuth } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { uuidPattern } from "@/lib/documents/domain";
 import { compareHref } from "@/lib/compare/domain";
-import { describeItem, itemEmbeds, itemKinds } from "@/lib/workspace/domain";
+import { describeItem, itemEmbeds, itemKindLabel } from "@/lib/workspace/domain";
+import { countryName } from "@/lib/registry/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+
 import { Badge, BackLink, Card, Disclosure, EmptyState, List, ListRow, PageHeader, Section } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 import { DeleteNoteButton, DeleteProjectForm, FileSavedSelect, NoteForm, ProjectForm, ProjectStatusButton, RemoveSavedButton } from "../../forms";
@@ -32,45 +35,47 @@ export default async function ProjectPage({ params }: PageProps<"/workspace/proj
   const saved = (savedResult.data ?? []) as unknown as (Parameters<typeof describeItem>[0] & { id: string; project_id: string | null })[];
   const notes = (notesResult.data ?? []) as unknown as (Parameters<typeof describeItem>[0] & { id: string; content: string; updated_at: string })[];
   const projects = (projectsResult.data as { id: string; name: string }[]).map((p) => ({ id: p.id, label: p.name }));
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const [t, p] = [dict.workspace, dict.workspace.projectPage];
   return <>
-    <PageHeader back={<BackLink href="/workspace">Không gian của tôi</BackLink>} eyebrow={project.status === "archived" ? "Dự án · đã lưu trữ" : "Dự án"} title={project.name}
+    <PageHeader back={<BackLink href="/workspace">{t.title}</BackLink>} eyebrow={project.status === "archived" ? p.archivedEyebrow : p.eyebrow} title={project.name}
       description={[project.target_year, project.target_role].filter(Boolean).join(" · ") || undefined}
-      actions={<ProjectStatusButton id={project.id} status={project.status} />} />
+      actions={<ProjectStatusButton id={project.id} status={project.status} locale={locale} />} />
     {project.description && <p className="-mt-4 mb-8 max-w-2xl whitespace-pre-wrap px-1 text-[15px] text-ink-2">{project.description}</p>}
 
-    <Section title="Quốc gia mục tiêu" description="Lối tắt tới dữ liệu công khai của các nước bạn chọn — không phải khuyến nghị.">
+    <Section title={p.targetCountries} description={p.targetCountriesDescription}>
       {targetCountries.length ? <div className="flex flex-wrap gap-2">
-        {targetCountries.map((c) => <Link key={c.id} href={`/countries/${c.slug}`} className="rounded-full bg-fill px-3.5 py-1.5 text-[14px] hover:bg-fill-strong">{c.name}</Link>)}
-        {targetCountries.length >= 2 && <Link href={compareHref(targetCountries.map((c) => c.slug))} className="rounded-full bg-accent px-3.5 py-1.5 text-[14px] text-white hover:bg-accent-hover">So sánh các nước này</Link>}
-      </div> : <EmptyState>Chưa chọn quốc gia. Sửa dự án để thêm.</EmptyState>}
+        {targetCountries.map((c) => <Link key={c.id} href={`/countries/${c.slug}`} className="rounded-full bg-fill px-3.5 py-1.5 text-[14px] hover:bg-fill-strong">{countryName(c.slug, c.name, locale)}</Link>)}
+        {targetCountries.length >= 2 && <Link href={compareHref(targetCountries.map((c) => c.slug))} className="rounded-full bg-accent px-3.5 py-1.5 text-[14px] text-white hover:bg-accent-hover">{p.compareThese}</Link>}
+      </div> : <EmptyState>{p.noCountries}</EmptyState>}
     </Section>
 
-    <Section title="Mục đã lưu trong dự án">
+    <Section title={p.saved}>
       {saved.length ? <List>{saved.map((row) => {
         const item = describeItem(row);
         if (!item) return null;
-        return <ListRow key={row.id} title={<Link href={item.href} className="hover:underline">{item.title}</Link>} badges={<Badge>{itemKinds[item.kind].label}</Badge>}>
-          <div className="flex flex-wrap items-center gap-4"><FileSavedSelect id={row.id} current={row.project_id} projects={projects} /><RemoveSavedButton id={row.id} /></div>
+        return <ListRow key={row.id} title={<Link href={item.href} className="hover:underline">{item.title}</Link>} badges={<Badge>{itemKindLabel(item.kind, locale)}</Badge>}>
+          <div className="flex flex-wrap items-center gap-4"><FileSavedSelect id={row.id} current={row.project_id} projects={projects} locale={locale} /><RemoveSavedButton id={row.id} locale={locale} /></div>
         </ListRow>;
-      })}</List> : <EmptyState>Chưa có mục nào. Lưu mục ở các trang công khai, rồi chọn dự án này ở <Link href="/workspace" className={textLink}>Không gian của tôi</Link>.</EmptyState>}
+      })}</List> : <EmptyState>{p.noSaved} <Link href="/workspace" className={textLink}>{t.title}</Link>.</EmptyState>}
     </Section>
 
-    <Section title="Ghi chú" description="Chỉ bạn xem được. Ghi chú không phải thông tin đã kiểm chứng.">
-      <Card><NoteForm projectId={project.id} placeholder="Ví dụ: cần chuẩn bị bảng điểm trước tháng 11…" /></Card>
+    <Section title={p.notes} description={p.notesDescription}>
+      <Card><NoteForm projectId={project.id} placeholder={p.notePlaceholder} locale={locale} /></Card>
       {notes.length > 0 && <div className="mt-4"><List>{notes.map((n) => {
         const item = describeItem(n);
-        return <ListRow key={n.id} title={<span className="whitespace-pre-wrap font-normal">{n.content}</span>} badges={<Badge>Ghi chú của bạn</Badge>}
-          meta={<>{item && <><Link href={item.href} className="hover:underline">{item.title}</Link> · </>}sửa ngày {new Date(n.updated_at).toISOString().slice(0, 10)}</>}>
-          <Disclosure small summary="Sửa"><div className="space-y-3"><NoteForm note={{ id: n.id, content: n.content }} /><DeleteNoteButton id={n.id} /></div></Disclosure>
+        return <ListRow key={n.id} title={<span className="whitespace-pre-wrap font-normal">{n.content}</span>} badges={<Badge>{t.yourNote}</Badge>}
+          meta={<>{item && <><Link href={item.href} className="hover:underline">{item.title}</Link> · </>}{t.editedOn(new Date(n.updated_at).toISOString().slice(0, 10))}</>}>
+          <Disclosure small summary={t.edit}><div className="space-y-3"><NoteForm note={{ id: n.id, content: n.content }} locale={locale} /><DeleteNoteButton id={n.id} locale={locale} /></div></Disclosure>
         </ListRow>;
       })}</List></div>}
     </Section>
 
-    <Section title="Cài đặt dự án">
+    <Section title={p.settings}>
       <div className="space-y-3">
-        <Disclosure summary="Sửa dự án"><Card><ProjectForm countries={(countriesResult.data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }))}
+        <Disclosure summary={p.edit}><Card><ProjectForm locale={locale} countries={(countriesResult.data as { id: string; name: string }[]).map((c) => ({ id: c.id, label: c.name }))}
           project={{ id: project.id, name: project.name, description: project.description, target_year: project.target_year, target_role: project.target_role, countries: targetCountries.map((c) => c.id) }} /></Card></Disclosure>
-        <Disclosure summary="Xóa dự án"><Card><DeleteProjectForm id={project.id} /></Card></Disclosure>
+        <Disclosure summary={p.delete}><Card><DeleteProjectForm id={project.id} locale={locale} /></Card></Disclosure>
       </div>
     </Section>
   </>;

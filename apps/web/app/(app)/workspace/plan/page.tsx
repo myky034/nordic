@@ -3,9 +3,8 @@ import { requireAuth } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { compareHref } from "@/lib/compare/domain";
 import { countryName } from "@/lib/registry/domain";
-import { targetDegrees } from "@/lib/workspace/domain";
-
-const degreeName = (d: string) => targetDegrees[d as keyof typeof targetDegrees] ?? d;
+import { targetDegreeLabel } from "@/lib/workspace/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { Card, List, ListRow, Notice, PageHeader, Section, BackLink } from "@/components/ui";
 import { PlanForm } from "../forms";
 
@@ -21,26 +20,29 @@ export default async function PlanPage() {
   const plan = planResult.data;
   const chosen = (planCountries.data ?? []) as unknown as { country_id: string; countries: { slug: string; name: string } }[];
   const countries = countriesResult.data as { id: string; name: string; slug: string }[];
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const [t, w] = [dict.workspace.plan, dict.workspace];
+  const name = (c: { slug: string; name: string }) => countryName(c.slug, c.name, locale);
   // Shortcuts are plain links built from the user's own answers. They filter
   // public lists; they do not rank, score or recommend anything.
   const shortcuts: [string, string, string][] = [];
-  if (chosen.length >= 2) shortcuts.push([compareHref(chosen.map((c) => c.countries.slug)), "So sánh các nước bạn quan tâm", chosen.map((c) => countryName(c.countries.slug, c.countries.name)).join(", ")]);
+  if (chosen.length >= 2) shortcuts.push([compareHref(chosen.map((c) => c.countries.slug)), t.compare, chosen.map((c) => name(c.countries)).join(", ")]);
   for (const c of chosen) {
-    shortcuts.push([`/programmes?country=${c.countries.slug}${plan?.target_degree ? `&degree=${plan.target_degree}` : ""}`, `Chương trình${plan?.target_degree ? ` ${degreeName(plan.target_degree).toLowerCase()}` : ""} tại ${countryName(c.countries.slug, c.countries.name)}`, "Danh sách chương trình đã duyệt, lọc theo lựa chọn của bạn"]);
-    shortcuts.push([`/immigration?country=${c.countries.slug}`, `Quy định nhập cư tại ${countryName(c.countries.slug, c.countries.name)}`, "Chỉ quy định có nguồn chính thức đã xác minh"]);
+    shortcuts.push([`/programmes?country=${c.countries.slug}${plan?.target_degree ? `&degree=${plan.target_degree}` : ""}`, t.programmes(plan?.target_degree ? targetDegreeLabel(plan.target_degree, locale) : null, name(c.countries)), t.programmesSub]);
+    shortcuts.push([`/immigration?country=${c.countries.slug}`, t.rules(name(c.countries)), t.rulesSub]);
   }
-  if (plan?.target_role) shortcuts.push([`/occupations?q=${encodeURIComponent(plan.target_role)}`, `Nghề: ${plan.target_role}`, "Tìm nghề theo vai trò mong muốn"]);
+  if (plan?.target_role) shortcuts.push([`/occupations?q=${encodeURIComponent(plan.target_role)}`, t.occupation(plan.target_role), t.occupationSub]);
   return <>
-    <PageHeader back={<BackLink href="/workspace">Không gian của tôi</BackLink>} eyebrow="Không gian của tôi" title="Kế hoạch châu Âu"
-      description="Hồ sơ mục tiêu của bạn. Chỉ bạn xem được; bạn có thể sửa hoặc xóa bất kỳ lúc nào." />
-    <Section title="Lối tắt theo hồ sơ của bạn">
-      <div className="mb-4"><Notice tone="neutral">Đây là các liên kết lọc sẵn theo câu trả lời của bạn — <strong>không phải khuyến nghị</strong>, không xếp hạng và không dự đoán khả năng trúng tuyển.</Notice></div>
+    <PageHeader back={<BackLink href="/workspace">{w.title}</BackLink>} eyebrow={w.title} title={t.title}
+      description={t.description} />
+    <Section title={t.shortcuts}>
+      <div className="mb-4"><Notice tone="neutral">{t.noticeBefore}<strong>{t.noticeStrong}</strong>{t.noticeAfter}</Notice></div>
       {shortcuts.length ? <List>{shortcuts.map(([href, title, sub]) => <ListRow key={href} href={href} title={title} subtitle={sub} />)}</List>
-        : <p className="px-1 text-[15px] text-ink-2">Chọn quốc gia quan tâm, bậc học hoặc vai trò mong muốn bên dưới để có lối tắt.</p>}
+        : <p className="px-1 text-[15px] text-ink-2">{t.noShortcuts}</p>}
     </Section>
-    <Section title="Hồ sơ mục tiêu">
-      <Card><PlanForm plan={plan} countries={countries.map((c) => ({ id: c.id, label: c.name }))} selected={chosen.map((c) => c.country_id)} /></Card>
+    <Section title={t.profile}>
+      <Card><PlanForm locale={locale} plan={plan} countries={countries.map((c) => ({ id: c.id, label: name(c) }))} selected={chosen.map((c) => c.country_id)} /></Card>
     </Section>
-    <p className="mt-8 px-1 text-[13px] text-ink-3">Muốn xóa toàn bộ dữ liệu cá nhân? Xem mục “Dữ liệu của bạn” ở <Link href="/workspace" className="text-accent hover:underline">Không gian của tôi</Link>.</p>
+    <p className="mt-8 px-1 text-[13px] text-ink-3">{t.deleteHint} <Link href="/workspace" className="text-accent hover:underline">{w.title}</Link>.</p>
   </>;
 }

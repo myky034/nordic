@@ -2,7 +2,9 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { createClient } from "@/lib/supabase/server";
 import { choiceParam, pageParam, pageSummary, pageWindow, withParams } from "@/lib/pagination";
-import { describeItem, itemEmbeds, itemKindList, itemKinds } from "@/lib/workspace/domain";
+import { describeItem, itemEmbeds, itemKindLabel, itemKindList, itemKinds } from "@/lib/workspace/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
+
 import { Badge, Card, Disclosure, EmptyState, List, ListRow, PageHeader, Pagination, Section, Segmented } from "@/components/ui";
 import { buttonSecondary } from "@/components/ui/styles";
 import { DeleteNoteButton, DeleteWorkspaceForm, FileSavedSelect, NoteForm, ProjectForm, RemoveSavedButton } from "./forms";
@@ -40,48 +42,49 @@ export default async function WorkspacePage({ searchParams }: PageProps<"/worksp
   const kindCounts = results.slice(5).map((r) => r.count ?? 0);
   const total = kindCounts.reduce((a, b) => a + b, 0);
 
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.workspace;
   return <>
-    <PageHeader eyebrow="Không gian của tôi" title="Không gian của tôi"
-      description="Dự án, mục đã lưu và ghi chú của riêng bạn. Không ai khác xem được, kể cả quản trị viên."
-      actions={<Link href="/workspace/plan" className={buttonSecondary}>Kế hoạch châu Âu</Link>} />
+    <PageHeader eyebrow={t.title} title={t.title} description={t.description}
+      actions={<Link href="/workspace/plan" className={buttonSecondary}>{t.planLink}</Link>} />
 
-    <Section title="Dự án nghiên cứu">
-      <Segmented label="Trạng thái dự án" items={[["active", "Đang làm"], ["archived", "Đã lưu trữ"]].map(([v, l]) => ({ href: withParams("/workspace", { kind: kind === "all" ? "" : kind }, { projects: v === "active" ? null : v }), label: l, active: projectTab === v }))} />
+    <Section title={t.projects}>
+      <Segmented label={t.projectStatus} items={[["active", t.active], ["archived", t.archived]].map(([v, l]) => ({ href: withParams("/workspace", { kind: kind === "all" ? "" : kind }, { projects: v === "active" ? null : v }), label: l, active: projectTab === v }))} />
       {projects.length ? <List>{projects.map((p) => <ListRow key={p.id} href={`/workspace/projects/${p.id}`} title={p.name}
-        subtitle={[p.target_year, p.target_role, p.research_project_countries.map((c) => c.countries.name).join(", ")].filter(Boolean).join(" · ") || "Chưa đặt mục tiêu"} />)}</List>
-        : <EmptyState>{projectTab === "active" ? "Chưa có dự án nào. Tạo một dự án như “Sweden 2028” để gom trường, chương trình và ghi chú cho một kế hoạch." : "Chưa có dự án nào được lưu trữ."}</EmptyState>}
-      <div className="mt-4 px-1"><Disclosure summary="Tạo dự án mới"><Card><ProjectForm countries={countries} /></Card></Disclosure></div>
+        subtitle={[p.target_year, p.target_role, p.research_project_countries.map((c) => c.countries.name).join(", ")].filter(Boolean).join(" · ") || t.noGoal} />)}</List>
+        : <EmptyState>{projectTab === "active" ? t.noProjects : t.noArchived}</EmptyState>}
+      <div className="mt-4 px-1"><Disclosure summary={t.newProject}><Card><ProjectForm countries={countries} locale={locale} /></Card></Disclosure></div>
     </Section>
 
-    <Section title="Đã lưu" description="Bấm ☆ Lưu trên trang quốc gia, trường, chương trình, quy định, nghề hoặc nguồn để thêm vào đây.">
-      <Segmented label="Loại mục" items={[
-        { href: withParams("/workspace", { projects: projectTab === "active" ? "" : projectTab }, {}), label: "Tất cả", count: total, active: kind === "all" },
-        ...itemKindList.map((k, i) => ({ href: withParams("/workspace", { projects: projectTab === "active" ? "" : projectTab }, { kind: k }), label: itemKinds[k].label, count: kindCounts[i], active: kind === k })),
+    <Section title={t.saved} description={t.savedDescription}>
+      <Segmented label={t.itemKind} items={[
+        { href: withParams("/workspace", { projects: projectTab === "active" ? "" : projectTab }, {}), label: dict.common.all, count: total, active: kind === "all" },
+        ...itemKindList.map((k, i) => ({ href: withParams("/workspace", { projects: projectTab === "active" ? "" : projectTab }, { kind: k }), label: itemKindLabel(k, locale), count: kindCounts[i], active: kind === k })),
       ]} />
       {items.length ? <List>{items.map((row) => {
         const item = describeItem(row);
         if (!item) return null;
-        return <ListRow key={row.id} title={<Link href={item.href} className="hover:underline">{item.title}</Link>} badges={<Badge>{itemKinds[item.kind].label}</Badge>} meta={`Lưu ngày ${day(row.created_at)}`}>
-          <div className="flex flex-wrap items-center gap-4"><FileSavedSelect id={row.id} current={row.project_id} projects={activeProjects} /><RemoveSavedButton id={row.id} /></div>
-          <Disclosure small summary="Thêm ghi chú về mục này" className="mt-2"><NoteForm kind={item.kind} itemId={item.id} /></Disclosure>
+        return <ListRow key={row.id} title={<Link href={item.href} className="hover:underline">{item.title}</Link>} badges={<Badge>{itemKindLabel(item.kind, locale)}</Badge>} meta={t.savedOn(day(row.created_at))}>
+          <div className="flex flex-wrap items-center gap-4"><FileSavedSelect id={row.id} current={row.project_id} projects={activeProjects} locale={locale} /><RemoveSavedButton id={row.id} locale={locale} /></div>
+          <Disclosure small summary={t.noteAboutItem} className="mt-2"><NoteForm kind={item.kind} itemId={item.id} locale={locale} /></Disclosure>
         </ListRow>;
-      })}</List> : <EmptyState>Chưa có mục nào được lưu{kind !== "all" ? " trong nhóm này" : ""}.</EmptyState>}
-      <Pagination summary={pageSummary(results[1].count ?? items.length, page)} href={(p) => withParams("/workspace", params, { page: p })} />
+      })}</List> : <EmptyState>{t.noSaved(kind !== "all")}</EmptyState>}
+      <Pagination summary={pageSummary(results[1].count ?? items.length, page)} href={(p) => withParams("/workspace", params, { page: p })} locale={locale} />
     </Section>
 
-    <Section title="Ghi chú gần đây" description="Ghi chú là suy nghĩ riêng của bạn, không phải thông tin đã được kiểm chứng.">
+    <Section title={t.recentNotes} description={t.notesDescription}>
       {notes.length ? <List>{notes.map((n) => {
         const item = describeItem(n);
         return <ListRow key={n.id} title={<span className="whitespace-pre-wrap font-normal">{n.content.length > 240 ? `${n.content.slice(0, 240)}…` : n.content}</span>}
-          badges={<Badge>Ghi chú của bạn</Badge>}
-          meta={<>{n.research_projects ? <Link href={`/workspace/projects/${n.research_projects.id}`} className="hover:underline">{n.research_projects.name}</Link> : "Không thuộc project"}{item && <> · <Link href={item.href} className="hover:underline">{item.title}</Link></>} · sửa ngày {day(n.updated_at)}</>}>
-          <Disclosure small summary="Sửa"><div className="space-y-3"><NoteForm note={{ id: n.id, content: n.content }} /><DeleteNoteButton id={n.id} /></div></Disclosure>
+          badges={<Badge>{t.yourNote}</Badge>}
+          meta={<>{n.research_projects ? <Link href={`/workspace/projects/${n.research_projects.id}`} className="hover:underline">{n.research_projects.name}</Link> : t.noProject}{item && <> · <Link href={item.href} className="hover:underline">{item.title}</Link></>} · {t.editedOn(day(n.updated_at))}</>}>
+          <Disclosure small summary={t.edit}><div className="space-y-3"><NoteForm note={{ id: n.id, content: n.content }} locale={locale} /><DeleteNoteButton id={n.id} locale={locale} /></div></Disclosure>
         </ListRow>;
-      })}</List> : <EmptyState>Chưa có ghi chú nào.</EmptyState>}
+      })}</List> : <EmptyState>{t.noNotes}</EmptyState>}
     </Section>
 
-    <Section title="Dữ liệu của bạn">
-      <Disclosure summary="Xóa toàn bộ dữ liệu workspace"><Card><DeleteWorkspaceForm /></Card></Disclosure>
+    <Section title={t.yourData}>
+      <Disclosure summary={t.deleteAll}><Card><DeleteWorkspaceForm locale={locale} /></Card></Disclosure>
     </Section>
   </>;
 }

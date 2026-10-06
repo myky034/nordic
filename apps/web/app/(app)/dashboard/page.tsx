@@ -20,7 +20,8 @@
 import { requireAuth } from "@/lib/auth/session";
 import { getCurrentUser } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
-import { visibleCounters, visibleGroups, type CounterId } from "@/lib/dashboard/items";
+import { counterLabel, localizeGroups, visibleCounters, visibleGroups, type CounterId } from "@/lib/dashboard/items";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { PageHeader, Section } from "@/components/ui";
 import { CounterTile, TileLink } from "./tiles";
 
@@ -31,7 +32,9 @@ export default async function DashboardPage() {
   // Fetch the user record to display their email.
   const user = await getCurrentUser();
   const { client, permissions } = await accessContext();
-  const groups = visibleGroups(permissions);
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  const t = dict.dashboard;
+  const groups = localizeGroups(visibleGroups(permissions), locale);
   const shown = visibleCounters(permissions);
 
   // Head-only counts through the user's own client: RLS scopes every number.
@@ -50,11 +53,11 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Nordic" title="Tổng quan"
-        description={<>Đăng nhập với <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
-      {shown.length > 0 && <Section title="Cần xử lý">
+      <PageHeader eyebrow="Nordic" title={t.title}
+        description={<>{t.signedInAs} <span className="font-medium text-ink">{user?.email ?? "unknown"}</span></>} />
+      {shown.length > 0 && <Section title={t.needsAttention}>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {shown.map((c, i) => <CounterTile key={c.id} label={c.label} href={c.href} value={values[i]} />)}
+          {shown.map((c, i) => <CounterTile key={c.id} label={counterLabel(c, locale)} href={c.href} value={values[i]} words={t} />)}
         </div>
       </Section>}
       {groups.map((g) => <Section key={g.id} title={g.title}>

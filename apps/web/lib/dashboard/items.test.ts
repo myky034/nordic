@@ -19,3 +19,15 @@ it("never lists the same destination twice", () => {
   const hrefs = dashboardGroups.flatMap((g) => g.tiles.map((t) => t.href));
   expect(new Set(hrefs).size).toBe(hrefs.length);
 });
+
+it("translates every group, tile and counter for English, and keeps the permission rules", async () => {
+  const { counters, counterLabel, dashboardGroups, localizeGroups, visibleGroups } = await import("./items");
+  const english = localizeGroups(dashboardGroups, "en");
+  // Every tile has an English title (none left identical to its Vietnamese one, except names such as "Crawler").
+  for (const [i, g] of english.entries()) for (const [j, t] of g.tiles.entries()) {
+    if (t.title === dashboardGroups[i].tiles[j].title) expect(t.title).toBe("Crawler");
+    expect(t.anyOf).toEqual(dashboardGroups[i].tiles[j].anyOf);
+  }
+  expect(localizeGroups(visibleGroups([]), "en").map((g) => g.title)).toEqual(["Yours", "Explore"]);
+  expect(counters.map((c) => counterLabel(c, "en"))).toEqual(["Proposals awaiting review", "Changed sources", "AI requests waiting", "Sources to verify"]);
+});

@@ -4,8 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 import { getAuthClaims } from "@/lib/auth/session";
 import { uuidPattern } from "@/lib/documents/domain";
 import {
-  applicationStatuses, DELETE_CONFIRMATION, isItemKind, itemKinds, parseBudget, parseYear, targetDegrees, workspaceError, type WorkspaceState,
+  applicationStatuses, deleteConfirmation, isDeleteConfirmation, isItemKind, itemKinds, parseBudget, parseYear, targetDegrees, workspaceError, type WorkspaceState,
 } from "@/lib/workspace/domain";
+import { getDictionary, getLocale } from "@/lib/i18n/server";
 
 // Every write goes through the signed-in user's Supabase client, so owner-only
 // RLS decides what can be touched; actions only validate the shape of input.
@@ -17,10 +18,15 @@ async function ownerClient() {
 }
 const text = (form: FormData, key: string) => { const v = form.get(key); return typeof v === "string" ? v.trim() : ""; };
 const id = (form: FormData, key: string) => { const v = text(form, key); return uuidPattern.test(v) ? v : null; };
-const fail = (operation: string, e: unknown): WorkspaceState => {
+// Messages are returned in the visitor's interface language (lib/i18n).
+async function lang() {
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  return { locale, m: dict.workspace.messages };
+}
+const fail = async (operation: string, e: unknown): Promise<WorkspaceState> => {
   const code = e && typeof e === "object" && "code" in e && typeof e.code === "string" ? e.code : e instanceof Error ? e.message : "";
   console.error({ source: "workspace", operation, timestamp: new Date().toISOString(), status: "failed", category: "workspace_write_failed" });
-  return { error: workspaceError(code) };
+  return { error: workspaceError(code, await getLocale()) };
 };
 function refresh(...paths: string[]) { for (const p of ["/workspace", ...paths]) revalidatePath(p); }
 const countriesFrom = (form: FormData) => [...new Set(form.getAll("countries").filter((v): v is string => typeof v === "string" && uuidPattern.test(v)))].slice(0, 5);
@@ -28,9 +34,10 @@ const countriesFrom = (form: FormData) => [...new Set(form.getAll("countries").f
 export type SaveState = WorkspaceState & { saved?: boolean };
 /** Bookmark toggle used by the Save button on public detail pages. */
 export async function toggleSaved(prev: SaveState, form: FormData): Promise<SaveState> {
+  const { locale, m } = await lang();
   try {
     const kind = text(form, "kind"), itemId = id(form, "id");
-    if (!isItemKind(kind) || !itemId) return { ...prev, error: workspaceError("invalid") };
+    if (!isItemKind(kind) || !itemId) return { ...prev, error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const column = itemKinds[kind].column;
     const existing = await client.from("saved_items").select("id").eq(column, itemId).maybeSingle();
@@ -43,16 +50,17 @@ export async function toggleSaved(prev: SaveState, form: FormData): Promise<Save
       if (error) throw error;
     }
     refresh();
-    return { saved: !existing.data, message: existing.data ? "Đã bỏ lưu." : "Đã lưu vào workspace." };
+    return { saved: !existing.data, message: existing.data ? m.unsaved : m.saved };
   } catch (e) { return { ...prev, ...fail("toggle_saved", e) }; }
 }
 
 export async function saveProject(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const projectId = text(form, "id") ? id(form, "id") : null;
     const year = parseYear(text(form, "targetYear"));
     const name = text(form, "name");
-    if ((text(form, "id") && !projectId) || year === "invalid" || !name || name.length > 120) return { error: workspaceError("invalid") };
+    if ((text(form, "id") && !projectId) || year === "invalid" || !name || name.length > 120) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const row = { name, description: text(form, "description") || null, target_year: year, target_role: text(form, "targetRole") || null };
     const result = projectId
@@ -69,67 +77,72 @@ export async function saveProject(_: WorkspaceState, form: FormData): Promise<Wo
       if (ins.error) throw ins.error;
     }
     refresh(`/workspace/projects/${pid}`);
-    return { message: projectId ? "Đã lưu thay đổi." : "Đã tạo dự án." };
+    return { message: projectId ? m.changesSaved : m.projectCreated };
   } catch (e) { return fail("save_project", e); }
 }
 
 export async function setProjectStatus(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const projectId = id(form, "id"), status = text(form, "status");
-    if (!projectId || !["active", "archived"].includes(status)) return { error: workspaceError("invalid") };
+    if (!projectId || !["active", "archived"].includes(status)) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const { error } = await client.from("research_projects").update({ status }).eq("id", projectId);
     if (error) throw error;
     refresh(`/workspace/projects/${projectId}`);
-    return { message: status === "archived" ? "Đã lưu trữ dự án." : "Đã mở lại dự án." };
+    return { message: status === "archived" ? m.archived : m.reopened };
   } catch (e) { return fail("project_status", e); }
 }
 
 export async function deleteProject(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const projectId = id(form, "id");
-    if (!projectId || text(form, "confirm") !== DELETE_CONFIRMATION) return { error: `Gõ ${DELETE_CONFIRMATION} để xác nhận.` };
+    if (!projectId || !isDeleteConfirmation(text(form, "confirm"))) return { error: m.typeToConfirm(deleteConfirmation(locale)) };
     const client = await ownerClient();
     // Notes in the project are deleted with it; saved items are kept and unfiled.
     const { error } = await client.from("research_projects").delete().eq("id", projectId);
     if (error) throw error;
     refresh();
-    return { message: "Đã xóa dự án." };
+    return { message: m.projectDeleted };
   } catch (e) { return fail("delete_project", e); }
 }
 
 export async function fileSavedItem(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const savedId = id(form, "id"), raw = text(form, "project"), projectId = raw ? id(form, "project") : null;
-    if (!savedId || (raw && !projectId)) return { error: workspaceError("invalid") };
+    if (!savedId || (raw && !projectId)) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const { error } = await client.from("saved_items").update({ project_id: projectId }).eq("id", savedId);
     if (error) throw error;
     refresh(...(projectId ? [`/workspace/projects/${projectId}`] : []));
-    return { message: projectId ? "Đã thêm vào dự án." : "Đã bỏ khỏi dự án." };
+    return { message: projectId ? m.addedToProject : m.removedFromProject };
   } catch (e) { return fail("file_saved", e); }
 }
 
 export async function removeSavedItem(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const savedId = id(form, "id");
-    if (!savedId) return { error: workspaceError("invalid") };
+    if (!savedId) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const { error } = await client.from("saved_items").delete().eq("id", savedId);
     if (error) throw error;
     refresh();
-    return { message: "Đã bỏ lưu." };
+    return { message: m.unsaved };
   } catch (e) { return fail("remove_saved", e); }
 }
 
 export async function saveNote(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const noteId = text(form, "id") ? id(form, "id") : null;
     const content = text(form, "content");
     const rawProject = text(form, "project"), projectId = rawProject ? id(form, "project") : null;
     const kind = text(form, "kind"), itemId = text(form, "item") ? id(form, "item") : null;
     if ((text(form, "id") && !noteId) || !content || content.length > 10000 || (rawProject && !projectId) || (kind && (!isItemKind(kind) || !itemId))) {
-      return { error: workspaceError("invalid") };
+      return { error: workspaceError("invalid", locale) };
     }
     const client = await ownerClient();
     const result = noteId
@@ -137,30 +150,32 @@ export async function saveNote(_: WorkspaceState, form: FormData): Promise<Works
       : await client.from("notes").insert({ content, project_id: projectId, ...(isItemKind(kind) && itemId ? { [itemKinds[kind].column]: itemId } : {}) });
     if (result.error) throw result.error;
     refresh(...(projectId ? [`/workspace/projects/${projectId}`] : []));
-    return { message: noteId ? "Đã lưu ghi chú." : "Đã thêm ghi chú." };
+    return { message: noteId ? m.noteSaved : m.noteAdded };
   } catch (e) { return fail("save_note", e); }
 }
 
 export async function deleteNote(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const noteId = id(form, "id");
-    if (!noteId) return { error: workspaceError("invalid") };
+    if (!noteId) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const { error } = await client.from("notes").delete().eq("id", noteId);
     if (error) throw error;
     refresh();
-    return { message: "Đã xóa ghi chú." };
+    return { message: m.noteDeleted };
   } catch (e) { return fail("delete_note", e); }
 }
 
 export async function savePlan(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
     const year = parseYear(text(form, "targetYear"));
     const degree = text(form, "targetDegree"), status = text(form, "applicationStatus");
     const budget = parseBudget(text(form, "budgetAmount"), text(form, "budgetCurrency"), text(form, "budgetPeriod"));
-    if (year === "invalid") return { error: "Năm mục tiêu phải trong khoảng 2000–2100." };
-    if (budget === "invalid") return { error: "Ngân sách cần đủ số tiền (ví dụ 12,000.50), mã tiền tệ 3 chữ (EUR, SEK…) và kỳ; hoặc để trống cả ba." };
-    if ((degree && !Object.hasOwn(targetDegrees, degree)) || (status && !Object.hasOwn(applicationStatuses, status))) return { error: workspaceError("invalid") };
+    if (year === "invalid") return { error: m.invalidYear };
+    if (budget === "invalid") return { error: m.invalidBudget };
+    if ((degree && !Object.hasOwn(targetDegrees, degree)) || (status && !Object.hasOwn(applicationStatuses, status))) return { error: workspaceError("invalid", locale) };
     const client = await ownerClient();
     const { error } = await client.from("user_plans").upsert({
       current_position: text(form, "currentPosition") || null, education: text(form, "education") || null,
@@ -177,17 +192,18 @@ export async function savePlan(_: WorkspaceState, form: FormData): Promise<Works
       if (ins.error) throw ins.error;
     }
     refresh("/workspace/plan");
-    return { message: "Đã lưu Kế hoạch châu Âu." };
+    return { message: m.planSaved };
   } catch (e) { return fail("save_plan", e); }
 }
 
 export async function deleteMyWorkspace(_: WorkspaceState, form: FormData): Promise<WorkspaceState> {
+  const { locale, m } = await lang();
   try {
-    if (text(form, "confirm") !== DELETE_CONFIRMATION) return { error: `Gõ ${DELETE_CONFIRMATION} để xác nhận.` };
+    if (!isDeleteConfirmation(text(form, "confirm"))) return { error: m.typeToConfirm(deleteConfirmation(locale)) };
     const client = await ownerClient();
     const { error } = await client.rpc("delete_my_workspace");
     if (error) throw error;
     refresh("/workspace/plan");
-    return { message: "Đã xóa toàn bộ dữ liệu workspace của bạn." };
+    return { message: m.workspaceDeleted };
   } catch (e) { return fail("delete_workspace", e); }
 }

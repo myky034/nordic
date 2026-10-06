@@ -55,13 +55,17 @@ export function TileLink({ tile }: { tile: Tile }) {
  * headline. Zero stays calm (no colour); a pending count uses the accent.
  * `null` means the count could not be loaded — shown as "—", never as 0.
  */
-export function CounterTile({ label, href, value }: { label: string; href: string; value: number | null }) {
+export function CounterTile({ label, href, value, words = { unavailable: "Không tải được", pending: "Cần xử lý", nothingPending: "Không có gì đang chờ" } }: {
+  label: string; href: string; value: number | null;
+  /** Status line wording in the viewer's language (dictionary.dashboard). */
+  words?: { unavailable: string; pending: string; nothingPending: string };
+}) {
   const pending = (value ?? 0) > 0;
   return <Link href={href} className="group flex flex-col justify-between rounded-2xl bg-surface p-4 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline transition hover:shadow-[0_6px_18px_rgb(0_0_0/0.08)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent">
     <span className="flex items-start justify-between gap-2 text-[13px] font-medium leading-snug text-ink-2">{label}<Chevron className="mt-0.5" /></span>
     <span className={`mt-3 text-[34px] font-semibold leading-none tracking-[-0.02em] tabular-nums ${pending ? "text-accent" : "text-ink"}`}>
       {value === null ? "—" : value.toLocaleString("vi-VN")}
     </span>
-    <span className="mt-1.5 text-[12px] text-ink-3">{value === null ? "Không tải được" : pending ? "Cần xử lý" : "Không có gì đang chờ"}</span>
+    <span className="mt-1.5 text-[12px] text-ink-3">{value === null ? words.unavailable : pending ? words.pending : words.nothingPending}</span>
   </Link>;
 }
