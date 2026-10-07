@@ -1,6 +1,8 @@
 # Kế hoạch giai đoạn 1 — Ngành học và hướng nghề cho chương trình (BẢN ĐỀ XUẤT, sửa 2026-10-03)
 
-> **Trạng thái:** kế hoạch để chủ dự án duyệt. **Chưa có code, chưa có migration.**
+> **Trạng thái (2026-10-07):** chủ dự án **đã duyệt** và chọn làm thành 3 phần. **11a xong** (bảng danh mục,
+> CSV ISCED-F chờ đối chiếu, script nhập, trang quản trị Hướng nghề). Còn **11b** (phân loại chương
+> trình + duyệt) và **11c** (bộ lọc công khai, nhãn, Kế hoạch châu Âu). Chi tiết: Decision Log 2026-10-07.
 > Định hướng: PROJECT_SPEC.md, Decision Log "2026-10-03 — Open taxonomy: every field of study
 > and every career path". Ví dụ định dạng mục: `docs/data/field-taxonomy-draft.md` (bản 0.3).
 >
@@ -36,7 +38,9 @@ bằng chứng và được duyệt.
    `taxonomy.manage`; vai trò quản trị viên đầy đủ được cấp sẵn qua migration, admin cấp thêm
    cho vai trò khác ở trang phân quyền. **Không seed hướng nghề nào**: chủ dự án tự tạo và chỉnh
    mọi hướng nghề trên trang quản trị.
-4. Chủ dự án duyệt kế hoạch này.
+4. ~~Chủ dự án duyệt kế hoạch này~~ — **đã duyệt 2026-10-07.** Thêm: tên và định nghĩa hướng nghề
+   bắt buộc cả tiếng Việt lẫn tiếng Anh; ISCED-F do Claude chép từ PDF chính thức vào
+   `docs/data/isced-f-2013.csv`, chủ dự án đối chiếu từng dòng (`docs/data/isced-f-2013.md`).
 
 ## Phạm vi giai đoạn 1
 

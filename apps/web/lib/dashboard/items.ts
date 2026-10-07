@@ -27,6 +27,7 @@ export const dashboardGroups: Group[] = [
     { href: "/admin/crawler", title: "Crawler", description: "URL được crawl và kết quả từng lần chạy", icon: "crawler", tint: "teal", anyOf: ["crawler.manage"] },
     { href: "/admin/extraction", title: "Trích xuất AI", description: "Yêu cầu, lần chạy và lý do đề xuất bị loại", icon: "sparkles", tint: "purple", anyOf: ["facts.propose", "facts.review"] },
     { href: "/admin/metrics", title: "Chỉ số so sánh", description: "Định nghĩa chỉ số cho bảng so sánh quốc gia", icon: "chart", tint: "pink", anyOf: ["metrics.manage"] },
+    { href: "/admin/taxonomy", title: "Ngành & hướng nghề", description: "Danh mục ngành ISCED-F và hướng nghề của Nordic", icon: "books", tint: "indigo", anyOf: ["taxonomy.manage"] },
     { href: "/admin/access", title: "Người dùng & phân quyền", description: "Vai trò, quyền và nhật ký thay đổi", icon: "access", tint: "red", anyOf: ["roles.manage", "users.assign_roles"] },
   ] },
   { id: "explore", title: "Khám phá", tiles: [
@@ -72,6 +73,7 @@ const tileTextEn: Record<string, { title: string; description: string }> = {
   "/admin/crawler": { title: "Crawler", description: "Crawled URLs and the result of each run" },
   "/admin/extraction": { title: "AI extraction", description: "Requests, runs and why proposals were rejected" },
   "/admin/metrics": { title: "Comparison metrics", description: "Metric definitions for the country comparison" },
+  "/admin/taxonomy": { title: "Fields & career paths", description: "ISCED-F fields of study and Nordic career paths" },
   "/admin/access": { title: "Users & permissions", description: "Roles, permissions and the change log" },
   "/countries": { title: "Countries", description: "Profiles of the five countries and comparison" },
   "/documents": { title: "Documents", description: "Recorded source pages and their versions" },

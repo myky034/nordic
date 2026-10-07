@@ -2,7 +2,7 @@ import "server-only";
 import { cache } from "react";
 import { createClient } from "../supabase/server";
 
-export type PermissionKey = "facts.propose" | "facts.review" | "documents.read" | "documents.ingest" | "users.assign_roles" | "roles.manage" | "sources.manage" | "education.manage" | "immigration.manage" | "labour.manage" | "metrics.manage" | "crawler.manage";
+export type PermissionKey = "facts.propose" | "facts.review" | "documents.read" | "documents.ingest" | "users.assign_roles" | "roles.manage" | "sources.manage" | "education.manage" | "immigration.manage" | "labour.manage" | "metrics.manage" | "crawler.manage" | "taxonomy.manage";
 /**
  * The signed-in user's permission keys, fetched once per request.
  *

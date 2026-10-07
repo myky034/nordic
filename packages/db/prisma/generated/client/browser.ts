@@ -187,3 +187,18 @@ export type ExtractionRequest = Prisma.ExtractionRequestModel
  * 
  */
 export type ExtractionItem = Prisma.ExtractionItemModel
+/**
+ * Model StudyField
+ * 
+ */
+export type StudyField = Prisma.StudyFieldModel
+/**
+ * Model CareerPath
+ * 
+ */
+export type CareerPath = Prisma.CareerPathModel
+/**
+ * Model CareerPathVersion
+ * 
+ */
+export type CareerPathVersion = Prisma.CareerPathVersionModel

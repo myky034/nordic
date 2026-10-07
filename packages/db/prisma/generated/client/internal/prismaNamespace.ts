@@ -430,7 +430,10 @@ export const ModelName = {
   ExtractionSetting: 'ExtractionSetting',
   ExtractionRun: 'ExtractionRun',
   ExtractionRequest: 'ExtractionRequest',
-  ExtractionItem: 'ExtractionItem'
+  ExtractionItem: 'ExtractionItem',
+  StudyField: 'StudyField',
+  CareerPath: 'CareerPath',
+  CareerPathVersion: 'CareerPathVersion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -446,7 +449,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem" | "studyField" | "careerPath" | "careerPathVersion"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2966,6 +2969,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    StudyField: {
+      payload: Prisma.$StudyFieldPayload<ExtArgs>
+      fields: Prisma.StudyFieldFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.StudyFieldFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.StudyFieldFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        findFirst: {
+          args: Prisma.StudyFieldFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.StudyFieldFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        findMany: {
+          args: Prisma.StudyFieldFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>[]
+        }
+        create: {
+          args: Prisma.StudyFieldCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        createMany: {
+          args: Prisma.StudyFieldCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.StudyFieldCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>[]
+        }
+        delete: {
+          args: Prisma.StudyFieldDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        update: {
+          args: Prisma.StudyFieldUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        deleteMany: {
+          args: Prisma.StudyFieldDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.StudyFieldUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.StudyFieldUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>[]
+        }
+        upsert: {
+          args: Prisma.StudyFieldUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$StudyFieldPayload>
+        }
+        aggregate: {
+          args: Prisma.StudyFieldAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateStudyField>
+        }
+        groupBy: {
+          args: Prisma.StudyFieldGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudyFieldGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.StudyFieldCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.StudyFieldCountAggregateOutputType> | number
+        }
+      }
+    }
+    CareerPath: {
+      payload: Prisma.$CareerPathPayload<ExtArgs>
+      fields: Prisma.CareerPathFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CareerPathFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CareerPathFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        findFirst: {
+          args: Prisma.CareerPathFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CareerPathFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        findMany: {
+          args: Prisma.CareerPathFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        create: {
+          args: Prisma.CareerPathCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        createMany: {
+          args: Prisma.CareerPathCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CareerPathCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        delete: {
+          args: Prisma.CareerPathDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        update: {
+          args: Prisma.CareerPathUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        deleteMany: {
+          args: Prisma.CareerPathDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CareerPathUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CareerPathUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>[]
+        }
+        upsert: {
+          args: Prisma.CareerPathUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathPayload>
+        }
+        aggregate: {
+          args: Prisma.CareerPathAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCareerPath>
+        }
+        groupBy: {
+          args: Prisma.CareerPathGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CareerPathCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathCountAggregateOutputType> | number
+        }
+      }
+    }
+    CareerPathVersion: {
+      payload: Prisma.$CareerPathVersionPayload<ExtArgs>
+      fields: Prisma.CareerPathVersionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CareerPathVersionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CareerPathVersionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        findFirst: {
+          args: Prisma.CareerPathVersionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CareerPathVersionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        findMany: {
+          args: Prisma.CareerPathVersionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>[]
+        }
+        create: {
+          args: Prisma.CareerPathVersionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        createMany: {
+          args: Prisma.CareerPathVersionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CareerPathVersionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>[]
+        }
+        delete: {
+          args: Prisma.CareerPathVersionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        update: {
+          args: Prisma.CareerPathVersionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        deleteMany: {
+          args: Prisma.CareerPathVersionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CareerPathVersionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CareerPathVersionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>[]
+        }
+        upsert: {
+          args: Prisma.CareerPathVersionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CareerPathVersionPayload>
+        }
+        aggregate: {
+          args: Prisma.CareerPathVersionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCareerPathVersion>
+        }
+        groupBy: {
+          args: Prisma.CareerPathVersionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathVersionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CareerPathVersionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CareerPathVersionCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3510,6 +3735,61 @@ export const ExtractionItemScalarFieldEnum = {
 export type ExtractionItemScalarFieldEnum = (typeof ExtractionItemScalarFieldEnum)[keyof typeof ExtractionItemScalarFieldEnum]
 
 
+export const StudyFieldScalarFieldEnum = {
+  id: 'id',
+  classification: 'classification',
+  code: 'code',
+  level: 'level',
+  parentId: 'parentId',
+  nameEn: 'nameEn',
+  nameVi: 'nameVi',
+  documentId: 'documentId',
+  sourcePage: 'sourcePage',
+  verifiedBy: 'verifiedBy',
+  verifiedOn: 'verifiedOn',
+  importedAt: 'importedAt'
+} as const
+
+export type StudyFieldScalarFieldEnum = (typeof StudyFieldScalarFieldEnum)[keyof typeof StudyFieldScalarFieldEnum]
+
+
+export const CareerPathScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  nameVi: 'nameVi',
+  nameEn: 'nameEn',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  includeRule: 'includeRule',
+  excludeRule: 'excludeRule',
+  keywords: 'keywords',
+  version: 'version',
+  active: 'active',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CareerPathScalarFieldEnum = (typeof CareerPathScalarFieldEnum)[keyof typeof CareerPathScalarFieldEnum]
+
+
+export const CareerPathVersionScalarFieldEnum = {
+  id: 'id',
+  careerPathId: 'careerPathId',
+  version: 'version',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  includeRule: 'includeRule',
+  excludeRule: 'excludeRule',
+  keywords: 'keywords',
+  changedBy: 'changedBy',
+  changedAt: 'changedAt'
+} as const
+
+export type CareerPathVersionScalarFieldEnum = (typeof CareerPathVersionScalarFieldEnum)[keyof typeof CareerPathVersionScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3839,6 +4119,9 @@ export type GlobalOmitConfig = {
   extractionRun?: Prisma.ExtractionRunOmit
   extractionRequest?: Prisma.ExtractionRequestOmit
   extractionItem?: Prisma.ExtractionItemOmit
+  studyField?: Prisma.StudyFieldOmit
+  careerPath?: Prisma.CareerPathOmit
+  careerPathVersion?: Prisma.CareerPathVersionOmit
 }
 
 /* Types for Logging */

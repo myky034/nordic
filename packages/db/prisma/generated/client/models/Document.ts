@@ -283,6 +283,7 @@ export type DocumentWhereInput = {
   changedFacts?: Prisma.FactListRelationFilter
   extractionRequests?: Prisma.ExtractionRequestListRelationFilter
   extractionItems?: Prisma.ExtractionItemListRelationFilter
+  studyFields?: Prisma.StudyFieldListRelationFilter
 }
 
 export type DocumentOrderByWithRelationInput = {
@@ -315,6 +316,7 @@ export type DocumentOrderByWithRelationInput = {
   changedFacts?: Prisma.FactOrderByRelationAggregateInput
   extractionRequests?: Prisma.ExtractionRequestOrderByRelationAggregateInput
   extractionItems?: Prisma.ExtractionItemOrderByRelationAggregateInput
+  studyFields?: Prisma.StudyFieldOrderByRelationAggregateInput
 }
 
 export type DocumentWhereUniqueInput = Prisma.AtLeast<{
@@ -351,6 +353,7 @@ export type DocumentWhereUniqueInput = Prisma.AtLeast<{
   changedFacts?: Prisma.FactListRelationFilter
   extractionRequests?: Prisma.ExtractionRequestListRelationFilter
   extractionItems?: Prisma.ExtractionItemListRelationFilter
+  studyFields?: Prisma.StudyFieldListRelationFilter
 }, "id" | "sourceId_canonicalUrl_contentHash">
 
 export type DocumentOrderByWithAggregationInput = {
@@ -426,6 +429,7 @@ export type DocumentCreateInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateInput = {
@@ -457,6 +461,7 @@ export type DocumentUncheckedCreateInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUpdateInput = {
@@ -488,6 +493,7 @@ export type DocumentUpdateInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateInput = {
@@ -519,6 +525,7 @@ export type DocumentUncheckedUpdateInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManyInput = {
@@ -876,6 +883,20 @@ export type DocumentUpdateOneRequiredWithoutExtractionItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutExtractionItemsInput, Prisma.DocumentUpdateWithoutExtractionItemsInput>, Prisma.DocumentUncheckedUpdateWithoutExtractionItemsInput>
 }
 
+export type DocumentCreateNestedOneWithoutStudyFieldsInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutStudyFieldsInput, Prisma.DocumentUncheckedCreateWithoutStudyFieldsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutStudyFieldsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+}
+
+export type DocumentUpdateOneRequiredWithoutStudyFieldsNestedInput = {
+  create?: Prisma.XOR<Prisma.DocumentCreateWithoutStudyFieldsInput, Prisma.DocumentUncheckedCreateWithoutStudyFieldsInput>
+  connectOrCreate?: Prisma.DocumentCreateOrConnectWithoutStudyFieldsInput
+  upsert?: Prisma.DocumentUpsertWithoutStudyFieldsInput
+  connect?: Prisma.DocumentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DocumentUpdateToOneWithWhereWithoutStudyFieldsInput, Prisma.DocumentUpdateWithoutStudyFieldsInput>, Prisma.DocumentUncheckedUpdateWithoutStudyFieldsInput>
+}
+
 export type DocumentCreateWithoutSourceInput = {
   id?: string
   canonicalUrl: string
@@ -904,6 +925,7 @@ export type DocumentCreateWithoutSourceInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutSourceInput = {
@@ -934,6 +956,7 @@ export type DocumentUncheckedCreateWithoutSourceInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutSourceInput = {
@@ -1012,6 +1035,7 @@ export type DocumentCreateWithoutFactsInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutFactsInput = {
@@ -1042,6 +1066,7 @@ export type DocumentUncheckedCreateWithoutFactsInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutFactsInput = {
@@ -1077,6 +1102,7 @@ export type DocumentCreateWithoutChangedFactsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutChangedFactsInput = {
@@ -1107,6 +1133,7 @@ export type DocumentUncheckedCreateWithoutChangedFactsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutChangedFactsInput = {
@@ -1153,6 +1180,7 @@ export type DocumentUpdateWithoutFactsInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutFactsInput = {
@@ -1183,6 +1211,7 @@ export type DocumentUncheckedUpdateWithoutFactsInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUpsertWithoutChangedFactsInput = {
@@ -1224,6 +1253,7 @@ export type DocumentUpdateWithoutChangedFactsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutChangedFactsInput = {
@@ -1254,6 +1284,7 @@ export type DocumentUncheckedUpdateWithoutChangedFactsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutEvidenceInput = {
@@ -1284,6 +1315,7 @@ export type DocumentCreateWithoutEvidenceInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutEvidenceInput = {
@@ -1314,6 +1346,7 @@ export type DocumentUncheckedCreateWithoutEvidenceInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutEvidenceInput = {
@@ -1360,6 +1393,7 @@ export type DocumentUpdateWithoutEvidenceInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutEvidenceInput = {
@@ -1390,6 +1424,7 @@ export type DocumentUncheckedUpdateWithoutEvidenceInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutUniversitiesInput = {
@@ -1420,6 +1455,7 @@ export type DocumentCreateWithoutUniversitiesInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutUniversitiesInput = {
@@ -1450,6 +1486,7 @@ export type DocumentUncheckedCreateWithoutUniversitiesInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutUniversitiesInput = {
@@ -1496,6 +1533,7 @@ export type DocumentUpdateWithoutUniversitiesInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutUniversitiesInput = {
@@ -1526,6 +1564,7 @@ export type DocumentUncheckedUpdateWithoutUniversitiesInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutProgrammesInput = {
@@ -1556,6 +1595,7 @@ export type DocumentCreateWithoutProgrammesInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutProgrammesInput = {
@@ -1586,6 +1626,7 @@ export type DocumentUncheckedCreateWithoutProgrammesInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutProgrammesInput = {
@@ -1632,6 +1673,7 @@ export type DocumentUpdateWithoutProgrammesInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutProgrammesInput = {
@@ -1662,6 +1704,7 @@ export type DocumentUncheckedUpdateWithoutProgrammesInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutImmigrationRulesInput = {
@@ -1692,6 +1735,7 @@ export type DocumentCreateWithoutImmigrationRulesInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutImmigrationRulesInput = {
@@ -1722,6 +1766,7 @@ export type DocumentUncheckedCreateWithoutImmigrationRulesInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutImmigrationRulesInput = {
@@ -1768,6 +1813,7 @@ export type DocumentUpdateWithoutImmigrationRulesInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutImmigrationRulesInput = {
@@ -1798,6 +1844,7 @@ export type DocumentUncheckedUpdateWithoutImmigrationRulesInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutOccupationsInput = {
@@ -1828,6 +1875,7 @@ export type DocumentCreateWithoutOccupationsInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutOccupationsInput = {
@@ -1858,6 +1906,7 @@ export type DocumentUncheckedCreateWithoutOccupationsInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutOccupationsInput = {
@@ -1904,6 +1953,7 @@ export type DocumentUpdateWithoutOccupationsInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutOccupationsInput = {
@@ -1934,6 +1984,7 @@ export type DocumentUncheckedUpdateWithoutOccupationsInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutCrawlUrlStatesInput = {
@@ -1964,6 +2015,7 @@ export type DocumentCreateWithoutCrawlUrlStatesInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutCrawlUrlStatesInput = {
@@ -1994,6 +2046,7 @@ export type DocumentUncheckedCreateWithoutCrawlUrlStatesInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutCrawlUrlStatesInput = {
@@ -2040,6 +2093,7 @@ export type DocumentUpdateWithoutCrawlUrlStatesInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutCrawlUrlStatesInput = {
@@ -2070,6 +2124,7 @@ export type DocumentUncheckedUpdateWithoutCrawlUrlStatesInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutCrawlerRunItemsInput = {
@@ -2100,6 +2155,7 @@ export type DocumentCreateWithoutCrawlerRunItemsInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutCrawlerRunItemsInput = {
@@ -2130,6 +2186,7 @@ export type DocumentUncheckedCreateWithoutCrawlerRunItemsInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutCrawlerRunItemsInput = {
@@ -2176,6 +2233,7 @@ export type DocumentUpdateWithoutCrawlerRunItemsInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutCrawlerRunItemsInput = {
@@ -2206,6 +2264,7 @@ export type DocumentUncheckedUpdateWithoutCrawlerRunItemsInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutTextInput = {
@@ -2236,6 +2295,7 @@ export type DocumentCreateWithoutTextInput = {
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutTextInput = {
@@ -2266,6 +2326,7 @@ export type DocumentUncheckedCreateWithoutTextInput = {
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutTextInput = {
@@ -2312,6 +2373,7 @@ export type DocumentUpdateWithoutTextInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutTextInput = {
@@ -2342,6 +2404,7 @@ export type DocumentUncheckedUpdateWithoutTextInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutExtractionRequestsInput = {
@@ -2372,6 +2435,7 @@ export type DocumentCreateWithoutExtractionRequestsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutExtractionRequestsInput = {
@@ -2402,6 +2466,7 @@ export type DocumentUncheckedCreateWithoutExtractionRequestsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutExtractionRequestsInput = {
@@ -2448,6 +2513,7 @@ export type DocumentUpdateWithoutExtractionRequestsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutExtractionRequestsInput = {
@@ -2478,6 +2544,7 @@ export type DocumentUncheckedUpdateWithoutExtractionRequestsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateWithoutExtractionItemsInput = {
@@ -2508,6 +2575,7 @@ export type DocumentCreateWithoutExtractionItemsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
   changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentUncheckedCreateWithoutExtractionItemsInput = {
@@ -2538,6 +2606,7 @@ export type DocumentUncheckedCreateWithoutExtractionItemsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
   changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
+  studyFields?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutDocumentInput
 }
 
 export type DocumentCreateOrConnectWithoutExtractionItemsInput = {
@@ -2584,6 +2653,7 @@ export type DocumentUpdateWithoutExtractionItemsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutExtractionItemsInput = {
@@ -2614,6 +2684,147 @@ export type DocumentUncheckedUpdateWithoutExtractionItemsInput = {
   crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentCreateWithoutStudyFieldsInput = {
+  id?: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationCreateNestedManyWithoutDocumentInput
+  source: Prisma.SourceCreateNestedOneWithoutDocumentsInput
+  text?: Prisma.DocumentTextCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactCreateNestedManyWithoutSourceChangedDocumentInput
+  extractionRequests?: Prisma.ExtractionRequestCreateNestedManyWithoutDocumentInput
+  extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentUncheckedCreateWithoutStudyFieldsInput = {
+  id?: string
+  sourceId: string
+  canonicalUrl: string
+  title?: string | null
+  documentType?: string
+  contentHash: string
+  hashMethod?: string
+  metadataHash: string
+  excerpt?: string | null
+  publishedAt?: Date | string | null
+  sourceUpdatedAt?: Date | string | null
+  retrievedAt: Date | string
+  ingestionMethod: string
+  processingStatus?: string
+  extractionStatus?: string
+  createdAt?: Date | string
+  facts?: Prisma.FactUncheckedCreateNestedManyWithoutDocumentInput
+  evidence?: Prisma.EvidenceUncheckedCreateNestedManyWithoutDocumentInput
+  universities?: Prisma.UniversityUncheckedCreateNestedManyWithoutDocumentInput
+  programmes?: Prisma.ProgrammeUncheckedCreateNestedManyWithoutDocumentInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedCreateNestedManyWithoutDocumentInput
+  occupations?: Prisma.OccupationUncheckedCreateNestedManyWithoutDocumentInput
+  text?: Prisma.DocumentTextUncheckedCreateNestedOneWithoutDocumentInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedCreateNestedManyWithoutLastDocumentInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedCreateNestedManyWithoutDocumentInput
+  changedFacts?: Prisma.FactUncheckedCreateNestedManyWithoutSourceChangedDocumentInput
+  extractionRequests?: Prisma.ExtractionRequestUncheckedCreateNestedManyWithoutDocumentInput
+  extractionItems?: Prisma.ExtractionItemUncheckedCreateNestedManyWithoutDocumentInput
+}
+
+export type DocumentCreateOrConnectWithoutStudyFieldsInput = {
+  where: Prisma.DocumentWhereUniqueInput
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutStudyFieldsInput, Prisma.DocumentUncheckedCreateWithoutStudyFieldsInput>
+}
+
+export type DocumentUpsertWithoutStudyFieldsInput = {
+  update: Prisma.XOR<Prisma.DocumentUpdateWithoutStudyFieldsInput, Prisma.DocumentUncheckedUpdateWithoutStudyFieldsInput>
+  create: Prisma.XOR<Prisma.DocumentCreateWithoutStudyFieldsInput, Prisma.DocumentUncheckedCreateWithoutStudyFieldsInput>
+  where?: Prisma.DocumentWhereInput
+}
+
+export type DocumentUpdateToOneWithWhereWithoutStudyFieldsInput = {
+  where?: Prisma.DocumentWhereInput
+  data: Prisma.XOR<Prisma.DocumentUpdateWithoutStudyFieldsInput, Prisma.DocumentUncheckedUpdateWithoutStudyFieldsInput>
+}
+
+export type DocumentUpdateWithoutStudyFieldsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUpdateManyWithoutDocumentNestedInput
+  source?: Prisma.SourceUpdateOneRequiredWithoutDocumentsNestedInput
+  text?: Prisma.DocumentTextUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
+  extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
+  extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+}
+
+export type DocumentUncheckedUpdateWithoutStudyFieldsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  sourceId?: Prisma.StringFieldUpdateOperationsInput | string
+  canonicalUrl?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  documentType?: Prisma.StringFieldUpdateOperationsInput | string
+  contentHash?: Prisma.StringFieldUpdateOperationsInput | string
+  hashMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  metadataHash?: Prisma.StringFieldUpdateOperationsInput | string
+  excerpt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sourceUpdatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  retrievedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  ingestionMethod?: Prisma.StringFieldUpdateOperationsInput | string
+  processingStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  extractionStatus?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  facts?: Prisma.FactUncheckedUpdateManyWithoutDocumentNestedInput
+  evidence?: Prisma.EvidenceUncheckedUpdateManyWithoutDocumentNestedInput
+  universities?: Prisma.UniversityUncheckedUpdateManyWithoutDocumentNestedInput
+  programmes?: Prisma.ProgrammeUncheckedUpdateManyWithoutDocumentNestedInput
+  immigrationRules?: Prisma.ImmigrationRuleUncheckedUpdateManyWithoutDocumentNestedInput
+  occupations?: Prisma.OccupationUncheckedUpdateManyWithoutDocumentNestedInput
+  text?: Prisma.DocumentTextUncheckedUpdateOneWithoutDocumentNestedInput
+  crawlUrlStates?: Prisma.CrawlUrlStateUncheckedUpdateManyWithoutLastDocumentNestedInput
+  crawlerRunItems?: Prisma.CrawlerRunItemUncheckedUpdateManyWithoutDocumentNestedInput
+  changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
+  extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
+  extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentCreateManySourceInput = {
@@ -2662,6 +2873,7 @@ export type DocumentUpdateWithoutSourceInput = {
   changedFacts?: Prisma.FactUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateWithoutSourceInput = {
@@ -2692,6 +2904,7 @@ export type DocumentUncheckedUpdateWithoutSourceInput = {
   changedFacts?: Prisma.FactUncheckedUpdateManyWithoutSourceChangedDocumentNestedInput
   extractionRequests?: Prisma.ExtractionRequestUncheckedUpdateManyWithoutDocumentNestedInput
   extractionItems?: Prisma.ExtractionItemUncheckedUpdateManyWithoutDocumentNestedInput
+  studyFields?: Prisma.StudyFieldUncheckedUpdateManyWithoutDocumentNestedInput
 }
 
 export type DocumentUncheckedUpdateManyWithoutSourceInput = {
@@ -2729,6 +2942,7 @@ export type DocumentCountOutputType = {
   changedFacts: number
   extractionRequests: number
   extractionItems: number
+  studyFields: number
 }
 
 export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2743,6 +2957,7 @@ export type DocumentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensio
   changedFacts?: boolean | DocumentCountOutputTypeCountChangedFactsArgs
   extractionRequests?: boolean | DocumentCountOutputTypeCountExtractionRequestsArgs
   extractionItems?: boolean | DocumentCountOutputTypeCountExtractionItemsArgs
+  studyFields?: boolean | DocumentCountOutputTypeCountStudyFieldsArgs
 }
 
 /**
@@ -2832,6 +3047,13 @@ export type DocumentCountOutputTypeCountExtractionItemsArgs<ExtArgs extends runt
   where?: Prisma.ExtractionItemWhereInput
 }
 
+/**
+ * DocumentCountOutputType without action
+ */
+export type DocumentCountOutputTypeCountStudyFieldsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.StudyFieldWhereInput
+}
+
 
 export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2863,6 +3085,7 @@ export type DocumentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   changedFacts?: boolean | Prisma.Document$changedFactsArgs<ExtArgs>
   extractionRequests?: boolean | Prisma.Document$extractionRequestsArgs<ExtArgs>
   extractionItems?: boolean | Prisma.Document$extractionItemsArgs<ExtArgs>
+  studyFields?: boolean | Prisma.Document$studyFieldsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["document"]>
 
@@ -2940,6 +3163,7 @@ export type DocumentInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   changedFacts?: boolean | Prisma.Document$changedFactsArgs<ExtArgs>
   extractionRequests?: boolean | Prisma.Document$extractionRequestsArgs<ExtArgs>
   extractionItems?: boolean | Prisma.Document$extractionItemsArgs<ExtArgs>
+  studyFields?: boolean | Prisma.Document$studyFieldsArgs<ExtArgs>
   _count?: boolean | Prisma.DocumentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DocumentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2965,6 +3189,7 @@ export type $DocumentPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     changedFacts: Prisma.$FactPayload<ExtArgs>[]
     extractionRequests: Prisma.$ExtractionRequestPayload<ExtArgs>[]
     extractionItems: Prisma.$ExtractionItemPayload<ExtArgs>[]
+    studyFields: Prisma.$StudyFieldPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3390,6 +3615,7 @@ export interface Prisma__DocumentClient<T, Null = never, ExtArgs extends runtime
   changedFacts<T extends Prisma.Document$changedFactsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$changedFactsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   extractionRequests<T extends Prisma.Document$extractionRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$extractionRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtractionRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   extractionItems<T extends Prisma.Document$extractionItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$extractionItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtractionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  studyFields<T extends Prisma.Document$studyFieldsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Document$studyFieldsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudyFieldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4116,6 +4342,30 @@ export type Document$extractionItemsArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.ExtractionItemScalarFieldEnum | Prisma.ExtractionItemScalarFieldEnum[]
+}
+
+/**
+ * Document.studyFields
+ */
+export type Document$studyFieldsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the StudyField
+   */
+  select?: Prisma.StudyFieldSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the StudyField
+   */
+  omit?: Prisma.StudyFieldOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.StudyFieldInclude<ExtArgs> | null
+  where?: Prisma.StudyFieldWhereInput
+  orderBy?: Prisma.StudyFieldOrderByWithRelationInput | Prisma.StudyFieldOrderByWithRelationInput[]
+  cursor?: Prisma.StudyFieldWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.StudyFieldScalarFieldEnum | Prisma.StudyFieldScalarFieldEnum[]
 }
 
 /**

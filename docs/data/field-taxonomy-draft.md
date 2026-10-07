@@ -14,6 +14,12 @@
 > Chủ dự án cần đọc lần cuối các mục bên dưới trước khi dùng. Chỗ ghi **[cần xác minh]** phải
 > kiểm tra trên nguồn chính thức. Không mục nào là dữ liệu về một trường hay chương trình có thật.
 
+> **2026-10-07:** bản nháp đầy đủ các hướng nghề CNTT (11 mục, cùng khung với file này) nằm ở
+> `docs/data/career-paths-it-draft.csv`. Đó chỉ là bản nháp để chủ dự án đọc, sửa rồi tự nhập ở
+> `/admin/taxonomy`; không có gì được nạp tự động. Chủ dự án chốt (2026-10-07): giữ cả 11 nhóm;
+> PO/PM = **Product Owner / Project Manager**; Business Analysis giới hạn CNTT, có thể mở rộng sau;
+> nhóm UX gọi đơn giản là **Thiết kế UX**.
+
 ## Phạm vi chung (chủ dự án quyết, 2026-10-03)
 
 - **Bậc học:** chỉ **thạc sĩ trở lên**: `master` (Thạc sĩ) và `phd` (Tiến sĩ). Chương trình
@@ -156,6 +162,7 @@ một mã nhóm 06 (hệ thống thông tin). Không có mã riêng cho Business
   này như **hướng nghề** (ví dụ "An ninh mạng", "Khoa học dữ liệu"). Không nên có hai danh sách
   song song cho cùng một ý.
 
-- Nội dung nhóm 3 (Business Analysis), nhất là giới hạn "trong bối cảnh CNTT".
+- ~~Nội dung nhóm 3 (Business Analysis), nhất là giới hạn "trong bối cảnh CNTT"~~ — **đã chốt 2026-10-07:**
+  hiện giới hạn trong bối cảnh CNTT; để ngỏ mở rộng sau (sửa tiêu chí thành phiên bản mới, giữ nguyên mã).
 - Danh sách 6 nhóm con CNTT và mục "CNTT khác".
 - Ai đối chiếu mã ISCED-F 2013 với tài liệu chính thức (có thể làm khi bắt đầu giai đoạn 1).

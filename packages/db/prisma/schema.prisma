@@ -130,6 +130,7 @@ model Document {
   changedFacts Fact[] @relation("SourceChangedDocument")
   extractionRequests ExtractionRequest[]
   extractionItems ExtractionItem[]
+  studyFields StudyField[]
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -710,4 +711,69 @@ model ExtractionItem {
   @@index([requestId], map: "extraction_items_request_idx")
   @@index([runId], map: "extraction_items_run_idx")
   @@map("extraction_items")
+}
+
+// Slice 11a: ISCED-F 2013 fields of study. Written only by the operator
+// function import_study_fields() from a CSV checked against the UNESCO
+// document (docs/data/isced-f-2013.md); read-only for the app.
+model StudyField {
+  id             String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  classification String
+  code           String       @unique
+  level          Int          @db.SmallInt
+  parentId       String?      @map("parent_id") @db.Uuid
+  parent         StudyField?  @relation("StudyFieldTree", fields: [parentId], references: [id], onDelete: Restrict)
+  children       StudyField[] @relation("StudyFieldTree")
+  nameEn         String       @map("name_en")
+  nameVi         String       @map("name_vi")
+  documentId     String       @map("document_id") @db.Uuid
+  document       Document     @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  sourcePage     Int?         @map("source_page") @db.SmallInt
+  verifiedBy     String       @map("verified_by")
+  verifiedOn     DateTime     @map("verified_on") @db.Date
+  importedAt     DateTime     @default(now()) @map("imported_at") @db.Timestamptz(6)
+
+  @@index([parentId], map: "study_fields_parent_idx")
+  @@map("study_fields")
+}
+
+// Slice 11a: career paths, Nordic's own groupings (never an official field).
+// Saved through save_career_path(); a criteria change bumps `version` and
+// adds a CareerPathVersion row. `key` never changes.
+model CareerPath {
+  id           String              @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key          String              @unique
+  nameVi       String              @map("name_vi")
+  nameEn       String              @map("name_en")
+  definitionVi String              @map("definition_vi")
+  definitionEn String              @map("definition_en")
+  includeRule  String              @map("include_rule")
+  excludeRule  String?             @map("exclude_rule")
+  keywords     String[]            @default([])
+  version      Int                 @default(1)
+  active       Boolean             @default(true)
+  createdBy    String              @map("created_by") @db.Uuid
+  createdAt    DateTime            @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedBy    String              @map("updated_by") @db.Uuid
+  updatedAt    DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
+  versions     CareerPathVersion[]
+
+  @@map("career_paths")
+}
+
+model CareerPathVersion {
+  id           String     @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  careerPathId String     @map("career_path_id") @db.Uuid
+  careerPath   CareerPath @relation(fields: [careerPathId], references: [id], onDelete: Restrict)
+  version      Int
+  definitionVi String     @map("definition_vi")
+  definitionEn String     @map("definition_en")
+  includeRule  String     @map("include_rule")
+  excludeRule  String?    @map("exclude_rule")
+  keywords     String[]
+  changedBy    String     @map("changed_by") @db.Uuid
+  changedAt    DateTime   @default(now()) @map("changed_at") @db.Timestamptz(6)
+
+  @@unique([careerPathId, version])
+  @@map("career_path_versions")
 }

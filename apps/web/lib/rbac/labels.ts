@@ -18,6 +18,7 @@ const labels: Record<Locale, Record<PermissionKey, string>> = {
     "labour.manage": "Đề xuất nghề",
     "metrics.manage": "Quản lý chỉ số so sánh",
     "crawler.manage": "Quản lý crawler",
+    "taxonomy.manage": "Quản lý hướng nghề",
   },
   en: {
     "facts.propose": "Propose facts",
@@ -32,6 +33,7 @@ const labels: Record<Locale, Record<PermissionKey, string>> = {
     "labour.manage": "Propose occupations",
     "metrics.manage": "Manage comparison metrics",
     "crawler.manage": "Manage crawler",
+    "taxonomy.manage": "Manage career paths",
   },
 };
 /** Vietnamese table, kept for existing callers. */
@@ -50,7 +52,7 @@ export function permissionName(key: PermissionKey, locale: Locale = defaultLocal
 
 const groupKeys: PermissionKey[][] = [
   ["facts.propose", "facts.review"],
-  ["education.manage", "immigration.manage", "labour.manage", "metrics.manage"],
+  ["education.manage", "immigration.manage", "labour.manage", "metrics.manage", "taxonomy.manage"],
   ["sources.manage", "documents.read", "documents.ingest", "crawler.manage"],
   ["roles.manage", "users.assign_roles"],
 ];
@@ -78,6 +80,8 @@ const auditActions: Record<Locale, Record<string, string>> = {
     "crawl_target.saved": "Lưu URL crawl",
     "extraction.account_set": "Đặt tài khoản AI",
     "metric.saved": "Lưu chỉ số so sánh",
+    "career_path.saved": "Lưu hướng nghề",
+    "study_fields.imported": "Nhập danh mục ngành ISCED-F",
   },
   en: {
     "role.saved": "Role saved",
@@ -87,6 +91,8 @@ const auditActions: Record<Locale, Record<string, string>> = {
     "crawl_target.saved": "Crawl URL saved",
     "extraction.account_set": "AI account set",
     "metric.saved": "Comparison metric saved",
+    "career_path.saved": "Career path saved",
+    "study_fields.imported": "ISCED-F field list imported",
   },
 };
 export function auditActionLabel(action: string, locale: Locale = defaultLocale) {

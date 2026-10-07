@@ -84,7 +84,10 @@ export const ModelName = {
   ExtractionSetting: 'ExtractionSetting',
   ExtractionRun: 'ExtractionRun',
   ExtractionRequest: 'ExtractionRequest',
-  ExtractionItem: 'ExtractionItem'
+  ExtractionItem: 'ExtractionItem',
+  StudyField: 'StudyField',
+  CareerPath: 'CareerPath',
+  CareerPathVersion: 'CareerPathVersion'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -606,6 +609,61 @@ export const ExtractionItemScalarFieldEnum = {
 } as const
 
 export type ExtractionItemScalarFieldEnum = (typeof ExtractionItemScalarFieldEnum)[keyof typeof ExtractionItemScalarFieldEnum]
+
+
+export const StudyFieldScalarFieldEnum = {
+  id: 'id',
+  classification: 'classification',
+  code: 'code',
+  level: 'level',
+  parentId: 'parentId',
+  nameEn: 'nameEn',
+  nameVi: 'nameVi',
+  documentId: 'documentId',
+  sourcePage: 'sourcePage',
+  verifiedBy: 'verifiedBy',
+  verifiedOn: 'verifiedOn',
+  importedAt: 'importedAt'
+} as const
+
+export type StudyFieldScalarFieldEnum = (typeof StudyFieldScalarFieldEnum)[keyof typeof StudyFieldScalarFieldEnum]
+
+
+export const CareerPathScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  nameVi: 'nameVi',
+  nameEn: 'nameEn',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  includeRule: 'includeRule',
+  excludeRule: 'excludeRule',
+  keywords: 'keywords',
+  version: 'version',
+  active: 'active',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  updatedBy: 'updatedBy',
+  updatedAt: 'updatedAt'
+} as const
+
+export type CareerPathScalarFieldEnum = (typeof CareerPathScalarFieldEnum)[keyof typeof CareerPathScalarFieldEnum]
+
+
+export const CareerPathVersionScalarFieldEnum = {
+  id: 'id',
+  careerPathId: 'careerPathId',
+  version: 'version',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  includeRule: 'includeRule',
+  excludeRule: 'excludeRule',
+  keywords: 'keywords',
+  changedBy: 'changedBy',
+  changedAt: 'changedAt'
+} as const
+
+export type CareerPathVersionScalarFieldEnum = (typeof CareerPathVersionScalarFieldEnum)[keyof typeof CareerPathVersionScalarFieldEnum]
 
 
 export const SortOrder = {

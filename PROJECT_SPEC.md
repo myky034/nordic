@@ -1687,7 +1687,7 @@ used the dev Supabase project for both Production and Preview).
   login roles and schedule are decided.
 - Steps: `docs/architecture/prod-environment-setup.md`.
 
-### 2026-10-06 — Vietnamese / English language switch for the whole site (approved; in progress)
+### 2026-10-06 — Vietnamese / English language switch for the whole site (approved; built)
 
 Requested by the project owner, replacing the dropped "Vietnamese display
 title" idea. Implements the "Later" item of the 2026-09-29 language entry.
@@ -1705,8 +1705,9 @@ title" idea. Implements the "Later" item of the 2026-09-29 language entry.
 - Owner decisions (2026-10-06): **cookie** (same URLs), **Vietnamese by
   default** (no browser-language guessing), editor and admin pages **included**;
   bilingual auth emails and an English User Guide **not now**.
-- Details: `docs/architecture/i18n-plan.md`. Wave 1 (foundation, header,
-  menu, footer, home, 404/error) built 2026-10-06.
+- Details: `docs/architecture/i18n-plan.md`. All four waves (foundation,
+  public pages, personal area, editor/admin) built 2026-10-06; the English
+  wording awaits the owner's review.
 
 ISCED-F 2013 source for the taxonomy (found 2026-10-06, to be registered as a
 source and imported through the normal pipeline): UNESCO Institute for
@@ -1714,3 +1715,42 @@ Statistics, ISCED page https://www.uis.unesco.org/en/methods-and-tools/isced
 and "ISCED-F 2013 – Detailed field descriptions" (2015). UIS lists a revision
 of ISCED-F 2013 in progress (2025–2026); ISCED-F 2013 remains the version in
 force, so the taxonomy must record which version it uses.
+
+### 2026-10-07 — Taxonomy phase 1 approved; Slice 11a built
+
+The owner asked to build the field taxonomy (phase 1 plan:
+`docs/architecture/field-taxonomy-phase1-plan.md`), with prod database
+separation and the English wording review left pending.
+
+**Owner decisions (2026-10-07)**
+
+- *ISCED-F import:* Claude transcribes the official UNESCO list into
+  `docs/data/isced-f-2013.csv` with a page reference per line; the owner checks
+  every line against the PDF and signs it (`verified_by`, `verified_on`); an
+  operator script imports only a fully signed file. Nothing is seeded by
+  migration and nothing is written from memory.
+- *Delivery:* three parts — 11a taxonomy tables, ISCED import, career-path
+  admin page; 11b classifying programmes with review; 11c public filters,
+  programme labels and fields/careers of interest in "Kế hoạch châu Âu".
+- *Career-path names:* Vietnamese **and** English name and definition are both
+  required (the site is bilingual); keywords stay English-only.
+
+**Slice 11a as built**
+
+- Migration `20261006090000_taxonomy`: permission `taxonomy.manage` (complete
+  administrator roles receive it); `study_fields` (ISCED-F 2013 tree, each row
+  linked to the stored source document, page, and who checked it);
+  `career_paths` + `career_path_versions` (criteria changes create a new
+  version, old versions kept; key immutable); `save_career_path()` (audited);
+  `import_study_fields()` executable by the database operator only, all rows
+  or none, never overwriting an existing code with a different name.
+- RLS: fields readable by everyone; active career paths public, retired ones
+  and version history only for taxonomy/education editors and reviewers; no
+  direct writes.
+- Source: UIS-hosted PDF "ISCED-F 2013 – Detailed field descriptions" (2015),
+  SHA-256 recorded in `docs/data/isced-f-2013.md`; the import script refuses a
+  document whose hash differs. UNESDOC was not used because it serves an
+  anti-bot challenge (AGENTS.md §6).
+- Admin page `/admin/taxonomy` (career paths; read-only field tree with
+  search). Not yet: classification of programmes (11b), public filters (11c).
+
