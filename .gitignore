@@ -13,7 +13,12 @@ node_modules
 !.yarn/versions
 
 # testing
-coverage
+# Test coverage reports only. Directory pattern + exception: apps/web/lib/coverage
+# is source code (public coverage labels, UX review 2026-10-13) and was
+# silently ignored by the former bare "coverage" pattern, breaking the
+# Vercel build.
+coverage/
+!apps/web/lib/coverage/
 
 # next.js (apps/web)
 .next/
