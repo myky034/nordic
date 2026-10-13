@@ -1832,3 +1832,39 @@ Detailed rules chosen while building, within the approved phase 1 plan:
   stay stored but are hidden publicly.
 - Pending classifications count in the review steps and the header total.
 
+### 2026-10-13 — Content-first UX direction (approved)
+
+After using the site as an end user, the owner found it hard to use, unclear in
+purpose and short of the information needed. A BA review
+(`docs/product/ux-review.md`) found the main cause is **content**, amplified by
+an interface organised around the data model: as of 2026-10-13 visitors see
+1 programme, no tuition/deadline facts, 0 comparison metrics, and nothing for
+four of the five countries.
+
+**Approved by the owner (2026-10-13)**
+
+- *Depth before breadth:* the main entry points focus on **Sweden + Master's
+  in IT** until that journey has real data (target: 15–20 programmes with
+  tuition, deadline and English requirement; student residence permit; work
+  during studies; post-study permit; living costs). Other countries keep their
+  pages, labelled "coming soon", with links to their official sources.
+- *Answer first, evidence on demand:* public pages lead with the value; source
+  and verification date stay one tap away. No trust rule is relaxed.
+- *Navigation by goal* (study, visa & residence, work, costs, compare);
+  Facts / Sources / Documents move to the footer ("About the data").
+- *Hide until meaningful:* the comparison page until at least 2 countries × 3
+  metrics; technical details (tier codes, document versions, hashes) on
+  public pages; `/dev/preview` in production.
+- *Postponed:* country quiz, rankings, AI assistant, Slice 12c/12d — they need
+  the Sweden data first. Slice 12a follows the UX work.
+- *Fact types with Vietnamese/English labels* (structured "kind of fact": tuition
+  per year, application deadline, minimum IELTS…), addressing the gap left by
+  dropping the Vietnamese display title on 2026-10-06. It is a schema change:
+  a separate plan goes to the owner before any code.
+
+**Review capacity (owner, 2026-10-13):** one reviewer (the owner), about
+**50–100 documents per week**; no second reviewer for now. At that pace the
+Sweden journey (≈ 20 programme pages plus the permit, work and cost pages)
+fits in one to two weeks of review, so the crawler + AI proposals are used to
+prepare candidates and the reviewer only decides.
+
