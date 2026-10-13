@@ -293,6 +293,7 @@ export type CareerPathWhereInput = {
   updatedBy?: Prisma.UuidFilter<"CareerPath"> | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   versions?: Prisma.CareerPathVersionListRelationFilter
+  classifications?: Prisma.ProgrammeClassificationListRelationFilter
 }
 
 export type CareerPathOrderByWithRelationInput = {
@@ -312,6 +313,7 @@ export type CareerPathOrderByWithRelationInput = {
   updatedBy?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   versions?: Prisma.CareerPathVersionOrderByRelationAggregateInput
+  classifications?: Prisma.ProgrammeClassificationOrderByRelationAggregateInput
 }
 
 export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
@@ -334,6 +336,7 @@ export type CareerPathWhereUniqueInput = Prisma.AtLeast<{
   updatedBy?: Prisma.UuidFilter<"CareerPath"> | string
   updatedAt?: Prisma.DateTimeFilter<"CareerPath"> | Date | string
   versions?: Prisma.CareerPathVersionListRelationFilter
+  classifications?: Prisma.ProgrammeClassificationListRelationFilter
 }, "id" | "key">
 
 export type CareerPathOrderByWithAggregationInput = {
@@ -397,6 +400,7 @@ export type CareerPathCreateInput = {
   updatedBy: string
   updatedAt?: Date | string
   versions?: Prisma.CareerPathVersionCreateNestedManyWithoutCareerPathInput
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathUncheckedCreateInput = {
@@ -416,6 +420,7 @@ export type CareerPathUncheckedCreateInput = {
   updatedBy: string
   updatedAt?: Date | string
   versions?: Prisma.CareerPathVersionUncheckedCreateNestedManyWithoutCareerPathInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathUpdateInput = {
@@ -435,6 +440,7 @@ export type CareerPathUpdateInput = {
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   versions?: Prisma.CareerPathVersionUpdateManyWithoutCareerPathNestedInput
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutCareerPathNestedInput
 }
 
 export type CareerPathUncheckedUpdateInput = {
@@ -454,6 +460,7 @@ export type CareerPathUncheckedUpdateInput = {
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   versions?: Prisma.CareerPathVersionUncheckedUpdateManyWithoutCareerPathNestedInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutCareerPathNestedInput
 }
 
 export type CareerPathCreateManyInput = {
@@ -575,6 +582,11 @@ export type CareerPathScalarRelationFilter = {
   isNot?: Prisma.CareerPathWhereInput
 }
 
+export type CareerPathNullableScalarRelationFilter = {
+  is?: Prisma.CareerPathWhereInput | null
+  isNot?: Prisma.CareerPathWhereInput | null
+}
+
 export type CareerPathCreatekeywordsInput = {
   set: string[]
 }
@@ -598,6 +610,22 @@ export type CareerPathUpdateOneRequiredWithoutVersionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.CareerPathUpdateToOneWithWhereWithoutVersionsInput, Prisma.CareerPathUpdateWithoutVersionsInput>, Prisma.CareerPathUncheckedUpdateWithoutVersionsInput>
 }
 
+export type CareerPathCreateNestedOneWithoutClassificationsInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutClassificationsInput, Prisma.CareerPathUncheckedCreateWithoutClassificationsInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutClassificationsInput
+  connect?: Prisma.CareerPathWhereUniqueInput
+}
+
+export type CareerPathUpdateOneWithoutClassificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.CareerPathCreateWithoutClassificationsInput, Prisma.CareerPathUncheckedCreateWithoutClassificationsInput>
+  connectOrCreate?: Prisma.CareerPathCreateOrConnectWithoutClassificationsInput
+  upsert?: Prisma.CareerPathUpsertWithoutClassificationsInput
+  disconnect?: Prisma.CareerPathWhereInput | boolean
+  delete?: Prisma.CareerPathWhereInput | boolean
+  connect?: Prisma.CareerPathWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.CareerPathUpdateToOneWithWhereWithoutClassificationsInput, Prisma.CareerPathUpdateWithoutClassificationsInput>, Prisma.CareerPathUncheckedUpdateWithoutClassificationsInput>
+}
+
 export type CareerPathCreateWithoutVersionsInput = {
   id?: string
   key: string
@@ -614,6 +642,7 @@ export type CareerPathCreateWithoutVersionsInput = {
   createdAt?: Date | string
   updatedBy: string
   updatedAt?: Date | string
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathUncheckedCreateWithoutVersionsInput = {
@@ -632,6 +661,7 @@ export type CareerPathUncheckedCreateWithoutVersionsInput = {
   createdAt?: Date | string
   updatedBy: string
   updatedAt?: Date | string
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutCareerPathInput
 }
 
 export type CareerPathCreateOrConnectWithoutVersionsInput = {
@@ -666,6 +696,7 @@ export type CareerPathUpdateWithoutVersionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutCareerPathNestedInput
 }
 
 export type CareerPathUncheckedUpdateWithoutVersionsInput = {
@@ -684,6 +715,99 @@ export type CareerPathUncheckedUpdateWithoutVersionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutCareerPathNestedInput
+}
+
+export type CareerPathCreateWithoutClassificationsInput = {
+  id?: string
+  key: string
+  nameVi: string
+  nameEn: string
+  definitionVi: string
+  definitionEn: string
+  includeRule: string
+  excludeRule?: string | null
+  keywords?: Prisma.CareerPathCreatekeywordsInput | string[]
+  version?: number
+  active?: boolean
+  createdBy: string
+  createdAt?: Date | string
+  updatedBy: string
+  updatedAt?: Date | string
+  versions?: Prisma.CareerPathVersionCreateNestedManyWithoutCareerPathInput
+}
+
+export type CareerPathUncheckedCreateWithoutClassificationsInput = {
+  id?: string
+  key: string
+  nameVi: string
+  nameEn: string
+  definitionVi: string
+  definitionEn: string
+  includeRule: string
+  excludeRule?: string | null
+  keywords?: Prisma.CareerPathCreatekeywordsInput | string[]
+  version?: number
+  active?: boolean
+  createdBy: string
+  createdAt?: Date | string
+  updatedBy: string
+  updatedAt?: Date | string
+  versions?: Prisma.CareerPathVersionUncheckedCreateNestedManyWithoutCareerPathInput
+}
+
+export type CareerPathCreateOrConnectWithoutClassificationsInput = {
+  where: Prisma.CareerPathWhereUniqueInput
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutClassificationsInput, Prisma.CareerPathUncheckedCreateWithoutClassificationsInput>
+}
+
+export type CareerPathUpsertWithoutClassificationsInput = {
+  update: Prisma.XOR<Prisma.CareerPathUpdateWithoutClassificationsInput, Prisma.CareerPathUncheckedUpdateWithoutClassificationsInput>
+  create: Prisma.XOR<Prisma.CareerPathCreateWithoutClassificationsInput, Prisma.CareerPathUncheckedCreateWithoutClassificationsInput>
+  where?: Prisma.CareerPathWhereInput
+}
+
+export type CareerPathUpdateToOneWithWhereWithoutClassificationsInput = {
+  where?: Prisma.CareerPathWhereInput
+  data: Prisma.XOR<Prisma.CareerPathUpdateWithoutClassificationsInput, Prisma.CareerPathUncheckedUpdateWithoutClassificationsInput>
+}
+
+export type CareerPathUpdateWithoutClassificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  nameVi?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  definitionVi?: Prisma.StringFieldUpdateOperationsInput | string
+  definitionEn?: Prisma.StringFieldUpdateOperationsInput | string
+  includeRule?: Prisma.StringFieldUpdateOperationsInput | string
+  excludeRule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keywords?: Prisma.CareerPathUpdatekeywordsInput | string[]
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CareerPathVersionUpdateManyWithoutCareerPathNestedInput
+}
+
+export type CareerPathUncheckedUpdateWithoutClassificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  key?: Prisma.StringFieldUpdateOperationsInput | string
+  nameVi?: Prisma.StringFieldUpdateOperationsInput | string
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  definitionVi?: Prisma.StringFieldUpdateOperationsInput | string
+  definitionEn?: Prisma.StringFieldUpdateOperationsInput | string
+  includeRule?: Prisma.StringFieldUpdateOperationsInput | string
+  excludeRule?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  keywords?: Prisma.CareerPathUpdatekeywordsInput | string[]
+  version?: Prisma.IntFieldUpdateOperationsInput | number
+  active?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  versions?: Prisma.CareerPathVersionUncheckedUpdateManyWithoutCareerPathNestedInput
 }
 
 
@@ -693,10 +817,12 @@ export type CareerPathUncheckedUpdateWithoutVersionsInput = {
 
 export type CareerPathCountOutputType = {
   versions: number
+  classifications: number
 }
 
 export type CareerPathCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   versions?: boolean | CareerPathCountOutputTypeCountVersionsArgs
+  classifications?: boolean | CareerPathCountOutputTypeCountClassificationsArgs
 }
 
 /**
@@ -714,6 +840,13 @@ export type CareerPathCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.E
  */
 export type CareerPathCountOutputTypeCountVersionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.CareerPathVersionWhereInput
+}
+
+/**
+ * CareerPathCountOutputType without action
+ */
+export type CareerPathCountOutputTypeCountClassificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgrammeClassificationWhereInput
 }
 
 
@@ -734,6 +867,7 @@ export type CareerPathSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   updatedBy?: boolean
   updatedAt?: boolean
   versions?: boolean | Prisma.CareerPath$versionsArgs<ExtArgs>
+  classifications?: boolean | Prisma.CareerPath$classificationsArgs<ExtArgs>
   _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["careerPath"]>
 
@@ -794,6 +928,7 @@ export type CareerPathSelectScalar = {
 export type CareerPathOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "key" | "nameVi" | "nameEn" | "definitionVi" | "definitionEn" | "includeRule" | "excludeRule" | "keywords" | "version" | "active" | "createdBy" | "createdAt" | "updatedBy" | "updatedAt", ExtArgs["result"]["careerPath"]>
 export type CareerPathInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   versions?: boolean | Prisma.CareerPath$versionsArgs<ExtArgs>
+  classifications?: boolean | Prisma.CareerPath$classificationsArgs<ExtArgs>
   _count?: boolean | Prisma.CareerPathCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type CareerPathIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -803,6 +938,7 @@ export type $CareerPathPayload<ExtArgs extends runtime.Types.Extensions.Internal
   name: "CareerPath"
   objects: {
     versions: Prisma.$CareerPathVersionPayload<ExtArgs>[]
+    classifications: Prisma.$ProgrammeClassificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1215,6 +1351,7 @@ readonly fields: CareerPathFieldRefs;
 export interface Prisma__CareerPathClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   versions<T extends Prisma.CareerPath$versionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CareerPath$versionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$CareerPathVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  classifications<T extends Prisma.CareerPath$classificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.CareerPath$classificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgrammeClassificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1673,6 +1810,30 @@ export type CareerPath$versionsArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.CareerPathVersionScalarFieldEnum | Prisma.CareerPathVersionScalarFieldEnum[]
+}
+
+/**
+ * CareerPath.classifications
+ */
+export type CareerPath$classificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgrammeClassification
+   */
+  select?: Prisma.ProgrammeClassificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProgrammeClassification
+   */
+  omit?: Prisma.ProgrammeClassificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgrammeClassificationInclude<ExtArgs> | null
+  where?: Prisma.ProgrammeClassificationWhereInput
+  orderBy?: Prisma.ProgrammeClassificationOrderByWithRelationInput | Prisma.ProgrammeClassificationOrderByWithRelationInput[]
+  cursor?: Prisma.ProgrammeClassificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgrammeClassificationScalarFieldEnum | Prisma.ProgrammeClassificationScalarFieldEnum[]
 }
 
 /**

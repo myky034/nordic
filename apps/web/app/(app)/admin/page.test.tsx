@@ -73,3 +73,13 @@ it("tallies decisions in the window and the oldest waiting proposal", async () =
   const out = await html(ActivitySection({ client: c as never, permissions: ["facts.review"], now, days: 30 }));
   for (const v of ["Vẫn khớp nguồn mới", ">3<", ">5<", "10 ngày", 'role="img"', "Quyết định duyệt theo ngày, 30 ngày qua. 3 quyết định", "30/9: Duyệt 1 · Từ chối 1"]) expect(out).toContain(v);
 });
+
+it("links to every admin page the viewer may open, the taxonomy page included", async () => {
+  ctx.mockResolvedValue({ client: client({}), permissions: ["roles.manage", "users.assign_roles", "taxonomy.manage", "metrics.manage"] });
+  const out = renderToStaticMarkup(await page());
+  expect(out).toContain('href="/admin/taxonomy"');
+  expect(out).toContain("Ngành &amp; hướng nghề");
+  expect(out).toContain('href="/admin/metrics"');
+  // Pages needing a permission the viewer lacks are not offered.
+  expect(out).not.toContain('href="/admin/crawler"');
+});

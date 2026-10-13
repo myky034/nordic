@@ -1,7 +1,7 @@
 import "server-only";
 import { createPublicClient } from "@/lib/supabase/public";
 
-export type PublicTable = "facts" | "immigration_rules" | "occupations" | "universities" | "programmes";
+export type PublicTable = "facts" | "immigration_rules" | "occupations" | "universities" | "programmes" | "programme_classifications";
 
 /**
  * Which of these ids can a signed-out visitor read right now?

@@ -87,7 +87,9 @@ export const ModelName = {
   ExtractionItem: 'ExtractionItem',
   StudyField: 'StudyField',
   CareerPath: 'CareerPath',
-  CareerPathVersion: 'CareerPathVersion'
+  CareerPathVersion: 'CareerPathVersion',
+  ProgrammeClassification: 'ProgrammeClassification',
+  ClassificationReview: 'ClassificationReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -664,6 +666,37 @@ export const CareerPathVersionScalarFieldEnum = {
 } as const
 
 export type CareerPathVersionScalarFieldEnum = (typeof CareerPathVersionScalarFieldEnum)[keyof typeof CareerPathVersionScalarFieldEnum]
+
+
+export const ProgrammeClassificationScalarFieldEnum = {
+  id: 'id',
+  programmeId: 'programmeId',
+  studyFieldId: 'studyFieldId',
+  careerPathId: 'careerPathId',
+  careerPathVersion: 'careerPathVersion',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  origin: 'origin',
+  status: 'status',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  reviewedAt: 'reviewedAt'
+} as const
+
+export type ProgrammeClassificationScalarFieldEnum = (typeof ProgrammeClassificationScalarFieldEnum)[keyof typeof ProgrammeClassificationScalarFieldEnum]
+
+
+export const ClassificationReviewScalarFieldEnum = {
+  id: 'id',
+  classificationId: 'classificationId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  careerPathVersion: 'careerPathVersion',
+  createdAt: 'createdAt'
+} as const
+
+export type ClassificationReviewScalarFieldEnum = (typeof ClassificationReviewScalarFieldEnum)[keyof typeof ClassificationReviewScalarFieldEnum]
 
 
 export const SortOrder = {

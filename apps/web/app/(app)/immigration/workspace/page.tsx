@@ -30,7 +30,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
   const t = dict.immigrationWorkspace, e = dict.editor;
   if (!manage && !review) return <NoAccess title={t.noAccessTitle} back="/immigration" backLabel={e.viewPublic}>{dict.educationWorkspace.noAccessHelp(permissionName("immigration.manage", locale), permissionName("facts.review", locale))}</NoAccess>;
   const params = await searchParams;
-  const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
+  const status = choiceParam(params, "status", [...tabs], "proposed");
   const q = searchParam(params);
   const page = pageParam(params);
   const { from, to } = pageWindow(page);
@@ -42,7 +42,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
     client.from("documents").select("id,title,canonical_url,sources!inner(name,source_tier)").eq("sources.source_tier", "T1").order("created_at", { ascending: false }).limit(100),
     client.from("countries").select("id,name").order("name"),
     client.from("immigration_rule_reviews").select("id,decision,note,created_at,immigration_rules(title)").order("created_at", { ascending: false }).limit(20),
-    ...tabs.map(([s]) => client.from("immigration_rules").select("id", { count: "exact", head: true }).eq("status", s)),
+    ...tabs.map((s) => client.from("immigration_rules").select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/immigration/workspace", params, { page: null }));
   if (results.some((r) => r.error)) { logAccessError("immigration_workspace"); throw new Error("Không tải được dữ liệu biên tập."); }

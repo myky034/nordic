@@ -29,7 +29,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
   const t = dict.labourWorkspace, e = dict.editor;
   if (!manage && !review) return <NoAccess title={t.noAccessTitle} back="/occupations" backLabel={e.viewPublic}>{dict.educationWorkspace.noAccessHelp(permissionName("labour.manage", locale), permissionName("facts.review", locale))}</NoAccess>;
   const params = await searchParams;
-  const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
+  const status = choiceParam(params, "status", [...tabs], "proposed");
   const q = searchParam(params);
   const page = pageParam(params);
   const { from, to } = pageWindow(page);
@@ -40,7 +40,7 @@ export default async function Page({ searchParams }: PageProps<"/labour/workspac
     client.from("documents").select("id,title,canonical_url").order("created_at", { ascending: false }).limit(100),
     client.from("countries").select("id,name").order("name"),
     client.from("occupation_reviews").select("id,decision,note,created_at,occupations(name)").order("created_at", { ascending: false }).limit(20),
-    ...tabs.map(([s]) => client.from("occupations").select("id", { count: "exact", head: true }).eq("status", s)),
+    ...tabs.map((s) => client.from("occupations").select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/labour/workspace", params, { page: null }));
   if (results.some((r) => r.error)) { logAccessError("labour_workspace"); throw new Error("Không tải được dữ liệu biên tập."); }

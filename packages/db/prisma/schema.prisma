@@ -131,6 +131,7 @@ model Document {
   extractionRequests ExtractionRequest[]
   extractionItems ExtractionItem[]
   studyFields StudyField[]
+  classifications ProgrammeClassification[]
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -319,6 +320,7 @@ model Programme {
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   facts           Fact[]
   reviews         EducationReview[]
+  classifications ProgrammeClassification[]
 
   savedItems SavedItem[]
   workspaceNotes Note[]
@@ -724,6 +726,7 @@ model StudyField {
   parentId       String?      @map("parent_id") @db.Uuid
   parent         StudyField?  @relation("StudyFieldTree", fields: [parentId], references: [id], onDelete: Restrict)
   children       StudyField[] @relation("StudyFieldTree")
+  classifications ProgrammeClassification[]
   nameEn         String       @map("name_en")
   nameVi         String       @map("name_vi")
   documentId     String       @map("document_id") @db.Uuid
@@ -757,6 +760,7 @@ model CareerPath {
   updatedBy    String              @map("updated_by") @db.Uuid
   updatedAt    DateTime            @default(now()) @map("updated_at") @db.Timestamptz(6)
   versions     CareerPathVersion[]
+  classifications ProgrammeClassification[]
 
   @@map("career_paths")
 }
@@ -777,3 +781,44 @@ model CareerPathVersion {
   @@unique([careerPathId, version])
   @@map("career_path_versions")
 }
+
+// Slice 11b: a programme classified by ONE ISCED-F field or ONE career path,
+// with a document + verbatim excerpt from the programme's own site. Written
+// only through propose_classification() / review_classification().
+model ProgrammeClassification {
+  id                String       @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  programmeId       String       @map("programme_id") @db.Uuid
+  programme         Programme    @relation(fields: [programmeId], references: [id], onDelete: Restrict)
+  studyFieldId      String?      @map("study_field_id") @db.Uuid
+  studyField        StudyField?  @relation(fields: [studyFieldId], references: [id], onDelete: Restrict)
+  careerPathId      String?      @map("career_path_id") @db.Uuid
+  careerPath        CareerPath?  @relation(fields: [careerPathId], references: [id], onDelete: Restrict)
+  careerPathVersion Int?         @map("career_path_version")
+  documentId        String       @map("document_id") @db.Uuid
+  document          Document     @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  evidenceExcerpt   String       @map("evidence_excerpt")
+  origin            String       @default("manual")
+  status            String       @default("proposed")
+  createdBy         String       @map("created_by") @db.Uuid
+  createdAt         DateTime     @default(now()) @map("created_at") @db.Timestamptz(6)
+  reviewedAt        DateTime?    @map("reviewed_at") @db.Timestamptz(6)
+  reviews           ClassificationReview[]
+
+  @@index([status, createdAt], map: "programme_classifications_status_idx")
+  @@map("programme_classifications")
+}
+
+model ClassificationReview {
+  id                String                  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  classificationId  String                  @map("classification_id") @db.Uuid
+  classification    ProgrammeClassification @relation(fields: [classificationId], references: [id], onDelete: Restrict)
+  actorId           String                  @map("actor_id") @db.Uuid
+  decision          String
+  note              String
+  careerPathVersion Int?                    @map("career_path_version")
+  createdAt         DateTime                @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@index([createdAt], map: "classification_reviews_created_at_idx")
+  @@map("classification_reviews")
+}
+

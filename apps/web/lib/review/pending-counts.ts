@@ -18,7 +18,7 @@ export async function pendingCounts(client: SupabaseClient): Promise<Record<Coun
   };
   const entries = await Promise.all(([
     ["sourcesUnverified", () => sum(head("sources", "status", "needs_verification"))],
-    ["education", () => sum(head("universities", "status", "proposed"), head("programmes", "status", "proposed"))],
+    ["education", () => sum(head("universities", "status", "proposed"), head("programmes", "status", "proposed"), head("programme_classifications", "status", "proposed"))],
     ["immigration", () => sum(head("immigration_rules", "status", "proposed"))],
     ["labour", () => sum(head("occupations", "status", "proposed"))],
     ["facts", () => sum(head("facts", "status", "proposed"))],

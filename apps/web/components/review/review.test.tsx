@@ -43,11 +43,12 @@ it("lists decisions by item name with a plain label, not a code or an id", async
 it("shows the three review steps with counts, marks the current one, and never shows a failed count as zero", async () => {
   const { ReviewStepsContent: ReviewSteps } = await import("./review-steps");
   // Fake client: every table has 2 pending rows except sources, whose count fails.
+  // Education sums universities, programmes and classifications (Slice 11b): 6.
   const client = { from: (table: string) => ({ select: () => ({ eq: () => Promise.resolve(table === "sources" ? { count: null, error: new Error("x") } : { count: 2, error: null }) }) }) };
   const errors = console.error; console.error = () => {};
   try {
     const html = renderToStaticMarkup(await ReviewSteps({ client: client as never, permissions: ["facts.review"], current: "immigration" }));
-    for (const text of ["Xác minh nguồn", "Duyệt mục gốc", "Duyệt thông tin chi tiết", "4 chờ", "2 chờ", "—", "Người quản lý nguồn thực hiện", 'aria-current="page"']) expect(html).toContain(text);
+    for (const text of ["Xác minh nguồn", "Duyệt mục gốc", "Duyệt thông tin chi tiết", "6 chờ", "2 chờ", "—", "Người quản lý nguồn thực hiện", 'aria-current="page"']) expect(html).toContain(text);
     expect(html).not.toContain('href="/admin/sources"');
   } finally { console.error = errors; }
 });

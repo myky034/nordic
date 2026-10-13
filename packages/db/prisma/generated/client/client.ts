@@ -226,3 +226,13 @@ export type CareerPath = Prisma.CareerPathModel
  * 
  */
 export type CareerPathVersion = Prisma.CareerPathVersionModel
+/**
+ * Model ProgrammeClassification
+ * 
+ */
+export type ProgrammeClassification = Prisma.ProgrammeClassificationModel
+/**
+ * Model ClassificationReview
+ * 
+ */
+export type ClassificationReview = Prisma.ClassificationReviewModel

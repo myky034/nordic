@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import { accessContext } from "@/lib/rbac/access";
 import { permissionName } from "@/lib/rbac/labels";
 import { readWindow } from "@/lib/admin/overview";
+import { adminPages } from "@/lib/dashboard/items";
+import { TileLink } from "../dashboard/tiles";
 import { withParams } from "@/lib/pagination";
 import { NoAccess, PageHeader, Section, Segmented } from "@/components/ui";
 import { ActivitySection, CoverageSection, CrawlerSection, ExtractionSection } from "./sections";
@@ -22,6 +24,9 @@ export default async function AdminOverviewPage({ searchParams }: PageProps<"/ad
   const props = { client, permissions, now, locale };
   return <>
     <PageHeader eyebrow={t.eyebrow} title={t.title} description={t.description} />
+    <Section title={t.pages}>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{adminPages(permissions, locale).map((tile) => <TileLink key={tile.href} tile={tile} />)}</div>
+    </Section>
     <Section title={t.system}>
       <div className="grid gap-4 lg:grid-cols-2">
         <Suspense fallback={<SectionPlaceholder />}><CrawlerSection {...props} /></Suspense>

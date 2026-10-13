@@ -86,3 +86,59 @@ export function taxonomyError(code: string, locale: Locale = defaultLocale) {
   return lookupMessage(errors, code, locale);
 }
 export type TaxonomyState = { error?: string; message?: string };
+
+// ---------------------------------------------------------------- Slice 11b: classifications
+
+/** Host of an http(s) URL, lower-case, without "www." — same rule as public.url_host() in SQL. */
+export function urlHost(url: string): string | null {
+  const m = /^https?:\/\/([^/:?#]+)/i.exec(url.trim());
+  return m ? m[1].toLowerCase().replace(/^www\./, "") : null;
+}
+/**
+ * Does a document come from the programme's own site? Same host, or one is a
+ * subdomain of the other (education.uni.se ↔ uni.se). Mirrors the check in
+ * propose_classification(), so the form only offers documents the database
+ * will accept; the database still decides.
+ */
+export function sameSite(documentUrl: string, programmeUrl: string) {
+  const d = urlHost(documentUrl), p = urlHost(programmeUrl);
+  return !!d && !!p && (d === p || d.endsWith(`.${p}`) || p.endsWith(`.${d}`));
+}
+/** A reviewed career-path classification judged against older criteria than the current ones. */
+export function isStale(c: { status: string; career_path_version: number | null; career_paths: { version: number } | null }) {
+  return c.status === "reviewed" && c.career_path_version !== null && !!c.career_paths && c.career_path_version < c.career_paths.version;
+}
+/** Fields a programme can be classified into: everything except "99 Field unknown". */
+export const classifiableFields = <T extends { code: string }>(rows: T[]) => rows.filter((r) => !r.code.startsWith("99"));
+
+const classificationErrors: MessageTable = {
+  vi: {
+    classification_forbidden: "Bạn chưa có quyền này (đề xuất cần education.manage, duyệt cần facts.review).",
+    access_forbidden: "Bạn chưa có quyền này (đề xuất cần education.manage, duyệt cần facts.review).",
+    classification_programme_ineligible: "Chỉ phân loại chương trình thạc sĩ hoặc tiến sĩ đã được duyệt.",
+    classification_career_path_retired: "Hướng nghề này đã ngừng dùng.",
+    classification_document_missing: "Không tìm thấy tài liệu bằng chứng.",
+    classification_document_mismatch: "Tài liệu phải là trang trên website của chính chương trình (cùng tên miền với trang chính thức).",
+    classification_duplicate: "Chương trình đã có phân loại này (đang chờ duyệt hoặc đã duyệt).",
+    classification_already_decided: "Phân loại này đã có quyết định. Hãy tải lại trang.",
+    classification_not_stale: "Phân loại này đã khớp phiên bản tiêu chí hiện tại.",
+    classification_missing: "Phân loại không còn tồn tại. Hãy tải lại trang.",
+    fallback: "Không lưu được. Kiểm tra chương trình, ngành hoặc hướng nghề, tài liệu và trích đoạn (tối đa 500 ký tự); ghi chú duyệt là bắt buộc.",
+  },
+  en: {
+    classification_forbidden: "You do not have this permission (proposing needs education.manage, reviewing needs facts.review).",
+    access_forbidden: "You do not have this permission (proposing needs education.manage, reviewing needs facts.review).",
+    classification_programme_ineligible: "Only reviewed Master's or PhD programmes can be classified.",
+    classification_career_path_retired: "This career path has been retired.",
+    classification_document_missing: "The evidence document was not found.",
+    classification_document_mismatch: "The document must be a page on the programme's own website (same domain as its official page).",
+    classification_duplicate: "The programme already has this classification (waiting or reviewed).",
+    classification_already_decided: "This classification has already been decided. Reload the page.",
+    classification_not_stale: "This classification already matches the current criteria version.",
+    classification_missing: "This classification no longer exists. Reload the page.",
+    fallback: "Could not save. Check the programme, the field or career path, the document and the excerpt (at most 500 characters); a review note is required.",
+  },
+};
+export function classificationError(code: string, locale: Locale = defaultLocale) {
+  return lookupMessage(classificationErrors, code, locale);
+}

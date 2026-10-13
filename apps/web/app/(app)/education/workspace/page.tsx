@@ -16,10 +16,11 @@ import { DecisionHistory } from "@/components/review/decision-history";
 import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { programmeBlockers, visibilityOf } from "@/lib/review/visibility";
+import { ClassificationSection, classificationTabs } from "./classifications";
 
 type Row = { id: string; name: string; status: string; official_url: string; evidence_excerpt: string; document_id: string;
   countries?: { name: string }; degree_type?: string; universities?: { name: string; status: string } };
-const kinds = ["university", "programme"] as const;
+const kinds = ["university", "programme", "classification"] as const;
 const tabs = ["proposed", "reviewed", "rejected"] as const;
 
 export default async function Page({ searchParams }: PageProps<"/education/workspace">) {
@@ -31,7 +32,17 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   if (!manage && !review) return <NoAccess title={t.noAccessTitle} back="/programmes" backLabel={t.seePublic}>{t.noAccessHelp(permissionName("education.manage", locale), permissionName("facts.review", locale))}</NoAccess>;
   const params = await searchParams;
   const kind = choiceParam(params, "kind", [...kinds], "university");
-  const status = choiceParam(params, "status", tabs.map(([v]) => v), "proposed");
+  const header = <PageHeader eyebrow={e.eyebrow} title={t.title} description={t.description}
+    actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">{e.publicPage}</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">{t.enterTuition}</Link></>} />;
+  const kindTabs = <Segmented label={t.kind} items={kinds.map((value) => ({ href: withParams("/education/workspace", {}, { kind: value === "university" ? null : value }), label: t.kinds[value], active: kind === value }))} />;
+  // Slice 11b: classifications have their own tabs, queries and forms.
+  if (kind === "classification") return <>
+    {header}
+    {review && <ReviewSteps client={client} permissions={permissions} current="education" locale={locale} />}
+    <div className="mt-6">{kindTabs}</div>
+    <ClassificationSection client={client} params={params} status={choiceParam(params, "status", [...classificationTabs], "proposed")} locale={locale} manage={manage} review={review} />
+  </>;
+  const status = choiceParam(params, "status", [...tabs], "proposed");
   const q = searchParam(params);
   const page = pageParam(params);
   const { from, to } = pageWindow(page);
@@ -49,7 +60,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
     client.from("countries").select("id,name").order("name"),
     client.from("education_reviews").select("id,university_id,decision,note,created_at,universities(name),programmes(name)").order("created_at", { ascending: false }).limit(20),
     client.from("universities").select("id,name,countries(name)").neq("status", "rejected").order("name").limit(300),
-    ...tabs.map(([s]) => client.from(table).select("id", { count: "exact", head: true }).eq("status", s)),
+    ...tabs.map((s) => client.from(table).select("id", { count: "exact", head: true }).eq("status", s)),
   ]);
   if (isPastLastPage(results[0].error)) redirect(withParams("/education/workspace", params, { page: null }));
   if (results.some((r) => r.error)) { logAccessError("education_workspace"); throw new Error("Không tải được dữ liệu biên tập."); }
@@ -62,8 +73,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
   const visible = status === "reviewed" ? await publicIds(table, rows.map((r) => r.id)) : new Set<string>();
   const base = { kind: kind === "university" ? null : kind };
   return <>
-    <PageHeader eyebrow={e.eyebrow} title={t.title} description={t.description}
-      actions={<><Link className={`${textLink} text-[15px]`} href="/programmes">{e.publicPage}</Link><Link className={`${textLink} text-[15px]`} href="/facts/workspace">{t.enterTuition}</Link></>} />
+    {header}
     {review && <ReviewSteps client={client} permissions={permissions} current="education" locale={locale} />}
     {manage && <div className="space-y-3">
       <Disclosure summary={t.proposeUniversity}><UniversityForm countries={countries} documents={documents} locale={locale} /></Disclosure>
@@ -71,7 +81,7 @@ export default async function Page({ searchParams }: PageProps<"/education/works
     </div>}
     <Section title={e.list}>
       <div className="flex flex-wrap items-start gap-3">
-        <Segmented label={t.kind} items={kinds.map((value) => ({ href: withParams("/education/workspace", {}, { kind: value === "university" ? null : value }), label: t.kinds[value], active: kind === value }))} />
+        {kindTabs}
         <Segmented label={e.status} items={tabs.map((value, i) => ({ href: withParams("/education/workspace", { q }, { ...base, status: value === "proposed" ? null : value }), label: e.statusTabs[value], count: tabCounts[i], active: status === value }))} />
       </div>
       <form action="/education/workspace" className="mb-5">

@@ -433,7 +433,9 @@ export const ModelName = {
   ExtractionItem: 'ExtractionItem',
   StudyField: 'StudyField',
   CareerPath: 'CareerPath',
-  CareerPathVersion: 'CareerPathVersion'
+  CareerPathVersion: 'CareerPathVersion',
+  ProgrammeClassification: 'ProgrammeClassification',
+  ClassificationReview: 'ClassificationReview'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -449,7 +451,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem" | "studyField" | "careerPath" | "careerPathVersion"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem" | "studyField" | "careerPath" | "careerPathVersion" | "programmeClassification" | "classificationReview"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3191,6 +3193,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProgrammeClassification: {
+      payload: Prisma.$ProgrammeClassificationPayload<ExtArgs>
+      fields: Prisma.ProgrammeClassificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProgrammeClassificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProgrammeClassificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        findFirst: {
+          args: Prisma.ProgrammeClassificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProgrammeClassificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        findMany: {
+          args: Prisma.ProgrammeClassificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>[]
+        }
+        create: {
+          args: Prisma.ProgrammeClassificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        createMany: {
+          args: Prisma.ProgrammeClassificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProgrammeClassificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>[]
+        }
+        delete: {
+          args: Prisma.ProgrammeClassificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        update: {
+          args: Prisma.ProgrammeClassificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProgrammeClassificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProgrammeClassificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProgrammeClassificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProgrammeClassificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProgrammeClassificationPayload>
+        }
+        aggregate: {
+          args: Prisma.ProgrammeClassificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProgrammeClassification>
+        }
+        groupBy: {
+          args: Prisma.ProgrammeClassificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgrammeClassificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProgrammeClassificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProgrammeClassificationCountAggregateOutputType> | number
+        }
+      }
+    }
+    ClassificationReview: {
+      payload: Prisma.$ClassificationReviewPayload<ExtArgs>
+      fields: Prisma.ClassificationReviewFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ClassificationReviewFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ClassificationReviewFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        findFirst: {
+          args: Prisma.ClassificationReviewFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ClassificationReviewFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        findMany: {
+          args: Prisma.ClassificationReviewFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>[]
+        }
+        create: {
+          args: Prisma.ClassificationReviewCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        createMany: {
+          args: Prisma.ClassificationReviewCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ClassificationReviewCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>[]
+        }
+        delete: {
+          args: Prisma.ClassificationReviewDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        update: {
+          args: Prisma.ClassificationReviewUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        deleteMany: {
+          args: Prisma.ClassificationReviewDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ClassificationReviewUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ClassificationReviewUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>[]
+        }
+        upsert: {
+          args: Prisma.ClassificationReviewUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ClassificationReviewPayload>
+        }
+        aggregate: {
+          args: Prisma.ClassificationReviewAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateClassificationReview>
+        }
+        groupBy: {
+          args: Prisma.ClassificationReviewGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClassificationReviewGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ClassificationReviewCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ClassificationReviewCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3790,6 +3940,37 @@ export const CareerPathVersionScalarFieldEnum = {
 export type CareerPathVersionScalarFieldEnum = (typeof CareerPathVersionScalarFieldEnum)[keyof typeof CareerPathVersionScalarFieldEnum]
 
 
+export const ProgrammeClassificationScalarFieldEnum = {
+  id: 'id',
+  programmeId: 'programmeId',
+  studyFieldId: 'studyFieldId',
+  careerPathId: 'careerPathId',
+  careerPathVersion: 'careerPathVersion',
+  documentId: 'documentId',
+  evidenceExcerpt: 'evidenceExcerpt',
+  origin: 'origin',
+  status: 'status',
+  createdBy: 'createdBy',
+  createdAt: 'createdAt',
+  reviewedAt: 'reviewedAt'
+} as const
+
+export type ProgrammeClassificationScalarFieldEnum = (typeof ProgrammeClassificationScalarFieldEnum)[keyof typeof ProgrammeClassificationScalarFieldEnum]
+
+
+export const ClassificationReviewScalarFieldEnum = {
+  id: 'id',
+  classificationId: 'classificationId',
+  actorId: 'actorId',
+  decision: 'decision',
+  note: 'note',
+  careerPathVersion: 'careerPathVersion',
+  createdAt: 'createdAt'
+} as const
+
+export type ClassificationReviewScalarFieldEnum = (typeof ClassificationReviewScalarFieldEnum)[keyof typeof ClassificationReviewScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4122,6 +4303,8 @@ export type GlobalOmitConfig = {
   studyField?: Prisma.StudyFieldOmit
   careerPath?: Prisma.CareerPathOmit
   careerPathVersion?: Prisma.CareerPathVersionOmit
+  programmeClassification?: Prisma.ProgrammeClassificationOmit
+  classificationReview?: Prisma.ClassificationReviewOmit
 }
 
 /* Types for Logging */

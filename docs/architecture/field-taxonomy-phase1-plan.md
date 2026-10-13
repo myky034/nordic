@@ -1,8 +1,9 @@
 # Kế hoạch giai đoạn 1 — Ngành học và hướng nghề cho chương trình (BẢN ĐỀ XUẤT, sửa 2026-10-03)
 
 > **Trạng thái (2026-10-07):** chủ dự án **đã duyệt** và chọn làm thành 3 phần. **11a xong** (bảng danh mục,
-> CSV ISCED-F chờ đối chiếu, script nhập, trang quản trị Hướng nghề). Còn **11b** (phân loại chương
-> trình + duyệt) và **11c** (bộ lọc công khai, nhãn, Kế hoạch châu Âu). Chi tiết: Decision Log 2026-10-07.
+> ISCED-F đã đối chiếu và nhập, trang quản trị Hướng nghề). **11b xong** (phân loại chương trình + duyệt +
+> "Cần duyệt lại" khi tiêu chí hướng nghề đổi). Còn **11c** (bộ lọc công khai, nhãn, Kế hoạch châu Âu).
+> Chi tiết: Decision Log 2026-10-07.
 > Định hướng: PROJECT_SPEC.md, Decision Log "2026-10-03 — Open taxonomy: every field of study
 > and every career path". Ví dụ định dạng mục: `docs/data/field-taxonomy-draft.md` (bản 0.3).
 >

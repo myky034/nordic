@@ -37,6 +37,16 @@ export const dashboardGroups: Group[] = [
   ] },
 ];
 
+/**
+ * Administration pages this user may open, other than the overview itself:
+ * the links at the top of /admin. Same list as the dashboard's "Quản trị"
+ * group, so a new admin page needs only one entry above.
+ */
+export function adminPages(permissions: string[], locale: Locale = defaultLocale): Tile[] {
+  const admin = localizeGroups(visibleGroups(permissions), locale).find((g) => g.id === "admin");
+  return admin ? admin.tiles.filter((t) => t.href !== "/admin") : [];
+}
+
 /** Groups with only the tiles this user may open; empty groups are dropped. */
 export function visibleGroups(permissions: string[], groups: Group[] = dashboardGroups): Group[] {
   const allowed = (t: Tile) => t.anyOf.length === 0 || t.anyOf.some((p) => permissions.includes(p));

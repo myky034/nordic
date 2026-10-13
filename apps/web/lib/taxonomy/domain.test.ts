@@ -35,3 +35,16 @@ it("explains database refusals in both languages, unknown codes included", () =>
   expect(taxonomyError("taxonomy_immutable", "en")).toBe("The key of an existing career path cannot be changed.");
   expect(taxonomyError("constructor")).toContain("Không lưu được");
 });
+
+it("accepts evidence only from the programme's own site, like the database does", async () => {
+  const { sameSite, urlHost, isStale, classifiableFields } = await import("./domain");
+  expect(urlHost("https://WWW.Uni.example.test/x?y")).toBe("uni.example.test");
+  expect(sameSite("https://education.uni.example.test/p", "https://www.uni.example.test/msc")).toBe(true);
+  expect(sameSite("https://aggregator.example.test/p", "https://www.uni.example.test/msc")).toBe(false);
+  expect(sameSite("https://notuni.example.test/p", "https://uni.example.test/msc")).toBe(false);
+  expect(sameSite("ftp://uni.example.test/p", "https://uni.example.test/msc")).toBe(false);
+  expect(isStale({ status: "reviewed", career_path_version: 1, career_paths: { version: 2 } })).toBe(true);
+  expect(isStale({ status: "proposed", career_path_version: 1, career_paths: { version: 2 } })).toBe(false);
+  expect(isStale({ status: "reviewed", career_path_version: null, career_paths: null })).toBe(false);
+  expect(classifiableFields([{ code: "0613" }, { code: "9999" }, { code: "99" }]).map((f) => f.code)).toEqual(["0613"]);
+});

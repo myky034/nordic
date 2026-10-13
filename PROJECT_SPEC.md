@@ -1754,3 +1754,81 @@ separation and the English wording review left pending.
 - Admin page `/admin/taxonomy` (career paths; read-only field tree with
   search). Not yet: classification of programmes (11b), public filters (11c).
 
+### 2026-10-07 — "Kế hoạch châu Âu" becomes a plan dashboard (approved; after 11b/11c)
+
+Requested by the owner: entering a profile in "Kế hoạch châu Âu" should give
+more than filtered links — something computed from it (what is missing, how
+much it costs, how long is left, which skills to learn). Approved the same day.
+
+**Principles (AGENTS.md §1, §11, §12, §15, §20, §23)**
+
+- Every figure is a transparent calculation over reviewed, sourced data, shown
+  with its source and verification date; missing data is shown as "unknown",
+  never filled in.
+- Anything the system suggests is labelled "suggestion based on your profile"
+  or "AI synthesis", never as official advice.
+- Not built: admission, visa or salary predictions; "best country" scores or
+  rankings. "How long" is answered with sourced dates and countdowns, not
+  probabilities.
+- All profile data stays user-private (owner-only RLS, as in Slice 8).
+
+**Approved scope**
+
+1. *Entry-requirement check:* the profile gains current degree (level and
+   ISCED field), English test and score, and years of experience. Each
+   reviewed entry requirement of the programmes the user saved or filters is
+   shown as met / not met / unknown, with its excerpt. Needs a structured
+   vocabulary of requirement types (like comparison metrics).
+2. *Budget:* tuition (reviewed fact) + monthly living cost (T1 figure, e.g. the
+   immigration authority's maintenance requirement) × duration, compared with
+   the user's budget; every line visible, per country and programme.
+3. *Timeline:* countdown to reviewed application deadlines plus published
+   (T1) visa processing times; steps without a source are the user's own
+   milestones and labelled as such.
+4. *Skills:* **ESCO** (European Commission classification of occupations and
+   skills) is the official source, registered and imported like ISCED-F
+   (checked file → operator import); its URL and version are recorded when the
+   source is registered. Career paths are linked to ESCO skills, and holders of
+   taxonomy.manage **may also attach skills by hand** — those links are
+   labelled as Nordic's, separate from ESCO's own occupation–skill relations.
+   The user ticks skills they have and sees what is missing, with programmes
+   that teach it (from 11b classifications).
+5. *AI plan summary:* a user-triggered summary written only from blocks 1–4,
+   every sentence cited, labelled "AI synthesis". Requires explicit user
+   consent before profile data is sent to the AI provider, and has API cost.
+
+**Phasing (after 11b and 11c, owner decision):** 12a profile + requirement
+check + budget; 12b timeline; 12c ESCO skills; 12d AI summary. Each slice
+gets its own plan and approval before code (schema, sources, privacy).
+
+**Known risk:** the dashboard is only as useful as the reviewed data behind
+it; at first many cells will read "unknown" until requirements, tuition and
+deadlines are reviewed for Sweden.
+
+### 2026-10-07 — Slice 11b built: classifying programmes
+
+Programmes are classified by field of study or career path through the
+education workspace (kind "Phân loại ngành / hướng nghề"), with review.
+Detailed rules chosen while building, within the approved phase 1 plan:
+
+- One row = one programme + one ISCED-F field **or** one career path, with a
+  document and a verbatim excerpt (≤ 500 characters). Only **reviewed**
+  Master's/PhD programmes can be classified; "99 Field unknown" is refused.
+- *Evidence site:* the document's host must equal the programme's official
+  URL host or be a subdomain of it (or the reverse), ignoring "www.". This
+  implements "the document belongs to the university's source" from the plan
+  without a source column on universities; aggregator pages are refused.
+- *Career-path versions:* a proposal is judged against the career path's
+  **current** criteria at review time, and the classification stores that
+  version. When the criteria change later, reviewed classifications on an
+  older version are listed under "Cần duyệt lại"; a reviewer either
+  revalidates them (stores the new version) or withdraws them. Nothing is
+  rewritten automatically.
+- *Withdrawal:* a reviewer may reject a reviewed classification (with a
+  note); a correction is a new proposal. All decisions are append-only in
+  classification_reviews.
+- *Public visibility (for 11c):* reviewed, while the programme is public and
+  the career path (if any) active. Classifications of a retired career path
+  stay stored but are hidden publicly.
+- Pending classifications count in the review steps and the header total.
+

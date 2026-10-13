@@ -31,3 +31,10 @@ it("translates every group, tile and counter for English, and keeps the permissi
   expect(localizeGroups(visibleGroups([]), "en").map((g) => g.title)).toEqual(["Yours", "Explore"]);
   expect(counters.map((c) => counterLabel(c, "en"))).toEqual(["Proposals awaiting review", "Changed sources", "AI requests waiting", "Sources to verify"]);
 });
+
+it("lists the admin pages a user may open, without the overview itself, in their language", async () => {
+  const { adminPages } = await import("./items");
+  expect(adminPages(["taxonomy.manage"]).map((t) => t.href)).toEqual(["/admin/taxonomy"]);
+  expect(adminPages(["roles.manage", "users.assign_roles"], "en").map((t) => t.title)).toEqual(["Users & permissions"]);
+  expect(adminPages([])).toEqual([]);
+});

@@ -278,6 +278,7 @@ export type StudyFieldWhereInput = {
   importedAt?: Prisma.DateTimeFilter<"StudyField"> | Date | string
   parent?: Prisma.XOR<Prisma.StudyFieldNullableScalarRelationFilter, Prisma.StudyFieldWhereInput> | null
   children?: Prisma.StudyFieldListRelationFilter
+  classifications?: Prisma.ProgrammeClassificationListRelationFilter
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
 }
 
@@ -296,6 +297,7 @@ export type StudyFieldOrderByWithRelationInput = {
   importedAt?: Prisma.SortOrder
   parent?: Prisma.StudyFieldOrderByWithRelationInput
   children?: Prisma.StudyFieldOrderByRelationAggregateInput
+  classifications?: Prisma.ProgrammeClassificationOrderByRelationAggregateInput
   document?: Prisma.DocumentOrderByWithRelationInput
 }
 
@@ -317,6 +319,7 @@ export type StudyFieldWhereUniqueInput = Prisma.AtLeast<{
   importedAt?: Prisma.DateTimeFilter<"StudyField"> | Date | string
   parent?: Prisma.XOR<Prisma.StudyFieldNullableScalarRelationFilter, Prisma.StudyFieldWhereInput> | null
   children?: Prisma.StudyFieldListRelationFilter
+  classifications?: Prisma.ProgrammeClassificationListRelationFilter
   document?: Prisma.XOR<Prisma.DocumentScalarRelationFilter, Prisma.DocumentWhereInput>
 }, "id" | "code">
 
@@ -371,6 +374,7 @@ export type StudyFieldCreateInput = {
   importedAt?: Date | string
   parent?: Prisma.StudyFieldCreateNestedOneWithoutChildrenInput
   children?: Prisma.StudyFieldCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutStudyFieldInput
   document: Prisma.DocumentCreateNestedOneWithoutStudyFieldsInput
 }
 
@@ -388,6 +392,7 @@ export type StudyFieldUncheckedCreateInput = {
   verifiedOn: Date | string
   importedAt?: Date | string
   children?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutStudyFieldInput
 }
 
 export type StudyFieldUpdateInput = {
@@ -403,6 +408,7 @@ export type StudyFieldUpdateInput = {
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.StudyFieldUpdateOneWithoutChildrenNestedInput
   children?: Prisma.StudyFieldUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutStudyFieldNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudyFieldsNestedInput
 }
 
@@ -420,6 +426,7 @@ export type StudyFieldUncheckedUpdateInput = {
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.StudyFieldUncheckedUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutStudyFieldNestedInput
 }
 
 export type StudyFieldCreateManyInput = {
@@ -635,6 +642,22 @@ export type StudyFieldUncheckedUpdateManyWithoutParentNestedInput = {
   deleteMany?: Prisma.StudyFieldScalarWhereInput | Prisma.StudyFieldScalarWhereInput[]
 }
 
+export type StudyFieldCreateNestedOneWithoutClassificationsInput = {
+  create?: Prisma.XOR<Prisma.StudyFieldCreateWithoutClassificationsInput, Prisma.StudyFieldUncheckedCreateWithoutClassificationsInput>
+  connectOrCreate?: Prisma.StudyFieldCreateOrConnectWithoutClassificationsInput
+  connect?: Prisma.StudyFieldWhereUniqueInput
+}
+
+export type StudyFieldUpdateOneWithoutClassificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.StudyFieldCreateWithoutClassificationsInput, Prisma.StudyFieldUncheckedCreateWithoutClassificationsInput>
+  connectOrCreate?: Prisma.StudyFieldCreateOrConnectWithoutClassificationsInput
+  upsert?: Prisma.StudyFieldUpsertWithoutClassificationsInput
+  disconnect?: Prisma.StudyFieldWhereInput | boolean
+  delete?: Prisma.StudyFieldWhereInput | boolean
+  connect?: Prisma.StudyFieldWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.StudyFieldUpdateToOneWithWhereWithoutClassificationsInput, Prisma.StudyFieldUpdateWithoutClassificationsInput>, Prisma.StudyFieldUncheckedUpdateWithoutClassificationsInput>
+}
+
 export type StudyFieldCreateWithoutDocumentInput = {
   id?: string
   classification: string
@@ -648,6 +671,7 @@ export type StudyFieldCreateWithoutDocumentInput = {
   importedAt?: Date | string
   parent?: Prisma.StudyFieldCreateNestedOneWithoutChildrenInput
   children?: Prisma.StudyFieldCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutStudyFieldInput
 }
 
 export type StudyFieldUncheckedCreateWithoutDocumentInput = {
@@ -663,6 +687,7 @@ export type StudyFieldUncheckedCreateWithoutDocumentInput = {
   verifiedOn: Date | string
   importedAt?: Date | string
   children?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutStudyFieldInput
 }
 
 export type StudyFieldCreateOrConnectWithoutDocumentInput = {
@@ -721,6 +746,7 @@ export type StudyFieldCreateWithoutChildrenInput = {
   verifiedOn: Date | string
   importedAt?: Date | string
   parent?: Prisma.StudyFieldCreateNestedOneWithoutChildrenInput
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutStudyFieldInput
   document: Prisma.DocumentCreateNestedOneWithoutStudyFieldsInput
 }
 
@@ -737,6 +763,7 @@ export type StudyFieldUncheckedCreateWithoutChildrenInput = {
   verifiedBy: string
   verifiedOn: Date | string
   importedAt?: Date | string
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutStudyFieldInput
 }
 
 export type StudyFieldCreateOrConnectWithoutChildrenInput = {
@@ -756,6 +783,7 @@ export type StudyFieldCreateWithoutParentInput = {
   verifiedOn: Date | string
   importedAt?: Date | string
   children?: Prisma.StudyFieldCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationCreateNestedManyWithoutStudyFieldInput
   document: Prisma.DocumentCreateNestedOneWithoutStudyFieldsInput
 }
 
@@ -772,6 +800,7 @@ export type StudyFieldUncheckedCreateWithoutParentInput = {
   verifiedOn: Date | string
   importedAt?: Date | string
   children?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutParentInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedCreateNestedManyWithoutStudyFieldInput
 }
 
 export type StudyFieldCreateOrConnectWithoutParentInput = {
@@ -807,6 +836,7 @@ export type StudyFieldUpdateWithoutChildrenInput = {
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.StudyFieldUpdateOneWithoutChildrenNestedInput
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutStudyFieldNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudyFieldsNestedInput
 }
 
@@ -823,6 +853,7 @@ export type StudyFieldUncheckedUpdateWithoutChildrenInput = {
   verifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutStudyFieldNestedInput
 }
 
 export type StudyFieldUpsertWithWhereUniqueWithoutParentInput = {
@@ -839,6 +870,86 @@ export type StudyFieldUpdateWithWhereUniqueWithoutParentInput = {
 export type StudyFieldUpdateManyWithWhereWithoutParentInput = {
   where: Prisma.StudyFieldScalarWhereInput
   data: Prisma.XOR<Prisma.StudyFieldUpdateManyMutationInput, Prisma.StudyFieldUncheckedUpdateManyWithoutParentInput>
+}
+
+export type StudyFieldCreateWithoutClassificationsInput = {
+  id?: string
+  classification: string
+  code: string
+  level: number
+  nameEn: string
+  nameVi: string
+  sourcePage?: number | null
+  verifiedBy: string
+  verifiedOn: Date | string
+  importedAt?: Date | string
+  parent?: Prisma.StudyFieldCreateNestedOneWithoutChildrenInput
+  children?: Prisma.StudyFieldCreateNestedManyWithoutParentInput
+  document: Prisma.DocumentCreateNestedOneWithoutStudyFieldsInput
+}
+
+export type StudyFieldUncheckedCreateWithoutClassificationsInput = {
+  id?: string
+  classification: string
+  code: string
+  level: number
+  parentId?: string | null
+  nameEn: string
+  nameVi: string
+  documentId: string
+  sourcePage?: number | null
+  verifiedBy: string
+  verifiedOn: Date | string
+  importedAt?: Date | string
+  children?: Prisma.StudyFieldUncheckedCreateNestedManyWithoutParentInput
+}
+
+export type StudyFieldCreateOrConnectWithoutClassificationsInput = {
+  where: Prisma.StudyFieldWhereUniqueInput
+  create: Prisma.XOR<Prisma.StudyFieldCreateWithoutClassificationsInput, Prisma.StudyFieldUncheckedCreateWithoutClassificationsInput>
+}
+
+export type StudyFieldUpsertWithoutClassificationsInput = {
+  update: Prisma.XOR<Prisma.StudyFieldUpdateWithoutClassificationsInput, Prisma.StudyFieldUncheckedUpdateWithoutClassificationsInput>
+  create: Prisma.XOR<Prisma.StudyFieldCreateWithoutClassificationsInput, Prisma.StudyFieldUncheckedCreateWithoutClassificationsInput>
+  where?: Prisma.StudyFieldWhereInput
+}
+
+export type StudyFieldUpdateToOneWithWhereWithoutClassificationsInput = {
+  where?: Prisma.StudyFieldWhereInput
+  data: Prisma.XOR<Prisma.StudyFieldUpdateWithoutClassificationsInput, Prisma.StudyFieldUncheckedUpdateWithoutClassificationsInput>
+}
+
+export type StudyFieldUpdateWithoutClassificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  classification?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  nameVi?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  parent?: Prisma.StudyFieldUpdateOneWithoutChildrenNestedInput
+  children?: Prisma.StudyFieldUpdateManyWithoutParentNestedInput
+  document?: Prisma.DocumentUpdateOneRequiredWithoutStudyFieldsNestedInput
+}
+
+export type StudyFieldUncheckedUpdateWithoutClassificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  classification?: Prisma.StringFieldUpdateOperationsInput | string
+  code?: Prisma.StringFieldUpdateOperationsInput | string
+  level?: Prisma.IntFieldUpdateOperationsInput | number
+  parentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  nameEn?: Prisma.StringFieldUpdateOperationsInput | string
+  nameVi?: Prisma.StringFieldUpdateOperationsInput | string
+  documentId?: Prisma.StringFieldUpdateOperationsInput | string
+  sourcePage?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  verifiedBy?: Prisma.StringFieldUpdateOperationsInput | string
+  verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  children?: Prisma.StudyFieldUncheckedUpdateManyWithoutParentNestedInput
 }
 
 export type StudyFieldCreateManyDocumentInput = {
@@ -868,6 +979,7 @@ export type StudyFieldUpdateWithoutDocumentInput = {
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   parent?: Prisma.StudyFieldUpdateOneWithoutChildrenNestedInput
   children?: Prisma.StudyFieldUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutStudyFieldNestedInput
 }
 
 export type StudyFieldUncheckedUpdateWithoutDocumentInput = {
@@ -883,6 +995,7 @@ export type StudyFieldUncheckedUpdateWithoutDocumentInput = {
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.StudyFieldUncheckedUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutStudyFieldNestedInput
 }
 
 export type StudyFieldUncheckedUpdateManyWithoutDocumentInput = {
@@ -925,6 +1038,7 @@ export type StudyFieldUpdateWithoutParentInput = {
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.StudyFieldUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUpdateManyWithoutStudyFieldNestedInput
   document?: Prisma.DocumentUpdateOneRequiredWithoutStudyFieldsNestedInput
 }
 
@@ -941,6 +1055,7 @@ export type StudyFieldUncheckedUpdateWithoutParentInput = {
   verifiedOn?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   importedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   children?: Prisma.StudyFieldUncheckedUpdateManyWithoutParentNestedInput
+  classifications?: Prisma.ProgrammeClassificationUncheckedUpdateManyWithoutStudyFieldNestedInput
 }
 
 export type StudyFieldUncheckedUpdateManyWithoutParentInput = {
@@ -964,10 +1079,12 @@ export type StudyFieldUncheckedUpdateManyWithoutParentInput = {
 
 export type StudyFieldCountOutputType = {
   children: number
+  classifications: number
 }
 
 export type StudyFieldCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   children?: boolean | StudyFieldCountOutputTypeCountChildrenArgs
+  classifications?: boolean | StudyFieldCountOutputTypeCountClassificationsArgs
 }
 
 /**
@@ -987,6 +1104,13 @@ export type StudyFieldCountOutputTypeCountChildrenArgs<ExtArgs extends runtime.T
   where?: Prisma.StudyFieldWhereInput
 }
 
+/**
+ * StudyFieldCountOutputType without action
+ */
+export type StudyFieldCountOutputTypeCountClassificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProgrammeClassificationWhereInput
+}
+
 
 export type StudyFieldSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1003,6 +1127,7 @@ export type StudyFieldSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
   importedAt?: boolean
   parent?: boolean | Prisma.StudyField$parentArgs<ExtArgs>
   children?: boolean | Prisma.StudyField$childrenArgs<ExtArgs>
+  classifications?: boolean | Prisma.StudyField$classificationsArgs<ExtArgs>
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.StudyFieldCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["studyField"]>
@@ -1060,6 +1185,7 @@ export type StudyFieldOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs
 export type StudyFieldInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   parent?: boolean | Prisma.StudyField$parentArgs<ExtArgs>
   children?: boolean | Prisma.StudyField$childrenArgs<ExtArgs>
+  classifications?: boolean | Prisma.StudyField$classificationsArgs<ExtArgs>
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.StudyFieldCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1077,6 +1203,7 @@ export type $StudyFieldPayload<ExtArgs extends runtime.Types.Extensions.Internal
   objects: {
     parent: Prisma.$StudyFieldPayload<ExtArgs> | null
     children: Prisma.$StudyFieldPayload<ExtArgs>[]
+    classifications: Prisma.$ProgrammeClassificationPayload<ExtArgs>[]
     document: Prisma.$DocumentPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1488,6 +1615,7 @@ export interface Prisma__StudyFieldClient<T, Null = never, ExtArgs extends runti
   readonly [Symbol.toStringTag]: "PrismaPromise"
   parent<T extends Prisma.StudyField$parentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudyField$parentArgs<ExtArgs>>): Prisma.Prisma__StudyFieldClient<runtime.Types.Result.GetResult<Prisma.$StudyFieldPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   children<T extends Prisma.StudyField$childrenArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudyField$childrenArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$StudyFieldPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  classifications<T extends Prisma.StudyField$classificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.StudyField$classificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProgrammeClassificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   document<T extends Prisma.DocumentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.DocumentDefaultArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1971,6 +2099,30 @@ export type StudyField$childrenArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.StudyFieldScalarFieldEnum | Prisma.StudyFieldScalarFieldEnum[]
+}
+
+/**
+ * StudyField.classifications
+ */
+export type StudyField$classificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProgrammeClassification
+   */
+  select?: Prisma.ProgrammeClassificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProgrammeClassification
+   */
+  omit?: Prisma.ProgrammeClassificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProgrammeClassificationInclude<ExtArgs> | null
+  where?: Prisma.ProgrammeClassificationWhereInput
+  orderBy?: Prisma.ProgrammeClassificationOrderByWithRelationInput | Prisma.ProgrammeClassificationOrderByWithRelationInput[]
+  cursor?: Prisma.ProgrammeClassificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProgrammeClassificationScalarFieldEnum | Prisma.ProgrammeClassificationScalarFieldEnum[]
 }
 
 /**
