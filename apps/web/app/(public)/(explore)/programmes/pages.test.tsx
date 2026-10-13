@@ -34,7 +34,7 @@ it("applies only allowlisted filters and always restricts to reviewed rows", asy
   expect(calls).toContainEqual(["eq", "universities.countries.slug", "sweden"]);
   expect(calls).toContainEqual(["ilike", "field", "%50\\%%"]);
   expect(calls.some((c) => c[1] === "degree_type")).toBe(false);
-  expect(html).toContain("Chưa có chương trình đã duyệt nào khớp");
+  expect(html).toContain("Chưa có chương trình đã kiểm tra nào khớp");
 });
 it("shows existence evidence and an honest empty state for tuition/deadlines", async () => {
   results.push({ data: programme, error: null }, { data: [], error: null });

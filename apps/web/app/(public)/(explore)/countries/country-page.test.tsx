@@ -30,7 +30,7 @@ it("shows an honest empty state instead of an invented country profile", async (
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "needs_research", sources: [] });
   result.data = []; result.error = null;
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
-  expect(html).toContain("Chưa có thông tin nào được duyệt");
+  expect(html).toContain("Chưa có thông tin nào được kiểm tra");
   expect(html).not.toContain("Country profile data is not available yet");
   // A visitor is not sent into the editors' workspace, nor shown the research status.
   expect(html).not.toContain("/facts/workspace");
@@ -56,7 +56,7 @@ it("renders reviewed facts scoped to this country instead of the placeholder", a
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "sweden" }), searchParams: Promise.resolve({}) }));
   expect(html).toContain("Student residence permit");
   expect(html).toContain("Migrationsverket");
-  expect(html).not.toContain("Chưa có thông tin nào được duyệt");
+  expect(html).not.toContain("Chưa có thông tin nào được kiểm tra");
 });
 it("fails closed on a database error instead of showing a silently empty profile", async () => {
   getCountry.mockResolvedValue({ id: "c1", slug: "sweden", name: "Sweden", status: "active", sources: [] });
@@ -69,11 +69,11 @@ it("says per topic that nothing is reviewed yet instead of showing empty cards, 
   getCountry.mockResolvedValue({ id: "c1", slug: "denmark", name: "Denmark", status: "needs_research", sources: [source] });
   result.data = []; result.error = null;
   const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "denmark" }), searchParams: Promise.resolve({ group: "permits" }) }));
-  for (const v of ["Chưa có nội dung nào được duyệt", "1/1 nguồn đã xác minh", 'href="/sources?country=denmark"', "Chưa có trường nào được duyệt", "Chưa có quy định nào được duyệt",
-    "Chưa có số liệu lao động nào được duyệt", 'href="/immigration?country=denmark"',
+  for (const v of ["Chưa có nội dung nào được kiểm tra", "1/1 nguồn đã xác minh", 'href="/sources?country=denmark"', "Chưa có trường nào được kiểm tra", "Chưa có quy định nào được kiểm tra",
+    "Chưa có số liệu lao động nào được kiểm tra", 'href="/immigration?country=denmark"',
     "Học phí &amp; chi phí", "Visa &amp; giấy phép", "Lương &amp; việc làm", 'href="/countries/denmark?group=work"',
     // ?group=permits was asked for: its question is the open tab.
-    "Cần visa, giấy phép gì?", "Chưa có thông tin nào được duyệt cho câu hỏi này"]) expect(html).toContain(v);
+    "Cần visa, giấy phép gì?", "Chưa có thông tin nào được kiểm tra cho câu hỏi này"]) expect(html).toContain(v);
   // The source list itself lives on /sources, not on the country page.
   // "Thông tin khác" appears only when it holds something.
   for (const v of ["Synthetic agency", "Nguồn của quốc gia này", "Học ở đây tốn bao nhiêu?", ">Khác<"]) expect(html).not.toContain(v);
@@ -97,12 +97,12 @@ it("says when a country has no reviewed data, points to its official sources, an
   try {
     setTestCoverage({ countries: { norway: { topics: [] } }, compareReady: false });
     const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "norway" }), searchParams: Promise.resolve({}) }));
-    expect(html).toContain("Chưa có dữ liệu đã duyệt cho nước này");
+    expect(html).toContain("Chưa có dữ liệu đã kiểm tra cho nước này");
     expect(html).toContain('href="/sources?country=norway"');
     expect(html).not.toContain('href="/compare?c=norway"');
     setTestCoverage({ countries: { norway: { topics: ["permits"] } }, compareReady: true });
     const withData = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "norway" }), searchParams: Promise.resolve({}) }));
-    expect(withData).not.toContain("Chưa có dữ liệu đã duyệt cho nước này");
+    expect(withData).not.toContain("Chưa có dữ liệu đã kiểm tra cho nước này");
     expect(withData).toContain('href="/compare?c=norway"');
   } finally { setTestCoverage(null); }
 });
