@@ -15,11 +15,11 @@ it("accepts only known categories and well-formed metric keys", () => {
 });
 it("keeps every value per cell, newest period first, and never merges cells", () => {
   const cells = buildCells([
-    { id: "a", metric_id: "m", country_id: "se", reference_period: "2023", status: "reviewed" },
-    { id: "b", metric_id: "m", country_id: "se", reference_period: "2025-Q1", status: "conflicted" },
-    { id: "c", metric_id: "m", country_id: "se", reference_period: null, status: "reviewed" },
-    { id: "d", metric_id: "m", country_id: "dk", reference_period: "2024", status: "reviewed" },
-    { id: "e", metric_id: null, country_id: "dk", reference_period: "2024", status: "reviewed" },
+    { id: "a", fact_type_id: "m", country_id: "se", reference_period: "2023", status: "reviewed" },
+    { id: "b", fact_type_id: "m", country_id: "se", reference_period: "2025-Q1", status: "conflicted" },
+    { id: "c", fact_type_id: "m", country_id: "se", reference_period: null, status: "reviewed" },
+    { id: "d", fact_type_id: "m", country_id: "dk", reference_period: "2024", status: "reviewed" },
+    { id: "e", fact_type_id: null, country_id: "dk", reference_period: "2024", status: "reviewed" },
   ]);
   expect(cells.get("m:se")!.map((f) => f.id)).toEqual(["b", "a", "c"]);
   expect(cells.get("m:dk")!.map((f) => f.id)).toEqual(["d"]);
@@ -28,4 +28,16 @@ it("keeps every value per cell, newest period first, and never merges cells", ()
 it("builds comparison URLs and hides raw errors", () => {
   expect(compareHref(["sweden", "denmark"], { category: "tuition", occupation: "" })).toBe("/compare?c=sweden&c=denmark&category=tuition");
   expect(metricError("postgres://secret")).not.toContain("secret");
+});
+
+it("formats a typed fact's structured value for the viewer without converting it (L3a)", async () => {
+  const { formatStructuredValue, factTypeLabel, valueKindLabel, appliesToLabel } = await import("./domain");
+  expect(formatStructuredValue({ value_number: "145000", value_currency: "SEK", value_period: "year" })).toBe("145.000 SEK / năm");
+  expect(formatStructuredValue({ value_number: "145000", value_currency: "SEK", value_period: "year" }, "en")).toBe("145,000 SEK / year");
+  expect(formatStructuredValue({ value_number: "6.5" })).toBe("6,5");
+  expect(formatStructuredValue({ value_date: "2027-01-15" }, "en")).toBe("15/01/2027");
+  expect(formatStructuredValue({ value_number: null })).toBeNull();
+  expect(factTypeLabel({ label_vi: "Học phí", label_en: "Tuition" }, "en")).toBe("Tuition");
+  expect(valueKindLabel("money")).toBe("Số tiền");
+  expect(appliesToLabel("constructor")).toBe("constructor");
 });

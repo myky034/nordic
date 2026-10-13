@@ -1,6 +1,7 @@
 # Kế hoạch L3 — Loại thông tin có nhãn Việt/Anh (ĐÃ DUYỆT, 2026-10-13)
 
-> **Trạng thái:** chủ dự án **đã duyệt** (2026-10-13) theo đúng các đề xuất D1–D6 ở mục 9. Đang làm L3a.
+> **Trạng thái:** chủ dự án **đã duyệt** (2026-10-13) theo đúng các đề xuất D1–D6 ở mục 9. **L3a xong**
+> (`docs/learning/slice-l3a-fact-types.md`); còn L3b (hiển thị công khai) và L3c (AI trích xuất).
 > Task: Linear KHLOE-146. Bối cảnh: rà soát UX 2026-10-13 (`docs/product/ux-review.md`, mục L3)
 > và Decision Log cùng ngày ("Fact types with Vietnamese/English labels … a separate plan goes to
 > the owner before any code").

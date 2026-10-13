@@ -15,7 +15,7 @@ it("never forwards actor, status, source URL or retrieval date from the form",as
  await proposeFact({},form);
  expect(requirePermission).toHaveBeenCalledWith("facts.propose");
  expect(rpc.mock.calls[0][1]).not.toHaveProperty("actor");
- expect(Object.keys(rpc.mock.calls[0][1]).sort()).toEqual(["p_document","p_topic","p_subject","p_predicate","p_value","p_unit","p_country","p_from","p_until","p_excerpt","p_university","p_programme","p_deadline_type","p_immigration_rule","p_occupation","p_reference_period","p_metric"].sort());
+ expect(Object.keys(rpc.mock.calls[0][1]).sort()).toEqual(["p_document","p_topic","p_subject","p_predicate","p_value","p_unit","p_country","p_from","p_until","p_excerpt","p_university","p_programme","p_deadline_type","p_immigration_rule","p_occupation","p_reference_period","p_fact_type","p_value_number","p_value_currency","p_value_period","p_value_date"].sort());
 });
 it("requires review capability and hides database details",async()=>{
  rpc.mockResolvedValue({error:{message:"secret connection details"}});
@@ -39,5 +39,20 @@ it("forwards an occupation link with a reference period and rejects fuzzy period
  rpc.mockClear();
  const bad=new FormData();bad.set("referencePeriod","recent");
  expect((await proposeFact({},bad)).error).toContain("Kỳ số liệu");
+ expect(rpc).not.toHaveBeenCalled();
+});
+it("forwards a fact type with its structured value, normalised, and refuses structured values without a type (L3a)",async()=>{
+ const id="11111111-1111-4111-8111-111111111111";
+ const form=new FormData();form.set("document","doc");form.set("factType",id);form.set("valueNumber","145 000".replace(" ",""));form.set("valueCurrency","sek");form.set("valuePeriod","year");
+ await proposeFact({},form);
+ expect(rpc.mock.calls[0][1]).toMatchObject({p_fact_type:id,p_value_number:145000,p_value_currency:"SEK",p_value_period:"year",p_value_date:null});
+ const decimal=new FormData();decimal.set("document","doc");decimal.set("factType",id);decimal.set("valueNumber","6,5");
+ await proposeFact({},decimal);
+ expect(rpc.mock.calls[1][1]).toMatchObject({p_value_number:6.5});
+ rpc.mockClear();
+ const untyped=new FormData();untyped.set("document","doc");untyped.set("valueNumber","12");
+ expect((await proposeFact({},untyped)).error).toBeDefined();
+ const badPeriod=new FormData();badPeriod.set("document","doc");badPeriod.set("factType",id);badPeriod.set("valuePeriod","decade");
+ expect((await proposeFact({},badPeriod)).error).toBeDefined();
  expect(rpc).not.toHaveBeenCalled();
 });

@@ -50,27 +50,64 @@ it("tolerates arbitrary user input and caps results per type", async () => {
   const capped = await as(null, async () => (await db.query("SELECT * FROM search_public('synthetic', 999)")).rows);
   expect(capped.length).toBeLessThanOrEqual(20 * 8);
 });
-it("requires metrics.manage to define metrics and keeps key/category immutable", async () => {
-  const save = (id: string | null, key: string, category = "living_cost", active = true) =>
-    db.query<{ id: string }>("SELECT save_metric($1,$2,'Synthetic metric','What exactly is measured','EUR/month',$3,$4) AS id", [id, key, category, active]);
-  await expect(as(member, () => save(null, "synthetic_cost"))).rejects.toThrow("metrics_forbidden");
-  await expect(as(null, () => save(null, "synthetic_cost"))).rejects.toThrow(/permission denied/);
-  await expect(as(admin, () => save(null, "Bad Key!"))).rejects.toThrow("metrics_invalid");
-  await expect(as(admin, () => save(null, "synthetic_cost", "happiness"))).rejects.toThrow("metrics_invalid");
-  metric = (await as(admin, () => save(null, "synthetic_cost"))).rows[0].id;
-  await expect(as(admin, () => save(null, "synthetic_cost"))).rejects.toThrow("metrics_duplicate");
-  await expect(as(admin, () => save(metric, "renamed_key"))).rejects.toThrow("metrics_immutable");
-  await expect(as(admin, () => save(metric, "synthetic_cost", "tuition"))).rejects.toThrow("metrics_immutable");
-  await as(admin, () => save(metric, "synthetic_cost")); // label/description edits are allowed
-  expect((await db.query("SELECT * FROM access_audit WHERE action='metric.saved'")).rows).toHaveLength(2);
-  expect((await as(null, async () => (await db.query("SELECT * FROM comparison_metrics")).rows)).length).toBe(1);
+// L3a (2026-10-13): comparison metrics became fact types; a metric is a
+// fact type with comparable = true.
+const saveType = (id: string | null, o: { key?: string; kind?: string; applies?: string; category?: string; min?: number | null; max?: number | null; labelEn?: string; comparable?: boolean; active?: boolean } = {}) =>
+  db.query<{ id: string }>("SELECT save_fact_type($1,$2,'Chi phí sinh hoạt giả',$3,'Đo gì','What exactly is measured',$4,$5,$6,'EUR/month',$7,$8,$9,$10) AS id",
+    [id, o.key ?? "synthetic_cost", o.labelEn ?? "Synthetic living cost", o.kind ?? "money", o.applies ?? "country", o.category ?? "living_cost",
+     o.min ?? null, o.max ?? null, o.comparable ?? true, o.active ?? true]);
+it("requires metrics.manage to define fact types and keeps key, kind, entity and category fixed", async () => {
+  await expect(as(member, () => saveType(null))).rejects.toThrow("fact_types_forbidden");
+  await expect(as(null, () => saveType(null))).rejects.toThrow(/permission denied/);
+  await expect(as(admin, () => saveType(null, { key: "Bad Key!" }))).rejects.toThrow("fact_types_invalid");
+  await expect(as(admin, () => saveType(null, { category: "happiness" }))).rejects.toThrow("fact_types_invalid");
+  await expect(as(admin, () => saveType(null, { kind: "colour" }))).rejects.toThrow("fact_types_invalid");
+  await expect(as(admin, () => saveType(null, { labelEn: "  " }))).rejects.toThrow("fact_types_invalid"); // both languages required
+  await expect(as(admin, () => saveType(null, { min: 0, max: 9 }))).rejects.toThrow("fact_types_invalid"); // range only for numbers
+  metric = (await as(admin, () => saveType(null))).rows[0].id;
+  await expect(as(admin, () => saveType(null))).rejects.toThrow("fact_types_duplicate");
+  await expect(as(admin, () => saveType(metric, { key: "renamed_key" }))).rejects.toThrow("fact_types_immutable");
+  await expect(as(admin, () => saveType(metric, { category: "tuition" }))).rejects.toThrow("fact_types_immutable");
+  await expect(as(admin, () => saveType(metric, { kind: "number" }))).rejects.toThrow("fact_types_immutable");
+  await expect(as(admin, () => saveType(metric, { applies: "programme" }))).rejects.toThrow("fact_types_immutable");
+  await as(admin, () => saveType(metric, { labelEn: "Synthetic monthly cost" })); // labels may be clarified
+  expect((await db.query("SELECT * FROM access_audit WHERE action='fact_type.saved'")).rows).toHaveLength(2);
+  expect((await as(null, async () => (await db.query("SELECT label_en, comparable FROM fact_types")).rows))).toEqual([{ label_en: "Synthetic monthly cost", comparable: true }]);
 });
-it("links facts to active metrics only, and requires a country", async () => {
-  const propose = (country: string | null, m = metric) => as(admin, () => db.query(
-    "SELECT propose_fact($1,'living_cost','Synthetic','monthly cost','1','EUR',$2,null,null,'e',null,null,null,null,null,'2024',$3)", [doc, country, m]));
-  await expect(propose(null)).rejects.toThrow("facts_country_required");
-  await propose(sweden);
-  await db.query("UPDATE comparison_metrics SET active=false WHERE id=$1", [metric]);
-  await expect(propose(sweden)).rejects.toThrow("facts_invalid");
-  expect((await db.query("SELECT * FROM facts WHERE metric_id IS NOT NULL")).rows).toHaveLength(1);
+it("checks a typed fact's structured value, entity and excerpt; untyped facts stay as before", async () => {
+  const propose = (o: { country?: string | null; type?: string | null; num?: number | null; cur?: string | null; per?: string | null; date?: string | null; excerpt?: string; value?: string; programme?: string | null } = {}) =>
+    as(admin, () => db.query(
+      "SELECT propose_fact($1,'living_cost','Synthetic','monthly cost',$2,'SEK',$3,null,null,$4,null,$5,null,null,null,'2024',$6,$7,$8,$9,$10)",
+      [doc, o.value ?? "SEK 12 300 per month", o.country === undefined ? sweden : o.country, o.excerpt ?? "Students need SEK 12 300 per month.", o.programme ?? null,
+       o.type === undefined ? metric : o.type, o.num === undefined ? 12300 : o.num, o.cur === undefined ? "SEK" : o.cur, o.per === undefined ? "month" : o.per, o.date ?? null]));
+  await expect(propose({ country: null })).rejects.toThrow("facts_country_required");
+  await expect(propose({ cur: null })).rejects.toThrow("facts_type_value_invalid");
+  await expect(propose({ per: null })).rejects.toThrow("facts_type_value_invalid");
+  await expect(propose({ cur: "sek" })).rejects.toThrow(/check constraint|facts_invalid/);
+  await expect(propose({ date: "2027-01-15" })).rejects.toThrow("facts_type_value_invalid");
+  // The structured number must be in the excerpt (digit groups may differ).
+  await expect(propose({ num: 13200 })).rejects.toThrow("facts_number_not_in_excerpt");
+  // Structured values without a type are refused.
+  await expect(propose({ type: null })).rejects.toThrow("facts_invalid");
+  await propose();
+  // Untyped facts are unchanged.
+  await propose({ type: null, num: null, cur: null, per: null });
+  await db.query("UPDATE fact_types SET active=false WHERE id=$1", [metric]);
+  await expect(propose()).rejects.toThrow("facts_type_invalid");
+  const rows = (await db.query<{ value: string; value_number: string; value_currency: string; value_period: string }>("SELECT value,value_number,value_currency,value_period FROM facts WHERE fact_type_id IS NOT NULL")).rows;
+  expect(rows).toEqual([{ value: "SEK 12 300 per month", value_number: "12300", value_currency: "SEK", value_period: "month" }]);
+});
+it("matches the type's entity and number range, and finds decimals and years in the excerpt", async () => {
+  const ielts = (await as(admin, () => saveType(null, { key: "min_ielts_overall", kind: "number", applies: "programme", category: "language", min: 0, max: 9, comparable: false }))).rows[0].id;
+  const deadline = (await as(admin, () => saveType(null, { key: "application_deadline", kind: "date", applies: "programme", category: "education", comparable: false }))).rows[0].id;
+  const uni = (await as(admin, () => db.query<{ id: string }>("SELECT propose_university($1,'Synthetic University','https://uni.example.test/',$2,'Synthetic excerpt') AS id", [sweden, doc]))).rows[0].id;
+  const programme = (await as(admin, () => db.query<{ id: string }>("SELECT propose_programme($1,'MSc Synthetic','master',null,'English','https://uni.example.test/p','',$2,'Synthetic excerpt') AS id", [uni, doc]))).rows[0].id;
+  const typed = (type: string, num: number | null, date: string | null, excerpt: string, prog: string | null = programme) => as(admin, () => db.query(
+    "SELECT propose_fact($1,'language','MSc Synthetic','minimum IELTS',$2,null,null,null,null,$3,null,$4,null,null,null,null,$5,$6,null,null,$7)",
+    [doc, String(num ?? date), excerpt, prog, type, num, date]));
+  await expect(typed(ielts, 6.5, null, "IELTS 6.5 overall", null)).rejects.toThrow("facts_type_entity_mismatch");
+  await expect(typed(ielts, 10, null, "IELTS 10 overall")).rejects.toThrow("facts_type_value_invalid");
+  await typed(ielts, 6.5, null, "An overall IELTS score of 6,5 is required.");
+  await expect(typed(deadline, null, "2027-01-15", "Apply by 15 January 2026.")).rejects.toThrow("facts_number_not_in_excerpt");
+  await typed(deadline, null, "2027-01-15", "Apply by 15 January 2027.");
 });

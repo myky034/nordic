@@ -27,10 +27,12 @@ export type AggregateFact = {
 }
 
 export type FactAvgAggregateOutputType = {
+  valueNumber: runtime.Decimal | null
   aiConfidence: runtime.Decimal | null
 }
 
 export type FactSumAggregateOutputType = {
+  valueNumber: runtime.Decimal | null
   aiConfidence: runtime.Decimal | null
 }
 
@@ -55,7 +57,11 @@ export type FactMinAggregateOutputType = {
   immigrationRuleId: string | null
   occupationId: string | null
   referencePeriod: string | null
-  metricId: string | null
+  factTypeId: string | null
+  valueNumber: runtime.Decimal | null
+  valueCurrency: string | null
+  valuePeriod: string | null
+  valueDate: Date | null
   sourceChangedAt: Date | null
   sourceChangedDocumentId: string | null
   origin: string | null
@@ -84,7 +90,11 @@ export type FactMaxAggregateOutputType = {
   immigrationRuleId: string | null
   occupationId: string | null
   referencePeriod: string | null
-  metricId: string | null
+  factTypeId: string | null
+  valueNumber: runtime.Decimal | null
+  valueCurrency: string | null
+  valuePeriod: string | null
+  valueDate: Date | null
   sourceChangedAt: Date | null
   sourceChangedDocumentId: string | null
   origin: string | null
@@ -113,7 +123,11 @@ export type FactCountAggregateOutputType = {
   immigrationRuleId: number
   occupationId: number
   referencePeriod: number
-  metricId: number
+  factTypeId: number
+  valueNumber: number
+  valueCurrency: number
+  valuePeriod: number
+  valueDate: number
   sourceChangedAt: number
   sourceChangedDocumentId: number
   origin: number
@@ -124,10 +138,12 @@ export type FactCountAggregateOutputType = {
 
 
 export type FactAvgAggregateInputType = {
+  valueNumber?: true
   aiConfidence?: true
 }
 
 export type FactSumAggregateInputType = {
+  valueNumber?: true
   aiConfidence?: true
 }
 
@@ -152,7 +168,11 @@ export type FactMinAggregateInputType = {
   immigrationRuleId?: true
   occupationId?: true
   referencePeriod?: true
-  metricId?: true
+  factTypeId?: true
+  valueNumber?: true
+  valueCurrency?: true
+  valuePeriod?: true
+  valueDate?: true
   sourceChangedAt?: true
   sourceChangedDocumentId?: true
   origin?: true
@@ -181,7 +201,11 @@ export type FactMaxAggregateInputType = {
   immigrationRuleId?: true
   occupationId?: true
   referencePeriod?: true
-  metricId?: true
+  factTypeId?: true
+  valueNumber?: true
+  valueCurrency?: true
+  valuePeriod?: true
+  valueDate?: true
   sourceChangedAt?: true
   sourceChangedDocumentId?: true
   origin?: true
@@ -210,7 +234,11 @@ export type FactCountAggregateInputType = {
   immigrationRuleId?: true
   occupationId?: true
   referencePeriod?: true
-  metricId?: true
+  factTypeId?: true
+  valueNumber?: true
+  valueCurrency?: true
+  valuePeriod?: true
+  valueDate?: true
   sourceChangedAt?: true
   sourceChangedDocumentId?: true
   origin?: true
@@ -326,7 +354,11 @@ export type FactGroupByOutputType = {
   immigrationRuleId: string | null
   occupationId: string | null
   referencePeriod: string | null
-  metricId: string | null
+  factTypeId: string | null
+  valueNumber: runtime.Decimal | null
+  valueCurrency: string | null
+  valuePeriod: string | null
+  valueDate: Date | null
   sourceChangedAt: Date | null
   sourceChangedDocumentId: string | null
   origin: string
@@ -378,7 +410,11 @@ export type FactWhereInput = {
   immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   occupationId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   referencePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
-  metricId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  factTypeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  valueNumber?: Prisma.DecimalNullableFilter<"Fact"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valuePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valueDate?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedDocumentId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   origin?: Prisma.StringFilter<"Fact"> | string
@@ -390,7 +426,7 @@ export type FactWhereInput = {
   programme?: Prisma.XOR<Prisma.ProgrammeNullableScalarRelationFilter, Prisma.ProgrammeWhereInput> | null
   immigrationRule?: Prisma.XOR<Prisma.ImmigrationRuleNullableScalarRelationFilter, Prisma.ImmigrationRuleWhereInput> | null
   occupation?: Prisma.XOR<Prisma.OccupationNullableScalarRelationFilter, Prisma.OccupationWhereInput> | null
-  metric?: Prisma.XOR<Prisma.ComparisonMetricNullableScalarRelationFilter, Prisma.ComparisonMetricWhereInput> | null
+  factType?: Prisma.XOR<Prisma.FactTypeNullableScalarRelationFilter, Prisma.FactTypeWhereInput> | null
   sourceChangedDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   extractionItems?: Prisma.ExtractionItemListRelationFilter
   evidence?: Prisma.XOR<Prisma.EvidenceNullableScalarRelationFilter, Prisma.EvidenceWhereInput> | null
@@ -419,7 +455,11 @@ export type FactOrderByWithRelationInput = {
   immigrationRuleId?: Prisma.SortOrderInput | Prisma.SortOrder
   occupationId?: Prisma.SortOrderInput | Prisma.SortOrder
   referencePeriod?: Prisma.SortOrderInput | Prisma.SortOrder
-  metricId?: Prisma.SortOrderInput | Prisma.SortOrder
+  factTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueCurrency?: Prisma.SortOrderInput | Prisma.SortOrder
+  valuePeriod?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceChangedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceChangedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   origin?: Prisma.SortOrder
@@ -431,7 +471,7 @@ export type FactOrderByWithRelationInput = {
   programme?: Prisma.ProgrammeOrderByWithRelationInput
   immigrationRule?: Prisma.ImmigrationRuleOrderByWithRelationInput
   occupation?: Prisma.OccupationOrderByWithRelationInput
-  metric?: Prisma.ComparisonMetricOrderByWithRelationInput
+  factType?: Prisma.FactTypeOrderByWithRelationInput
   sourceChangedDocument?: Prisma.DocumentOrderByWithRelationInput
   extractionItems?: Prisma.ExtractionItemOrderByRelationAggregateInput
   evidence?: Prisma.EvidenceOrderByWithRelationInput
@@ -463,7 +503,11 @@ export type FactWhereUniqueInput = Prisma.AtLeast<{
   immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   occupationId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   referencePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
-  metricId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  factTypeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  valueNumber?: Prisma.DecimalNullableFilter<"Fact"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valuePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valueDate?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedDocumentId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   origin?: Prisma.StringFilter<"Fact"> | string
@@ -475,7 +519,7 @@ export type FactWhereUniqueInput = Prisma.AtLeast<{
   programme?: Prisma.XOR<Prisma.ProgrammeNullableScalarRelationFilter, Prisma.ProgrammeWhereInput> | null
   immigrationRule?: Prisma.XOR<Prisma.ImmigrationRuleNullableScalarRelationFilter, Prisma.ImmigrationRuleWhereInput> | null
   occupation?: Prisma.XOR<Prisma.OccupationNullableScalarRelationFilter, Prisma.OccupationWhereInput> | null
-  metric?: Prisma.XOR<Prisma.ComparisonMetricNullableScalarRelationFilter, Prisma.ComparisonMetricWhereInput> | null
+  factType?: Prisma.XOR<Prisma.FactTypeNullableScalarRelationFilter, Prisma.FactTypeWhereInput> | null
   sourceChangedDocument?: Prisma.XOR<Prisma.DocumentNullableScalarRelationFilter, Prisma.DocumentWhereInput> | null
   extractionItems?: Prisma.ExtractionItemListRelationFilter
   evidence?: Prisma.XOR<Prisma.EvidenceNullableScalarRelationFilter, Prisma.EvidenceWhereInput> | null
@@ -504,7 +548,11 @@ export type FactOrderByWithAggregationInput = {
   immigrationRuleId?: Prisma.SortOrderInput | Prisma.SortOrder
   occupationId?: Prisma.SortOrderInput | Prisma.SortOrder
   referencePeriod?: Prisma.SortOrderInput | Prisma.SortOrder
-  metricId?: Prisma.SortOrderInput | Prisma.SortOrder
+  factTypeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueNumber?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueCurrency?: Prisma.SortOrderInput | Prisma.SortOrder
+  valuePeriod?: Prisma.SortOrderInput | Prisma.SortOrder
+  valueDate?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceChangedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   sourceChangedDocumentId?: Prisma.SortOrderInput | Prisma.SortOrder
   origin?: Prisma.SortOrder
@@ -541,7 +589,11 @@ export type FactScalarWhereWithAggregatesInput = {
   immigrationRuleId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
   occupationId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
   referencePeriod?: Prisma.StringNullableWithAggregatesFilter<"Fact"> | string | null
-  metricId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
+  factTypeId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
+  valueNumber?: Prisma.DecimalNullableWithAggregatesFilter<"Fact"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.StringNullableWithAggregatesFilter<"Fact"> | string | null
+  valuePeriod?: Prisma.StringNullableWithAggregatesFilter<"Fact"> | string | null
+  valueDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Fact"> | Date | string | null
   sourceChangedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Fact"> | Date | string | null
   sourceChangedDocumentId?: Prisma.UuidNullableWithAggregatesFilter<"Fact"> | string | null
   origin?: Prisma.StringWithAggregatesFilter<"Fact"> | string
@@ -564,6 +616,10 @@ export type FactCreateInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -574,7 +630,7 @@ export type FactCreateInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -603,7 +659,11 @@ export type FactUncheckedCreateInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -630,6 +690,10 @@ export type FactUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -640,7 +704,7 @@ export type FactUpdateInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -669,7 +733,11 @@ export type FactUncheckedUpdateInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -702,7 +770,11 @@ export type FactCreateManyInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -725,6 +797,10 @@ export type FactUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -752,7 +828,11 @@ export type FactUncheckedUpdateManyInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -791,7 +871,11 @@ export type FactCountOrderByAggregateInput = {
   immigrationRuleId?: Prisma.SortOrder
   occupationId?: Prisma.SortOrder
   referencePeriod?: Prisma.SortOrder
-  metricId?: Prisma.SortOrder
+  factTypeId?: Prisma.SortOrder
+  valueNumber?: Prisma.SortOrder
+  valueCurrency?: Prisma.SortOrder
+  valuePeriod?: Prisma.SortOrder
+  valueDate?: Prisma.SortOrder
   sourceChangedAt?: Prisma.SortOrder
   sourceChangedDocumentId?: Prisma.SortOrder
   origin?: Prisma.SortOrder
@@ -800,6 +884,7 @@ export type FactCountOrderByAggregateInput = {
 }
 
 export type FactAvgOrderByAggregateInput = {
+  valueNumber?: Prisma.SortOrder
   aiConfidence?: Prisma.SortOrder
 }
 
@@ -824,7 +909,11 @@ export type FactMaxOrderByAggregateInput = {
   immigrationRuleId?: Prisma.SortOrder
   occupationId?: Prisma.SortOrder
   referencePeriod?: Prisma.SortOrder
-  metricId?: Prisma.SortOrder
+  factTypeId?: Prisma.SortOrder
+  valueNumber?: Prisma.SortOrder
+  valueCurrency?: Prisma.SortOrder
+  valuePeriod?: Prisma.SortOrder
+  valueDate?: Prisma.SortOrder
   sourceChangedAt?: Prisma.SortOrder
   sourceChangedDocumentId?: Prisma.SortOrder
   origin?: Prisma.SortOrder
@@ -853,7 +942,11 @@ export type FactMinOrderByAggregateInput = {
   immigrationRuleId?: Prisma.SortOrder
   occupationId?: Prisma.SortOrder
   referencePeriod?: Prisma.SortOrder
-  metricId?: Prisma.SortOrder
+  factTypeId?: Prisma.SortOrder
+  valueNumber?: Prisma.SortOrder
+  valueCurrency?: Prisma.SortOrder
+  valuePeriod?: Prisma.SortOrder
+  valueDate?: Prisma.SortOrder
   sourceChangedAt?: Prisma.SortOrder
   sourceChangedDocumentId?: Prisma.SortOrder
   origin?: Prisma.SortOrder
@@ -862,6 +955,7 @@ export type FactMinOrderByAggregateInput = {
 }
 
 export type FactSumOrderByAggregateInput = {
+  valueNumber?: Prisma.SortOrder
   aiConfidence?: Prisma.SortOrder
 }
 
@@ -1221,45 +1315,45 @@ export type FactUncheckedUpdateManyWithoutOccupationNestedInput = {
   deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
 }
 
-export type FactCreateNestedManyWithoutMetricInput = {
-  create?: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput> | Prisma.FactCreateWithoutMetricInput[] | Prisma.FactUncheckedCreateWithoutMetricInput[]
-  connectOrCreate?: Prisma.FactCreateOrConnectWithoutMetricInput | Prisma.FactCreateOrConnectWithoutMetricInput[]
-  createMany?: Prisma.FactCreateManyMetricInputEnvelope
+export type FactCreateNestedManyWithoutFactTypeInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput> | Prisma.FactCreateWithoutFactTypeInput[] | Prisma.FactUncheckedCreateWithoutFactTypeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutFactTypeInput | Prisma.FactCreateOrConnectWithoutFactTypeInput[]
+  createMany?: Prisma.FactCreateManyFactTypeInputEnvelope
   connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
 }
 
-export type FactUncheckedCreateNestedManyWithoutMetricInput = {
-  create?: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput> | Prisma.FactCreateWithoutMetricInput[] | Prisma.FactUncheckedCreateWithoutMetricInput[]
-  connectOrCreate?: Prisma.FactCreateOrConnectWithoutMetricInput | Prisma.FactCreateOrConnectWithoutMetricInput[]
-  createMany?: Prisma.FactCreateManyMetricInputEnvelope
+export type FactUncheckedCreateNestedManyWithoutFactTypeInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput> | Prisma.FactCreateWithoutFactTypeInput[] | Prisma.FactUncheckedCreateWithoutFactTypeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutFactTypeInput | Prisma.FactCreateOrConnectWithoutFactTypeInput[]
+  createMany?: Prisma.FactCreateManyFactTypeInputEnvelope
   connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
 }
 
-export type FactUpdateManyWithoutMetricNestedInput = {
-  create?: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput> | Prisma.FactCreateWithoutMetricInput[] | Prisma.FactUncheckedCreateWithoutMetricInput[]
-  connectOrCreate?: Prisma.FactCreateOrConnectWithoutMetricInput | Prisma.FactCreateOrConnectWithoutMetricInput[]
-  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutMetricInput | Prisma.FactUpsertWithWhereUniqueWithoutMetricInput[]
-  createMany?: Prisma.FactCreateManyMetricInputEnvelope
+export type FactUpdateManyWithoutFactTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput> | Prisma.FactCreateWithoutFactTypeInput[] | Prisma.FactUncheckedCreateWithoutFactTypeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutFactTypeInput | Prisma.FactCreateOrConnectWithoutFactTypeInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutFactTypeInput | Prisma.FactUpsertWithWhereUniqueWithoutFactTypeInput[]
+  createMany?: Prisma.FactCreateManyFactTypeInputEnvelope
   set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
-  update?: Prisma.FactUpdateWithWhereUniqueWithoutMetricInput | Prisma.FactUpdateWithWhereUniqueWithoutMetricInput[]
-  updateMany?: Prisma.FactUpdateManyWithWhereWithoutMetricInput | Prisma.FactUpdateManyWithWhereWithoutMetricInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutFactTypeInput | Prisma.FactUpdateWithWhereUniqueWithoutFactTypeInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutFactTypeInput | Prisma.FactUpdateManyWithWhereWithoutFactTypeInput[]
   deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
 }
 
-export type FactUncheckedUpdateManyWithoutMetricNestedInput = {
-  create?: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput> | Prisma.FactCreateWithoutMetricInput[] | Prisma.FactUncheckedCreateWithoutMetricInput[]
-  connectOrCreate?: Prisma.FactCreateOrConnectWithoutMetricInput | Prisma.FactCreateOrConnectWithoutMetricInput[]
-  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutMetricInput | Prisma.FactUpsertWithWhereUniqueWithoutMetricInput[]
-  createMany?: Prisma.FactCreateManyMetricInputEnvelope
+export type FactUncheckedUpdateManyWithoutFactTypeNestedInput = {
+  create?: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput> | Prisma.FactCreateWithoutFactTypeInput[] | Prisma.FactUncheckedCreateWithoutFactTypeInput[]
+  connectOrCreate?: Prisma.FactCreateOrConnectWithoutFactTypeInput | Prisma.FactCreateOrConnectWithoutFactTypeInput[]
+  upsert?: Prisma.FactUpsertWithWhereUniqueWithoutFactTypeInput | Prisma.FactUpsertWithWhereUniqueWithoutFactTypeInput[]
+  createMany?: Prisma.FactCreateManyFactTypeInputEnvelope
   set?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   disconnect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   delete?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
   connect?: Prisma.FactWhereUniqueInput | Prisma.FactWhereUniqueInput[]
-  update?: Prisma.FactUpdateWithWhereUniqueWithoutMetricInput | Prisma.FactUpdateWithWhereUniqueWithoutMetricInput[]
-  updateMany?: Prisma.FactUpdateManyWithWhereWithoutMetricInput | Prisma.FactUpdateManyWithWhereWithoutMetricInput[]
+  update?: Prisma.FactUpdateWithWhereUniqueWithoutFactTypeInput | Prisma.FactUpdateWithWhereUniqueWithoutFactTypeInput[]
+  updateMany?: Prisma.FactUpdateManyWithWhereWithoutFactTypeInput | Prisma.FactUpdateManyWithWhereWithoutFactTypeInput[]
   deleteMany?: Prisma.FactScalarWhereInput | Prisma.FactScalarWhereInput[]
 }
 
@@ -1294,6 +1388,10 @@ export type FactCreateWithoutCountryInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1303,7 +1401,7 @@ export type FactCreateWithoutCountryInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -1331,7 +1429,11 @@ export type FactUncheckedCreateWithoutCountryInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -1393,7 +1495,11 @@ export type FactScalarWhereInput = {
   immigrationRuleId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   occupationId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   referencePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
-  metricId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  factTypeId?: Prisma.UuidNullableFilter<"Fact"> | string | null
+  valueNumber?: Prisma.DecimalNullableFilter<"Fact"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valuePeriod?: Prisma.StringNullableFilter<"Fact"> | string | null
+  valueDate?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedAt?: Prisma.DateTimeNullableFilter<"Fact"> | Date | string | null
   sourceChangedDocumentId?: Prisma.UuidNullableFilter<"Fact"> | string | null
   origin?: Prisma.StringFilter<"Fact"> | string
@@ -1416,6 +1522,10 @@ export type FactCreateWithoutDocumentInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1425,7 +1535,7 @@ export type FactCreateWithoutDocumentInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -1453,7 +1563,11 @@ export type FactUncheckedCreateWithoutDocumentInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -1490,6 +1604,10 @@ export type FactCreateWithoutSourceChangedDocumentInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1500,7 +1618,7 @@ export type FactCreateWithoutSourceChangedDocumentInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
@@ -1528,7 +1646,11 @@ export type FactUncheckedCreateWithoutSourceChangedDocumentInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1596,6 +1718,10 @@ export type FactCreateWithoutEvidenceInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1606,7 +1732,7 @@ export type FactCreateWithoutEvidenceInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
@@ -1634,7 +1760,11 @@ export type FactUncheckedCreateWithoutEvidenceInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -1676,6 +1806,10 @@ export type FactUpdateWithoutEvidenceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1686,7 +1820,7 @@ export type FactUpdateWithoutEvidenceInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
@@ -1714,7 +1848,11 @@ export type FactUncheckedUpdateWithoutEvidenceInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1740,6 +1878,10 @@ export type FactCreateWithoutReviewsInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1750,7 +1892,7 @@ export type FactCreateWithoutReviewsInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -1778,7 +1920,11 @@ export type FactUncheckedCreateWithoutReviewsInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -1809,6 +1955,10 @@ export type FactCreateWithoutConflictsInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -1819,7 +1969,7 @@ export type FactCreateWithoutConflictsInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -1847,7 +1997,11 @@ export type FactUncheckedCreateWithoutConflictsInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -1889,6 +2043,10 @@ export type FactUpdateWithoutReviewsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1899,7 +2057,7 @@ export type FactUpdateWithoutReviewsInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -1927,7 +2085,11 @@ export type FactUncheckedUpdateWithoutReviewsInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1964,6 +2126,10 @@ export type FactUpdateWithoutConflictsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1974,7 +2140,7 @@ export type FactUpdateWithoutConflictsInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -2002,7 +2168,11 @@ export type FactUncheckedUpdateWithoutConflictsInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2028,6 +2198,10 @@ export type FactCreateWithoutUniversityInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2037,7 +2211,7 @@ export type FactCreateWithoutUniversityInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -2065,7 +2239,11 @@ export type FactUncheckedCreateWithoutUniversityInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2118,6 +2296,10 @@ export type FactCreateWithoutProgrammeInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2127,7 +2309,7 @@ export type FactCreateWithoutProgrammeInput = {
   university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -2155,7 +2337,11 @@ export type FactUncheckedCreateWithoutProgrammeInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2208,6 +2394,10 @@ export type FactCreateWithoutImmigrationRuleInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2217,7 +2407,7 @@ export type FactCreateWithoutImmigrationRuleInput = {
   university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -2245,7 +2435,11 @@ export type FactUncheckedCreateWithoutImmigrationRuleInput = {
   deadlineType?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2298,6 +2492,10 @@ export type FactCreateWithoutOccupationInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2307,7 +2505,7 @@ export type FactCreateWithoutOccupationInput = {
   university?: Prisma.UniversityCreateNestedOneWithoutFactsInput
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   extractionItems?: Prisma.ExtractionItemCreateNestedManyWithoutFactInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
@@ -2335,7 +2533,11 @@ export type FactUncheckedCreateWithoutOccupationInput = {
   deadlineType?: string | null
   immigrationRuleId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2373,7 +2575,7 @@ export type FactUpdateManyWithWhereWithoutOccupationInput = {
   data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutOccupationInput>
 }
 
-export type FactCreateWithoutMetricInput = {
+export type FactCreateWithoutFactTypeInput = {
   id?: string
   topic: string
   subject: string
@@ -2388,6 +2590,10 @@ export type FactCreateWithoutMetricInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2405,7 +2611,7 @@ export type FactCreateWithoutMetricInput = {
   conflicts?: Prisma.FactReviewCreateNestedManyWithoutRelatedFactInput
 }
 
-export type FactUncheckedCreateWithoutMetricInput = {
+export type FactUncheckedCreateWithoutFactTypeInput = {
   id?: string
   documentId: string
   topic: string
@@ -2426,6 +2632,10 @@ export type FactUncheckedCreateWithoutMetricInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2437,30 +2647,30 @@ export type FactUncheckedCreateWithoutMetricInput = {
   conflicts?: Prisma.FactReviewUncheckedCreateNestedManyWithoutRelatedFactInput
 }
 
-export type FactCreateOrConnectWithoutMetricInput = {
+export type FactCreateOrConnectWithoutFactTypeInput = {
   where: Prisma.FactWhereUniqueInput
-  create: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput>
+  create: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput>
 }
 
-export type FactCreateManyMetricInputEnvelope = {
-  data: Prisma.FactCreateManyMetricInput | Prisma.FactCreateManyMetricInput[]
+export type FactCreateManyFactTypeInputEnvelope = {
+  data: Prisma.FactCreateManyFactTypeInput | Prisma.FactCreateManyFactTypeInput[]
   skipDuplicates?: boolean
 }
 
-export type FactUpsertWithWhereUniqueWithoutMetricInput = {
+export type FactUpsertWithWhereUniqueWithoutFactTypeInput = {
   where: Prisma.FactWhereUniqueInput
-  update: Prisma.XOR<Prisma.FactUpdateWithoutMetricInput, Prisma.FactUncheckedUpdateWithoutMetricInput>
-  create: Prisma.XOR<Prisma.FactCreateWithoutMetricInput, Prisma.FactUncheckedCreateWithoutMetricInput>
+  update: Prisma.XOR<Prisma.FactUpdateWithoutFactTypeInput, Prisma.FactUncheckedUpdateWithoutFactTypeInput>
+  create: Prisma.XOR<Prisma.FactCreateWithoutFactTypeInput, Prisma.FactUncheckedCreateWithoutFactTypeInput>
 }
 
-export type FactUpdateWithWhereUniqueWithoutMetricInput = {
+export type FactUpdateWithWhereUniqueWithoutFactTypeInput = {
   where: Prisma.FactWhereUniqueInput
-  data: Prisma.XOR<Prisma.FactUpdateWithoutMetricInput, Prisma.FactUncheckedUpdateWithoutMetricInput>
+  data: Prisma.XOR<Prisma.FactUpdateWithoutFactTypeInput, Prisma.FactUncheckedUpdateWithoutFactTypeInput>
 }
 
-export type FactUpdateManyWithWhereWithoutMetricInput = {
+export type FactUpdateManyWithWhereWithoutFactTypeInput = {
   where: Prisma.FactScalarWhereInput
-  data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutMetricInput>
+  data: Prisma.XOR<Prisma.FactUpdateManyMutationInput, Prisma.FactUncheckedUpdateManyWithoutFactTypeInput>
 }
 
 export type FactCreateWithoutExtractionItemsInput = {
@@ -2478,6 +2688,10 @@ export type FactCreateWithoutExtractionItemsInput = {
   createdAt?: Date | string
   deadlineType?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2488,7 +2702,7 @@ export type FactCreateWithoutExtractionItemsInput = {
   programme?: Prisma.ProgrammeCreateNestedOneWithoutFactsInput
   immigrationRule?: Prisma.ImmigrationRuleCreateNestedOneWithoutFactsInput
   occupation?: Prisma.OccupationCreateNestedOneWithoutFactsInput
-  metric?: Prisma.ComparisonMetricCreateNestedOneWithoutFactsInput
+  factType?: Prisma.FactTypeCreateNestedOneWithoutFactsInput
   sourceChangedDocument?: Prisma.DocumentCreateNestedOneWithoutChangedFactsInput
   evidence?: Prisma.EvidenceCreateNestedOneWithoutFactInput
   reviews?: Prisma.FactReviewCreateNestedManyWithoutFactInput
@@ -2516,7 +2730,11 @@ export type FactUncheckedCreateWithoutExtractionItemsInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2558,6 +2776,10 @@ export type FactUpdateWithoutExtractionItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2568,7 +2790,7 @@ export type FactUpdateWithoutExtractionItemsInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
@@ -2596,7 +2818,11 @@ export type FactUncheckedUpdateWithoutExtractionItemsInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2627,7 +2853,11 @@ export type FactCreateManyCountryInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2650,6 +2880,10 @@ export type FactUpdateWithoutCountryInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2659,7 +2893,7 @@ export type FactUpdateWithoutCountryInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -2687,7 +2921,11 @@ export type FactUncheckedUpdateWithoutCountryInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2719,7 +2957,11 @@ export type FactUncheckedUpdateManyWithoutCountryInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2747,7 +2989,11 @@ export type FactCreateManyDocumentInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -2776,7 +3022,11 @@ export type FactCreateManySourceChangedDocumentInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   origin?: string
   aiModel?: string | null
@@ -2798,6 +3048,10 @@ export type FactUpdateWithoutDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2807,7 +3061,7 @@ export type FactUpdateWithoutDocumentInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -2835,7 +3089,11 @@ export type FactUncheckedUpdateWithoutDocumentInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2867,7 +3125,11 @@ export type FactUncheckedUpdateManyWithoutDocumentInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -2890,6 +3152,10 @@ export type FactUpdateWithoutSourceChangedDocumentInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2900,7 +3166,7 @@ export type FactUpdateWithoutSourceChangedDocumentInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
   reviews?: Prisma.FactReviewUpdateManyWithoutFactNestedInput
@@ -2928,7 +3194,11 @@ export type FactUncheckedUpdateWithoutSourceChangedDocumentInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2960,7 +3230,11 @@ export type FactUncheckedUpdateManyWithoutSourceChangedDocumentInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2987,7 +3261,11 @@ export type FactCreateManyUniversityInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -3010,6 +3288,10 @@ export type FactUpdateWithoutUniversityInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3019,7 +3301,7 @@ export type FactUpdateWithoutUniversityInput = {
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -3047,7 +3329,11 @@ export type FactUncheckedUpdateWithoutUniversityInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3079,7 +3365,11 @@ export type FactUncheckedUpdateManyWithoutUniversityInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3107,7 +3397,11 @@ export type FactCreateManyProgrammeInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -3130,6 +3424,10 @@ export type FactUpdateWithoutProgrammeInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3139,7 +3437,7 @@ export type FactUpdateWithoutProgrammeInput = {
   university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -3167,7 +3465,11 @@ export type FactUncheckedUpdateWithoutProgrammeInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3199,7 +3501,11 @@ export type FactUncheckedUpdateManyWithoutProgrammeInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3227,7 +3533,11 @@ export type FactCreateManyImmigrationRuleInput = {
   deadlineType?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -3250,6 +3560,10 @@ export type FactUpdateWithoutImmigrationRuleInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3259,7 +3573,7 @@ export type FactUpdateWithoutImmigrationRuleInput = {
   university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   occupation?: Prisma.OccupationUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -3287,7 +3601,11 @@ export type FactUncheckedUpdateWithoutImmigrationRuleInput = {
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3319,7 +3637,11 @@ export type FactUncheckedUpdateManyWithoutImmigrationRuleInput = {
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3347,7 +3669,11 @@ export type FactCreateManyOccupationInput = {
   deadlineType?: string | null
   immigrationRuleId?: string | null
   referencePeriod?: string | null
-  metricId?: string | null
+  factTypeId?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -3370,6 +3696,10 @@ export type FactUpdateWithoutOccupationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3379,7 +3709,7 @@ export type FactUpdateWithoutOccupationInput = {
   university?: Prisma.UniversityUpdateOneWithoutFactsNestedInput
   programme?: Prisma.ProgrammeUpdateOneWithoutFactsNestedInput
   immigrationRule?: Prisma.ImmigrationRuleUpdateOneWithoutFactsNestedInput
-  metric?: Prisma.ComparisonMetricUpdateOneWithoutFactsNestedInput
+  factType?: Prisma.FactTypeUpdateOneWithoutFactsNestedInput
   sourceChangedDocument?: Prisma.DocumentUpdateOneWithoutChangedFactsNestedInput
   extractionItems?: Prisma.ExtractionItemUpdateManyWithoutFactNestedInput
   evidence?: Prisma.EvidenceUpdateOneWithoutFactNestedInput
@@ -3407,7 +3737,11 @@ export type FactUncheckedUpdateWithoutOccupationInput = {
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3439,7 +3773,11 @@ export type FactUncheckedUpdateManyWithoutOccupationInput = {
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metricId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  factTypeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3447,7 +3785,7 @@ export type FactUncheckedUpdateManyWithoutOccupationInput = {
   aiConfidence?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
-export type FactCreateManyMetricInput = {
+export type FactCreateManyFactTypeInput = {
   id?: string
   documentId: string
   topic: string
@@ -3468,6 +3806,10 @@ export type FactCreateManyMetricInput = {
   immigrationRuleId?: string | null
   occupationId?: string | null
   referencePeriod?: string | null
+  valueNumber?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: string | null
+  valuePeriod?: string | null
+  valueDate?: Date | string | null
   sourceChangedAt?: Date | string | null
   sourceChangedDocumentId?: string | null
   origin?: string
@@ -3475,7 +3817,7 @@ export type FactCreateManyMetricInput = {
   aiConfidence?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
 }
 
-export type FactUpdateWithoutMetricInput = {
+export type FactUpdateWithoutFactTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.StringFieldUpdateOperationsInput | string
   subject?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3490,6 +3832,10 @@ export type FactUpdateWithoutMetricInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   deadlineType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
   aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3507,7 +3853,7 @@ export type FactUpdateWithoutMetricInput = {
   conflicts?: Prisma.FactReviewUpdateManyWithoutRelatedFactNestedInput
 }
 
-export type FactUncheckedUpdateWithoutMetricInput = {
+export type FactUncheckedUpdateWithoutFactTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3528,6 +3874,10 @@ export type FactUncheckedUpdateWithoutMetricInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3539,7 +3889,7 @@ export type FactUncheckedUpdateWithoutMetricInput = {
   conflicts?: Prisma.FactReviewUncheckedUpdateManyWithoutRelatedFactNestedInput
 }
 
-export type FactUncheckedUpdateManyWithoutMetricInput = {
+export type FactUncheckedUpdateManyWithoutFactTypeInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   documentId?: Prisma.StringFieldUpdateOperationsInput | string
   topic?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3560,6 +3910,10 @@ export type FactUncheckedUpdateManyWithoutMetricInput = {
   immigrationRuleId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   occupationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   referencePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueNumber?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  valueCurrency?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valuePeriod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  valueDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   sourceChangedDocumentId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   origin?: Prisma.StringFieldUpdateOperationsInput | string
@@ -3637,7 +3991,11 @@ export type FactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   immigrationRuleId?: boolean
   occupationId?: boolean
   referencePeriod?: boolean
-  metricId?: boolean
+  factTypeId?: boolean
+  valueNumber?: boolean
+  valueCurrency?: boolean
+  valuePeriod?: boolean
+  valueDate?: boolean
   sourceChangedAt?: boolean
   sourceChangedDocumentId?: boolean
   origin?: boolean
@@ -3649,7 +4007,7 @@ export type FactSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
   extractionItems?: boolean | Prisma.Fact$extractionItemsArgs<ExtArgs>
   evidence?: boolean | Prisma.Fact$evidenceArgs<ExtArgs>
@@ -3679,7 +4037,11 @@ export type FactSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   immigrationRuleId?: boolean
   occupationId?: boolean
   referencePeriod?: boolean
-  metricId?: boolean
+  factTypeId?: boolean
+  valueNumber?: boolean
+  valueCurrency?: boolean
+  valuePeriod?: boolean
+  valueDate?: boolean
   sourceChangedAt?: boolean
   sourceChangedDocumentId?: boolean
   origin?: boolean
@@ -3691,7 +4053,7 @@ export type FactSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
 }, ExtArgs["result"]["fact"]>
 
@@ -3716,7 +4078,11 @@ export type FactSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   immigrationRuleId?: boolean
   occupationId?: boolean
   referencePeriod?: boolean
-  metricId?: boolean
+  factTypeId?: boolean
+  valueNumber?: boolean
+  valueCurrency?: boolean
+  valuePeriod?: boolean
+  valueDate?: boolean
   sourceChangedAt?: boolean
   sourceChangedDocumentId?: boolean
   origin?: boolean
@@ -3728,7 +4094,7 @@ export type FactSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
 }, ExtArgs["result"]["fact"]>
 
@@ -3753,7 +4119,11 @@ export type FactSelectScalar = {
   immigrationRuleId?: boolean
   occupationId?: boolean
   referencePeriod?: boolean
-  metricId?: boolean
+  factTypeId?: boolean
+  valueNumber?: boolean
+  valueCurrency?: boolean
+  valuePeriod?: boolean
+  valueDate?: boolean
   sourceChangedAt?: boolean
   sourceChangedDocumentId?: boolean
   origin?: boolean
@@ -3761,7 +4131,7 @@ export type FactSelectScalar = {
   aiConfidence?: boolean
 }
 
-export type FactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "topic" | "subject" | "predicate" | "value" | "unit" | "countryId" | "validFrom" | "validUntil" | "status" | "createdBy" | "reviewedAt" | "createdAt" | "universityId" | "programmeId" | "deadlineType" | "immigrationRuleId" | "occupationId" | "referencePeriod" | "metricId" | "sourceChangedAt" | "sourceChangedDocumentId" | "origin" | "aiModel" | "aiConfidence", ExtArgs["result"]["fact"]>
+export type FactOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "documentId" | "topic" | "subject" | "predicate" | "value" | "unit" | "countryId" | "validFrom" | "validUntil" | "status" | "createdBy" | "reviewedAt" | "createdAt" | "universityId" | "programmeId" | "deadlineType" | "immigrationRuleId" | "occupationId" | "referencePeriod" | "factTypeId" | "valueNumber" | "valueCurrency" | "valuePeriod" | "valueDate" | "sourceChangedAt" | "sourceChangedDocumentId" | "origin" | "aiModel" | "aiConfidence", ExtArgs["result"]["fact"]>
 export type FactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   document?: boolean | Prisma.DocumentDefaultArgs<ExtArgs>
   country?: boolean | Prisma.Fact$countryArgs<ExtArgs>
@@ -3769,7 +4139,7 @@ export type FactInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
   extractionItems?: boolean | Prisma.Fact$extractionItemsArgs<ExtArgs>
   evidence?: boolean | Prisma.Fact$evidenceArgs<ExtArgs>
@@ -3784,7 +4154,7 @@ export type FactIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
 }
 export type FactIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3794,7 +4164,7 @@ export type FactIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   programme?: boolean | Prisma.Fact$programmeArgs<ExtArgs>
   immigrationRule?: boolean | Prisma.Fact$immigrationRuleArgs<ExtArgs>
   occupation?: boolean | Prisma.Fact$occupationArgs<ExtArgs>
-  metric?: boolean | Prisma.Fact$metricArgs<ExtArgs>
+  factType?: boolean | Prisma.Fact$factTypeArgs<ExtArgs>
   sourceChangedDocument?: boolean | Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>
 }
 
@@ -3807,7 +4177,7 @@ export type $FactPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     programme: Prisma.$ProgrammePayload<ExtArgs> | null
     immigrationRule: Prisma.$ImmigrationRulePayload<ExtArgs> | null
     occupation: Prisma.$OccupationPayload<ExtArgs> | null
-    metric: Prisma.$ComparisonMetricPayload<ExtArgs> | null
+    factType: Prisma.$FactTypePayload<ExtArgs> | null
     sourceChangedDocument: Prisma.$DocumentPayload<ExtArgs> | null
     extractionItems: Prisma.$ExtractionItemPayload<ExtArgs>[]
     evidence: Prisma.$EvidencePayload<ExtArgs> | null
@@ -3835,7 +4205,11 @@ export type $FactPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     immigrationRuleId: string | null
     occupationId: string | null
     referencePeriod: string | null
-    metricId: string | null
+    factTypeId: string | null
+    valueNumber: runtime.Decimal | null
+    valueCurrency: string | null
+    valuePeriod: string | null
+    valueDate: Date | null
     sourceChangedAt: Date | null
     sourceChangedDocumentId: string | null
     origin: string
@@ -4241,7 +4615,7 @@ export interface Prisma__FactClient<T, Null = never, ExtArgs extends runtime.Typ
   programme<T extends Prisma.Fact$programmeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$programmeArgs<ExtArgs>>): Prisma.Prisma__ProgrammeClient<runtime.Types.Result.GetResult<Prisma.$ProgrammePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   immigrationRule<T extends Prisma.Fact$immigrationRuleArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$immigrationRuleArgs<ExtArgs>>): Prisma.Prisma__ImmigrationRuleClient<runtime.Types.Result.GetResult<Prisma.$ImmigrationRulePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   occupation<T extends Prisma.Fact$occupationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$occupationArgs<ExtArgs>>): Prisma.Prisma__OccupationClient<runtime.Types.Result.GetResult<Prisma.$OccupationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  metric<T extends Prisma.Fact$metricArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$metricArgs<ExtArgs>>): Prisma.Prisma__ComparisonMetricClient<runtime.Types.Result.GetResult<Prisma.$ComparisonMetricPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  factType<T extends Prisma.Fact$factTypeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$factTypeArgs<ExtArgs>>): Prisma.Prisma__FactTypeClient<runtime.Types.Result.GetResult<Prisma.$FactTypePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   sourceChangedDocument<T extends Prisma.Fact$sourceChangedDocumentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$sourceChangedDocumentArgs<ExtArgs>>): Prisma.Prisma__DocumentClient<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   extractionItems<T extends Prisma.Fact$extractionItemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$extractionItemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExtractionItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   evidence<T extends Prisma.Fact$evidenceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Fact$evidenceArgs<ExtArgs>>): Prisma.Prisma__EvidenceClient<runtime.Types.Result.GetResult<Prisma.$EvidencePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -4296,7 +4670,11 @@ export interface FactFieldRefs {
   readonly immigrationRuleId: Prisma.FieldRef<"Fact", 'String'>
   readonly occupationId: Prisma.FieldRef<"Fact", 'String'>
   readonly referencePeriod: Prisma.FieldRef<"Fact", 'String'>
-  readonly metricId: Prisma.FieldRef<"Fact", 'String'>
+  readonly factTypeId: Prisma.FieldRef<"Fact", 'String'>
+  readonly valueNumber: Prisma.FieldRef<"Fact", 'Decimal'>
+  readonly valueCurrency: Prisma.FieldRef<"Fact", 'String'>
+  readonly valuePeriod: Prisma.FieldRef<"Fact", 'String'>
+  readonly valueDate: Prisma.FieldRef<"Fact", 'DateTime'>
   readonly sourceChangedAt: Prisma.FieldRef<"Fact", 'DateTime'>
   readonly sourceChangedDocumentId: Prisma.FieldRef<"Fact", 'String'>
   readonly origin: Prisma.FieldRef<"Fact", 'String'>
@@ -4798,22 +5176,22 @@ export type Fact$occupationArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Fact.metric
+ * Fact.factType
  */
-export type Fact$metricArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Fact$factTypeArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the ComparisonMetric
+   * Select specific fields to fetch from the FactType
    */
-  select?: Prisma.ComparisonMetricSelect<ExtArgs> | null
+  select?: Prisma.FactTypeSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the ComparisonMetric
+   * Omit specific fields from the FactType
    */
-  omit?: Prisma.ComparisonMetricOmit<ExtArgs> | null
+  omit?: Prisma.FactTypeOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.ComparisonMetricInclude<ExtArgs> | null
-  where?: Prisma.ComparisonMetricWhereInput
+  include?: Prisma.FactTypeInclude<ExtArgs> | null
+  where?: Prisma.FactTypeWhereInput
 }
 
 /**

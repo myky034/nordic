@@ -217,9 +217,14 @@ model Fact {
   occupation Occupation? @relation(fields: [occupationId], references: [id], onDelete: Restrict)
   // Period a statistic measures: YYYY, YYYY-Qn, YYYY-Hn or YYYY-MM (SQL CHECK).
   referencePeriod String? @map("reference_period")
-  // Slice 7: comparison metric; requires country_id (SQL CHECK facts_metric_country).
-  metricId String? @map("metric_id") @db.Uuid
-  metric ComparisonMetric? @relation(fields: [metricId], references: [id], onDelete: Restrict)
+  // L3a: fact type (was the Slice 7 metric); requires country_id (SQL CHECK facts_fact_type_country).
+  factTypeId String? @map("fact_type_id") @db.Uuid
+  factType FactType? @relation(fields: [factTypeId], references: [id], onDelete: Restrict)
+  // Structured reading of `value` for typed facts (SQL CHECK facts_structured_needs_type).
+  valueNumber Decimal? @map("value_number") @db.Decimal
+  valueCurrency String? @map("value_currency")
+  valuePeriod String? @map("value_period")
+  valueDate DateTime? @map("value_date") @db.Date
   // Slice 9: set by the crawler when the page behind this fact changed after review.
   sourceChangedAt DateTime? @map("source_changed_at") @db.Timestamptz(6)
   sourceChangedDocumentId String? @map("source_changed_document_id") @db.Uuid
@@ -431,23 +436,31 @@ model OccupationReview {
   @@map("occupation_reviews")
 }
 
-// Slice 7: admin-curated comparison vocabulary. Definitions only, never values.
-// key and category are immutable once created (enforced by save_metric).
-model ComparisonMetric {
-  id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  key         String   @unique
-  label       String
-  description String
-  unitHint    String?  @map("unit_hint")
-  category    String
-  active      Boolean  @default(true)
-  createdBy   String   @map("created_by") @db.Uuid
-  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt   DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
-  facts       Fact[]
+// L3a (2026-10-13): one vocabulary of fact types (was comparison_metrics).
+// key, valueKind, appliesTo and category are fixed once created (enforced by
+// save_fact_type); a comparison metric is a type with comparable = true.
+model FactType {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  key          String   @unique
+  labelVi      String   @map("label_vi")
+  labelEn      String   @map("label_en")
+  definitionVi String   @map("definition_vi")
+  definitionEn String   @map("definition_en")
+  valueKind    String   @map("value_kind")
+  appliesTo    String   @map("applies_to")
+  unitHint     String?  @map("unit_hint")
+  minValue     Decimal? @map("min_value") @db.Decimal
+  maxValue     Decimal? @map("max_value") @db.Decimal
+  comparable   Boolean  @default(false)
+  category     String
+  active       Boolean  @default(true)
+  createdBy    String   @map("created_by") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
+  facts        Fact[]
 
-  @@index([category, label])
-  @@map("comparison_metrics")
+  @@index([category, labelVi], map: "fact_types_category_idx")
+  @@map("fact_types")
 }
 
 // Slice 8: user-private workspace. Owner-only RLS on every table; user_id FKs

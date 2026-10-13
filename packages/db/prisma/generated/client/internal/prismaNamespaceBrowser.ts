@@ -69,7 +69,7 @@ export const ModelName = {
   ImmigrationRuleReview: 'ImmigrationRuleReview',
   Occupation: 'Occupation',
   OccupationReview: 'OccupationReview',
-  ComparisonMetric: 'ComparisonMetric',
+  FactType: 'FactType',
   ResearchProject: 'ResearchProject',
   ResearchProjectCountry: 'ResearchProjectCountry',
   SavedItem: 'SavedItem',
@@ -236,7 +236,11 @@ export const FactScalarFieldEnum = {
   immigrationRuleId: 'immigrationRuleId',
   occupationId: 'occupationId',
   referencePeriod: 'referencePeriod',
-  metricId: 'metricId',
+  factTypeId: 'factTypeId',
+  valueNumber: 'valueNumber',
+  valueCurrency: 'valueCurrency',
+  valuePeriod: 'valuePeriod',
+  valueDate: 'valueDate',
   sourceChangedAt: 'sourceChangedAt',
   sourceChangedDocumentId: 'sourceChangedDocumentId',
   origin: 'origin',
@@ -380,12 +384,19 @@ export const OccupationReviewScalarFieldEnum = {
 export type OccupationReviewScalarFieldEnum = (typeof OccupationReviewScalarFieldEnum)[keyof typeof OccupationReviewScalarFieldEnum]
 
 
-export const ComparisonMetricScalarFieldEnum = {
+export const FactTypeScalarFieldEnum = {
   id: 'id',
   key: 'key',
-  label: 'label',
-  description: 'description',
+  labelVi: 'labelVi',
+  labelEn: 'labelEn',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  valueKind: 'valueKind',
+  appliesTo: 'appliesTo',
   unitHint: 'unitHint',
+  minValue: 'minValue',
+  maxValue: 'maxValue',
+  comparable: 'comparable',
   category: 'category',
   active: 'active',
   createdBy: 'createdBy',
@@ -393,7 +404,7 @@ export const ComparisonMetricScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type ComparisonMetricScalarFieldEnum = (typeof ComparisonMetricScalarFieldEnum)[keyof typeof ComparisonMetricScalarFieldEnum]
+export type FactTypeScalarFieldEnum = (typeof FactTypeScalarFieldEnum)[keyof typeof FactTypeScalarFieldEnum]
 
 
 export const ResearchProjectScalarFieldEnum = {

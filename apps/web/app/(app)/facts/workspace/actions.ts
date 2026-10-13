@@ -6,6 +6,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { uuidPattern } from "@/lib/documents/domain";
 import { deadlineTypes } from "@/lib/education/domain";
 import { isReferencePeriod } from "@/lib/labour/domain";
+import { currencyPattern, valuePeriods } from "@/lib/compare/domain";
 export async function proposeFact(_: FactState, form: FormData): Promise<FactState> {
   // Messages in the editor\'s interface language (lib/i18n).
   const [locale, dict] = [await getLocale(), await getDictionary()];
@@ -20,14 +21,27 @@ export async function proposeFact(_: FactState, form: FormData): Promise<FactSta
     const deadline = get("deadlineType");
     if (deadline && !Object.hasOwn(deadlineTypes, deadline)) return {error:factError("facts_invalid", locale)};
     const period = get("referencePeriod");
-    const metric = get("metric");
-    if (metric && !uuidPattern.test(metric)) return {error:factError("facts_invalid", locale)};
+    // L3a: optional fact type with its structured value. Shape checks only;
+    // propose_fact() decides which fields the type needs, the range, and
+    // whether the number is in the excerpt.
+    const factType = get("factType");
+    if (factType && !uuidPattern.test(factType)) return {error:factError("facts_invalid", locale)};
+    const rawNumber = get("valueNumber").replace(",", ".");
+    const valueNumber = rawNumber === "" ? null : Number(rawNumber);
+    const valueCurrency = get("valueCurrency").toUpperCase() || null;
+    const valuePeriod = get("valuePeriod") || null;
+    const valueDate = get("valueDate") || null;
+    if ((valueNumber !== null && !Number.isFinite(valueNumber)) || (valueCurrency && !currencyPattern.test(valueCurrency))
+      || (valuePeriod && !(valuePeriods as readonly string[]).includes(valuePeriod)) || (valueDate && !/^\d{4}-\d{2}-\d{2}$/.test(valueDate))
+      || (!factType && (valueNumber !== null || valueCurrency || valuePeriod || valueDate))) {
+      return {error:factError("facts_type_value_invalid", locale)};
+    }
     if (period && !isReferencePeriod(period)) return {error:factError("facts_invalid_period", locale)};
     const { error } = await client.rpc("propose_fact", {
       p_document:get("document"),p_topic:get("topic"),p_subject:get("subject"),
       p_predicate:get("predicate"),p_value:get("value"),p_unit:get("unit") || null,
       p_country:get("country") || null,p_from:get("from") || null,p_until:get("until") || null,p_excerpt:get("excerpt"),
-      p_university:kind==="university"?entity:null,p_programme:kind==="programme"?entity:null,p_deadline_type:deadline || null,p_immigration_rule:kind==="immigration_rule"?entity:null,p_occupation:kind==="occupation"?entity:null,p_reference_period:period || null,p_metric:metric || null,
+      p_university:kind==="university"?entity:null,p_programme:kind==="programme"?entity:null,p_deadline_type:deadline || null,p_immigration_rule:kind==="immigration_rule"?entity:null,p_occupation:kind==="occupation"?entity:null,p_reference_period:period || null,p_fact_type:factType || null,p_value_number:valueNumber,p_value_currency:valueCurrency,p_value_period:valuePeriod,p_value_date:valueDate,
     });
     if (error) throw new Error(error.message);
     revalidatePath("/facts/workspace");

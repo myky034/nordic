@@ -415,7 +415,7 @@ export const ModelName = {
   ImmigrationRuleReview: 'ImmigrationRuleReview',
   Occupation: 'Occupation',
   OccupationReview: 'OccupationReview',
-  ComparisonMetric: 'ComparisonMetric',
+  FactType: 'FactType',
   ResearchProject: 'ResearchProject',
   ResearchProjectCountry: 'ResearchProjectCountry',
   SavedItem: 'SavedItem',
@@ -451,7 +451,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "comparisonMetric" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem" | "studyField" | "careerPath" | "careerPathVersion" | "programmeClassification" | "classificationReview"
+    modelProps: "country" | "source" | "document" | "role" | "permission" | "rolePermission" | "userRole" | "accessAudit" | "fact" | "evidence" | "factReview" | "university" | "programme" | "educationReview" | "immigrationRule" | "immigrationRuleReview" | "occupation" | "occupationReview" | "factType" | "researchProject" | "researchProjectCountry" | "savedItem" | "note" | "userPlan" | "userPlanCountry" | "crawlTarget" | "crawlUrlState" | "crawlerRun" | "crawlerRunItem" | "documentText" | "extractionSetting" | "extractionRun" | "extractionRequest" | "extractionItem" | "studyField" | "careerPath" | "careerPathVersion" | "programmeClassification" | "classificationReview"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1787,77 +1787,77 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    ComparisonMetric: {
-      payload: Prisma.$ComparisonMetricPayload<ExtArgs>
-      fields: Prisma.ComparisonMetricFieldRefs
+    FactType: {
+      payload: Prisma.$FactTypePayload<ExtArgs>
+      fields: Prisma.FactTypeFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.ComparisonMetricFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload> | null
+          args: Prisma.FactTypeFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.ComparisonMetricFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         findFirst: {
-          args: Prisma.ComparisonMetricFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload> | null
+          args: Prisma.FactTypeFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.ComparisonMetricFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         findMany: {
-          args: Prisma.ComparisonMetricFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+          args: Prisma.FactTypeFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>[]
         }
         create: {
-          args: Prisma.ComparisonMetricCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         createMany: {
-          args: Prisma.ComparisonMetricCreateManyArgs<ExtArgs>
+          args: Prisma.FactTypeCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.ComparisonMetricCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+          args: Prisma.FactTypeCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>[]
         }
         delete: {
-          args: Prisma.ComparisonMetricDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         update: {
-          args: Prisma.ComparisonMetricUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         deleteMany: {
-          args: Prisma.ComparisonMetricDeleteManyArgs<ExtArgs>
+          args: Prisma.FactTypeDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.ComparisonMetricUpdateManyArgs<ExtArgs>
+          args: Prisma.FactTypeUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.ComparisonMetricUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>[]
+          args: Prisma.FactTypeUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>[]
         }
         upsert: {
-          args: Prisma.ComparisonMetricUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$ComparisonMetricPayload>
+          args: Prisma.FactTypeUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FactTypePayload>
         }
         aggregate: {
-          args: Prisma.ComparisonMetricAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateComparisonMetric>
+          args: Prisma.FactTypeAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFactType>
         }
         groupBy: {
-          args: Prisma.ComparisonMetricGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ComparisonMetricGroupByOutputType>[]
+          args: Prisma.FactTypeGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactTypeGroupByOutputType>[]
         }
         count: {
-          args: Prisma.ComparisonMetricCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.ComparisonMetricCountAggregateOutputType> | number
+          args: Prisma.FactTypeCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FactTypeCountAggregateOutputType> | number
         }
       }
     }
@@ -3508,7 +3508,11 @@ export const FactScalarFieldEnum = {
   immigrationRuleId: 'immigrationRuleId',
   occupationId: 'occupationId',
   referencePeriod: 'referencePeriod',
-  metricId: 'metricId',
+  factTypeId: 'factTypeId',
+  valueNumber: 'valueNumber',
+  valueCurrency: 'valueCurrency',
+  valuePeriod: 'valuePeriod',
+  valueDate: 'valueDate',
   sourceChangedAt: 'sourceChangedAt',
   sourceChangedDocumentId: 'sourceChangedDocumentId',
   origin: 'origin',
@@ -3652,12 +3656,19 @@ export const OccupationReviewScalarFieldEnum = {
 export type OccupationReviewScalarFieldEnum = (typeof OccupationReviewScalarFieldEnum)[keyof typeof OccupationReviewScalarFieldEnum]
 
 
-export const ComparisonMetricScalarFieldEnum = {
+export const FactTypeScalarFieldEnum = {
   id: 'id',
   key: 'key',
-  label: 'label',
-  description: 'description',
+  labelVi: 'labelVi',
+  labelEn: 'labelEn',
+  definitionVi: 'definitionVi',
+  definitionEn: 'definitionEn',
+  valueKind: 'valueKind',
+  appliesTo: 'appliesTo',
   unitHint: 'unitHint',
+  minValue: 'minValue',
+  maxValue: 'maxValue',
+  comparable: 'comparable',
   category: 'category',
   active: 'active',
   createdBy: 'createdBy',
@@ -3665,7 +3676,7 @@ export const ComparisonMetricScalarFieldEnum = {
   updatedAt: 'updatedAt'
 } as const
 
-export type ComparisonMetricScalarFieldEnum = (typeof ComparisonMetricScalarFieldEnum)[keyof typeof ComparisonMetricScalarFieldEnum]
+export type FactTypeScalarFieldEnum = (typeof FactTypeScalarFieldEnum)[keyof typeof FactTypeScalarFieldEnum]
 
 
 export const ResearchProjectScalarFieldEnum = {
@@ -4284,7 +4295,7 @@ export type GlobalOmitConfig = {
   immigrationRuleReview?: Prisma.ImmigrationRuleReviewOmit
   occupation?: Prisma.OccupationOmit
   occupationReview?: Prisma.OccupationReviewOmit
-  comparisonMetric?: Prisma.ComparisonMetricOmit
+  factType?: Prisma.FactTypeOmit
   researchProject?: Prisma.ResearchProjectOmit
   researchProjectCountry?: Prisma.ResearchProjectCountryOmit
   savedItem?: Prisma.SavedItemOmit

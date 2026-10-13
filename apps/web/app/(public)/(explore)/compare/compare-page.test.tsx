@@ -12,7 +12,7 @@ vi.mock("@/lib/supabase/public", () => ({ createPublicClient: () => ({ from: (t:
 import ComparePage from "./page";
 const render = async (query: Record<string, string | string[]>) => renderToStaticMarkup(await ComparePage({ params: Promise.resolve({}), searchParams: Promise.resolve(query) }));
 const fact = (id: string, country: string, value: string, period: string, status = "reviewed") => ({
-  id, document_id: "d", metric_id: "m1", country_id: country, value, unit: "EUR", reference_period: period, status, created_at: "2026-09-20",
+  id, document_id: "d", fact_type_id: "m1", country_id: country, value, unit: "EUR", reference_period: period, status, created_at: "2026-09-20",
   evidence: { retrieved_at: "2026-09-19T00:00:00Z" }, documents: { sources: { name: `Source ${id}`, source_tier: "T1" } },
 });
 
@@ -24,7 +24,7 @@ it("asks for at least two countries before querying values", async () => {
 });
 it("shows every value per cell with its own source and period, and never a score", async () => {
   tables.countries = { data: [{ id: "se", slug: "sweden", name: "Sweden" }, { id: "dk", slug: "denmark", name: "Denmark" }] };
-  tables.comparison_metrics = { data: [{ id: "m1", label: "Synthetic monthly cost", description: "Synthetic definition", unit_hint: "EUR/month", category: "living_cost" }] };
+  tables.fact_types = { data: [{ id: "m1", label_vi: "Synthetic monthly cost", label_en: "Synthetic monthly cost (EN)", definition_vi: "Synthetic definition", definition_en: "Synthetic definition (EN)", unit_hint: "EUR/month", category: "living_cost" }] };
   tables.facts = { data: [fact("a", "se", "100", "2023"), fact("b", "se", "120", "2025-Q1", "conflicted")] };
   calls.length = 0;
   const html = await render({ c: ["sweden", "denmark"] });
@@ -34,4 +34,6 @@ it("shows every value per cell with its own source and period, and never a score
   expect(html).toContain("Không có điểm tổng hay xếp hạng");
   expect(html.toLowerCase()).not.toMatch(/\baverage\b|score:|ranked #|\bbest\b|\bwinner\b/);
   expect(calls).toContainEqual(["facts", "in", "status", ["reviewed", "conflicted"]]);
+  // L3a: only fact types marked comparable become comparison rows.
+  expect(calls).toContainEqual(["fact_types", "eq", "comparable", true]);
 });

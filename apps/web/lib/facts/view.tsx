@@ -8,13 +8,14 @@ import { deadlineLabel } from "../education/domain";
 import { isOfficialTier } from "../immigration/domain";
 import { isOfficialStatisticsTier } from "../labour/domain";
 import { confidenceLabel } from "../extraction/domain";
+import { factTypeLabel } from "../compare/domain";
 export type FactRow = {
  id:string; document_id:string; topic:string; subject:string; predicate:string; value:string;
- unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; metric_id?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; comparison_metrics?:{label:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
+ unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; fact_type_id?:string|null; value_number?:number|string|null; value_currency?:string|null; value_period?:string|null; value_date?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; fact_types?:{label_vi:string;label_en:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
  evidence:{source_url:string;excerpt:string;retrieved_at:string};
  documents:{title:string|null;sources:{name:string;source_tier:string|null;status?:string}};
 };
-export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,metric_id,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,comparison_metrics(label),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier,status))";
+export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,fact_type_id,value_number,value_currency,value_period,value_date,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,fact_types(label_vi,label_en),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier,status))";
 const day=(value:string|null, missing:string)=>value?new Date(value).toISOString().slice(0,10):missing;
 // One claim = one card: the value is the headline, status and source are
 // badges, the supporting excerpt is quoted, dates sit in a quiet meta grid.
@@ -69,8 +70,8 @@ function FactNotes({fact, locale}:{fact:FactRow; locale:Locale}) {
 }
 function FactBadges({fact, locale}:{fact:FactRow; locale:Locale}) {
  const t=dictionaries[locale].factCard, deadline=deadlineLabel(fact.deadline_type, locale);
- if(!(deadline||fact.reference_period||fact.comparison_metrics)) return null;
- return <p className="mt-2 flex flex-wrap gap-2">{fact.comparison_metrics&&<Badge>{t.metric(fact.comparison_metrics.label)}</Badge>}{deadline&&<Badge>{t.deadline(deadline)}</Badge>}{fact.reference_period&&<Badge tone="accent">{t.period(fact.reference_period)}</Badge>}</p>;
+ if(!(deadline||fact.reference_period||fact.fact_types)) return null;
+ return <p className="mt-2 flex flex-wrap gap-2">{fact.fact_types&&<Badge>{t.metric(factTypeLabel(fact.fact_types, locale))}</Badge>}{deadline&&<Badge>{t.deadline(deadline)}</Badge>}{fact.reference_period&&<Badge tone="accent">{t.period(fact.reference_period)}</Badge>}</p>;
 }
 function RelatedLinks({fact, locale}:{fact:FactRow; locale:Locale}) {
  const t=dictionaries[locale].factCard;
@@ -93,7 +94,7 @@ function PublicFactCard({fact, locale}:{fact:FactRow; locale:Locale}) {
  const e=fact.evidence, t=dictionaries[locale].factCard;
  return <article className="rounded-2xl bg-surface p-5 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline">
    <div className="flex flex-wrap items-center justify-between gap-2">
-     <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-ink-3">{fact.comparison_metrics?.label ?? topicLabel(fact.topic, locale)}</p>
+     <p className="text-[12px] font-semibold uppercase tracking-[0.06em] text-ink-3">{fact.fact_types ? factTypeLabel(fact.fact_types, locale) : topicLabel(fact.topic, locale)}</p>
      {fact.status!=="reviewed"&&<ReviewBadge status={fact.status}>{statusLabel(fact.status, locale)}</ReviewBadge>}
    </div>
    <h3 className="mt-1.5 text-[15px] leading-snug text-ink-2">{fact.subject} — {fact.predicate}</h3>

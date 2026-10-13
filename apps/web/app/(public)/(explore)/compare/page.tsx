@@ -3,7 +3,7 @@ import Form from "next/form";
 import { createPublicClient } from "@/lib/supabase/public";
 import { logAccessError } from "@/lib/rbac/access";
 import { countryName, countrySlugs } from "@/lib/registry/domain";
-import { buildCells, categoryParam, compareCountries, compareHref, MAX_COUNTRIES, metricCategoryLabel } from "@/lib/compare/domain";
+import { buildCells, categoryParam, compareCountries, compareHref, factTypeDefinition, factTypeLabel, MAX_COUNTRIES, metricCategoryLabel } from "@/lib/compare/domain";
 import { ruleTypeOptions } from "@/lib/immigration/domain";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { uuidPattern } from "@/lib/documents/domain";
@@ -14,11 +14,12 @@ import { publicCoverage } from "@/lib/coverage/queries";
 import { COMPARE_MIN_COUNTRIES, COMPARE_MIN_METRICS } from "@/lib/coverage/domain";
 
 type Country = CompareCountry;
-type Metric = { id: string; label: string; description: string; unit_hint: string | null; category: string };
+// L3a: the rows are fact types marked comparable (they replaced comparison metrics).
+type Metric = { id: string; label_vi: string; label_en: string; definition_vi: string; definition_en: string; unit_hint: string | null; category: string };
 type Value = CompareValue;
 type Rule = { id: string; title: string; rule_type: string; country_id: string; documents: { sources: { last_verified_at: string | null } } };
 
-const valueSelect = "id,document_id,metric_id,occupation_id,country_id,predicate,value,unit,reference_period,status,created_at,evidence(retrieved_at),documents!facts_document_id_fkey(sources(name,source_tier))";
+const valueSelect = "id,document_id,fact_type_id,occupation_id,country_id,predicate,value,unit,reference_period,status,created_at,evidence(retrieved_at),documents!facts_document_id_fkey(sources(name,source_tier))";
 const day = (v: string | null, missing: string) => v ? new Date(v).toISOString().slice(0, 10) : missing;
 
 export default async function ComparePage({ searchParams }: PageProps<"/compare">) {
@@ -39,7 +40,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/compare"
   const db = createPublicClient();
   const [countriesResult, metricsResult, occupationsResult] = await Promise.all([
     db.from("countries").select("id,slug,name").in("slug", slugs.length ? slugs : ["-"]),
-    db.from("comparison_metrics").select("id,label,description,unit_hint,category").eq("active", true).order("category").order("label"),
+    db.from("fact_types").select("id,label_vi,label_en,definition_vi,definition_en,unit_hint,category").eq("active", true).eq("comparable", true).order("category").order("label_vi"),
     db.from("occupations").select("id,name").eq("status", "reviewed").order("name").limit(200),
   ]);
   if (countriesResult.error || metricsResult.error || occupationsResult.error) { logAccessError("compare_setup"); throw new Error("Không tải được dữ liệu so sánh."); }
@@ -72,7 +73,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/compare"
 
   const ids = countries.map((c) => c.id);
   const [valuesResult, rulesResult, figuresResult, ...educationCounts] = await Promise.all([
-    metrics.length ? db.from("facts").select(valueSelect).in("metric_id", metrics.map((m) => m.id)).in("country_id", ids).in("status", ["reviewed", "conflicted"]).limit(1000)
+    metrics.length ? db.from("facts").select(valueSelect).in("fact_type_id", metrics.map((m) => m.id)).in("country_id", ids).in("status", ["reviewed", "conflicted"]).limit(1000)
       : Promise.resolve({ data: [], error: null }),
     db.from("immigration_rules").select("id,title,rule_type,country_id,documents!immigration_rules_document_id_fkey(sources(last_verified_at))").in("country_id", ids).eq("status", "reviewed").order("title").limit(500),
     occupationId ? db.from("facts").select(valueSelect).eq("occupation_id", occupationId).in("country_id", ids).in("status", ["reviewed", "conflicted"]).limit(500)
@@ -100,7 +101,7 @@ export default async function ComparePage({ searchParams }: PageProps<"/compare"
       ]} />}
       {metrics.length ? <CompareTable locale={locale} countries={countries} rows={metrics.map((m) => ({
         key: m.id,
-        head: <><span>{m.label}</span>{m.unit_hint && <span className="block text-[12px] font-normal text-ink-3">{m.unit_hint}</span>}<span className="mt-1 block text-[12px] font-normal leading-snug text-ink-3">{m.description}</span></>,
+        head: <><span>{factTypeLabel(m, locale)}</span>{m.unit_hint && <span className="block text-[12px] font-normal text-ink-3">{m.unit_hint}</span>}<span className="mt-1 block text-[12px] font-normal leading-snug text-ink-3">{factTypeDefinition(m, locale)}</span></>,
         cells: countries.map((c) => <CompareCell locale={locale} key={c.id} values={cells.get(`${m.id}:${c.id}`) ?? []} />),
       }))} /> : <EmptyState>{t.noMetrics}</EmptyState>}
     </Section>

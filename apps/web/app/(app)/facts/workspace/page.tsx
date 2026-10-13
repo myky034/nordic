@@ -5,6 +5,7 @@ import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
 import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
+import { factTypeDefinition, factTypeLabel } from "@/lib/compare/domain";
 import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
 import { selectItem } from "@/lib/review/selection";
 import { SamePageFacts } from "@/components/review/same-page-facts";
@@ -55,7 +56,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  client.from("universities").select("id,name").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
  client.from("immigration_rules").select("id,title,countries(name)").neq("status","rejected").order("created_at",{ascending:false}).limit(100),
  client.from("occupations").select("id,name,countries(name)").neq("status","rejected").order("name").limit(200),
- client.from("comparison_metrics").select("id,label,unit_hint").eq("active",true).order("label"),
+ client.from("fact_types").select("id,label_vi,label_en,definition_vi,definition_en,value_kind,applies_to,unit_hint,min_value,max_value").eq("active",true).order("label_vi"),
  // Only reviewed/conflicted claims can be paired as a conflict (2026-09-23 fix).
  client.from("facts").select("id,subject,predicate,value").in("status",["reviewed","conflicted"]).order("created_at",{ascending:false}).limit(200),
  ...counts,
@@ -72,7 +73,9 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    ...(results[6].data as unknown as {id:string;title:string;countries:{name:string}}[]).map(r=>({value:`immigration_rule:${r.id}`,label:`${t.entity.rule}: ${r.title} · ${r.countries.name}`})),
    ...(results[7].data as unknown as {id:string;name:string;countries:{name:string}|null}[]).map(o=>({value:`occupation:${o.id}`,label:`${t.entity.occupation}: ${o.name} · ${o.countries?.name ?? e.international}`})),
  ];
- const metrics=results[8].data as {id:string;label:string;unit_hint:string|null}[];
+ // L3a: fact types for the proposal form, labelled in the editor's language.
+ const metrics=(results[8].data as {id:string;label_vi:string;label_en:string;definition_vi:string;definition_en:string;value_kind:string;applies_to:string;unit_hint:string|null;min_value:number|string|null;max_value:number|string|null}[])
+  .map(m=>({...m,label:factTypeLabel(m,locale),definition:factTypeDefinition(m,locale)}));
  // Readable choices: "subject — predicate: value", not an id prefix.
  const conflictCandidates=(results[9].data as {id:string;subject:string;predicate:string;value:string}[])
    .map(c=>({id:c.id,label:`${c.subject} — ${c.predicate}: ${c.value.length>60?c.value.slice(0,60)+"…":c.value}`}));

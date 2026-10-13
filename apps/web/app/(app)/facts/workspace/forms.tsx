@@ -1,15 +1,26 @@
 "use client";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { proposeFact, resolveSourceChange, reviewFact } from "./actions";
 import { deadlineOptions } from "@/lib/education/domain";
+import { valuePeriodLabel, valuePeriods } from "@/lib/compare/domain";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import type { Locale } from "@/lib/i18n/locales";
 import { Card, Field, FormMessage } from "@/components/ui";
 import { ReviewPanel } from "@/components/review/review-panel";
 import { buttonPrimary, control } from "@/components/ui/styles";
-export function ProposalForm({documents,countries,selected,entities=[],metrics=[],locale}:{documents:{id:string;title:string|null}[];countries:{id:string;name:string}[];selected:string;entities?:{value:string;label:string}[];metrics?:{id:string;label:string;unit_hint:string|null}[];locale:Locale}) {
+/** A fact type as the proposal form needs it (labels already in the editor's language). */
+export type FormFactType={id:string;label:string;definition:string;value_kind:string;applies_to:string;unit_hint:string|null;min_value:number|string|null;max_value:number|string|null};
+export function ProposalForm({documents,countries,selected,entities=[],metrics=[],locale}:{documents:{id:string;title:string|null}[];countries:{id:string;name:string}[];selected:string;entities?:{value:string;label:string}[];metrics?:FormFactType[];locale:Locale}) {
  const [state,action,pending]=useActionState(proposeFact,{});
  const d=dictionaries[locale], t=d.factsWorkspace.form, e=d.editor;
+ // L3a: the type list follows the linked item ("programme:<id>" → programme
+ // types; nothing linked → country types), and the structured fields follow
+ // the chosen type's value kind. The database checks the same rules again.
+ const [entity,setEntity]=useState("");
+ const [typeId,setTypeId]=useState("");
+ const kind=entity ? entity.split(":")[0] : "country";
+ const types=metrics.filter(m=>m.applies_to===kind);
+ const type=types.find(m=>m.id===typeId);
  return <Card><form action={action} className="space-y-5">
  <div><h2 className="text-[22px] font-semibold tracking-[-0.015em]">{d.factsWorkspace.addProposal}</h2>
  <p className="mt-2 text-[15px] leading-relaxed text-ink-2">{t.intro}</p></div>
@@ -24,9 +35,21 @@ export function ProposalForm({documents,countries,selected,entities=[],metrics=[
  <Field label={t.unit}><input name="unit" maxLength={100} className={control}/></Field>
  <Field label={t.country}><select name="country" className={control}><option value="">{t.noCountry}</option>{countries.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}</select></Field>
  </div>
- <Field label={t.entity}><select name="entity" className={control}><option value="">{e.notLinked}</option>{entities.map(e=><option key={e.value} value={e.value}>{e.label}</option>)}</select></Field>
+ <Field label={t.entity}><select name="entity" value={entity} onChange={ev=>{setEntity(ev.target.value);setTypeId("");}} className={control}><option value="">{e.notLinked}</option>{entities.map(e=><option key={e.value} value={e.value}>{e.label}</option>)}</select></Field>
  <Field label={t.deadlineType}><select name="deadlineType" className={control}><option value="">{t.notDeadline}</option>{deadlineOptions(locale).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></Field>
- <Field label={t.metric} hint={t.metricHint}><select name="metric" className={control}><option value="">{e.notLinked}</option>{metrics.map(m=><option key={m.id} value={m.id}>{m.label}{m.unit_hint?` (${m.unit_hint})`:""}</option>)}</select></Field>
+ <Field label={t.metric} hint={t.metricHint}><select name="factType" value={type?.id ?? ""} onChange={ev=>setTypeId(ev.target.value)} className={control}><option value="">{t.noType}</option>{types.map(m=><option key={m.id} value={m.id}>{m.label}{m.unit_hint?` (${m.unit_hint})`:""}</option>)}</select></Field>
+ {type&&<div className="space-y-4 rounded-xl bg-fill/50 p-4">
+  <p className="text-[14px] leading-relaxed text-ink-2"><span className="font-medium text-ink">{t.typeDefinition}:</span> {type.definition}</p>
+  {(type.value_kind==="money"||type.value_kind==="number")&&<div className="grid gap-5 sm:grid-cols-3">
+   <Field label={t.valueNumber} hint={type.value_kind==="number"&&(type.min_value!==null||type.max_value!==null)?t.range(String(type.min_value ?? "…"),String(type.max_value ?? "…")):t.valueNumberHint}><input name="valueNumber" required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" className={control}/></Field>
+   {type.value_kind==="money"&&<>
+    <Field label={t.valueCurrency} hint={t.valueCurrencyHint}><input name="valueCurrency" required pattern="[A-Za-z]{3}" maxLength={3} defaultValue={/^[A-Z]{3}$/.test(type.unit_hint ?? "")?type.unit_hint ?? "":""} className={`${control} uppercase`}/></Field>
+    <Field label={t.valuePeriod}><select name="valuePeriod" required className={control}><option value="">{t.choosePeriod}</option>{valuePeriods.map(p=><option key={p} value={p}>{valuePeriodLabel(p, locale)}</option>)}</select></Field>
+   </>}
+  </div>}
+  {type.value_kind==="date"&&<Field label={t.valueDate} hint={t.valueDateHint}><input type="date" name="valueDate" required className={control}/></Field>}
+  {type.value_kind==="text"&&<p className="text-[13px] text-ink-3">{t.textType}</p>}
+ </div>}
  <Field label={t.period} hint={t.periodHint}><input name="referencePeriod" maxLength={7} pattern="[0-9]{4}(-(Q[1-4]|H[12]|0[1-9]|1[0-2]))?" placeholder="2024" className={control}/></Field>
  <div className="grid gap-5 sm:grid-cols-2"><Field label={t.from}><input type="date" name="from" className={control}/></Field><Field label={t.until}><input type="date" name="until" className={control}/></Field></div>
  <Field label={e.excerpt} hint={t.excerptHint}><textarea name="excerpt" required maxLength={500} rows={3} className={control}/></Field>

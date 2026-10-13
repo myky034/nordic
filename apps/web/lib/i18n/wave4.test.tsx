@@ -105,7 +105,7 @@ describe("admin and editor screens in English", () => {
     expect(html[1]).toContain("1 permission");
     expect(html[2]).toContain("Government authority");
     expect(html[3]).toContain("Register URL");
-    expect(html[4]).toContain("Create metric");
+    expect(html[4]).toContain("Create fact type");
     expect(html[5]).toContain("AI account ID");
     expect(html[6]).toContain("(blocked)");
     for (const h of html) expect(h).not.toMatch(vietnamese);

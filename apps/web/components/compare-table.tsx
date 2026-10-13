@@ -9,7 +9,7 @@ import { ReviewBadge, TierBadge } from "@/components/ui/badges";
 // Shared by /compare and the dev UI preview. Presentation only: callers decide
 // which values are public and pass them in already filtered.
 export type CompareCountry = { id: string; slug: string; name: string };
-export type CompareValue = { id: string; document_id: string; metric_id: string | null; occupation_id?: string | null; country_id: string; predicate?: string; value: string; unit: string | null;
+export type CompareValue = { id: string; document_id: string; fact_type_id: string | null; occupation_id?: string | null; country_id: string; predicate?: string; value: string; unit: string | null;
   reference_period: string | null; status: string; created_at: string; evidence: { retrieved_at: string }; documents: { sources: { name: string; source_tier: string | null } } };
 
 const day = (v: string | null, missing: string) => v ? new Date(v).toISOString().slice(0, 10) : missing;

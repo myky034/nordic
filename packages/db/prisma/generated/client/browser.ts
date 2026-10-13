@@ -108,10 +108,10 @@ export type Occupation = Prisma.OccupationModel
  */
 export type OccupationReview = Prisma.OccupationReviewModel
 /**
- * Model ComparisonMetric
+ * Model FactType
  * 
  */
-export type ComparisonMetric = Prisma.ComparisonMetricModel
+export type FactType = Prisma.FactTypeModel
 /**
  * Model ResearchProject
  * 
