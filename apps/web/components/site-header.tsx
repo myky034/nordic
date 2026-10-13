@@ -4,7 +4,7 @@ import { MobileMenu, NavLinks } from "./nav-links";
 import { AccountActions } from "./account-actions";
 import { LanguageSwitch } from "./language-switch";
 import { getDictionary } from "@/lib/i18n/server";
-import { navigationFor } from "@/lib/navigation/menu";
+import { aboutDataLinks, navigationFor } from "@/lib/navigation/menu";
 import { publicCoverage } from "@/lib/coverage/queries";
 
 // One global navigation bar for public and signed-in pages. A light
@@ -38,9 +38,14 @@ export async function SiteHeader() {
 }
 
 export async function SiteFooter() {
-  const t = (await getDictionary()).footer;
+  const d = await getDictionary(), t = d.footer;
   return <footer className="mt-24 border-t border-hairline">
     <div className="mx-auto max-w-6xl px-5 py-8 text-[13px] leading-relaxed text-ink-3 sm:px-8">
+      {/* The evidence behind every page: one tap away, not in the main menu (UX review C1/B3). */}
+      <nav aria-label={d.nav.aboutData} className="mb-4 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span className="font-medium text-ink-2">{d.nav.aboutData}</span>
+        {aboutDataLinks(d.nav).map((l) => <Link key={l.href} href={l.href} title={l.description} className="hover:text-ink">{l.label}</Link>)}
+      </nav>
       <p>{t.disclaimer}</p>
       <p className="mt-1">{t.check}</p>
     </div>

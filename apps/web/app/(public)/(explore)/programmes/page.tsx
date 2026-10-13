@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -48,7 +49,7 @@ export default async function ProgrammesPage({ searchParams }: PageProps<"/progr
       ? <List label={t.title}>{programmes.map((p) => <ListRow key={p.id} href={`/programmes/${p.id}`} title={p.name}
           badges={<Badge tone="accent">{degreeLabel(p.degree_type, locale)}</Badge>}
           subtitle={`${p.universities.name} · ${countryName(p.universities.countries.slug, p.universities.countries.name, locale)} · ${p.field ?? c.notStatedField} · ${p.language ?? c.notStatedLanguage}`} />)}</List>
-      : <EmptyState>{t.empty}</EmptyState>}
+      : <EmptyState action={<WayOut country={filters.country || null} clearHref={q || Object.values(filters).some(Boolean) ? "/programmes" : null} locale={locale} />}>{t.empty}</EmptyState>}
     <Pagination summary={pageSummary(count ?? programmes.length, page)} href={(p) => withParams("/programmes", params, { page: p })} locale={locale} />
   </>;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import { SaveButton } from "@/components/save-button";
 import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
@@ -37,7 +38,7 @@ export default async function UniversityPage({ params }: PageProps<"/universitie
       {programmes.length ? <List label={t.programmes}>{programmes.map((p) => <ListRow key={p.id} href={`/programmes/${p.id}`} title={p.name}
         badges={<Badge tone="accent">{degreeLabel(p.degree_type, locale)}</Badge>}
         subtitle={`${p.field ?? c.notStatedField} · ${p.language ?? c.notStatedLanguage}`} />)}</List>
-        : <EmptyState>{t.noProgrammes}</EmptyState>}
+        : <EmptyState action={<WayOut official={uni.official_url} country={uni.countries.slug} locale={locale} />}>{t.noProgrammes}</EmptyState>}
     </Section>
     <Section title={t.why}>
       <Card><ExistenceEvidence excerpt={uni.evidence_excerpt} document={uni.documents} reviewedAt={uni.reviewed_at} locale={locale} /></Card>

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { createPublicClient } from "@/lib/supabase/public";
 import { logAccessError } from "@/lib/rbac/access";
@@ -26,7 +27,7 @@ export default async function SearchPage({ searchParams }: PageProps<"/search">)
       <button className={buttonPrimary}>{t.submit}</button>
     </Form>
     {!q ? <EmptyState>{t.hint}</EmptyState>
-      : !groups.length ? <EmptyState title={t.noResultsTitle(q)}>{t.noResults}</EmptyState>
+      : !groups.length ? <EmptyState title={t.noResultsTitle(q)} action={<WayOut locale={locale} />}>{t.noResults}</EmptyState>
       : groups.map((g) => {
         const all = seeAllHref(g.type, q);
         const label = searchGroupLabel(g.type as SearchEntity, locale);

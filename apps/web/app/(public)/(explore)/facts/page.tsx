@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
@@ -52,7 +53,7 @@ export default async function Page({ searchParams }: PageProps<"/facts">) {
       <div className="flex items-center gap-4"><button className={buttonPrimary}>{c.filter}</button><Link href="/facts" className={`${textLink} text-[15px]`}>{c.clearFilter}</Link></div>
     </Form>
     {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} locale={locale} />)}</div>
-      : <EmptyState>{t.empty(Boolean(q || country || group))}</EmptyState>}
+      : <EmptyState action={<WayOut country={country || null} clearHref={q || country || group ? "/facts" : null} locale={locale} />}>{t.empty(Boolean(q || country || group))}</EmptyState>}
     <Pagination summary={pageSummary(count ?? facts.length, page)} href={(p) => withParams("/facts", query, { page: p })} locale={locale} />
   </>;
 }

@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import { SaveButton } from "@/components/save-button";
 import { savedState } from "@/lib/workspace/saved";
 import { notFound, redirect } from "next/navigation";
@@ -63,7 +64,7 @@ export default async function OccupationPage({ params, searchParams }: PageProps
       ]} />
       {facts.some((f) => f.status === "conflicted") && <div className="mb-4"><Notice tone="critical" role="alert" title={t.conflictTitle}>{t.conflictText}</Notice></div>}
       {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} locale={locale} />)}</div>
-        : <EmptyState>{t.noFigures(country ? name(country) : null)}</EmptyState>}
+        : <EmptyState action={<WayOut country={country || occupation.countries?.slug || null} clearHref={country ? `/occupations/${id}` : null} locale={locale} />}>{t.noFigures(country ? name(country) : null)}</EmptyState>}
       <Pagination summary={pageSummary(figuresResult.count ?? facts.length, page)} href={(p) => withParams(`/occupations/${id}`, query, { page: p })} locale={locale} />
     </Section>
     <Section title={t.why}>

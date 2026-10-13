@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -52,14 +53,14 @@ export default async function ImmigrationPage({ searchParams }: PageProps<"/immi
       ? <List label={t.title}>{list.map((r) => <ListRow key={r.id} href={`/immigration/${r.id}`} title={r.title}
           badges={<Badge tone="accent">{ruleTypeLabel(r.rule_type, locale)}</Badge>}
           subtitle={`${countryName(r.countries.slug, r.countries.name, locale)} · ${r.documents.sources.name} (T1) · ${t.sourceVerified(day(r.documents.sources.last_verified_at, locale))}`} />)}</List>
-      : <EmptyState>{t.empty}</EmptyState>}
+      : <EmptyState action={<WayOut country={filters.country || null} clearHref={q || Object.values(filters).some(Boolean) ? "/immigration" : null} locale={locale} />}>{t.empty}</EmptyState>}
     <Pagination summary={pageSummary(ruleResult.count ?? list.length, page)} href={(p) => withParams("/immigration", params, { page: p })} locale={locale} />
     <Section title={t.authorities}>
       {authorityList.length
         ? <List label={t.authoritiesLabel}>{authorityList.map((a) => <ListRow key={a.id} title={a.name}
             badges={<SourceStatusBadge status={a.status}>{verificationLabel(a.status, a.last_verified_at ? new Date(a.last_verified_at) : null, locale)}</SourceStatusBadge>}
             subtitle={<><ExternalLink quiet href={a.canonical_url}>{a.canonical_url}</ExternalLink> · {countryName(a.countries.slug, a.countries.name, locale)} · {t.lastVerified(day(a.last_verified_at, locale))}</>} />)}</List>
-        : <EmptyState>{t.noAuthorities}</EmptyState>}
+        : <EmptyState action={<WayOut country={filters.country || null} locale={locale} />}>{t.noAuthorities}</EmptyState>}
     </Section>
   </>;
 }

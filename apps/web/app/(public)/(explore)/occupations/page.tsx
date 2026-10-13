@@ -1,3 +1,4 @@
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
@@ -37,7 +38,7 @@ export default async function OccupationsPage({ searchParams }: PageProps<"/occu
       ? <List label={t.title}>{occupations.map((o) => <ListRow key={o.id} href={`/occupations/${o.id}`} title={o.name}
           badges={o.classification_code ? <Badge>{classificationLabel(o.classification_system, o.classification_code, locale)}</Badge> : undefined}
           subtitle={o.countries ? t.definitionFor(countryName(o.countries.slug, o.countries.name, locale)) : t.international} />)}</List>
-      : <EmptyState>{q ? t.noMatch(q) : t.empty}</EmptyState>}
+      : <EmptyState action={<WayOut clearHref={q ? "/occupations" : null} locale={locale} />}>{q ? t.noMatch(q) : t.empty}</EmptyState>}
     <Pagination summary={pageSummary(count ?? occupations.length, page)} href={(p) => withParams("/occupations", params, { page: p })} locale={locale} />
   </>;
 }

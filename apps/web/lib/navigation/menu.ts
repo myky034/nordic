@@ -11,27 +11,34 @@ export type NavEntry = { id: string; label: string; href?: string; links?: NavLi
 
 /**
  * The navigation in the viewer's language; labels come from the dictionary (lib/i18n).
- * `showCompare`: false hides "So sánh" until it has enough data (lib/coverage, UX review B1).
+ *
+ * Organised by what a visitor wants to do (UX review 2026-10-13, C1/B3/B7):
+ * study, visas & residence, work, compare — not by how data is stored.
+ * Facts, sources and documents are the evidence behind every page; they move
+ * to the footer ("About the data", aboutDataLinks) instead of the main bar.
+ * `showCompare`: false hides "So sánh" until it has enough data (lib/coverage, B1).
  */
 export function navigationFor(nav: Dictionary["nav"], { showCompare = true }: { showCompare?: boolean } = {}): NavEntry[] {
   const entries: NavEntry[] = [
     { id: "countries", label: nav.countries, href: "/countries" },
     { id: "study", label: nav.study, links: [
-      { href: "/universities", ...nav.universities },
       { href: "/programmes", ...nav.programmes },
+      { href: "/universities", ...nav.universities },
     ] },
-    { id: "work", label: nav.work, links: [
-      { href: "/immigration", ...nav.immigration },
-      { href: "/occupations", ...nav.occupations },
-    ] },
+    { id: "permits", label: nav.permits, href: "/immigration" },
+    { id: "jobs", label: nav.jobs, href: "/occupations" },
     { id: "compare", label: nav.compare, href: "/compare" },
-    { id: "evidence", label: nav.evidence, links: [
-      { href: "/facts", ...nav.facts },
-      { href: "/sources", ...nav.sources },
-      { href: "/documents", ...nav.documents },
-    ] },
   ];
   return showCompare ? entries : entries.filter((e) => e.id !== "compare");
+}
+
+/** Footer links to the evidence pages ("About the data"). */
+export function aboutDataLinks(nav: Dictionary["nav"]): NavLink[] {
+  return [
+    { href: "/facts", ...nav.facts },
+    { href: "/sources", ...nav.sources },
+    { href: "/documents", ...nav.documents },
+  ];
 }
 
 export function isActive(path: string, href: string) {

@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import Form from "next/form";
 import { createClient } from "@/lib/supabase/server";
 import { logAccessError } from "@/lib/rbac/access";
@@ -48,7 +49,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps<"/uni
             <span className="inline-flex items-center gap-1 font-medium text-accent">{c.viewDetails}<Chevron className="text-accent transition-transform group-hover:translate-x-0.5" /></span>
           </div>
         </Link>)}</div>
-      : <EmptyState>{t.empty}</EmptyState>}
+      : <EmptyState action={<WayOut country={country || null} clearHref={country || q ? "/universities" : null} locale={locale} />}>{t.empty}</EmptyState>}
     <Pagination summary={pageSummary(count ?? universities.length, page)} href={(p) => withParams("/universities", params, { page: p })} locale={locale} />
   </>;
 }

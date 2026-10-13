@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { WayOut } from "@/components/way-out";
 import { SaveButton } from "@/components/save-button";
 import { savedState } from "@/lib/workspace/saved";
 import { notFound } from "next/navigation";
@@ -50,7 +51,7 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
     ]} />
     <Section title={t.facts}>
       {facts.length ? <div className="space-y-4">{facts.map((f) => <FactCard key={f.id} fact={f} internal={internal} locale={locale} />)}</div>
-        : <EmptyState>{t.noFacts}</EmptyState>}
+        : <EmptyState action={<WayOut official={programme.official_url} country={uni.countries.slug} locale={locale} />}>{t.noFacts}</EmptyState>}
     </Section>
     <Section title={t.why}>
       <Card><ExistenceEvidence excerpt={programme.evidence_excerpt} document={programme.documents} reviewedAt={programme.reviewed_at} locale={locale} /></Card>

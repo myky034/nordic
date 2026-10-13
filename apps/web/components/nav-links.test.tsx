@@ -12,8 +12,9 @@ const labels = { main: viDict.nav.main, openMenu: viDict.nav.openMenu, closeMenu
 it("renders five top-level entries with collapsed, labelled group menus", () => {
   path.value = "/programmes/p1";
   const html = renderToStaticMarkup(<NavLinks entries={entries} label={viDict.nav.main} />);
-  for (const label of ["Quốc gia", "Du học", "Làm việc &amp; Visa", "So sánh", "Bằng chứng"]) expect(html).toContain(label);
-  expect(html.match(/aria-expanded="false"/g)).toHaveLength(3);
+  for (const label of ["Quốc gia", "Du học", "Visa &amp; cư trú", "Việc làm", "So sánh"]) expect(html).toContain(label);
+  // Only "Du học" is a group since the goal-based menu (UX review 2026-10-13, C1).
+  expect(html.match(/aria-expanded="false"/g)).toHaveLength(1);
   // Group panels are in the markup (for aria-controls) but hidden until opened.
   expect(html).toMatch(/<div id="[^"]+" hidden=""/);
   expect(html).toContain('aria-current="page" class="group block rounded-xl" href="/programmes"');
@@ -25,9 +26,11 @@ it("renders a closed Menu button on the server (the sheet itself is portalled on
   expect(html).toContain('aria-expanded="false"');
 });
 it("lists every destination in the mobile sheet, grouped, with the current page marked", () => {
-  const html = renderToStaticMarkup(<MobileNavList path="/sources/s1" entries={entries} label={viDict.nav.main} />);
-  for (const href of ["/countries", "/universities", "/programmes", "/immigration", "/occupations", "/compare", "/facts", "/sources", "/documents"]) expect(html).toContain(`href="${href}"`);
-  for (const group of ["Du học", "Làm việc &amp; Visa", "Bằng chứng"]) expect(html).toContain(group);
+  const html = renderToStaticMarkup(<MobileNavList path="/immigration/r1" entries={entries} label={viDict.nav.main} />);
+  for (const href of ["/countries", "/universities", "/programmes", "/immigration", "/occupations", "/compare"]) expect(html).toContain(`href="${href}"`);
+  // Evidence pages live in the footer now, not in the menu.
+  for (const href of ["/facts", "/sources", "/documents"]) expect(html).not.toContain(`href="${href}"`);
+  expect(html).toContain("Du học");
   expect(html.match(/aria-current="page"/g)).toHaveLength(1);
 });
 
@@ -36,5 +39,5 @@ it("renders the English labels it is given", () => {
   const html = renderToStaticMarkup(<MobileMenu entries={navigationFor(enDict.nav)} labels={{ main: enDict.nav.main, openMenu: enDict.nav.openMenu, closeMenu: enDict.nav.closeMenu }} />);
   expect(html).toContain('aria-label="Open menu"');
   const bar = renderToStaticMarkup(<NavLinks entries={navigationFor(enDict.nav)} label={enDict.nav.main} />);
-  for (const label of ["Countries", "Study", "Work &amp; Visas", "Compare", "Evidence"]) expect(bar).toContain(label);
+  for (const label of ["Countries", "Study", "Visas &amp; residence", "Work", "Compare"]) expect(bar).toContain(label);
 });
