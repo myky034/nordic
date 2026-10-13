@@ -58,7 +58,7 @@ export default async function AdminSourcesPage({ searchParams }: PageProps<"/adm
         list={rows.length ? <SplitList label={t.list} footer={<SplitPager locale={locale} summary={pageSummary(total, page)} href={(p) => withParams("/admin/sources", params, { page: p, source: null, new: null })} />}>
           {rows.map((s) => <SplitRow key={s.id} href={withParams("/admin/sources", params, { source: s.id, new: null })} selected={s.id === current?.id} explicit={!!requested}
             title={s.name} subtitle={`${host(s.canonicalUrl)} · ${s.country?.name ?? t.noCountry}`}
-            badges={<><TierBadge tier={s.sourceTier} locale={locale} /><SourceStatusBadge status={s.status}>{verificationLabel(s.status, s.lastVerifiedAt, locale)}</SourceStatusBadge>{s.crawlEnabled && <Badge tone="accent">{t.crawling}</Badge>}</>} />)}
+            badges={<><TierBadge tier={s.sourceTier} locale={locale} showCode /><SourceStatusBadge status={s.status}>{verificationLabel(s.status, s.lastVerifiedAt, locale)}</SourceStatusBadge>{s.crawlEnabled && <Badge tone="accent">{t.crawling}</Badge>}</>} />)}
         </SplitList> : <p className="p-5 text-[15px] text-ink-2">{t.empty}</p>}
         detail={creating
           ? <><h2 className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{t.newSource}</h2><SourceForm countries={countries} locale={locale} /></>
@@ -67,7 +67,7 @@ export default async function AdminSourcesPage({ searchParams }: PageProps<"/adm
               <h2 className="text-[22px] font-semibold tracking-[-0.015em] text-ink">{current.name}</h2>
               <p className="mt-1 text-[15px]"><ExternalLink href={current.canonicalUrl} quiet>{current.canonicalUrl}</ExternalLink></p>
               <div className="mt-2 flex flex-wrap items-center gap-2">
-                <TierBadge tier={current.sourceTier} locale={locale} />
+                <TierBadge tier={current.sourceTier} locale={locale} showCode />
                 <SourceStatusBadge status={current.status}>{verificationLabel(current.status, current.lastVerifiedAt, locale)}</SourceStatusBadge>
                 <Badge>{t.crawlBadge(crawlPolicyLabel(current.crawlPolicy, locale), current.crawlEnabled)}</Badge>
                 <span className="text-[13px] text-ink-3">{t.lastVerified} {dateLabel(current.lastVerifiedAt, locale)}</span>

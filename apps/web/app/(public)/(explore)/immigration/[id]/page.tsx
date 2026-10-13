@@ -49,7 +49,7 @@ export default async function ImmigrationRulePage({ params }: PageProps<"/immigr
     <div className="mt-8">
       <DescriptionList items={[
         [t.officialPage, <ExternalLink key="o" href={rule.official_url}>{rule.official_url}</ExternalLink>],
-        [t.source, `${source.name} · ${tierLabel(source.source_tier, locale)}`],
+        [t.source, `${source.name} · ${tierLabel(source.source_tier, locale, { showCode: false })}`],
         [t.sourceLastVerified, day(source.last_verified_at, locale)],
         [t.evidenceRetrieved, day(rule.documents.retrieved_at, locale)],
         [t.evidenceReviewed, day(rule.reviewed_at, locale)],

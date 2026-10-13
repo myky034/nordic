@@ -114,8 +114,10 @@ export function canonicalSourceUrl(value: string): string | null {
   } catch { return null; }
 }
 
-export function tierLabel(tier: string | null, locale: Locale = defaultLocale) {
-  return isTier(tier) ? `${tier} · ${tierName(tier, locale)}` : unclassifiedLabel(locale);
+/** "T1 · Government authority" for editors; `showCode: false` gives the plain name visitors read. */
+export function tierLabel(tier: string | null, locale: Locale = defaultLocale, { showCode = true }: { showCode?: boolean } = {}) {
+  if (!isTier(tier)) return unclassifiedLabel(locale);
+  return showCode ? `${tier} · ${tierName(tier, locale)}` : tierName(tier, locale);
 }
 
 const verification = {

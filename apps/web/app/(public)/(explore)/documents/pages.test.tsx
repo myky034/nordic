@@ -65,12 +65,14 @@ it("renders escaped excerpts, attribution, unknown dates and unverified status",
   expect(html).not.toContain("<script>");
   for (const text of [
     "Chưa có",
-    "Nội dung chưa được kiểm chứng",
-    "Đã lưu thông tin trang",
+    // The excerpt notice stays for everyone (AGENTS.md §15)…
+    "không phải thông tin đã kiểm chứng",
     "Synthetic source",
     'href="https://example.com/document"',
   ])
     expect(html).toContain(text);
+  // …while storage details are for editors only (UX review B4).
+  for (const text of ["Đã lưu thông tin trang", "Kiểm chứng nội dung"]) expect(html).not.toContain(text);
 });
 it("shows the add-evidence shortcut only to people who can propose facts", async () => {
   get.mockResolvedValue({ id: "id", sourceId: "source", canonicalUrl: "https://example.com/document", title: "Fixture", excerpt: null,

@@ -9,7 +9,7 @@ import { buttonPrimary, textLink } from "@/components/ui/styles";
 import { InternalText } from "./internal-text";
 import { ExtractionPanel } from "./extraction-panel";
 import { viewerPermissions } from "@/lib/rbac/viewer";
-import { canProposeFacts } from "@/lib/rbac/ui";
+import { canProposeFacts, seesInternalDetails } from "@/lib/rbac/ui";
 
 export default async function DocumentPage({ params }: PageProps<"/documents/[id]">) {
   const { id } = await params;
@@ -19,23 +19,28 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
   const url = canonicalSourceUrl(document.canonicalUrl);
   const sourceUrl = canonicalSourceUrl(document.source.canonicalUrl);
   // Only people who can propose facts see the shortcut into the workspace.
-  const canPropose = canProposeFacts(await viewerPermissions());
+  const permissions = await viewerPermissions();
+  const canPropose = canProposeFacts(permissions);
+  // Storage details (hash, "saved page" badge, content-check row, tier code)
+  // are for editors; visitors keep source, URL, dates and the excerpt notice
+  // (UX review 2026-10-13, B4; AGENTS.md §23).
+  const internal = seesInternalDetails(permissions);
   const [locale, dict] = [await getLocale(), await getDictionary()];
   const [t, c] = [dict.documents, dict.common];
   return <>
     <PageHeader back={<BackLink href="/documents">{t.back}</BackLink>} eyebrow={t.eyebrow}
       title={<span className="break-words">{document.title ?? c.untitledDocument}</span>}
-      description={<div className="flex flex-wrap gap-2 pt-1"><Badge>{t.savedBadge}</Badge></div>}
+      description={internal ? <div className="flex flex-wrap gap-2 pt-1"><Badge>{t.savedBadge}</Badge></div> : undefined}
       actions={canPropose ? <Link href={`/facts/workspace?document=${id}`} className={buttonPrimary}>{t.addFact}</Link> : undefined} />
     {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>{t.openOriginal(url)}</ExternalLink></p>}
     <DescriptionList items={[
       [t.source, sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],
-      [t.tier, tierLabel(document.source.sourceTier, locale)],
+      [t.tier, tierLabel(document.source.sourceTier, locale, { showCode: internal })],
       [t.retrieved, dateLabel(document.retrievedAt, locale)],
       [t.published, dateLabel(document.publishedAt, locale)],
       [t.updated, dateLabel(document.sourceUpdatedAt, locale)],
       [t.type, document.documentType],
-      [t.contentCheck, t.contentNotChecked],
+      ...(internal ? [[t.contentCheck, t.contentNotChecked] as [string, string]] : []),
       [t.sourceLastVerified, dateLabel(document.source.lastVerifiedAt, locale)],
     ]} />
     <Section title={t.excerpt} description={t.excerptDescription}>
@@ -47,7 +52,7 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
       {versions.length ? <List label={t.versionsLabel}>{versions.slice(0, 20).map((version) => <ListRow key={version.id} href={`/documents/${version.id}`}
         title={c.retrievedOn(dateLabel(version.retrievedAt, locale))}
         badges={version.id === id ? <Badge tone="accent">{t.thisVersion}</Badge> : undefined}
-        meta={<span className="font-mono">{version.contentHash.slice(0, 12)}</span>} />)}</List>
+        meta={internal ? <span className="font-mono">{version.contentHash.slice(0, 12)}</span> : undefined} />)}</List>
         : <EmptyState>{t.noVersions}</EmptyState>}
     </Section>
   </>;

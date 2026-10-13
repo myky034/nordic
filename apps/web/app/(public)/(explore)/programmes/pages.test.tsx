@@ -39,7 +39,7 @@ it("applies only allowlisted filters and always restricts to reviewed rows", asy
 it("shows existence evidence and an honest empty state for tuition/deadlines", async () => {
   results.push({ data: programme, error: null }, { data: [], error: null });
   const html = renderToStaticMarkup(await ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
-  for (const text of ["Synthetic Programme", "Synthetic University", "Synthetic source", "T2", "2026-09-19", "Nguồn không nêu", "Chưa có học phí, hạn nộp"]) expect(html).toContain(text);
+  for (const text of ["Synthetic Programme", "Synthetic University", "Synthetic source", "Tổ chức", "2026-09-19", "Nguồn không nêu", "Chưa có học phí, hạn nộp"]) expect(html).toContain(text);
 });
 it("returns not found for malformed ids and unpublished programmes, and fails closed on errors", async () => {
   await expect(ProgrammePage({ params: Promise.resolve({ id: "x" }), searchParams: Promise.resolve({}) })).rejects.toThrow("NOT_FOUND");

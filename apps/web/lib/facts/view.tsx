@@ -41,7 +41,7 @@ export function FactCard({fact, internal=false, locale=defaultLocale}:{fact:Fact
    <div className="mt-5"><Quote>{e.excerpt}</Quote></div>
    <dl className="mt-5 grid gap-x-6 gap-y-3 text-[13px] sm:grid-cols-2">
      {/* Each value appears once under its label; unknown dates are said, not hidden (AGENTS.md 12). */}
-     <div><dt className="text-ink-3">{t.source}</dt><dd className="mt-0.5 flex flex-wrap items-center gap-2 text-[15px] text-ink">{fact.documents.sources.name}<TierBadge tier={fact.documents.sources.source_tier} locale={locale}/></dd></div>
+     <div><dt className="text-ink-3">{t.source}</dt><dd className="mt-0.5 flex flex-wrap items-center gap-2 text-[15px] text-ink">{fact.documents.sources.name}<TierBadge tier={fact.documents.sources.source_tier} locale={locale} showCode/></dd></div>
      <div><dt className="text-ink-3">{t.validity}</dt><dd className="mt-0.5 text-[15px] text-ink">{validity(fact.valid_from,fact.valid_until,undefined,locale)}<span className="block text-[13px] text-ink-3">{fact.valid_from||fact.valid_until?t.sourceStates(fact.valid_from,fact.valid_until):t.noTerm}</span></dd></div>
      <div><dt className="text-ink-3">{t.retrieved}</dt><dd className="mt-0.5 text-[15px] text-ink">{day(e.retrieved_at,t.notYet)}</dd></div>
      <div><dt className="text-ink-3">{t.reviewed}</dt><dd className="mt-0.5 text-[15px] text-ink">{fact.reviewed_at?day(fact.reviewed_at,t.notYet):t.notReviewed}</dd></div>

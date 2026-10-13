@@ -63,7 +63,7 @@ export default async function Page({ searchParams }: PageProps<"/immigration/wor
       <Segmented label={e.status} items={tabs.map((value, i) => ({ href: withParams("/immigration/workspace", { q }, { status: value === "proposed" ? null : value }), label: e.statusTabs[value], count: tabCounts[i], active: status === value }))} />
       <form action="/immigration/workspace" className="mb-5">{status !== "proposed" && <input type="hidden" name="status" value={status} />}<SearchInput defaultValue={q} placeholder={t.search} /></form>
       {rules.length ? <List>{rules.map((r) => <ListRow key={r.id} title={r.title}
-        badges={<><ReviewBadge status={r.status}>{statusLabel(r.status, locale)}</ReviewBadge><TierBadge tier={r.documents.sources.source_tier} locale={locale} /><SourceStatusBadge status={r.documents.sources.status}>{r.documents.sources.status === "verified" ? e.sourceVerified : e.sourceUnverified}</SourceStatusBadge></>}
+        badges={<><ReviewBadge status={r.status}>{statusLabel(r.status, locale)}</ReviewBadge><TierBadge tier={r.documents.sources.source_tier} locale={locale} showCode /><SourceStatusBadge status={r.documents.sources.status}>{r.documents.sources.status === "verified" ? e.sourceVerified : e.sourceUnverified}</SourceStatusBadge></>}
         subtitle={`${ruleTypeLabel(r.rule_type, locale)} · ${r.countries.name} · ${r.documents.sources.name}`}>
         <div className="mb-2"><VisibilityNote visibility={visibilityOf(r.id, r.status, visible, ruleBlockers({ source: r.documents.sources }))} publicHref={`/immigration/${r.id}`} locale={locale} /></div>
         {/* Open in the review queue: the evidence and the decision are the work. */}
