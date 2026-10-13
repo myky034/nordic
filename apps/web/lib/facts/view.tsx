@@ -8,14 +8,14 @@ import { deadlineLabel } from "../education/domain";
 import { isOfficialTier } from "../immigration/domain";
 import { isOfficialStatisticsTier } from "../labour/domain";
 import { confidenceLabel } from "../extraction/domain";
-import { factTypeLabel } from "../compare/domain";
+import { factTypeLabel, formatStructuredValue } from "../compare/domain";
 export type FactRow = {
  id:string; document_id:string; topic:string; subject:string; predicate:string; value:string;
- unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; fact_type_id?:string|null; value_number?:number|string|null; value_currency?:string|null; value_period?:string|null; value_date?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; fact_types?:{label_vi:string;label_en:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
+ unit:string|null; status:string; programme_id?:string|null; deadline_type?:string|null; immigration_rule_id?:string|null; occupation_id?:string|null; reference_period?:string|null; fact_type_id?:string|null; value_number?:number|string|null; value_currency?:string|null; value_period?:string|null; value_date?:string|null; source_changed_at?:string|null; source_changed_document_id?:string|null; origin?:string; ai_model?:string|null; ai_confidence?:number|string|null; fact_types?:{key?:string;label_vi:string;label_en:string}|null; valid_from:string|null; valid_until:string|null; reviewed_at:string|null;
  evidence:{source_url:string;excerpt:string;retrieved_at:string};
  documents:{title:string|null;sources:{name:string;source_tier:string|null;status?:string}};
 };
-export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,fact_type_id,value_number,value_currency,value_period,value_date,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,fact_types(label_vi,label_en),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier,status))";
+export const factSelect = "id,document_id,programme_id,deadline_type,immigration_rule_id,occupation_id,reference_period,fact_type_id,value_number,value_currency,value_period,value_date,source_changed_at,source_changed_document_id,origin,ai_model,ai_confidence,fact_types(key,label_vi,label_en),topic,subject,predicate,value,unit,status,valid_from,valid_until,reviewed_at,evidence(source_url,excerpt,retrieved_at),documents!facts_document_id_fkey(title,sources(name,source_tier,status))";
 const day=(value:string|null, missing:string)=>value?new Date(value).toISOString().slice(0,10):missing;
 // One claim = one card: the value is the headline, status and source are
 // badges, the supporting excerpt is quoted, dates sit in a quiet meta grid.
@@ -68,6 +68,21 @@ function FactNotes({fact, locale}:{fact:FactRow; locale:Locale}) {
    {fact.source_changed_at&&<p role="note" className="mt-4 rounded-xl bg-caution/[0.08] px-4 py-3 text-[15px] text-caution">{t.sourceChanged(day(fact.source_changed_at,t.notYet))}{fact.source_changed_document_id&&<> <Link className="underline underline-offset-4" href={`/documents/${fact.source_changed_document_id}`}>{t.seeNewVersion}</Link></>}</p>}
  </>;
 }
+/**
+ * L3b: a typed fact leads with its structured value written for the viewer
+ * ("145.000 SEK / năm"); the source's own wording stays right below it
+ * ("Nguồn ghi: …"), never replaced or translated (AGENTS.md §1, §8).
+ * Untyped facts show the verbatim value as before.
+ */
+export function FactValue({fact, locale, compact=false}:{fact:FactRow; locale:Locale; compact?:boolean}) {
+ const t=dictionaries[locale].factCard, structured=formatStructuredValue(fact, locale), verbatim=`${fact.value}${fact.unit ? " "+fact.unit : ""}`;
+ const big=compact?"text-[15px] font-semibold text-ink":"mt-1 text-[20px] font-semibold leading-snug tracking-[-0.01em] text-ink";
+ if(!structured) return <p className={`whitespace-pre-wrap break-words ${big}`}>{verbatim}</p>;
+ return <div className={compact?"":"mt-1"}>
+  <p className={big.replace("mt-1 ","")}>{structured}</p>
+  <p className="mt-0.5 whitespace-pre-wrap break-words text-[13px] text-ink-3">{t.asWritten(verbatim)}</p>
+ </div>;
+}
 function FactBadges({fact, locale}:{fact:FactRow; locale:Locale}) {
  const t=dictionaries[locale].factCard, deadline=deadlineLabel(fact.deadline_type, locale);
  if(!(deadline||fact.reference_period||fact.fact_types)) return null;
@@ -98,7 +113,7 @@ function PublicFactCard({fact, locale}:{fact:FactRow; locale:Locale}) {
      {fact.status!=="reviewed"&&<ReviewBadge status={fact.status}>{statusLabel(fact.status, locale)}</ReviewBadge>}
    </div>
    <h3 className="mt-1.5 text-[15px] leading-snug text-ink-2">{fact.subject} — {fact.predicate}</h3>
-   <p className="mt-1 whitespace-pre-wrap break-words text-[20px] font-semibold leading-snug tracking-[-0.01em] text-ink">{fact.value}{fact.unit ? " "+fact.unit : ""}</p>
+   <FactValue fact={fact} locale={locale}/>
    <FactBadges fact={fact} locale={locale}/>
    <FactNotes fact={fact} locale={locale}/>
    <p className="mt-3 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-[13px] text-ink-3">

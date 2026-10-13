@@ -36,16 +36,35 @@ it("applies only allowlisted filters and always restricts to reviewed rows", asy
   expect(calls.some((c) => c[1] === "degree_type")).toBe(false);
   expect(html).toContain("Chưa có chương trình đã kiểm tra nào khớp");
 });
-it("shows existence evidence and an honest empty state for tuition/deadlines", async () => {
-  results.push({ data: programme, error: null }, { data: [], error: null });
+it("leads with the official page and the university's description, and lists what is not available yet", async () => {
+  results.push({ data: programme, error: null }, { data: [], error: null }, { data: [{ key: "tuition_fee", label_vi: "Học phí (loại)", label_en: "Tuition (type)" }], error: null });
   const html = renderToStaticMarkup(await ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
-  for (const text of ["Synthetic Programme", "Synthetic University", "Synthetic source", "Tổ chức", "2026-09-19", "Nguồn không nêu", "Chưa có học phí, hạn nộp"]) expect(html).toContain(text);
+  for (const text of ["Synthetic Programme", "Synthetic University", "Mở trang chương trình chính thức", "Synthetic excerpt.", "Synthetic source", "Tổ chức", "2026-09-19", "Nguồn không nêu",
+    "Thông tin chính", "Học phí (loại)", "Hạn nộp hồ sơ", "IELTS tối thiểu", "Chưa có", "xem trên trang chính thức"]) expect(html).toContain(text);
+  // The description comes before the checklist, which comes before the summary.
+  expect(html.indexOf("Synthetic excerpt.")).toBeLessThan(html.indexOf("Thông tin chính"));
+  expect(html.indexOf("Thông tin chính")).toBeLessThan(html.indexOf("Tóm tắt"));
+});
+it("fills a slot from a typed fact, showing the structured value and the source's own wording (L3b)", async () => {
+  const tuition = {
+    id: "f1", document_id: "d1", topic: "tuition", subject: "Synthetic Programme", predicate: "tuition fee", value: "SEK 145 000 per year", unit: null,
+    status: "reviewed", valid_from: null, valid_until: null, reviewed_at: "2026-10-01T00:00:00Z",
+    fact_types: { key: "tuition_fee", label_vi: "Học phí", label_en: "Tuition fee" }, value_number: "145000", value_currency: "SEK", value_period: "year", value_date: null,
+    evidence: { source_url: "https://uni.example.test/p", excerpt: "Tuition fee: SEK 145 000 per year.", retrieved_at: "2026-09-30T00:00:00Z" },
+    documents: { title: null, sources: { name: "Synthetic source", source_tier: "T2" } },
+  };
+  results.push({ data: programme, error: null }, { data: [tuition], error: null }, { data: [], error: null });
+  const html = renderToStaticMarkup(await ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
+  expect(html).toContain("145.000 SEK / năm");
+  expect(html).toContain("Nguồn ghi: “SEK 145 000 per year”");
+  expect(html).toContain('href="#fact-f1"');
+  expect(html).toContain('id="fact-f1"');
 });
 it("returns not found for malformed ids and unpublished programmes, and fails closed on errors", async () => {
   await expect(ProgrammePage({ params: Promise.resolve({ id: "x" }), searchParams: Promise.resolve({}) })).rejects.toThrow("NOT_FOUND");
-  results.push({ data: null, error: null }, { data: [], error: null });
+  results.push({ data: null, error: null }, { data: [], error: null }, { data: [], error: null });
   await expect(ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) })).rejects.toThrow("NOT_FOUND");
-  results.push({ data: null, error: { message: "down" } }, { data: [], error: null });
+  results.push({ data: null, error: { message: "down" } }, { data: [], error: null }, { data: [], error: null });
   await expect(ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) })).rejects.toThrow("Không tải được");
 });
 it("redirects a page past the last result to page 1, keeping filters", async () => {
