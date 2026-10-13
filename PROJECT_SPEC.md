@@ -1868,3 +1868,26 @@ Sweden journey (≈ 20 programme pages plus the permit, work and cost pages)
 fits in one to two weeks of review, so the crawler + AI proposals are used to
 prepare candidates and the reviewer only decides.
 
+### 2026-10-13 — Fact types (L3) approved as proposed
+
+Plan: `docs/architecture/fact-types-plan.md`. The owner approved it ("commit
+and start L3"), with the recommended answer to each decision:
+
+- D1: comparison metrics are generalised into one vocabulary, **fact types**
+  (`comparison_metrics` → `fact_types`, `facts.metric_id` → `fact_type_id`);
+  a metric is a fact type with `comparable = true`. Safe now: the table has
+  0 rows and no fact references it (checked on the whole database).
+- D2: managed with the existing `metrics.manage` permission, shown as
+  "manage fact types".
+- D3: for money/number fact types the number must appear in the excerpt for
+  manual entries too, as for AI proposals.
+- D4: the 36 existing facts stay untyped; a type comes only with a new proposal.
+- D5: the 14 types in the plan are a draft of definitions; the owner creates
+  them in the UI or asks Claude to enter them after L3a.
+- D6: L3a (database, admin page, entry form) → L3b (public display) → L3c
+  (AI extraction).
+
+The verbatim value and excerpt remain required and are never translated;
+structured values (number, currency, period, date) are proposals reviewed
+like every fact; no automatic unit or currency conversion.
+
