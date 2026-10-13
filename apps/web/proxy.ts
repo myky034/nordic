@@ -26,7 +26,16 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/proxy";
 
+/** Developer-only pages (DEMO previews); never served by a production build. */
+export const isDevOnlyPath = (path: string) => path === "/dev" || path.startsWith("/dev/");
+
 export async function proxy(request: NextRequest) {
+  // The pages call notFound() in production too, but the streamed layout has
+  // already sent "200 OK" by then, so the status was wrong (UX review B6,
+  // KHLOE-108). Answering here, before any rendering, gives a real 404.
+  if (process.env.NODE_ENV === "production" && isDevOnlyPath(request.nextUrl.pathname)) {
+    return new NextResponse("Not found", { status: 404, headers: { "content-type": "text/plain; charset=utf-8" } });
+  }
   // This service endpoint authenticates its own bearer token, independently of
   // browser sessions. An Auth outage must not block internal ingestion.
   if (request.nextUrl.pathname === "/api/ingestion/documents") return NextResponse.next();
