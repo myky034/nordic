@@ -234,6 +234,8 @@ export const vi = {
     why: "Vì sao nghề này có trong danh sách",
   },
   compare: {
+    notReadyTitle: "Bảng so sánh sắp có",
+    notReadyText: (metrics: number, countries: number) => `Bảng so sánh mở khi có ít nhất ${metrics} chỉ số, mỗi chỉ số có giá trị đã duyệt ở ít nhất ${countries} nước. Trong lúc chờ, hãy xem trang từng nước.`,
     eyebrow: "So sánh",
     title: "So sánh quốc gia",
     description: "Đặt các nước cạnh nhau; mỗi giá trị giữ nguồn, mức độ nguồn, kỳ số liệu và ngày riêng. Không có điểm tổng hay xếp hạng.",
@@ -1102,6 +1104,17 @@ export const vi = {
     staleTab: "Cần duyệt lại",
     proposed: "Đã lưu đề xuất phân loại. Người duyệt sẽ đối chiếu trích đoạn với tiêu chí.",
     historyDetail: "Phân loại",
+  },
+  coverage: {
+    topics: { study: "Du học", cost: "Chi phí", permits: "Visa & cư trú", work: "Việc làm" },
+    levels: { none: "Sắp có", partial: "Một phần", all: "Có cả 4 chủ đề" },
+    has: (topics: string) => `Có dữ liệu: ${topics}`,
+    rule: "Nhãn tính từ dữ liệu đã duyệt và đang công khai, theo 4 chủ đề: du học, chi phí, visa & cư trú, việc làm. Nhãn không đánh giá chất lượng hay độ đầy đủ.",
+    comingSoon: "Sắp có",
+    comingSoonHelp: "Chưa có dữ liệu đã duyệt cho các nước này. Bạn vẫn mở được trang của từng nước để xem nguồn chính thức.",
+    noneNotice: "Chưa có dữ liệu đã duyệt cho nước này. Trong lúc chờ, hãy xem trực tiếp các trang chính thức trong danh sách nguồn.",
+    seeSources: "Xem nguồn chính thức",
+    focus: "Hiện có nhiều dữ liệu nhất: Thụy Điển, thạc sĩ CNTT.",
   },
   factCard: {
     source: "Nguồn",

@@ -13,6 +13,9 @@ import { logAccessError } from "@/lib/rbac/access";
 import { Badge, BackLink, Chevron, PageHeader, Section, Segmented } from "@/components/ui";
 import { textLink } from "@/components/ui/styles";
 import { TopicCard } from "./topic-card";
+import { publicCoverage } from "@/lib/coverage/queries";
+import { coverageLevel } from "@/lib/coverage/domain";
+import { Notice } from "@/components/ui";
 import { viewerPermissions } from "@/lib/rbac/viewer";
 import { canOpenFactsWorkspace, seesInternalDetails } from "@/lib/rbac/ui";
 
@@ -77,6 +80,11 @@ export default async function CountryPage({ params, searchParams }: PageProps<"/
   const t = dict.country;
   const name = countryName(country.slug, country.name, locale);
   const verified = country.sources.filter((s) => s.status === "verified").length;
+  // UX review C5/L6/B1: say plainly when a country has no reviewed data yet and
+  // where to look meanwhile; offer the comparison only when it has data.
+  const coverage = await publicCoverage();
+  const noData = coverage ? coverageLevel(coverage.countries[country.slug]?.topics ?? []) === "none" : false;
+  const showCompare = coverage?.compareReady ?? true;
 
   return <>
     <PageHeader back={<BackLink href="/countries">{t.back}</BackLink>} actions={<SaveButton kind="country" id={country.id} signedIn={save.signedIn} initialSaved={save.saved} locale={locale} />} eyebrow={locale === "vi" ? country.name : undefined} title={name}
@@ -86,6 +94,9 @@ export default async function CountryPage({ params, searchParams }: PageProps<"/
         <Link href={`/sources?country=${country.slug}`} className={textLink}>{t.sourcesVerified(verified, country.sources.length)}</Link>
         {internal && <Badge tone={country.status === "active" ? "accent" : "neutral"}>{countryStatusLabel(country.status, locale)}</Badge>}
       </span>} />
+    {noData && <div className="mb-6"><Notice tone="neutral" title={dict.coverage.comingSoon}>
+      {dict.coverage.noneNotice} <Link href={`/sources?country=${country.slug}`} className={textLink}>{dict.coverage.seeSources}</Link>
+    </Notice></div>}
 
     <div className="grid gap-4 md:grid-cols-3">
       <TopicCard title={t.study} icon="education" tint="orange" recentLabel={t.recent}
@@ -102,11 +113,11 @@ export default async function CountryPage({ params, searchParams }: PageProps<"/
         links={[{ href: "/occupations", label: t.linkOccupations }]} />
     </div>
     <p className="mt-2 px-1 text-[13px] text-ink-3">{t.countsNote(name)}</p>
-    <Link href={`/compare?c=${country.slug}`} className="group mt-4 flex items-center justify-between gap-4 rounded-2xl bg-surface px-5 py-4 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline transition hover:shadow-[0_6px_18px_rgb(0_0_0/0.08)]">
+    {showCompare && <Link href={`/compare?c=${country.slug}`} className="group mt-4 flex items-center justify-between gap-4 rounded-2xl bg-surface px-5 py-4 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline transition hover:shadow-[0_6px_18px_rgb(0_0_0/0.08)]">
       <span><span className="block text-[15px] font-semibold text-ink">{t.compareTitle(name)}</span>
         <span className="block text-[13px] text-ink-2">{t.compareText}</span></span>
       <Chevron className="transition-transform group-hover:translate-x-0.5" />
-    </Link>
+    </Link>}
 
     {/* One question per tab; the full list is /facts?country=…&group=… */}
     {(() => {

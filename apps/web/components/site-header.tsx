@@ -5,6 +5,7 @@ import { AccountActions } from "./account-actions";
 import { LanguageSwitch } from "./language-switch";
 import { getDictionary } from "@/lib/i18n/server";
 import { navigationFor } from "@/lib/navigation/menu";
+import { publicCoverage } from "@/lib/coverage/queries";
 
 // One global navigation bar for public and signed-in pages. A light
 // translucent surface with backdrop blur, used only here (spec: blur sparingly).
@@ -16,7 +17,8 @@ function SearchLink({ label }: { label: string }) {
 
 export async function SiteHeader() {
   const t = await getDictionary();
-  const entries = navigationFor(t.nav);
+  // Unknown coverage (failed read) keeps the link: never hide content on an error.
+  const entries = navigationFor(t.nav, { showCompare: (await publicCoverage())?.compareReady ?? true });
   // One row at every width: logo, grouped navigation (md+), then search,
   // account and — below 1024px (lg) — the Menu button. lg, not a tablet width,
   // because signed-in pages show two account buttons and the bar must never

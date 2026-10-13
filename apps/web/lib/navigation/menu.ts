@@ -9,9 +9,12 @@ import type { Dictionary } from "@/lib/i18n/dictionaries";
 export type NavLink = { href: string; label: string; description: string };
 export type NavEntry = { id: string; label: string; href?: string; links?: NavLink[] };
 
-/** The navigation in the viewer's language; labels come from the dictionary (lib/i18n). */
-export function navigationFor(nav: Dictionary["nav"]): NavEntry[] {
-  return [
+/**
+ * The navigation in the viewer's language; labels come from the dictionary (lib/i18n).
+ * `showCompare`: false hides "So sánh" until it has enough data (lib/coverage, UX review B1).
+ */
+export function navigationFor(nav: Dictionary["nav"], { showCompare = true }: { showCompare?: boolean } = {}): NavEntry[] {
+  const entries: NavEntry[] = [
     { id: "countries", label: nav.countries, href: "/countries" },
     { id: "study", label: nav.study, links: [
       { href: "/universities", ...nav.universities },
@@ -28,6 +31,7 @@ export function navigationFor(nav: Dictionary["nav"]): NavEntry[] {
       { href: "/documents", ...nav.documents },
     ] },
   ];
+  return showCompare ? entries : entries.filter((e) => e.id !== "compare");
 }
 
 export function isActive(path: string, href: string) {

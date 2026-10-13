@@ -10,6 +10,8 @@ import { uuidPattern } from "@/lib/documents/domain";
 import { EmptyState, Field, Notice, PageHeader, Section, Segmented, filterBar } from "@/components/ui";
 import { CompareCell, CompareTable, type CompareCountry, type CompareValue } from "@/components/compare-table";
 import { buttonPrimary, control, textLink } from "@/components/ui/styles";
+import { publicCoverage } from "@/lib/coverage/queries";
+import { COMPARE_MIN_COUNTRIES, COMPARE_MIN_METRICS } from "@/lib/coverage/domain";
 
 type Country = CompareCountry;
 type Metric = { id: string; label: string; description: string; unit_hint: string | null; category: string };
@@ -21,6 +23,15 @@ const day = (v: string | null, missing: string) => v ? new Date(v).toISOString()
 
 export default async function ComparePage({ searchParams }: PageProps<"/compare">) {
   const query = await searchParams;
+  // UX review B1: until enough metrics have values in several countries, say
+  // so instead of showing an empty table. Direct links still land here.
+  if ((await publicCoverage())?.compareReady === false) {
+    const d = await getDictionary(), t = d.compare;
+    return <>
+      <PageHeader eyebrow={t.eyebrow} title={t.title} description={t.description} />
+      <EmptyState title={t.notReadyTitle} action={<Link href="/countries" className={textLink}>{d.nav.countries}</Link>}>{t.notReadyText(COMPARE_MIN_METRICS, COMPARE_MIN_COUNTRIES)}</EmptyState>
+    </>;
+  }
   const { countries: slugs, ready } = compareCountries(query);
   const category = categoryParam(query);
   const occupationId = typeof query.occupation === "string" && uuidPattern.test(query.occupation) ? query.occupation : "";

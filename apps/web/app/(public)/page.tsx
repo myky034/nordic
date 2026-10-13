@@ -18,6 +18,8 @@ import { countrySlugs } from "@/lib/registry/domain";
 import { getDictionary } from "@/lib/i18n/server";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 import { Chevron } from "@/components/ui";
+import { publicCoverage } from "@/lib/coverage/queries";
+import { byCoverage, type CoverageTopic } from "@/lib/coverage/domain";
 import { buttonPrimary, buttonSecondary } from "@/components/ui/styles";
 
 // Goal cards: icon and destinations are fixed here; titles, texts and link
@@ -32,6 +34,14 @@ const goals: { key: keyof Dictionary["home"]["goals"]; icon: IconName; tint: Tin
 export default async function LandingPage() {
   const t = await getDictionary();
   const h = t.home;
+  // UX review B1/B2/C5: no comparison card until it has data; countries with
+  // reviewed data first, the rest as "coming soon". A failed coverage read
+  // keeps the previous behaviour (all countries, comparison shown).
+  const coverage = await publicCoverage();
+  const shownGoals = goals.filter((g) => g.key !== "compare" || (coverage?.compareReady ?? true));
+  const ranked = byCoverage(countrySlugs.map((slug) => ({ slug, topics: (coverage?.countries[slug]?.topics ?? []) as CoverageTopic[] })));
+  const withData = coverage ? ranked.filter((c) => c.topics.length > 0) : ranked;
+  const comingSoon = coverage ? ranked.filter((c) => c.topics.length === 0) : [];
   return (
     <main className="mx-auto w-full max-w-5xl px-5 sm:px-8">
       <section className="py-16 text-center sm:py-24">
@@ -51,7 +61,7 @@ export default async function LandingPage() {
       <section aria-labelledby="goals" className="pb-6">
         <h2 id="goals" className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{h.goalsTitle}</h2>
         <div className="grid gap-4 sm:grid-cols-2">
-          {goals.map((g) => <div key={g.key} className="flex flex-col rounded-2xl bg-surface p-6 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline">
+          {shownGoals.map((g) => <div key={g.key} className="flex flex-col rounded-2xl bg-surface p-6 shadow-[0_1px_2px_rgb(0_0_0/0.04)] ring-1 ring-hairline">
             <div className="flex items-center gap-3"><AppIcon icon={g.icon} tint={g.tint} /><h3 className="text-[19px] font-semibold text-ink">{h.goals[g.key].title}</h3></div>
             <p className="mt-3 flex-1 text-[15px] leading-relaxed text-ink-2">{h.goals[g.key].text}</p>
             <div className="mt-4 flex flex-wrap gap-x-5 gap-y-2">
@@ -62,10 +72,13 @@ export default async function LandingPage() {
       </section>
 
       <section aria-labelledby="countries" className="py-10">
-        <h2 id="countries" className="mb-4 px-1 text-[22px] font-semibold tracking-[-0.015em]">{h.countriesTitle}</h2>
+        <h2 id="countries" className="mb-1 px-1 text-[22px] font-semibold tracking-[-0.015em]">{h.countriesTitle}</h2>
+        {coverage && withData.length > 0 && <p className="mb-4 px-1 text-[15px] text-ink-2">{t.coverage.focus}</p>}
         <div className="flex flex-wrap gap-2">
-          {countrySlugs.map((slug) => <Link key={slug} href={`/countries/${slug}`} className="rounded-full bg-surface px-4 py-2 text-[15px] font-medium text-ink ring-1 ring-hairline transition hover:bg-fill">{t.countryNames[slug] ?? slug}</Link>)}
+          {withData.map(({ slug, topics }) => <Link key={slug} href={`/countries/${slug}`} className="rounded-full bg-surface px-4 py-2 text-[15px] font-medium text-ink ring-1 ring-hairline transition hover:bg-fill">
+            {t.countryNames[slug] ?? slug}{coverage && <span className="ml-2 text-[13px] font-normal text-ink-3">{topics.map((x) => t.coverage.topics[x]).join(" · ")}</span>}</Link>)}
         </div>
+        {comingSoon.length > 0 && <p className="mt-4 px-1 text-[13px] text-ink-3">{t.coverage.comingSoon}: {comingSoon.map(({ slug }, i) => <span key={slug}>{i > 0 && ", "}<Link href={`/countries/${slug}`} className="hover:text-ink">{t.countryNames[slug] ?? slug}</Link></span>)}</p>}
       </section>
 
       <section aria-labelledby="principles" className="py-12">

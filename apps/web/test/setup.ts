@@ -12,3 +12,12 @@ vi.mock("@/lib/i18n/server", async () => {
     getDictionary: async () => dictionaries[testLocale()],
   };
 });
+
+// Public coverage (lib/coverage/queries.ts) is cached by Next.js and read with
+// the anonymous client, neither of which exists in tests. Pages get "unknown"
+// by default — they then behave as before the UX review — and a test can set
+// coverage with setTestCoverage() from test/coverage.ts.
+vi.mock("@/lib/coverage/queries", async () => {
+  const { testCoverage } = await import("./coverage");
+  return { publicCoverage: async () => testCoverage() };
+});

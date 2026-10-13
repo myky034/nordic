@@ -89,3 +89,20 @@ it("renders the country page in English when the visitor chose English", async (
   for (const v of ["Denmark", "Nothing reviewed yet", "No universities reviewed yet", "What would you like to know?", "Tuition &amp; costs", "How much does it cost to study here?"]) expect(html).toContain(v);
   for (const v of ["Đan Mạch", "Chưa có trường nào"]) expect(html).not.toContain(v);
 });
+
+it("says when a country has no reviewed data, points to its official sources, and hides an empty comparison (UX review C5/B1)", async () => {
+  const { setTestCoverage } = await import("@/test/coverage");
+  getCountry.mockResolvedValue({ id: "c2", slug: "norway", name: "Norway", status: "needs_research", sources: [] });
+  result.data = []; result.error = null;
+  try {
+    setTestCoverage({ countries: { norway: { topics: [] } }, compareReady: false });
+    const html = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "norway" }), searchParams: Promise.resolve({}) }));
+    expect(html).toContain("Chưa có dữ liệu đã duyệt cho nước này");
+    expect(html).toContain('href="/sources?country=norway"');
+    expect(html).not.toContain('href="/compare?c=norway"');
+    setTestCoverage({ countries: { norway: { topics: ["permits"] } }, compareReady: true });
+    const withData = renderToStaticMarkup(await CountryPage({ params: Promise.resolve({ slug: "norway" }), searchParams: Promise.resolve({}) }));
+    expect(withData).not.toContain("Chưa có dữ liệu đã duyệt cho nước này");
+    expect(withData).toContain('href="/compare?c=norway"');
+  } finally { setTestCoverage(null); }
+});

@@ -234,6 +234,8 @@ export const en: Dictionary = {
     why: "Why this occupation is listed",
   },
   compare: {
+    notReadyTitle: "Comparison coming soon",
+    notReadyText: (metrics: number, countries: number) => `The comparison opens once at least ${metrics} metrics each have reviewed values in at least ${countries} countries. Meanwhile, see each country's page.`,
     eyebrow: "Compare",
     title: "Compare countries",
     description: "Countries side by side; every value keeps its own source, source tier, reference period and date. No overall score or ranking.",
@@ -1102,6 +1104,17 @@ export const en: Dictionary = {
     staleTab: "Needs re-review",
     proposed: "Classification proposal saved. A reviewer will check the excerpt against the criteria.",
     historyDetail: "Classification",
+  },
+  coverage: {
+    topics: { study: "Study", cost: "Costs", permits: "Visas & residence", work: "Work" },
+    levels: { none: "Coming soon", partial: "Partial", all: "All 4 topics" },
+    has: (topics: string) => `Data on: ${topics}`,
+    rule: "Labels are computed from reviewed, public data in four topics: study, costs, visas & residence, work. They do not rate quality or completeness.",
+    comingSoon: "Coming soon",
+    comingSoonHelp: "No reviewed data for these countries yet. You can still open each country's page to see its official sources.",
+    noneNotice: "No reviewed data for this country yet. Meanwhile, check the official pages in the source list directly.",
+    seeSources: "See official sources",
+    focus: "Most data so far: Sweden, Master's in IT.",
   },
   factCard: {
     source: "Source",
