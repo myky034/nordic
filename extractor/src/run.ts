@@ -1,7 +1,7 @@
 import { LIMITS, PROMPT_VERSION } from "./config";
 import type { ExtractorDb } from "./db";
 import { LlmError, type Llm } from "./llm";
-import { buildMessages, candidateSchema, truncateText } from "./prompt";
+import { buildMessages, candidateSchemaFor, truncateText } from "./prompt";
 import { parseCandidates } from "./validate";
 
 export type RunOptions = {
@@ -27,7 +27,9 @@ export async function runExtraction(opts: RunOptions) {
       if (i > 0) await new Promise((r) => setTimeout(r, opts.delayMs ?? LIMITS.delayBetweenDocumentsMs));
       const { text, truncated } = truncateText(doc.text);
       try {
-        const completion = await opts.llm.complete(buildMessages({ ...doc, text }, countries), candidateSchema);
+        // Per document: which fact types fit depends on the entity the page belongs to.
+        const factTypes = await opts.db.factTypes(runId, doc.request_id);
+        const completion = await opts.llm.complete(buildMessages({ ...doc, text }, countries, factTypes), candidateSchemaFor(factTypes.map((t) => t.key)));
         const { candidates, dropped } = parseCandidates(completion.content);
         const tally: Record<string, number> = {};
         for (const c of candidates) {

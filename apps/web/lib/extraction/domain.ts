@@ -82,6 +82,14 @@ const reasonRules: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^valid_until is before valid_from$/, () => "Ngày kết thúc hiệu lực trước ngày bắt đầu."],
   [/^Invalid reference period$/, () => "Kỳ số liệu không đúng dạng (2024, 2024-Q2, 2024-H1, 2024-09)."],
   [/^Confidence must be a number between 0 and 1$/, () => "Mức tự đánh giá phải là số từ 0 đến 1."],
+  // L3c: fact types and structured values.
+  [/^Structured number must be digits/, () => "Con số cấu trúc phải chỉ gồm chữ số, có thể có dấu chấm thập phân."],
+  [/^Structured value without a fact type$/, () => "Có giá trị cấu trúc nhưng không chọn loại thông tin."],
+  [/^Unknown or retired fact type$/, () => "Loại thông tin không tồn tại hoặc đã ngừng dùng."],
+  [/^Fact type does not fit this page$/, () => "Loại thông tin không hợp với trang này (trang không phải của chương trình/trường/quy định tương ứng)."],
+  [/^Fact type needs a country$/, () => "Loại thông tin này cần quốc gia, nhưng AI không nêu và trang không gắn với quốc gia nào."],
+  [/^Structured value does not fit the fact type$/, () => "Giá trị cấu trúc không đúng kiểu của loại thông tin (thiếu tiền tệ/kỳ, hoặc ngoài khoảng hợp lệ)."],
+  [/^Country does not match the linked page$/, () => "Quốc gia AI nêu khác quốc gia của trang đã gắn."],
   [/^Cancelled by an editor$/, () => "Biên tập viên đã hủy yêu cầu."],
   [/^(Run ended before this document finished|Worker stopped before finishing)$/, () => "Lần chạy dừng trước khi xử lý xong tài liệu này."],
 ];

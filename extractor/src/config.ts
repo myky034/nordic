@@ -1,7 +1,8 @@
 // Extraction limits and fixed vocabularies (Slice 10a decisions, PROJECT_SPEC.md §21).
 // The database re-enforces every limit that matters (extractor_* functions);
 // these values keep cost and rate-limit usage low on a free tier.
-export const PROMPT_VERSION = "extract-v2";
+// extract-v3 (L3c): fact types and structured values.
+export const PROMPT_VERSION = "extract-v3";
 export const LIMITS = {
   defaultDocuments: 5,
   maxDocuments: 10, // same cap as extractor_claim()

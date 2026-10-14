@@ -1,7 +1,7 @@
 import pg from "pg";
 import { workerPoolConfig } from "@nordic/db/pg-ssl";
 import type { Candidate } from "./validate";
-import type { Country, SourceDocument } from "./prompt";
+import type { Country, FactTypeHint, SourceDocument } from "./prompt";
 
 // The worker's only database surface: the extractor_* SQL functions. Its role
 // has no table privileges; every rule is enforced (again) in the database.
@@ -11,6 +11,8 @@ export type ExtractorDb = {
   startRun(trigger: string, provider: string, model: string, promptVersion: string): Promise<string>;
   countries(): Promise<Country[]>;
   claim(runId: string, limit: number): Promise<Claimed[]>;
+  /** L3c: fact types allowed for this request's page (its matched entity's kind + country types). */
+  factTypes(runId: string, requestId: string): Promise<FactTypeHint[]>;
   propose(runId: string, requestId: string, candidate: Candidate): Promise<ProposeResult>;
   finishRequest(runId: string, requestId: string, status: "done" | "failed", note: string, inputTokens: number, outputTokens: number, truncated: boolean): Promise<void>;
   finishRun(runId: string, status: "succeeded" | "partial" | "failed", note: string | null): Promise<Record<string, number>>;
@@ -24,6 +26,7 @@ export function pgExtractorDb(connectionString: string, caCert?: string | null):
     startRun: async (t, p, m, v) => (await pool.query("SELECT extractor_start_run($1,$2,$3,$4) AS id", [t, p, m, v])).rows[0].id,
     countries: async () => (await pool.query("SELECT * FROM extractor_countries()")).rows,
     claim: async (runId, limit) => (await pool.query("SELECT * FROM extractor_claim($1,$2)", [runId, limit])).rows,
+    factTypes: async (runId, requestId) => (await pool.query("SELECT * FROM extractor_fact_types($1,$2)", [runId, requestId])).rows,
     propose: async (runId, requestId, c) => (await pool.query("SELECT extractor_propose($1,$2,$3) AS r", [runId, requestId, JSON.stringify(c)])).rows[0].r,
     finishRequest: async (runId, requestId, status, note, i, o, truncated) => {
       await pool.query("SELECT extractor_finish_request($1,$2,$3,$4,$5,$6,$7)", [runId, requestId, status, note, i, o, truncated]);

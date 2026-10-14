@@ -1891,3 +1891,25 @@ The verbatim value and excerpt remain required and are never translated;
 structured values (number, currency, period, date) are proposals reviewed
 like every fact; no automatic unit or currency conversion.
 
+### 2026-10-14 — L3c: AI proposals get fact types; the entity comes from the page URL (option A)
+
+AI extraction proposals are linked to a document, not to a programme, while
+programme-level fact types (tuition, deadline, minimum IELTS…) require a
+programme (L3a). Owner decision (option A):
+
+- A document whose canonical URL **exactly matches** the stored official URL
+  of one reviewed programme (or university, immigration rule, occupation) is
+  that entity's page; proposals extracted from it are linked to that entity,
+  and the model may use the fact types for that kind of entity.
+- With no match — or more than one — the model may only use country-level
+  types, or leave the type empty as before. The model never chooses the
+  entity; the reviewer still decides every proposal.
+- A typed candidate is checked like a manual typed fact (active type, right
+  entity kind, structured fields for its kind, range, number or year in the
+  excerpt); a candidate that fails is recorded as invalid with its reason,
+  never silently re-typed.
+
+Rejected alternatives: country types only (tuition, deadlines, IELTS would
+stay manual); choosing the programme while reviewing (would edit proposals
+in place).
+

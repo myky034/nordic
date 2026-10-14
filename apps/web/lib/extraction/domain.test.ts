@@ -15,6 +15,8 @@ it("explains known rejection reasons in Vietnamese and keeps unknown ones as rec
   const { reasonLabel } = await import("./domain");
   expect(reasonLabel("Excerpt not found verbatim in the document text")).toContain("không có nguyên văn");
   expect(reasonLabel("Number 10656 not found in the excerpt")).toContain("10656");
+  expect(reasonLabel("Fact type does not fit this page")).toContain("không hợp với trang");
+  expect(reasonLabel("Structured value does not fit the fact type", "en")).toBe("Structured value does not fit the fact type");
   expect(reasonLabel("Something new")).toBe("Something new");
   expect(reasonLabel(null)).toBeNull();
 });
