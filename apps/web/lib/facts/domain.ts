@@ -37,7 +37,9 @@ const factErrors: MessageTable = {
     facts_country_required: "Số liệu gắn với một nghề hoặc một loại thông tin phải có quốc gia. Hãy chọn quốc gia mà thông tin mô tả.",
     facts_type_invalid: "Loại thông tin không còn dùng hoặc không tồn tại. Hãy tải lại trang.",
     facts_type_entity_mismatch: "Loại thông tin này dành cho một đối tượng khác. Hãy chọn đúng chương trình, trường, quy định hoặc nghề mà loại yêu cầu.",
-    facts_type_value_invalid: "Giá trị có cấu trúc chưa đúng kiểu: số tiền cần số, mã tiền tệ (ví dụ SEK) và kỳ; con số cần nằm trong khoảng cho phép; ngày cần ngày.",
+    facts_type_value_invalid: "Giá trị có cấu trúc chưa đúng kiểu: bỏ trống hết, hoặc nhập đủ (số tiền cần số, mã tiền tệ như SEK và kỳ); con số phải nằm trong khoảng cho phép.",
+    facts_type_unchanged: "Loại và giá trị giống hệt hiện tại; không có gì để lưu.",
+    facts_missing: "Không tìm thấy thông tin này. Hãy tải lại trang.",
     facts_number_not_in_excerpt: "Con số (hoặc năm của ngày) không có trong trích đoạn. Hãy chép đúng câu của nguồn có chứa con số đó.",
     facts_not_flagged: "Thông tin này không còn trong hàng chờ nguồn đã đổi. Hãy tải lại trang.",
     facts_invalid_period: "Kỳ số liệu phải có dạng 2024, 2024-Q2, 2024-H1 hoặc 2024-09.",
@@ -51,7 +53,9 @@ const factErrors: MessageTable = {
     facts_country_required: "A figure linked to an occupation or a fact type needs a country. Choose the country the fact describes.",
     facts_type_invalid: "This fact type is retired or no longer exists. Reload the page.",
     facts_type_entity_mismatch: "This fact type is for a different kind of item. Choose the programme, university, rule or occupation it requires.",
-    facts_type_value_invalid: "The structured value does not fit the type: money needs a number, a currency code (e.g. SEK) and a period; a number must be within the allowed range; a date needs a date.",
+    facts_type_value_invalid: "The structured value does not fit the type: leave it all empty, or complete it (money needs a number, a currency code such as SEK and a period); a number must be within the allowed range.",
+    facts_type_unchanged: "The type and value are the same as now; nothing to save.",
+    facts_missing: "This fact was not found. Reload the page.",
     facts_number_not_in_excerpt: "The number (or the year of the date) is not in the excerpt. Copy the source sentence that contains it.",
     facts_not_flagged: "This fact is no longer in the changed-source queue. Reload the page.",
     facts_invalid_period: "The reference period must look like 2024, 2024-Q2, 2024-H1 or 2024-09.",
@@ -86,3 +90,19 @@ const statusNames: Record<Locale, Record<string,string>> = {
 };
 export const statuses = statusNames.vi;
 export const statusLabel = (status: string, locale: Locale = defaultLocale) => statusNames[locale][status] ?? status;
+
+/**
+ * Which kinds of fact type may describe an existing fact (L4, set_fact_type):
+ * the kind of the item it is linked to, plus country types. Every typed fact
+ * needs a country, so a fact without one fits no type. Mirrors the database.
+ */
+export function factTypeKindsFor(f: { programme_id?: string | null; university_id?: string | null; immigration_rule_id?: string | null;
+  occupation_id?: string | null; country_id?: string | null }): string[] {
+  if (!f.country_id) return [];
+  const kinds: string[] = [];
+  if (f.programme_id) kinds.push("programme");
+  if (f.university_id) kinds.push("university");
+  if (f.immigration_rule_id) kinds.push("immigration_rule");
+  if (f.occupation_id) kinds.push("occupation");
+  return [...kinds, "country"];
+}

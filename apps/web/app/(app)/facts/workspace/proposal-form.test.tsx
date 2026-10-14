@@ -1,6 +1,6 @@
 import { renderToStaticMarkup } from "react-dom/server";
 import { expect, it, vi } from "vitest";
-vi.mock("./actions", () => ({ proposeFact: async () => ({}), reviewFact: async () => ({}), resolveSourceChange: async () => ({}), markConflict: async () => ({}) }));
+vi.mock("./actions", () => ({ proposeFact: async () => ({}), reviewFact: async () => ({}), resolveSourceChange: async () => ({}), markConflict: async () => ({}), setFactType: async () => ({}) }));
 import { ProposalForm, type FormFactType } from "./forms";
 
 // L3a: synthetic fact types; the list follows the linked item, so with no

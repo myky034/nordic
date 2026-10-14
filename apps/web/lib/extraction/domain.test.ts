@@ -20,3 +20,11 @@ it("explains known rejection reasons in Vietnamese and keeps unknown ones as rec
   expect(reasonLabel("Something new")).toBe("Something new");
   expect(reasonLabel(null)).toBeNull();
 });
+
+it("explains what the database dropped from an AI candidate, keeping unknown notes as recorded", async () => {
+  const { adjustmentLabel } = await import("./domain");
+  expect(adjustmentLabel("Structured value dropped: 24 is not in the excerpt")).toBe("Bỏ con số 24: câu trích không có số này (AI tự tính hoặc đổi đơn vị).");
+  expect(adjustmentLabel('Fact type dropped: "tuition_fee" does not fit this page')).toContain("“tuition_fee”");
+  expect(adjustmentLabel("Structured value dropped: 24 is not in the excerpt", "en")).toBe("Structured value dropped: 24 is not in the excerpt");
+  expect(adjustmentLabel("Something new")).toBe("Something new");
+});

@@ -68,7 +68,7 @@ const worker = async <T>(fn: () => Promise<T>) => {
 let run: string;
 const requests: Record<string, string> = {};
 type Doc = "programmeDoc" | "otherDoc" | "plainDoc";
-const propose = (doc: Doc, candidate: object) => worker(() => db.query<{ r: { outcome: string; reason: string | null; fact_id: string | null } }>(
+const propose = (doc: Doc, candidate: object) => worker(() => db.query<{ r: { outcome: string; reason: string | null; fact_id: string | null; adjustments: string[] } }>(
   "SELECT extractor_propose($1,$2,$3) AS r", [run, requests[doc], JSON.stringify(candidate)])).then((x) => x.rows[0].r);
 const tuition = { topic: "tuition", subject: "MSc Synthetic", predicate: "tuition fee", value: "SEK 145 000 per academic year", unit: "",
   excerpt: "Tuition fee: SEK 145 000 per academic year for students outside the EU.", country: "", fact_type: "tuition_fee",
@@ -108,21 +108,47 @@ it("stores a typed proposal linked to the page's programme, its country and the 
     excerpt: "Application deadline: 15 January 2027.", fact_type: "application_deadline", value_number: "", value_currency: "", value_period: "", value_date: "2027-01-15" });
   expect(deadline.outcome).toBe("proposed");
 });
-it("records why a typed candidate is refused, and never stores it untyped", async () => {
-  const reason = async (doc: Doc, change: object) => (await propose(doc, { ...tuition, predicate: `tuition ${Math.random()}`, ...change })).reason;
-  expect(await reason("otherDoc", {})).toBe("Fact type does not fit this page");
-  expect(await reason("programmeDoc", { fact_type: "residence_permit_fee" })).toBe("Fact type does not fit this page");
-  expect(await reason("programmeDoc", { fact_type: "no_such_type" })).toBe("Unknown or retired fact type");
-  expect(await reason("programmeDoc", { value_currency: "" })).toBe("Structured value does not fit the fact type");
-  expect(await reason("programmeDoc", { value_number: "145 000" })).toBe("Structured number must be digits with an optional decimal point");
-  expect(await reason("programmeDoc", { value_number: "154000" })).toBe("Number 154000 not found in the excerpt");
-  expect(await reason("programmeDoc", { fact_type: "", value_currency: "SEK" })).toBe("Structured value without a fact type");
-  expect(await reason("programmeDoc", { country: "denmark" })).toBe("Country does not match the linked page");
+// L4 Q2 (Decision Log 2026-10-14): a wrong fact type or structured value is
+// dropped and noted; the grounded fact itself is still proposed.
+it("keeps the fact when its type or structured value is wrong, dropping only that part with a note", async () => {
+  const check = async (doc: Doc, change: object) => {
+    const r = await propose(doc, { ...tuition, predicate: `tuition ${Math.random()}`, ...change });
+    expect(r.outcome).toBe("proposed");
+    const fact = (await db.query<{ key: string | null; value_number: string | null; value_currency: string | null; value_period: string | null }>(
+      "SELECT t.key, f.value_number, f.value_currency, f.value_period FROM facts f LEFT JOIN fact_types t ON t.id=f.fact_type_id WHERE f.id=$1", [r.fact_id])).rows[0];
+    const item = (await db.query<{ adjustments: string[] }>("SELECT adjustments FROM extraction_items WHERE fact_id=$1", [r.fact_id])).rows[0];
+    return { ...fact, notes: item.adjustments };
+  };
+  const untyped = { key: null, value_number: null, value_currency: null, value_period: null };
+  const typedNoValue = { key: "tuition_fee", value_number: null, value_currency: null, value_period: null };
+  expect(await check("otherDoc", {})).toEqual({ ...untyped, notes: ['Fact type dropped: "tuition_fee" does not fit this page', "Structured value dropped: no fact type"] });
+  expect(await check("programmeDoc", { fact_type: "residence_permit_fee" })).toMatchObject({ ...untyped, notes: [expect.stringContaining("does not fit this page"), "Structured value dropped: no fact type"] });
+  expect(await check("programmeDoc", { fact_type: "no_such_type" })).toMatchObject({ ...untyped, notes: ['Fact type dropped: "no_such_type" is unknown or retired', "Structured value dropped: no fact type"] });
+  expect(await check("programmeDoc", { fact_type: "", value_currency: "SEK" })).toEqual({ ...untyped, notes: ["Structured value dropped: no fact type"] });
+  // The type is right but the value is not: the type stays, the whole value goes.
+  expect(await check("programmeDoc", { value_currency: "" })).toEqual({ ...typedNoValue, notes: ['Structured value dropped: does not fit the fact type "tuition_fee"'] });
+  expect(await check("programmeDoc", { value_number: "154000" })).toEqual({ ...typedNoValue, notes: ["Structured value dropped: 154000 is not in the excerpt"] });
+  expect(await check("programmeDoc", { value_number: "145 000" })).toEqual({ ...typedNoValue,
+    notes: ['Structured number dropped: "145 000" is not digits with an optional decimal point', 'Structured value dropped: does not fit the fact type "tuition_fee"'] });
+  // Like the SU case ("two years" read as 24 months): a number the excerpt does not show is dropped, the type kept.
+  expect(await check("programmeDoc", { fact_type: "min_ielts_overall", value_number: "7", value_currency: "", value_period: "" }))
+    .toEqual({ key: "min_ielts_overall", value_number: null, value_currency: null, value_period: null, notes: ["Structured value dropped: 7 is not in the excerpt"] });
+  // Out of the type's range: dropped as not fitting.
+  expect(await check("programmeDoc", { fact_type: "min_ielts_overall", value_number: "24", value_currency: "", value_period: "" }))
+    .toMatchObject({ key: "min_ielts_overall", value_number: null, notes: ['Structured value dropped: does not fit the fact type "min_ielts_overall"'] });
+  // A type with no value at all is fine and needs no note.
+  expect(await check("programmeDoc", { value_number: "", value_currency: "", value_period: "" })).toEqual({ ...typedNoValue, notes: [] });
   const living = { fact_type: "maintenance_requirement", value_period: "month" };
-  expect(await reason("plainDoc", { ...living, country: "" })).toBe("Fact type needs a country");
+  expect(await check("plainDoc", { ...living, country: "" })).toMatchObject({ key: null, notes: ['Fact type dropped: "maintenance_requirement" needs a country', "Structured value dropped: no fact type"] });
   // A country type is allowed on any page; the page's entity supplies the country.
-  expect((await propose("otherDoc", { ...tuition, predicate: "living cost", ...living })).outcome).toBe("proposed");
-  expect((await db.query("SELECT count(*)::int AS n FROM facts WHERE fact_type_id IS NULL AND origin='ai'")).rows[0]).toEqual({ n: 0 });
+  expect(await check("otherDoc", { ...living })).toMatchObject({ key: "maintenance_requirement", value_number: "145000", notes: [] });
+});
+it("still refuses candidates that are not grounded in the page", async () => {
+  const reason = async (doc: Doc, change: object) => (await propose(doc, { ...tuition, predicate: `tuition ${Math.random()}`, ...change })).reason;
+  expect(await reason("programmeDoc", { country: "denmark" })).toBe("Country does not match the linked page");
+  // A number in the verbatim value that the excerpt does not contain is invented.
+  expect(await reason("programmeDoc", { value: "SEK 154 000 per academic year" })).toBe("Number 154000 not found in the excerpt");
+  expect(await reason("programmeDoc", { excerpt: "Tuition fee: SEK 154 000 per academic year for everyone." })).toBe("Excerpt not found verbatim in the document text");
 });
 it("still accepts untyped proposals, linked to the page's entity", async () => {
   const r = await propose("programmeDoc", { ...tuition, predicate: "scholarships", fact_type: "", value_number: "", value_currency: "", value_period: "",
@@ -134,4 +160,39 @@ it("links nothing when two reviewed entities claim the same page", async () => {
   for (const name of ["Synthetic A", "Synthetic B"]) await db.query(`INSERT INTO universities(country_id,name,official_url,document_id,evidence_excerpt,status,created_by,reviewed_at)
     VALUES($1,$2,'https://www.uni.example.test/about/',$3,'Synthetic excerpt','reviewed',$4,now())`, [ids.sweden, name, ids.plainDoc, admin]);
   expect((await db.query("SELECT * FROM document_entity($1)", [ids.plainDoc])).rows).toEqual([]);
+});
+// L4 Q3: a reviewer sets, changes or removes the type of a PROPOSED fact,
+// checked like a manual entry and recorded append-only.
+it("lets a reviewer set the type of a proposed fact, with the same checks and an append-only history", async () => {
+  const as = async <T>(user: string | null, fn: () => Promise<T>) => {
+    await db.query("SELECT set_config('request.jwt.claim.sub',$1,false)", [user ?? ""]);
+    await db.exec(`SET SESSION AUTHORIZATION ${user ? "authenticated" : "anon"}`);
+    try { return await fn(); } finally { await db.exec("SET SESSION AUTHORIZATION postgres; RESET ROLE"); }
+  };
+  const fact = (await propose("programmeDoc", { ...tuition, predicate: "fee as stated", fact_type: "", value_number: "", value_currency: "", value_period: "" })).fact_id!;
+  const set = (user: string | null, type: string | null, num: number | null = null, cur: string | null = null, per: string | null = null) =>
+    as(user, () => db.query("SELECT set_fact_type($1,$2,$3,$4,$5,null,'synthetic note')", [fact, type, num, cur, per]));
+  await set(admin, ids.tuition);
+  await set(admin, ids.tuition, 145000, "sek", "year");
+  expect((await db.query("SELECT value_number, value_currency, value_period FROM facts WHERE id=$1", [fact])).rows[0])
+    .toEqual({ value_number: "145000", value_currency: "SEK", value_period: "year" });
+  await expect(set(admin, ids.tuition, 145000, "SEK", "year")).rejects.toThrow("facts_type_unchanged");
+  await expect(set(admin, ids.tuition, 154000, "SEK", "year")).rejects.toThrow("facts_number_not_in_excerpt");
+  await expect(set(admin, ids.tuition, 145000, "SEK", null)).rejects.toThrow("facts_type_value_invalid");
+  await expect(set(admin, ids.permitFee)).rejects.toThrow("facts_type_entity_mismatch");
+  await expect(set(admin, null, 145000)).rejects.toThrow("facts_type_value_invalid");
+  // Only reviewers; the AI account may only propose.
+  await expect(set(aiAccount, ids.deadline)).rejects.toThrow("facts_forbidden");
+  await expect(set(null, ids.deadline)).rejects.toThrow(/permission denied/);
+  const history = (await db.query<{ before: { fact_type_id: string | null }; after: { fact_type_id: string; value_number: number | null }; note: string }>(
+    "SELECT before, after, note FROM fact_type_changes WHERE fact_id=$1 ORDER BY created_at", [fact])).rows;
+  expect(history.map((h) => [h.before.fact_type_id, h.after.fact_type_id, h.after.value_number, h.note]))
+    .toEqual([[null, ids.tuition, null, "synthetic note"], [ids.tuition, ids.tuition, 145000, "synthetic note"]]);
+  // History is read-only for everyone and hidden from the public.
+  await expect(as(admin, () => db.query("DELETE FROM fact_type_changes"))).rejects.toThrow(/permission denied/);
+  await expect(as(admin, () => db.query("UPDATE fact_type_changes SET note='x'"))).rejects.toThrow(/permission denied/);
+  await expect(as(null, () => db.query("SELECT * FROM fact_type_changes"))).rejects.toThrow(/permission denied/);
+  // After the decision the type is fixed (withdraw / replace instead).
+  await as(admin, () => db.query("SELECT review_fact($1,'reviewed','synthetic review')", [fact]));
+  await expect(set(admin, null)).rejects.toThrow("facts_already_decided");
 });

@@ -15,3 +15,10 @@ it("gives the same validity verdict in the short public wording",()=>{
  expect(validityShort("2027-01-01",null,now)).toBe("chưa đến thời gian áp dụng");
  expect(validityShort(null,"2026-01-01",now)).toBe("đã quá thời hạn ghi nhận");
 });
+
+it("offers a fact the types of its linked item plus country types, and none without a country", async () => {
+  const { factTypeKindsFor } = await import("./domain");
+  expect(factTypeKindsFor({ programme_id: "p", country_id: "se" })).toEqual(["programme", "country"]);
+  expect(factTypeKindsFor({ country_id: "se" })).toEqual(["country"]);
+  expect(factTypeKindsFor({ programme_id: "p", country_id: null })).toEqual([]);
+});

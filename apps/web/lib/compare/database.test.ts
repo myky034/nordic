@@ -83,19 +83,23 @@ it("checks a typed fact's structured value, entity and excerpt; untyped facts st
   await expect(propose({ country: null })).rejects.toThrow("facts_country_required");
   await expect(propose({ cur: null })).rejects.toThrow("facts_type_value_invalid");
   await expect(propose({ per: null })).rejects.toThrow("facts_type_value_invalid");
-  await expect(propose({ cur: "sek" })).rejects.toThrow(/check constraint|facts_invalid/);
+  await expect(propose({ cur: "sek" })).rejects.toThrow(/check constraint|facts_invalid|facts_type_value_invalid/);
   await expect(propose({ date: "2027-01-15" })).rejects.toThrow("facts_type_value_invalid");
   // The structured number must be in the excerpt (digit groups may differ).
   await expect(propose({ num: 13200 })).rejects.toThrow("facts_number_not_in_excerpt");
   // Structured values without a type are refused.
   await expect(propose({ type: null })).rejects.toThrow("facts_invalid");
   await propose();
+  // L4 Q1: a typed fact may have no structured value at all ("about SEK 12 300"
+  // read by a reviewer later), but never half of one (checked above).
+  await propose({ num: null, cur: null, per: null, value: "around SEK 12 300 per month" });
   // Untyped facts are unchanged.
   await propose({ type: null, num: null, cur: null, per: null });
   await db.query("UPDATE fact_types SET active=false WHERE id=$1", [metric]);
   await expect(propose()).rejects.toThrow("facts_type_invalid");
-  const rows = (await db.query<{ value: string; value_number: string; value_currency: string; value_period: string }>("SELECT value,value_number,value_currency,value_period FROM facts WHERE fact_type_id IS NOT NULL")).rows;
-  expect(rows).toEqual([{ value: "SEK 12 300 per month", value_number: "12300", value_currency: "SEK", value_period: "month" }]);
+  const rows = (await db.query<{ value: string; value_number: string; value_currency: string; value_period: string }>("SELECT value,value_number,value_currency,value_period FROM facts WHERE fact_type_id IS NOT NULL ORDER BY created_at")).rows;
+  expect(rows).toEqual([{ value: "SEK 12 300 per month", value_number: "12300", value_currency: "SEK", value_period: "month" },
+    { value: "around SEK 12 300 per month", value_number: null, value_currency: null, value_period: null }]);
 });
 it("matches the type's entity and number range, and finds decimals and years in the excerpt", async () => {
   const ielts = (await as(admin, () => saveType(null, { key: "min_ielts_overall", kind: "number", applies: "programme", category: "language", min: 0, max: 9, comparable: false }))).rows[0].id;

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/auth/session";
 import { accessContext, logAccessError } from "@/lib/rbac/access";
 import { FactCard, factSelect, type FactRow } from "@/lib/facts/view";
-import { ConflictForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
+import { ConflictForm, FactTypeForm, ProposalForm, ReviewForm, SourceChangeForm } from "./forms";
 import { factTypeDefinition, factTypeLabel } from "@/lib/compare/domain";
 import { ItemStepper, SplitList, SplitPager, SplitRow, SplitView } from "@/components/review/split-view";
 import { selectItem } from "@/lib/review/selection";
@@ -18,6 +18,8 @@ import { permissionName } from "@/lib/rbac/labels";
 import { publicIds } from "@/lib/review/public-check";
 import { factBlockers, visibilityOf } from "@/lib/review/visibility";
 import { uuidPattern } from "@/lib/documents/domain";
+import { factTypeKindsFor } from "@/lib/facts/domain";
+import { adjustmentLabel } from "@/lib/extraction/domain";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
 import { Badge, Disclosure, EmptyState, NoAccess, PageHeader, SearchInput, Section, Segmented } from "@/components/ui";
@@ -94,7 +96,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  // rules/occupations are loaded only to explain a "no" (lib/review/visibility.ts).
  const ruleIds=[...new Set(facts.flatMap(f=>f.immigration_rule_id?[f.immigration_rule_id]:[]))];
  const occupationIds=[...new Set(facts.flatMap(f=>f.occupation_id?[f.occupation_id]:[]))];
- const [linkedRules,linkedOccupations,visible,sameDocument]=await Promise.all([
+ const [linkedRules,linkedOccupations,visible,sameDocument,extraction]=await Promise.all([
    ruleIds.length?client.from("immigration_rules").select("id,status,documents!immigration_rules_document_id_fkey(sources(status,source_tier))").in("id",ruleIds):Promise.resolve({data:[],error:null}),
    occupationIds.length?client.from("occupations").select("id,status").in("id",occupationIds):Promise.resolve({data:[],error:null}),
    facts.some(f=>f.status==="reviewed"||f.status==="conflicted")?publicIds("facts",facts.map(f=>f.id)):Promise.resolve(new Set<string>()),
@@ -102,7 +104,14 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
    // (lib/review/siblings.ts). Fetched in the same round as the lookups above,
    // since each Supabase round trip is slow.
    current?client.from("facts").select("id,subject,predicate,value,unit,status").eq("document_id",current.document_id).neq("id",current.id).order("created_at").limit(30):Promise.resolve({data:[],error:null}),
+   // L4 Q2: what the database dropped from the AI candidate behind this fact.
+   review&&current?.status==="proposed"&&current.origin==="ai"?client.from("extraction_items").select("adjustments").eq("fact_id",current.id).maybeSingle():Promise.resolve({data:null,error:null}),
  ]);
+ if(extraction.error) logAccessError("facts_workspace_extraction_item");
+ const adjustments=((extraction.data as {adjustments:string[]}|null)?.adjustments ?? []).map(a=>adjustmentLabel(a,locale));
+ // L4 Q3: types a reviewer may give the selected fact (its linked item's kind + country).
+ const typeKinds=current?factTypeKindsFor(current):[];
+ const typeChoices=metrics.filter(m=>typeKinds.includes(m.applies_to));
  // Editors' RLS shows every status; a failure is shown, not hidden.
  if(sameDocument.error) logAccessError("facts_workspace_same_document");
  const siblings:Sibling[]|null=sameDocument.error?null:sameDocument.data as Sibling[];
@@ -144,6 +153,8 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
      <VisibilityNote visibility={visibility(current)} publicHref="/facts" locale={locale}/>
      <SamePageFacts current={current} others={siblings} locale={locale}/>
      {/* The decision sits right under the claim. After a decision the item leaves this tab and the next one opens (lib/review/selection.ts). */}
+     {review&&current.status==="proposed"&&typeChoices.length>0&&<FactTypeForm key={`type-${current.id}`} fact={current} types={typeChoices} adjustments={adjustments}
+       currentLabel={current.fact_types?factTypeLabel(current.fact_types,locale):null} locale={locale}/>}
      {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"} locale={locale}/>}
      {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary={t.compareNewVersion}><SourceChangeForm key={current.id} id={current.id} locale={locale}/></Disclosure>}
      {review&&status!=="source_changed"&&(current.status==="reviewed"||current.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary={t.markConflict}><ConflictForm key={current.id} id={current.id} others={conflictCandidates} locale={locale}/></Disclosure>}

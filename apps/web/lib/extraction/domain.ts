@@ -93,6 +93,23 @@ const reasonRules: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^Cancelled by an editor$/, () => "Biên tập viên đã hủy yêu cầu."],
   [/^(Run ended before this document finished|Worker stopped before finishing)$/, () => "Lần chạy dừng trước khi xử lý xong tài liệu này."],
 ];
+// L4 Q2: parts of an AI candidate the database dropped while keeping the fact.
+// Stored in English (extraction_items.adjustments); explained to editors here.
+const adjustmentRules: [RegExp, (m: RegExpMatchArray) => string][] = [
+  [/^Fact type dropped: "(.+)" is unknown or retired$/, (m) => `Bỏ loại “${m[1]}”: loại không tồn tại hoặc đã ngừng dùng.`],
+  [/^Fact type dropped: "(.+)" does not fit this page$/, (m) => `Bỏ loại “${m[1]}”: không hợp với trang này (trang không thuộc đối tượng mà loại yêu cầu).`],
+  [/^Fact type dropped: "(.+)" needs a country$/, (m) => `Bỏ loại “${m[1]}”: loại cần quốc gia nhưng không xác định được.`],
+  [/^Structured value dropped: no fact type$/, () => "Bỏ giá trị có cấu trúc: thông tin không có loại."],
+  [/^Structured value dropped: does not fit the fact type "(.+)"$/, (m) => `Bỏ giá trị có cấu trúc: không đúng kiểu của loại “${m[1]}” (thiếu tiền tệ/kỳ, hoặc ngoài khoảng hợp lệ).`],
+  [/^Structured value dropped: (.+) is not in the excerpt$/, (m) => `Bỏ con số ${m[1]}: câu trích không có số này (AI tự tính hoặc đổi đơn vị).`],
+  [/^Structured number dropped: "(.+)" is not digits/, (m) => `Bỏ con số “${m[1]}”: không viết bằng chữ số.`],
+  [/^Structured date dropped: "(.+)" is not a real/, (m) => `Bỏ ngày “${m[1]}”: không phải ngày hợp lệ.`],
+];
+export function adjustmentLabel(note: string, locale: Locale = defaultLocale) {
+  if (locale === "en") return note;
+  for (const [re, f] of adjustmentRules) { const m = note.match(re); if (m) return f(m); }
+  return note;
+}
 export function reasonLabel(reason: string | null | undefined, locale: Locale = defaultLocale) {
   if (!reason) return null;
   if (locale === "en") return reason;

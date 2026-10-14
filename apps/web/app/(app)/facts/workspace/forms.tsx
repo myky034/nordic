@@ -1,6 +1,6 @@
 "use client";
 import { useActionState, useState } from "react";
-import { proposeFact, resolveSourceChange, reviewFact } from "./actions";
+import { proposeFact, resolveSourceChange, reviewFact, setFactType } from "./actions";
 import { deadlineOptions } from "@/lib/education/domain";
 import { valuePeriodLabel, valuePeriods } from "@/lib/compare/domain";
 import { dictionaries } from "@/lib/i18n/dictionaries";
@@ -38,24 +38,60 @@ export function ProposalForm({documents,countries,selected,entities=[],metrics=[
  <Field label={t.entity}><select name="entity" value={entity} onChange={ev=>{setEntity(ev.target.value);setTypeId("");}} className={control}><option value="">{e.notLinked}</option>{entities.map(e=><option key={e.value} value={e.value}>{e.label}</option>)}</select></Field>
  <Field label={t.deadlineType}><select name="deadlineType" className={control}><option value="">{t.notDeadline}</option>{deadlineOptions(locale).map(([v,l])=><option key={v} value={v}>{l}</option>)}</select></Field>
  <Field label={t.metric} hint={t.metricHint}><select name="factType" value={type?.id ?? ""} onChange={ev=>setTypeId(ev.target.value)} className={control}><option value="">{t.noType}</option>{types.map(m=><option key={m.id} value={m.id}>{m.label}{m.unit_hint?` (${m.unit_hint})`:""}</option>)}</select></Field>
- {type&&<div className="space-y-4 rounded-xl bg-fill/50 p-4">
-  <p className="text-[14px] leading-relaxed text-ink-2"><span className="font-medium text-ink">{t.typeDefinition}:</span> {type.definition}</p>
-  {(type.value_kind==="money"||type.value_kind==="number")&&<div className="grid gap-5 sm:grid-cols-3">
-   <Field label={t.valueNumber} hint={type.value_kind==="number"&&(type.min_value!==null||type.max_value!==null)?t.range(String(type.min_value ?? "…"),String(type.max_value ?? "…")):t.valueNumberHint}><input name="valueNumber" required inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" className={control}/></Field>
-   {type.value_kind==="money"&&<>
-    <Field label={t.valueCurrency} hint={t.valueCurrencyHint}><input name="valueCurrency" required pattern="[A-Za-z]{3}" maxLength={3} defaultValue={/^[A-Z]{3}$/.test(type.unit_hint ?? "")?type.unit_hint ?? "":""} className={`${control} uppercase`}/></Field>
-    <Field label={t.valuePeriod}><select name="valuePeriod" required className={control}><option value="">{t.choosePeriod}</option>{valuePeriods.map(p=><option key={p} value={p}>{valuePeriodLabel(p, locale)}</option>)}</select></Field>
-   </>}
-  </div>}
-  {type.value_kind==="date"&&<Field label={t.valueDate} hint={t.valueDateHint}><input type="date" name="valueDate" required className={control}/></Field>}
-  {type.value_kind==="text"&&<p className="text-[13px] text-ink-3">{t.textType}</p>}
- </div>}
+ {type&&<StructuredFields type={type} locale={locale}/>}
  <Field label={t.period} hint={t.periodHint}><input name="referencePeriod" maxLength={7} pattern="[0-9]{4}(-(Q[1-4]|H[12]|0[1-9]|1[0-2]))?" placeholder="2024" className={control}/></Field>
  <div className="grid gap-5 sm:grid-cols-2"><Field label={t.from}><input type="date" name="from" className={control}/></Field><Field label={t.until}><input type="date" name="until" className={control}/></Field></div>
  <Field label={e.excerpt} hint={t.excerptHint}><textarea name="excerpt" required maxLength={500} rows={3} className={control}/></Field>
  <FormMessage error={state.error} message={state.message}/>
  <button disabled={pending || !documents.length} className={buttonPrimary}>{pending?e.saving:e.saveProposal}</button>
  </form></Card>;
+}
+type StructuredDefaults={value_number?:number|string|null;value_currency?:string|null;value_period?:string|null;value_date?:string|null};
+/**
+ * The structured fields for a chosen type (L3a). L4 Q1: all optional — the
+ * fact needs only its verbatim value; a number is entered only when the
+ * excerpt writes it in digits. The database checks completeness and the excerpt.
+ */
+function StructuredFields({type,locale,defaults={}}:{type:FormFactType;locale:Locale;defaults?:StructuredDefaults}) {
+ const t=dictionaries[locale].factsWorkspace.form;
+ return <div className="space-y-4 rounded-xl bg-fill/50 p-4">
+  <p className="text-[14px] leading-relaxed text-ink-2"><span className="font-medium text-ink">{t.typeDefinition}:</span> {type.definition}</p>
+  {(type.value_kind==="money"||type.value_kind==="number")&&<div className="grid gap-5 sm:grid-cols-3">
+   <Field label={t.valueNumber} hint={type.value_kind==="number"&&(type.min_value!==null||type.max_value!==null)?`${t.range(String(type.min_value ?? "…"),String(type.max_value ?? "…"))}. ${t.valueNumberHint}`:t.valueNumberHint}><input name="valueNumber" inputMode="decimal" pattern="[0-9]+([.,][0-9]+)?" defaultValue={defaults.value_number==null?"":String(defaults.value_number)} className={control}/></Field>
+   {type.value_kind==="money"&&<>
+    <Field label={t.valueCurrency} hint={t.valueCurrencyHint}><input name="valueCurrency" pattern="[A-Za-z]{3}" maxLength={3} defaultValue={defaults.value_currency ?? (/^[A-Z]{3}$/.test(type.unit_hint ?? "")?type.unit_hint ?? "":"")} className={`${control} uppercase`}/></Field>
+    <Field label={t.valuePeriod}><select name="valuePeriod" defaultValue={defaults.value_period ?? ""} className={control}><option value="">{t.choosePeriod}</option>{valuePeriods.map(p=><option key={p} value={p}>{valuePeriodLabel(p, locale)}</option>)}</select></Field>
+   </>}
+  </div>}
+  {type.value_kind==="date"&&<Field label={t.valueDate} hint={t.valueDateHint}><input type="date" name="valueDate" defaultValue={defaults.value_date ?? ""} className={control}/></Field>}
+  {type.value_kind==="text"&&<p className="text-[13px] text-ink-3">{t.textType}</p>}
+ </div>;
+}
+/**
+ * L4 Q3: a reviewer sets, changes or removes the type of a proposed fact
+ * before deciding. Only types that fit what the fact is linked to are listed
+ * (lib/facts/domain.ts factTypeKindsFor); the database checks again.
+ */
+export function FactTypeForm({fact,types,currentLabel,adjustments=[],locale}:{fact:{id:string}&StructuredDefaults&{fact_type_id?:string|null};types:FormFactType[];currentLabel:string|null;adjustments?:string[];locale:Locale}) {
+ const [state,action,pending]=useActionState(setFactType,{});
+ const d=dictionaries[locale], t=d.factsWorkspace.form, e=d.editor;
+ const [typeId,setTypeId]=useState(fact.fact_type_id ?? "");
+ const type=types.find(m=>m.id===typeId);
+ const same=typeId===(fact.fact_type_id ?? "");
+ return <form action={action} className="space-y-4 rounded-2xl bg-fill/50 p-4 sm:p-5">
+ <input type="hidden" name="fact" value={fact.id}/>
+ <div><h3 className="text-[17px] font-semibold">{t.typeSection}</h3>
+ <p className="mt-1 text-[14px] leading-relaxed text-ink-2">{t.typeIntro}</p>
+ <p className="mt-1 text-[13px] text-ink-3">{currentLabel?t.typeNow(currentLabel):t.typeNone}</p></div>
+ {adjustments.length>0&&<div className="rounded-xl bg-caution/[0.08] p-3 text-[14px] leading-relaxed text-ink-2"><p className="font-medium text-ink">{t.aiAdjusted}</p>
+  <ul className="mt-1 list-disc pl-5">{adjustments.map(a=><li key={a}>{a}</li>)}</ul></div>}
+ <Field label={t.metric}><select name="factType" value={typeId} onChange={ev=>setTypeId(ev.target.value)} className={control}><option value="">{t.noType}</option>{types.map(m=><option key={m.id} value={m.id}>{m.label}{m.unit_hint?` (${m.unit_hint})`:""}</option>)}</select></Field>
+ {/* Remount on type change so a previous type's values never carry over. */}
+ {type&&<StructuredFields key={type.id} type={type} locale={locale} defaults={same?fact:{}}/>}
+ <Field label={t.typeNote}><input name="note" maxLength={1000} className={control}/></Field>
+ <FormMessage error={state.error} message={state.message}/>
+ <button disabled={pending} className={buttonPrimary}>{pending?e.saving:t.saveType}</button>
+ </form>;
 }
 export function ReviewForm({id,ai,locale}:{id:string;ai:boolean;locale:Locale}) {
  const t=dictionaries[locale].factsWorkspace.form;

@@ -40,24 +40,40 @@ export function norm(s: string) {
 }
 
 /**
- * Local copy of the database's grounding rules, used by --dry-run (no
- * database) and to explain results. Returns null when the candidate passes.
+ * Local copy of the database's grounding rules (group 1 of extractor_propose),
+ * used by --dry-run (no database). Returns null when the candidate would be
+ * proposed; problems with the fact type or structured value never refuse a
+ * candidate (L4) — see structuredNotes().
  */
-export function precheck(c: Candidate, documentText: string, countrySlugs: string[], factTypeKeys: readonly string[] = []): string | null {
+export function precheck(c: Candidate, documentText: string, countrySlugs: string[]): string | null {
   if (!(TOPICS as readonly string[]).includes(c.topic)) return "Topic not in the allowed list";
   if (!c.subject || !c.predicate || !c.value) return "Missing subject/predicate/value";
   if (c.excerpt.length < 20 || c.excerpt.length > 500) return "Excerpt must be 20-500 characters";
   const excerpt = norm(c.excerpt);
   if (!norm(documentText).includes(excerpt)) return "Excerpt not found verbatim in the document text";
   if (c.country && !countrySlugs.includes(c.country)) return "Unknown country";
-  if (c.value_number && !/^[0-9]+(\.[0-9]+)?$/.test(c.value_number)) return "Structured number must be digits with an optional decimal point";
-  const structured = [c.value_number, c.value_currency, c.value_period, c.value_date].some(Boolean);
-  if (!c.fact_type && structured) return "Structured value without a fact type";
-  if (c.fact_type && !factTypeKeys.includes(c.fact_type)) return "Fact type does not fit this page";
   const tokens = new Set(norm(`${c.value} ${c.unit ?? ""}`).match(/[0-9]+/g) ?? []);
-  for (const d of [c.valid_from, c.valid_until, c.reference_period, c.value_date]) if (d) tokens.add(d.slice(0, 4));
-  // Same as the database: trailing zeros dropped (6.50 -> 6.5), then normalised (6.5 -> 65).
-  if (c.value_number) tokens.add(norm(c.value_number.includes(".") ? c.value_number.replace(/\.?0+$/, "") : c.value_number.replace(/^0+(?=\d)/, "")));
-  for (const t of tokens) if (!new RegExp(`(^|[^0-9])${t}([^0-9]|$)`).test(excerpt)) return `Number ${t} not found in the excerpt`;
+  for (const d of [c.valid_from, c.valid_until, c.reference_period]) if (d) tokens.add(d.slice(0, 4));
+  for (const t of tokens) if (!inExcerpt(t, excerpt)) return `Number ${t} not found in the excerpt`;
   return null;
+}
+const inExcerpt = (token: string, normalisedExcerpt: string) => new RegExp(`(^|[^0-9])${token}([^0-9]|$)`).test(normalisedExcerpt);
+
+/**
+ * What the database would drop from a grounded candidate (group 2, L4), for
+ * --dry-run output. Kind and range checks need the type rows and are left to
+ * the database.
+ */
+export function structuredNotes(c: Candidate, factTypeKeys: readonly string[]): string[] {
+  const notes: string[] = [];
+  const typed = !!c.fact_type && factTypeKeys.includes(c.fact_type);
+  if (c.fact_type && !typed) notes.push(`Fact type dropped: "${c.fact_type}" is not offered for this page`);
+  const number = c.value_number && /^[0-9]+(\.[0-9]+)?$/.test(c.value_number) ? c.value_number : null;
+  if (c.value_number && !number) notes.push(`Structured number dropped: "${c.value_number}" is not digits with an optional decimal point`);
+  if (![number, c.value_currency, c.value_period, c.value_date].some(Boolean)) return notes;
+  if (!typed) return [...notes, "Structured value dropped: no fact type"];
+  // Same as the database: trailing zeros dropped (6.50 -> 6.5), then normalised (6.5 -> 65).
+  const token = number ? norm(number.includes(".") ? number.replace(/\.?0+$/, "") : number.replace(/^0+(?=\d)/, "")) : c.value_date?.slice(0, 4);
+  if (token && !inExcerpt(token, norm(c.excerpt))) notes.push(`Structured value dropped: ${token} is not in the excerpt`);
+  return notes;
 }

@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { norm, parseCandidates, precheck } from "./validate";
+import { norm, parseCandidates, precheck, structuredNotes } from "./validate";
 
 const text = "Residence permit\nYou must have at least SEK 10,656 per month.\nRules apply from 1 January 2026.";
 const base = { topic: "immigration", subject: "Residence permit", predicate: "maintenance", value: "SEK 10 656 per month", unit: null,
@@ -25,14 +25,18 @@ it("refuses excerpts and numbers that are not in the page", () => {
   expect(precheck({ ...base, topic: "visa_guarantee" }, text, ["sweden"])).toContain("Topic");
   expect(precheck({ ...base, country: "atlantis" }, text, ["sweden"])).toContain("Unknown country");
 });
-it("checks a typed candidate's structured value against the excerpt and the allowed types", () => {
+// L4: a wrong type or structured value never refuses a grounded candidate;
+// structuredNotes() predicts what the database would drop.
+it("keeps a grounded typed candidate and lists what the database would drop", () => {
   const typed = { ...base, fact_type: "maintenance_requirement", value_number: "10656", value_currency: "SEK", value_period: "month" };
   const keys = ["maintenance_requirement"];
-  expect(precheck(typed, text, ["sweden"], keys)).toBeNull();
-  expect(precheck({ ...typed, value_number: "10656.00" }, text, ["sweden"], keys)).toBeNull();
-  expect(precheck({ ...typed, value_number: "10,656" }, text, ["sweden"], keys)).toContain("digits");
-  expect(precheck({ ...typed, value_number: "12000" }, text, ["sweden"], keys)).toContain("Number 12000");
-  expect(precheck(typed, text, ["sweden"], [])).toBe("Fact type does not fit this page");
-  expect(precheck({ ...typed, fact_type: null }, text, ["sweden"], keys)).toBe("Structured value without a fact type");
+  expect(precheck(typed, text, ["sweden"])).toBeNull();
+  expect(precheck({ ...typed, value_number: "12000" }, text, ["sweden"])).toBeNull();
+  expect(structuredNotes(typed, keys)).toEqual([]);
+  expect(structuredNotes({ ...typed, value_number: "10656.00" }, keys)).toEqual([]);
+  expect(structuredNotes({ ...typed, value_number: "12000" }, keys)).toEqual(["Structured value dropped: 12000 is not in the excerpt"]);
+  expect(structuredNotes({ ...typed, value_number: "10,656" }, keys)[0]).toContain("not digits");
+  expect(structuredNotes(typed, [])).toEqual(['Fact type dropped: "maintenance_requirement" is not offered for this page', "Structured value dropped: no fact type"]);
+  expect(structuredNotes({ ...typed, value_number: null, value_currency: null, value_period: null }, keys)).toEqual([]);
   expect(parseCandidates({ candidates: [{ ...typed, value_currency: "sek", value_date: "" }] }).candidates[0]).toMatchObject({ value_currency: "SEK", value_date: null });
 });

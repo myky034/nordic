@@ -4,7 +4,7 @@ import { pgExtractorDb } from "./db";
 import { LlmError, openAiCompatible, RESPONSE_MODES } from "./llm";
 import { buildMessages, candidateSchema, truncateText } from "./prompt";
 import { runExtraction } from "./run";
-import { parseCandidates, precheck } from "./validate";
+import { parseCandidates, precheck, structuredNotes } from "./validate";
 
 // Entry point.
 //   npm run extract -w @nordic/extractor                       → process pending requests
@@ -34,7 +34,9 @@ async function dryRun(file: string, url = "file://local") {
   const completion = await llm.complete(buildMessages(doc, DRY_RUN_COUNTRIES), candidateSchema);
   const { candidates } = parseCandidates(completion.content);
   const slugs = DRY_RUN_COUNTRIES.map((c) => c.slug);
-  for (const c of candidates) console.log(JSON.stringify({ check: precheck(c, text, slugs) ?? "ok", ...c }));
+  // Dry run has no database, so no fact types are offered: any type the model
+  // returns is reported as what the database would drop.
+  for (const c of candidates) console.log(JSON.stringify({ check: precheck(c, text, slugs) ?? "ok", adjustments: structuredNotes(c, []), ...c }));
   console.log(JSON.stringify({ candidates: candidates.length, truncated, tokens: { input: completion.inputTokens, output: completion.outputTokens } }));
 }
 

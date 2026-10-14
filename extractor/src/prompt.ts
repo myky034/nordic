@@ -90,21 +90,17 @@ export function buildMessages(doc: SourceDocument, countries: Country[], factTyp
     "- valid_from / valid_until: YYYY-MM-DD only if the document states that exact date for when the fact applies, else ''.",
     "- reference_period: for statistics, the period stated (YYYY, YYYY-Qn, YYYY-Hn or YYYY-MM), else ''.",
     ...(factTypes.length ? [
-      // extract-v4: small models returned one candidate for a page stating several
-      // listed types, so they are asked to check every type in turn.
+      // extract-v5 (L4): the database keeps a fact whose type or number is wrong and
+      // drops only that part, so the prompt states general rules, not per-site fixes.
       "- Go through the fact types below ONE BY ONE and check whether the document states each of them; propose one candidate for every type it states. Facts that fit no type are still welcome with fact_type ''.",
-      "- fact_type: set it ONLY when the fact is exactly what one of these definitions describes (including conditions such as full-time, intake or student group); otherwise ''. Never stretch a definition to fit:",
+      "- fact_type: set it when the fact is what one of these definitions describes (including conditions such as full-time, intake or student group); if unsure, ''. Never stretch a definition to fit:",
       ...factTypes.map(describeType),
-      "- When fact_type is set, also give the structured value, read only from the excerpt (no conversion, no calculation):",
-      "  - money: value_number, value_currency (the 3-letter ISO code of the currency the excerpt states, e.g. SEK, EUR) and value_period (" + VALUE_PERIODS.join(", ") + "); value_date ''.",
+      "- Structured value (optional): fill it ONLY with what the excerpt writes in digits; otherwise leave it '' and still keep fact_type. Never convert units or currencies, never calculate, never turn words into numbers.",
+      "  - money: value_number, value_currency (3-letter ISO code of the currency the excerpt states, e.g. SEK, EUR) and value_period (" + VALUE_PERIODS.join(", ") + "), all three or none.",
       "  - number: value_number only.",
-      "  - date: value_date (YYYY-MM-DD) only; '' if the excerpt does not state the full date.",
+      "  - date: value_date (YYYY-MM-DD) only, when the excerpt states the full date.",
       "  - text: all structured fields ''.",
       "  - value_number: digits with an optional '.' decimal point, no spaces or thousands separators (\"145 000\" -> \"145000\", \"6,5\" -> \"6.5\").",
-      "  - If the excerpt does not state a needed part (e.g. no currency or no period), set fact_type to '' instead of guessing.",
-      // The database refuses any structured number not written in the excerpt (L3 D3),
-      // so a converted or spelled-out number would only produce an invalid candidate.
-      "  - value_number must appear in the excerpt written in digits. If the excerpt writes the number in words (\"two years\") or the type's unit differs from the excerpt's (years vs months), do NOT convert: set fact_type to '' and keep the verbatim value.",
     ] : [
       "- fact_type, value_number, value_currency, value_period, value_date: always ''.",
     ]),

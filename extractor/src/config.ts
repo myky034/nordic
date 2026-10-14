@@ -3,7 +3,8 @@
 // these values keep cost and rate-limit usage low on a free tier.
 // extract-v3 (L3c): fact types and structured values.
 // extract-v4: check every listed type; never convert or spell out numbers.
-export const PROMPT_VERSION = "extract-v4";
+// extract-v5 (L4): keep the type even without a number; general rules only.
+export const PROMPT_VERSION = "extract-v5";
 export const LIMITS = {
   defaultDocuments: 5,
   maxDocuments: 10, // same cap as extractor_claim()

@@ -74,6 +74,10 @@ người duyệt → hàng chờ duyệt như mọi đề xuất AI
 - `page_key`, `document_entity` không mở cho `anon`/`authenticated`.
 - Thông tin AI vẫn `proposed`, ẩn đến khi người duyệt đồng ý.
 
+> **Thay đổi sau đó (L4, 2026-10-14):** quy tắc "ứng viên sai loại bị ghi invalid" không còn.
+> Loại hoặc con số sai giờ chỉ bị bỏ phần đó, thông tin vẫn được đề xuất kèm ghi chú. Xem
+> `slice-l4-flexible-facts.md`.
+
 ## Cập nhật extract-v4 (2026-10-14)
 
 Lần chạy thật đầu tiên trên trang chương trình Stockholm University (Gemini flash-lite):

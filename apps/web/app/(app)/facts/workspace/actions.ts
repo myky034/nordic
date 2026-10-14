@@ -7,12 +7,31 @@ import { uuidPattern } from "@/lib/documents/domain";
 import { deadlineTypes } from "@/lib/education/domain";
 import { isReferencePeriod } from "@/lib/labour/domain";
 import { currencyPattern, valuePeriods } from "@/lib/compare/domain";
+type Structured = { valueNumber: number | null; valueCurrency: string | null; valuePeriod: string | null; valueDate: string | null };
+/**
+ * Shape checks for the optional structured value (L3a, L4). Returns null when
+ * a field is malformed; which fields a type needs, the range and the excerpt
+ * check are decided by the database.
+ */
+function readStructured(get: (key: string) => string): Structured | null {
+  const rawNumber = get("valueNumber").replace(",", ".");
+  const valueNumber = rawNumber === "" ? null : Number(rawNumber);
+  const valueCurrency = get("valueCurrency").toUpperCase() || null;
+  const valuePeriod = get("valuePeriod") || null;
+  const valueDate = get("valueDate") || null;
+  if ((valueNumber !== null && !Number.isFinite(valueNumber)) || (valueCurrency && !currencyPattern.test(valueCurrency))
+    || (valuePeriod && !(valuePeriods as readonly string[]).includes(valuePeriod)) || (valueDate && !/^\d{4}-\d{2}-\d{2}$/.test(valueDate))) return null;
+  return { valueNumber, valueCurrency, valuePeriod, valueDate };
+}
+const hasStructured = (v: Structured) => v.valueNumber !== null || !!v.valueCurrency || !!v.valuePeriod || !!v.valueDate;
+const formReader = (form: FormData) => (key: string) => typeof form.get(key) === "string" ? String(form.get(key)).trim() : "";
+
 export async function proposeFact(_: FactState, form: FormData): Promise<FactState> {
   // Messages in the editor\'s interface language (lib/i18n).
   const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("facts.propose");
-    const get = (key: string) => typeof form.get(key) === "string" ? String(form.get(key)).trim() : "";
+    const get = formReader(form);
     // Slice 5/6a: optional link to ONE entity, encoded as "programme:<uuid>",
     // "university:<uuid>" or "immigration_rule:<uuid>" by a single select so
     // two links cannot be sent at once.
@@ -26,16 +45,9 @@ export async function proposeFact(_: FactState, form: FormData): Promise<FactSta
     // whether the number is in the excerpt.
     const factType = get("factType");
     if (factType && !uuidPattern.test(factType)) return {error:factError("facts_invalid", locale)};
-    const rawNumber = get("valueNumber").replace(",", ".");
-    const valueNumber = rawNumber === "" ? null : Number(rawNumber);
-    const valueCurrency = get("valueCurrency").toUpperCase() || null;
-    const valuePeriod = get("valuePeriod") || null;
-    const valueDate = get("valueDate") || null;
-    if ((valueNumber !== null && !Number.isFinite(valueNumber)) || (valueCurrency && !currencyPattern.test(valueCurrency))
-      || (valuePeriod && !(valuePeriods as readonly string[]).includes(valuePeriod)) || (valueDate && !/^\d{4}-\d{2}-\d{2}$/.test(valueDate))
-      || (!factType && (valueNumber !== null || valueCurrency || valuePeriod || valueDate))) {
-      return {error:factError("facts_type_value_invalid", locale)};
-    }
+    const structured = readStructured(get);
+    if (!structured || (!factType && hasStructured(structured))) return {error:factError("facts_type_value_invalid", locale)};
+    const { valueNumber, valueCurrency, valuePeriod, valueDate } = structured;
     if (period && !isReferencePeriod(period)) return {error:factError("facts_invalid_period", locale)};
     const { error } = await client.rpc("propose_fact", {
       p_document:get("document"),p_topic:get("topic"),p_subject:get("subject"),
@@ -75,4 +87,26 @@ export async function resolveSourceChange(_: FactState, form: FormData): Promise
     revalidatePath("/facts/workspace"); revalidatePath("/facts");
     return {message:decision==="revalidated"?dict.factsWorkspace.messages.revalidated:dict.factsWorkspace.messages.withdrawn};
   } catch(e) { logAccessError("resolve_source_change"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
+}
+// L4 (Q3): a reviewer sets, changes or removes the type and structured value
+// of a proposed fact. set_fact_type() re-checks everything and records it.
+export async function setFactType(_: FactState, form: FormData): Promise<FactState> {
+  const [locale, dict] = [await getLocale(), await getDictionary()];
+  try {
+    const { client } = await requirePermission("facts.review");
+    const get = formReader(form);
+    const fact = get("fact"), factType = get("factType");
+    if (!uuidPattern.test(fact) || (factType && !uuidPattern.test(factType))) return {error:factError("facts_invalid", locale)};
+    const structured = readStructured(get);
+    if (!structured || (!factType && hasStructured(structured))) return {error:factError("facts_type_value_invalid", locale)};
+    const note = get("note");
+    if (note.length > 1000) return {error:factError("facts_invalid", locale)};
+    const { error } = await client.rpc("set_fact_type", {
+      p_fact: fact, p_fact_type: factType || null, p_value_number: structured.valueNumber, p_value_currency: structured.valueCurrency,
+      p_value_period: structured.valuePeriod, p_value_date: structured.valueDate, p_note: note || null,
+    });
+    if (error) throw new Error(error.message);
+    revalidatePath("/facts/workspace");
+    return { message: dict.factsWorkspace.messages.typeSaved };
+  } catch (e) { logAccessError("set_fact_type"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }

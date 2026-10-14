@@ -2083,3 +2083,30 @@ University page was rejected for exactly this. Owner decision (option 2):
   comparison remain possible where the number exists.
 - Both types fill the "Duration" slot of the programme page
   (`slotAlsoFilledBy` in `lib/education/programme-slots.ts`).
+
+### 2026-10-14 — L4: flexible facts — fact type and structured value are additions, not conditions (approved)
+
+Plan: `docs/architecture/flexible-facts-plan.md`. After three AI runs on one
+Stockholm University page needed two prompt changes and a new fact type, the
+owner asked for a design that does not need fixing for every new website, and
+approved the plan as proposed ("đồng ý tất cả"):
+
+- Q1: a typed fact may have **no** structured value; when it has one it must
+  be complete for its kind and its number (or date year) must be in the
+  excerpt (D3 unchanged).
+- Q2: replaces the L3c rule "a typed candidate that fails is recorded as
+  invalid". Grounding failures (excerpt not in the page, numbers of the
+  verbatim value not in the excerpt, topic, lengths, dates, country conflict,
+  duplicates, limit) still make the candidate invalid. A wrong fact type or
+  structured value only drops that part; the fact is proposed with a visible
+  note of every adjustment (editors only).
+- Q3: a reviewer (`facts.review`) may set, change or remove the fact type and
+  structured value of a **proposed** fact; checked like a manual entry and
+  recorded append-only. Reviewed facts are not changed in place (withdraw /
+  replace, feature 6 of the Study Abroad additions). The verbatim value,
+  excerpt, document and linked entity are never editable.
+- Q4: `programme_duration_text` is retired after L4c.
+- Q5: the pending SU "two years" proposal waits for the new review screen.
+
+Phasing: L4a database → L4b review screen → L4c prompt `extract-v5`, docs,
+clean-up.
