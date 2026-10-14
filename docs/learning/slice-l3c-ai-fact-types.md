@@ -74,6 +74,22 @@ người duyệt → hàng chờ duyệt như mọi đề xuất AI
 - `page_key`, `document_entity` không mở cho `anon`/`authenticated`.
 - Thông tin AI vẫn `proposed`, ẩn đến khi người duyệt đồng ý.
 
+## Cập nhật extract-v4 (2026-10-14)
+
+Lần chạy thật đầu tiên trên trang chương trình Stockholm University (Gemini flash-lite):
+
+- Mô hình chỉ trả về **1 ứng viên**, dù trang nêu rõ yêu cầu bằng đầu vào, tiếng Anh, kỳ nộp hồ sơ.
+- Ứng viên đó là `programme_duration = 24` (tháng), lấy từ câu "takes two years". Database từ chối
+  ("Number 24 not found in the excerpt"), đúng quy tắc D3: 24 là phép tính, trang không ghi số đó.
+
+Prompt `extract-v4` thêm hai quy tắc:
+
+1. rà **từng loại** trong danh sách và đề xuất mỗi loại trang có nêu;
+2. con số cấu trúc phải được **viết bằng chữ số** trong trích đoạn; nếu trang viết bằng chữ
+   ("two years") hoặc khác đơn vị của loại, **không đổi**, để trống loại và giữ nguyên văn.
+
+`PROMPT_VERSION` được ghi vào mỗi lần chạy, nên so được kết quả v3 với v4 trong `/admin/extraction`.
+
 ## Lỗi thường gặp
 
 - Chương trình chưa **duyệt** → trang không khớp → AI chỉ được dùng loại cấp quốc gia.

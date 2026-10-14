@@ -1913,3 +1913,173 @@ Rejected alternatives: country types only (tuition, deadlines, IELTS would
 stay manual); choosing the programme while reviewing (would edit proposals
 in place).
 
+
+### 2026-10-14 — Additions adopted from the "Study Abroad" document set (added at the owner's request)
+
+Source: the 13 documents in `documents/New_documents/` (Product Discovery,
+User Research, Problem & Opportunity, Scope & MVP, PRD v0.1, Access Control
+v0.1, IA, User Flows, Wireframes, Design System, Hi-Fi UI, Decision Log &
+UI Readiness, Delivery Planning v1.1), all dated 2026-10-14. Comparison with
+the code: `docs/product/new-documents-gap-review.md`.
+
+The owner asked to add to this spec what those documents contribute to the
+current system. **Status:** the items below are part of the product
+direction. Each feature still gets its own plan (schema, sources, privacy,
+RLS) and owner approval before any code, as for every slice. Conflicts with
+the current system are listed under "Open decisions" and are **not** decided
+here. Nothing below relaxes AGENTS.md: no invented data, no automatic
+currency conversion without a registered rate source, no AI decisions.
+
+**Product framing (adopted)**
+
+- Primary audience: people in Vietnam researching study (and work) in
+  Europe; Vietnamese first, English kept.
+- Core visitor journey: **find → check the source → compare → estimate the
+  budget → plan the steps**, usable without an account; an account is needed
+  only to save (matches Slice 8 and the 2026-10-07 plan dashboard).
+- Problem statements P01–P05 and opportunities O01–O06 of the Problem &
+  Opportunity document are the "why" used to prioritise. Their evidence is
+  secondary research (IDP/ICEF surveys) and individual public posts: it is
+  not representative of Vietnamese users and is not used as product data.
+  Those research URLs are not registered as sources.
+
+**New features (proposed slices; plan + approval each)**
+
+1. *Compare two programmes side by side* (PRD FR-03). Public. Up to two
+   reviewed programmes; rows are their fact types (tuition, deadline,
+   duration, IELTS/TOEFL, prior degree, language). A missing value reads
+   "unknown", never 0; different currencies or periods are shown as stated,
+   never converted or scored. Keeps the existing country comparison.
+2. *Budget estimator* (FR-04, BR03; extends block 2 of the 2026-10-07 plan
+   dashboard). Guests can calculate in the browser; nothing financial is sent
+   to the server or to analytics until the user signs in and saves (owner-only
+   RLS, like `user_plans`). Lines: tuition, living costs, housing, insurance,
+   travel, one-off fees, contingency (separate and editable), duration, and
+   funds available; result = total and gap, with the formula visible. A line
+   may be pre-filled only from a reviewed fact, shown with its source and date;
+   everything else is labelled as the user's own estimate. Each line shows its
+   currency and unit (per month / year / one-off). No scholarship or
+   part-time income is assumed. It is labelled a planning estimate, not
+   financial advice or proof of visa funds.
+3. *Exchange rates* (DEC-003). Only from an exchange-rate source registered
+   and verified in the Source Registry, refreshed by a scheduled job. The
+   display always shows the original amount and currency, the rate, the
+   provider and the rate date; a failed refresh shows the rate as out of date.
+   Nothing is ever converted silently. **Blocked** until the owner chooses the
+   source (open decision O4).
+4. *Plan checklist* (FR-05). Owner-only tasks in a research project or the
+   plan: title, due date, status, note, order; deleting asks for confirmation.
+   Tasks the user writes are labelled as their own milestones. A task may link
+   to a reviewed deadline fact (block 3 of the plan dashboard), which keeps its
+   source.
+5. *Report incorrect information* (FR-06, ACL-09). Public form with the page
+   pre-filled, a category (outdated, wrong, broken link, other), a description
+   and an optional evidence URL. It asks for no personal data and is
+   rate-limited. A report becomes a ticket (`new → triaged → resolved |
+   dismissed`) handled by a permission-holder. A report never edits published
+   content: a correction is a new proposal reviewed as usual. Reporters are
+   never shown publicly. How anonymous writes are rate-limited without a new
+   SaaS is part of the plan.
+6. *Withdraw / replace a reviewed fact* (ACL workflow, AGENTS.md §4.3). A
+   reviewer may withdraw a reviewed fact with a reason (hidden publicly, kept
+   with its history), or mark it replaced by a newer reviewed fact. Decisions
+   are append-only, as in 11b classifications.
+7. *Programme filters* (FR-01): field of study / career path (Slice 11c) and
+   tuition range, using typed tuition facts only and comparing within one
+   currency and period.
+
+**Operations and quality rules (adopted)**
+
+- *Review cadence by kind of data* (DEC-003), used to flag "due for review"
+  in admin and "may be out of date" publicly when overdue (§10, §12):
+  tuition — each academic year and on official change; living costs —
+  quarterly; visa fees and maintenance funds — monthly and on official
+  change; exchange rates — daily. The cadence is a reminder for the reviewer,
+  never an automatic change of a fact.
+- *Required UX states* on every page and form (User Flows §5): loading
+  (no double submit), empty with one recovery action, inline validation that
+  keeps what was typed, sign-in needed, not allowed (without revealing whose
+  data it is), changed by someone else (reload), out-of-date source, network
+  error with safe retry. These extend §17 Definition of Done.
+- *Accessibility target:* WCAG 2.2 AA — visible focus, full keyboard use,
+  labelled fields, 44 × 44 px touch targets, reduced motion respected,
+  usable at 200 % zoom. Glass or decorative effects never sit under body text
+  or data.
+- *Security acceptance tests* SEC-01…SEC-14 of the Access Control document
+  become a checklist. Already covered: owner isolation, owner taken from the
+  session, drafts never public, concurrent review. To add: a disabled account
+  with an old session, a signed-out session, audit records cannot be edited,
+  and self-review once a second reviewer exists (open decision O3).
+- *Continuous integration:* typecheck, lint and tests run on every push
+  (GitHub Actions), in addition to the Vercel build.
+- *Disclaimer* on policy and cost pages: "For reference only; check the
+  official source before applying."
+- *Analytics:* none of the profile or budget inputs is ever tracked. Usage
+  events are added only after a privacy decision, with no new third-party
+  service. Success measures (task completion, source opened, coverage of
+  sourced fields) are measured in usability tests and from the database, not
+  by tracking individuals.
+- *Usability testing:* 5–8 people per round on the priority tasks (find a
+  programme, check a source, compare, estimate a budget, add a task) before a
+  layout is locked; findings are recorded.
+
+**Not adopted (with reason)**
+
+- Next.js vs NestJS spike (ADR-001): the stack is already decided and running
+  (§3, AGENTS.md §3); ADR-001 option A is the current architecture.
+- Fixed role ladder with Super Admin: the configurable RBAC already covers
+  Editor/Reviewer/Admin. Re-authentication and MFA for administrators stay an
+  open item (O6), not a new role.
+- A separate DRAFT → IN_REVIEW → APPROVED → PUBLISHED revision workflow: the
+  existing "proposed → reviewed / rejected / conflicted" with append-only
+  reviews already means "nothing is public before review"; only withdraw /
+  replace (feature 6) is added.
+- URL renames (`/explore`, `/programs/:slug`, `/cms/*`): current routes stay.
+- Liquid Glass / iridescent visual direction: optional refinement of header
+  and hero in a later design pass. The current design system
+  (2026-09-23 entry) stays.
+- Guest plans stored in the browser: DEC-002 already requires sign-in to save.
+
+**Open decisions (not decided; owner to choose)**
+
+- O1 — MVP countries: the documents list Sweden, Netherlands, Finland,
+  **France, Germany**; the system has Sweden, **Denmark**, Finland,
+  **Norway**, Netherlands. Adding a country needs registered, verified
+  official sources before any data.
+- O2 — Scope of work / labour-market pages: the documents cover study only
+  ("job forecasts" are out of scope); the system has immigration and labour
+  modules. Proposed: keep immigration (budgets and permits need it); the owner
+  decides whether labour stays visible.
+- O3 — Self-review: the documents forbid approving one's own proposal; with
+  a single reviewer that would block all review. Proposed: an explicit
+  exception while there is one reviewer, enforced by configuration once a
+  second reviewer joins.
+- O4 — Exchange-rate source and conversion to VND.
+- O5 — Which document set is the baseline: PRD and Access Control are marked
+  "draft", while IA, User Flows, Wireframes and the UI Decision Log say
+  "approved by the PO".
+- O6 — Re-authentication / MFA for administrators; session lengths.
+- O7 — How long a guest's unsaved budget is kept while they sign in, and the
+  privacy notice for it.
+
+**Proposed order** (owner may change): CI → compare two programmes → budget
+estimator without exchange rates → plan checklist → report incorrect
+information → withdraw / replace → filters (with 11c) → exchange rates
+(after O4) → saved budget scenarios. Each step follows the Sweden + Master's
+in IT content focus of 2026-10-13.
+
+### 2026-10-14 — Programme length as stated: a verbatim text type (option 2)
+
+The numeric `programme_duration` (months) can only be filled when the page
+writes the number of months in digits: "two years" would need a conversion,
+which the excerpt rule (L3 D3) refuses — the first real AI run on a Stockholm
+University page was rejected for exactly this. Owner decision (option 2):
+
+- A second fact type `programme_duration_text` (kind *text*, applies to
+  programmes) holds the length **verbatim** as the page states it (e.g. "two
+  years, half-time, online"). It is entered by the owner in the fact-types
+  admin page like the other types.
+- The numeric type stays for pages that state months, so filtering and
+  comparison remain possible where the number exists.
+- Both types fill the "Duration" slot of the programme page
+  (`slotAlsoFilledBy` in `lib/education/programme-slots.ts`).

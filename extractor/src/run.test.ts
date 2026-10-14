@@ -32,7 +32,7 @@ it("proposes every candidate, records a per-document summary and caps documents 
     return { content: { candidates: [candidate("a"), candidate("bad")] }, inputTokens: 1, outputTokens: 1 };
   } };
   await runExtraction({ db, llm, trigger: "manual", maxDocuments: 99, delayMs: 0, log: () => {} });
-  expect(calls[0]).toBe("start manual p m extract-v3");
+  expect(calls[0]).toBe("start manual p m extract-v4");
   expect(calls[1]).toBe("claim 10");
   // The page's allowed fact types reach the schema, so the model cannot invent a key.
   expect(calls[2]).toBe("types r1");

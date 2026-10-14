@@ -10,6 +10,16 @@ export const programmeSlotKeys = [
 ] as const;
 export type ProgrammeSlotKey = (typeof programmeSlotKeys)[number];
 
+/**
+ * Extra fact types that also fill a slot (owner decision 2026-10-14, option 2):
+ * most pages state the length in words ("two years"), which the numeric
+ * programme_duration (months) cannot hold without converting, so a verbatim
+ * text type fills the same "Duration" slot alongside it.
+ */
+export const slotAlsoFilledBy: Partial<Record<ProgrammeSlotKey, readonly string[]>> = {
+  programme_duration: ["programme_duration_text"],
+};
+
 type SlotFact = { fact_types?: { key?: string } | null; deadline_type?: string | null };
 
 /**
@@ -24,7 +34,7 @@ export function programmeSlots<T extends SlotFact>(facts: readonly T[]) {
   const others: T[] = [];
   for (const fact of facts) {
     const key = fact.fact_types?.key ?? (fact.deadline_type ? "application_deadline" : null);
-    const slot = slots.find((s) => s.key === key);
+    const slot = slots.find((s) => s.key === key || (key !== null && slotAlsoFilledBy[s.key]?.includes(key)));
     if (slot) slot.facts.push(fact); else others.push(fact);
   }
   return { slots, others };

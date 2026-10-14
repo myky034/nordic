@@ -23,6 +23,9 @@ it("lists the page's fact types with their definitions, or tells the model to le
   const [typed] = buildMessages(doc, [], [ielts]);
   expect(typed.content).toContain("- min_ielts_overall (number; usual unit band; allowed range 0–9): Minimum IELTS overall. Lowest accepted IELTS Academic overall band.");
   expect(typed.content).toContain("set fact_type to '' instead of guessing");
+  // extract-v4: every type is checked; spelled-out or converted numbers stay untyped.
+  expect(typed.content).toContain("ONE BY ONE");
+  expect(typed.content).toContain("do NOT convert");
   const [untyped] = buildMessages(doc, []);
   expect(untyped.content).toContain("fact_type, value_number, value_currency, value_period, value_date: always ''");
   expect(candidateSchemaFor(["min_ielts_overall"]).properties.candidates.items.properties.fact_type.enum).toEqual(["", "min_ielts_overall"]);

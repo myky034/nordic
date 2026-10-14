@@ -18,3 +18,8 @@ it("counts an untyped deadline (rolling, fixed, year-round) as the deadline slot
   expect(slots.find((s) => s.key === "application_deadline")!.facts.map((f) => f.id)).toEqual(["r"]);
   expect(others).toEqual([]);
 });
+it("fills the duration slot from the numeric type and the verbatim text type alike", () => {
+  const { slots, others } = programmeSlots([fact("m", "programme_duration"), fact("t", "programme_duration_text")]);
+  expect(slots.find((s) => s.key === "programme_duration")!.facts.map((f) => f.id)).toEqual(["m", "t"]);
+  expect(others).toEqual([]);
+});
