@@ -2110,3 +2110,33 @@ approved the plan as proposed ("đồng ý tất cả"):
 
 Phasing: L4a database → L4b review screen → L4c prompt `extract-v5`, docs,
 clean-up.
+
+### 2026-10-14 — L5: "map facts" screen for crawled pages, phase 1 (approved)
+
+Plan: `docs/architecture/mapping-screen-plan.md`. Each university structures
+its pages differently, so instead of one template the owner wants an
+intermediate screen to map page content to facts. Approved as proposed
+("đồng ý tất cả", Q1–Q6):
+
+- Q1: editor screen `/facts/map/[document]` (page text on the left, the
+  facts the page should have on the right), reached from the document page,
+  the review card and the programme page.
+- Q2: the programme page's "key information" slots grow to eight (tuition;
+  deadline / application period; duration; credits; study mode; teaching
+  language; English requirement; prior degree), shared by the public page and
+  the mapping checklist.
+- Q3: one duplicate rule for AI and manual proposals on the same document:
+  same subject+predicate+value, or same value with the same (or no) fact type,
+  or the same fact type with one excerpt containing the other. Manual
+  duplicates are refused with a link to the existing fact.
+- Q4: a manual proposal's excerpt must be in the document's crawled text when
+  the document has one (the anti-fabrication rule now applies to every path).
+- Q5: topic, subject, predicate and country are pre-filled from the fact type
+  and the linked entity, editable.
+- Q6: approve / reject on the mapping screen with the same rules as the
+  review queue.
+
+O3 (self-review with a single reviewer) stays **pending**; the current
+behaviour is unchanged and the screen adds no "map and approve" shortcut.
+Phase 2 (saving mappings as per-source rules) and JavaScript rendering
+(Playwright) are separate, later plans.

@@ -46,13 +46,13 @@ export function ProposalForm({documents,countries,selected,entities=[],metrics=[
  <button disabled={pending || !documents.length} className={buttonPrimary}>{pending?e.saving:e.saveProposal}</button>
  </form></Card>;
 }
-type StructuredDefaults={value_number?:number|string|null;value_currency?:string|null;value_period?:string|null;value_date?:string|null};
+export type StructuredDefaults={value_number?:number|string|null;value_currency?:string|null;value_period?:string|null;value_date?:string|null};
 /**
  * The structured fields for a chosen type (L3a). L4 Q1: all optional — the
  * fact needs only its verbatim value; a number is entered only when the
  * excerpt writes it in digits. The database checks completeness and the excerpt.
  */
-function StructuredFields({type,locale,defaults={}}:{type:FormFactType;locale:Locale;defaults?:StructuredDefaults}) {
+export function StructuredFields({type,locale,defaults={}}:{type:FormFactType;locale:Locale;defaults?:StructuredDefaults}) {
  const t=dictionaries[locale].factsWorkspace.form;
  return <div className="space-y-4 rounded-xl bg-fill/50 p-4">
   <p className="text-[14px] leading-relaxed text-ink-2"><span className="font-medium text-ink">{t.typeDefinition}:</span> {type.definition}</p>

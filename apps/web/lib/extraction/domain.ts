@@ -76,6 +76,7 @@ const reasonRules: [RegExp, (m: RegExpMatchArray) => string][] = [
   [/^Unknown country$/, () => "Quốc gia không có trong hệ thống."],
   [/^Missing or too long subject\/predicate\/value\/unit$/, () => "Thiếu hoặc quá dài: đối tượng, thuộc tính, giá trị hoặc đơn vị."],
   [/^Same subject, predicate and value already proposed/, () => "Đã có đề xuất cùng đối tượng, thuộc tính và giá trị cho tài liệu này."],
+  [/^Already proposed for this document/, () => "Tài liệu này đã có thông tin giống vậy (cùng giá trị, hoặc cùng loại và cùng câu trích)."],
   [/^More than 30 proposals/, () => "Vượt giới hạn 30 đề xuất cho một tài liệu."],
   [/^Dates must be YYYY-MM-DD$/, () => "Ngày phải có dạng YYYY-MM-DD."],
   [/^Dates must be real calendar dates$/, () => "Ngày không tồn tại trên lịch."],

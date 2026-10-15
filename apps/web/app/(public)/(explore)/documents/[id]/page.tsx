@@ -31,7 +31,8 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
     <PageHeader back={<BackLink href="/documents">{t.back}</BackLink>} eyebrow={t.eyebrow}
       title={<span className="break-words">{document.title ?? c.untitledDocument}</span>}
       description={internal ? <div className="flex flex-wrap gap-2 pt-1"><Badge>{t.savedBadge}</Badge></div> : undefined}
-      actions={canPropose ? <Link href={`/facts/workspace?document=${id}`} className={buttonPrimary}>{t.addFact}</Link> : undefined} />
+      actions={canPropose ? <><Link href={`/facts/map/${id}`} className={buttonPrimary}>{dict.factMap.entry}</Link>
+        <Link href={`/facts/workspace?document=${id}`} className={`${textLink} text-[15px]`}>{t.addFact}</Link></> : undefined} />
     {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>{t.openOriginal(url)}</ExternalLink></p>}
     <DescriptionList items={[
       [t.source, sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],

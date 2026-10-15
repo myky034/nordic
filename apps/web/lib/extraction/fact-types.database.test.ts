@@ -111,9 +111,15 @@ it("stores a typed proposal linked to the page's programme, its country and the 
 // L4 Q2 (Decision Log 2026-10-14): a wrong fact type or structured value is
 // dropped and noted; the grounded fact itself is still proposed.
 it("keeps the fact when its type or structured value is wrong, dropping only that part with a note", async () => {
+  // Each case is judged alone: the previous case's fact is rejected afterwards,
+  // since the same value or type + excerpt would otherwise be a duplicate (L5).
+  let n = 0;
+  // Earlier tests left typed proposals from the same sentences on these pages.
+  await db.query("UPDATE facts SET status='rejected' WHERE origin='ai'");
   const check = async (doc: Doc, change: object) => {
-    const r = await propose(doc, { ...tuition, predicate: `tuition ${Math.random()}`, ...change });
+    const r = await propose(doc, { ...tuition, predicate: `tuition ${Math.random()}`, value: `${tuition.value}, case ${"abcdefghijklmnop"[n++]}`, ...change });
     expect(r.outcome).toBe("proposed");
+    await db.query("UPDATE facts SET status='rejected' WHERE id=$1", [r.fact_id]);
     const fact = (await db.query<{ key: string | null; value_number: string | null; value_currency: string | null; value_period: string | null }>(
       "SELECT t.key, f.value_number, f.value_currency, f.value_period FROM facts f LEFT JOIN fact_types t ON t.id=f.fact_type_id WHERE f.id=$1", [r.fact_id])).rows[0];
     const item = (await db.query<{ adjustments: string[] }>("SELECT adjustments FROM extraction_items WHERE fact_id=$1", [r.fact_id])).rows[0];
@@ -169,7 +175,8 @@ it("lets a reviewer set the type of a proposed fact, with the same checks and an
     await db.exec(`SET SESSION AUTHORIZATION ${user ? "authenticated" : "anon"}`);
     try { return await fn(); } finally { await db.exec("SET SESSION AUTHORIZATION postgres; RESET ROLE"); }
   };
-  const fact = (await propose("programmeDoc", { ...tuition, predicate: "fee as stated", fact_type: "", value_number: "", value_currency: "", value_period: "" })).fact_id!;
+  const fact = (await propose("programmeDoc", { ...tuition, predicate: "fee as stated", value: "SEK 145 000 per academic year, as stated",
+    fact_type: "", value_number: "", value_currency: "", value_period: "" })).fact_id!;
   const set = (user: string | null, type: string | null, num: number | null = null, cur: string | null = null, per: string | null = null) =>
     as(user, () => db.query("SELECT set_fact_type($1,$2,$3,$4,$5,null,'synthetic note')", [fact, type, num, cur, per]));
   await set(admin, ids.tuition);
@@ -195,4 +202,41 @@ it("lets a reviewer set the type of a proposed fact, with the same checks and an
   // After the decision the type is fixed (withdraw / replace instead).
   await as(admin, () => db.query("SELECT review_fact($1,'reviewed','synthetic review')", [fact]));
   await expect(set(admin, null)).rejects.toThrow("facts_already_decided");
+});
+// L5a (Decision Log 2026-10-14, Q3/Q4; KHLOE-155).
+it("applies one duplicate rule to AI and manual proposals, and grounds manual excerpts in the page text", async () => {
+  const as = async <T>(user: string | null, fn: () => Promise<T>) => {
+    await db.query("SELECT set_config('request.jwt.claim.sub',$1,false)", [user ?? ""]);
+    await db.exec(`SET SESSION AUTHORIZATION ${user ? "authenticated" : "anon"}`);
+    try { return await fn(); } finally { await db.exec("SET SESSION AUTHORIZATION postgres; RESET ROLE"); }
+  };
+  const deadline = "Application deadline: 15 January 2027.";
+  const manual = (value: string, excerpt: string, type: string | null = null) => as(admin, () => db.query(
+    "SELECT propose_fact($1,'deadline','MSc Synthetic',$2,$3,null,null,null,null,$4,null,$5,null,null,null,null,$6)",
+    [ids.programmeDoc, `deadline ${Math.random()}`, value, excerpt, ids.programme, type]));
+  // Q4: the excerpt must be in the crawled text of the page.
+  await expect(manual("15 January 2027", "Application deadline: 15 February 2027.")).rejects.toThrow("facts_excerpt_not_in_document");
+  await manual("15 January 2027", deadline, ids.deadline);
+  // Q3 (b): same value, other wording of the property, no type → duplicate.
+  await expect(manual("15 January 2027", deadline)).rejects.toThrow("facts_duplicate");
+  // Q3 (c): same type and an excerpt inside the earlier one → duplicate, for the AI too.
+  const ai = await propose("programmeDoc", { ...tuition, topic: "deadline", predicate: "closing date", value: "15 January",
+    excerpt: "Application deadline: 15 January 2027", fact_type: "application_deadline", value_number: "", value_currency: "", value_period: "", value_date: "" });
+  expect(ai).toMatchObject({ outcome: "duplicate", reason: "Already proposed for this document (same value or same type and excerpt)" });
+  // A rejected fact is no longer a duplicate.
+  await db.query("UPDATE facts SET status='rejected' WHERE value='15 January 2027' AND document_id=$1", [ids.programmeDoc]);
+  await manual("15 January 2027", deadline);
+});
+it("tells editors which entity a page belongs to, and nobody else", async () => {
+  const as = async <T>(user: string | null, fn: () => Promise<T>) => {
+    await db.query("SELECT set_config('request.jwt.claim.sub',$1,false)", [user ?? ""]);
+    await db.exec(`SET SESSION AUTHORIZATION ${user ? "authenticated" : "anon"}`);
+    try { return await fn(); } finally { await db.exec("SET SESSION AUTHORIZATION postgres; RESET ROLE"); }
+  };
+  const rows = (await as(admin, () => db.query("SELECT * FROM editor_document_entity($1)", [ids.programmeDoc]))).rows;
+  expect(rows).toEqual([{ kind: "programme", entity_id: ids.programme, name: "MSc Synthetic", country_id: ids.sweden }]);
+  await expect(as(null, () => db.query("SELECT * FROM editor_document_entity($1)", [ids.programmeDoc]))).rejects.toThrow(/permission denied/);
+  const outsider = "44444444-4444-4444-8444-444444444444";
+  await db.query("INSERT INTO auth.users(id,email_confirmed_at) VALUES($1,now())", [outsider]);
+  await expect(as(outsider, () => db.query("SELECT * FROM editor_document_entity($1)", [ids.programmeDoc]))).rejects.toThrow("facts_forbidden");
 });

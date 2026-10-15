@@ -4,20 +4,28 @@
 // and which reviewed facts fill each slot. A slot with no fact is shown as
 // "not available yet — see the official page"; nothing is estimated.
 
-/** Fact type keys, in the order visitors ask about them (docs/architecture/fact-types-plan.md §6). */
+/**
+ * Fact type keys, in the order visitors ask about them (fact-types-plan.md §6;
+ * eight slots since L5 Q2, 2026-10-14). The same list is the "should have"
+ * checklist of the mapping screen (lib/facts/mapping.ts).
+ */
 export const programmeSlotKeys = [
-  "tuition_fee", "application_deadline", "programme_duration", "min_ielts_overall", "min_toefl_ibt", "prior_degree_requirement",
+  "tuition_fee", "application_deadline", "programme_duration", "programme_credits", "study_mode", "teaching_language",
+  "english_requirement", "prior_degree_requirement",
 ] as const;
 export type ProgrammeSlotKey = (typeof programmeSlotKeys)[number];
 
 /**
- * Extra fact types that also fill a slot (owner decision 2026-10-14, option 2):
- * most pages state the length in words ("two years"), which the numeric
- * programme_duration (months) cannot hold without converting, so a verbatim
- * text type fills the same "Duration" slot alongside it.
+ * Extra fact types that also fill a slot. A slot answers one visitor question
+ * ("when can I apply?", "which English do I need?") whichever way the page
+ * states it: an exact date or a period, IELTS / TOEFL or a national level.
+ * programme_duration_text (2026-10-14, retired after L4) keeps filling
+ * "Duration" for facts typed with it.
  */
 export const slotAlsoFilledBy: Partial<Record<ProgrammeSlotKey, readonly string[]>> = {
+  application_deadline: ["application_period"],
   programme_duration: ["programme_duration_text"],
+  english_requirement: ["min_ielts_overall", "min_toefl_ibt"],
 };
 
 type SlotFact = { fact_types?: { key?: string } | null; deadline_type?: string | null };

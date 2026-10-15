@@ -40,7 +40,7 @@ it("leads with the official page and the university's description, and lists wha
   results.push({ data: programme, error: null }, { data: [], error: null }, { data: [{ key: "tuition_fee", label_vi: "Học phí (loại)", label_en: "Tuition (type)" }], error: null });
   const html = renderToStaticMarkup(await ProgrammePage({ params: Promise.resolve({ id }), searchParams: Promise.resolve({}) }));
   for (const text of ["Synthetic Programme", "Synthetic University", "Mở trang chương trình chính thức", "Synthetic excerpt.", "Synthetic source", "Tổ chức", "2026-09-19", "Nguồn không nêu",
-    "Thông tin chính", "Học phí (loại)", "Hạn nộp hồ sơ", "IELTS tối thiểu", "Chưa có", "xem trên trang chính thức"]) expect(html).toContain(text);
+    "Thông tin chính", "Học phí (loại)", "Hạn / đợt nộp hồ sơ", "Yêu cầu tiếng Anh", "Hình thức học", "Số tín chỉ", "Chưa có", "xem trên trang chính thức"]) expect(html).toContain(text);
   // The description comes before the checklist, which comes before the summary.
   expect(html.indexOf("Synthetic excerpt.")).toBeLessThan(html.indexOf("Thông tin chính"));
   expect(html.indexOf("Thông tin chính")).toBeLessThan(html.indexOf("Tóm tắt"));

@@ -109,7 +109,9 @@ it("rejects fabricated or ungrounded candidates and records why", async () => {
 });
 it("caps proposals per document and closes the request and run with counts and tokens", async () => {
   // Two proposals exist already, so 28 more fit under the cap of 30.
-  for (let i = 0; i < 28; i++) expect((await propose({ ...good, predicate: `synthetic predicate ${i}` })).outcome).toBe("proposed");
+  // Distinct values: the same value twice is a duplicate (L5 shared rule).
+  const tag = (i: number) => String.fromCharCode(97 + (i % 26)).repeat(1 + Math.floor(i / 26));
+  for (let i = 0; i < 28; i++) expect((await propose({ ...good, predicate: `synthetic predicate ${i}`, value: `${good.value}, case ${tag(i)}` })).outcome).toBe("proposed");
   expect((await propose({ ...good, predicate: "one too many" })).outcome).toBe("limit");
   await worker(() => db.query("SELECT extractor_finish_request($1,$2,'done','ok',1200,300,true)", [run, request]));
   const counts = (await worker(() => db.query<{ c: Record<string, number> }>("SELECT extractor_finish_run($1,'succeeded',null) AS c", [run]))).rows[0].c;

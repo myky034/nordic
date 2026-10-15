@@ -48,6 +48,9 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
   const save = await savedState("programme", programme.id);
   // Crawl, AI and review-state labels are for editors only (lib/rbac/ui.ts).
   const internal = seesInternalDetails(await viewerPermissions());
+  // L5: editors get a shortcut to map facts from the crawled official page.
+  const mapDocument = internal ? (await client.from("documents").select("id").eq("canonical_url", programme.official_url)
+    .order("retrieved_at", { ascending: false }).limit(1)).data?.[0]?.id as string | undefined : undefined;
   const [locale, dict] = [await getLocale(), await getDictionary()];
   const [t, c] = [dict.programmes, dict.common];
   const { slots, others } = programmeSlots(facts);
@@ -57,7 +60,8 @@ export default async function ProgrammePage({ params }: PageProps<"/programmes/[
   return <>
     <PageHeader back={<BackLink href="/programmes">{t.back}</BackLink>}
       actions={<><a href={programme.official_url} target="_blank" rel="noopener noreferrer" className={buttonPrimary}>{t.openProgramme} ↗</a>
-        <SaveButton kind="programme" id={programme.id} signedIn={save.signedIn} initialSaved={save.saved} locale={locale} /></>}
+        <SaveButton kind="programme" id={programme.id} signedIn={save.signedIn} initialSaved={save.saved} locale={locale} />
+        {mapDocument && <Link href={`/facts/map/${mapDocument}`} className={`${textLink} text-[15px]`}>{dict.factMap.entry}</Link>}</>}
       eyebrow={<>{degreeLabel(programme.degree_type, locale)} · <Link href={`/countries/${uni.countries.slug}`} className="hover:underline">{countryName(uni.countries.slug, uni.countries.name, locale)}</Link></>}
       title={programme.name}
       description={<Link href={`/programmes?university=${uni.id}`} className={textLink}>{uni.name}</Link>} />

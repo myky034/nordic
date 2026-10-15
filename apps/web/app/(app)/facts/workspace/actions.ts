@@ -6,26 +6,7 @@ import { getDictionary, getLocale } from "@/lib/i18n/server";
 import { uuidPattern } from "@/lib/documents/domain";
 import { deadlineTypes } from "@/lib/education/domain";
 import { isReferencePeriod } from "@/lib/labour/domain";
-import { currencyPattern, valuePeriods } from "@/lib/compare/domain";
-type Structured = { valueNumber: number | null; valueCurrency: string | null; valuePeriod: string | null; valueDate: string | null };
-/**
- * Shape checks for the optional structured value (L3a, L4). Returns null when
- * a field is malformed; which fields a type needs, the range and the excerpt
- * check are decided by the database.
- */
-function readStructured(get: (key: string) => string): Structured | null {
-  const rawNumber = get("valueNumber").replace(",", ".");
-  const valueNumber = rawNumber === "" ? null : Number(rawNumber);
-  const valueCurrency = get("valueCurrency").toUpperCase() || null;
-  const valuePeriod = get("valuePeriod") || null;
-  const valueDate = get("valueDate") || null;
-  if ((valueNumber !== null && !Number.isFinite(valueNumber)) || (valueCurrency && !currencyPattern.test(valueCurrency))
-    || (valuePeriod && !(valuePeriods as readonly string[]).includes(valuePeriod)) || (valueDate && !/^\d{4}-\d{2}-\d{2}$/.test(valueDate))) return null;
-  return { valueNumber, valueCurrency, valuePeriod, valueDate };
-}
-const hasStructured = (v: Structured) => v.valueNumber !== null || !!v.valueCurrency || !!v.valuePeriod || !!v.valueDate;
-const formReader = (form: FormData) => (key: string) => typeof form.get(key) === "string" ? String(form.get(key)).trim() : "";
-
+import { formReader, hasStructured, readStructured } from "@/lib/facts/structured";
 export async function proposeFact(_: FactState, form: FormData): Promise<FactState> {
   // Messages in the editor\'s interface language (lib/i18n).
   const [locale, dict] = [await getLocale(), await getDictionary()];
@@ -69,7 +50,7 @@ export async function reviewFact(_: FactState, form: FormData): Promise<FactStat
       p_fact:form.get("fact"),p_decision:form.get("decision"),p_note:form.get("note"),p_related:form.get("related") || null,
     });
     if(error) throw new Error(error.message);
-    revalidatePath("/facts/workspace"); revalidatePath("/facts");
+    revalidatePath("/facts/workspace"); revalidatePath("/facts"); revalidatePath("/facts/map/[id]", "page");
     return {message:dict.editor.decisionRecorded};
   } catch(e) { logAccessError("review_fact"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }
@@ -106,7 +87,7 @@ export async function setFactType(_: FactState, form: FormData): Promise<FactSta
       p_value_period: structured.valuePeriod, p_value_date: structured.valueDate, p_note: note || null,
     });
     if (error) throw new Error(error.message);
-    revalidatePath("/facts/workspace");
+    revalidatePath("/facts/workspace"); revalidatePath("/facts/map/[id]", "page");
     return { message: dict.factsWorkspace.messages.typeSaved };
   } catch (e) { logAccessError("set_fact_type"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }

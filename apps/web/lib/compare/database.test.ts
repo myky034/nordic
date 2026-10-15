@@ -92,9 +92,12 @@ it("checks a typed fact's structured value, entity and excerpt; untyped facts st
   await propose();
   // L4 Q1: a typed fact may have no structured value at all ("about SEK 12 300"
   // read by a reviewer later), but never half of one (checked above).
-  await propose({ num: null, cur: null, per: null, value: "around SEK 12 300 per month" });
+  await propose({ num: null, cur: null, per: null, value: "around SEK 12 300 per month", excerpt: "Students need around SEK 12 300 per month." });
+  // L5 Q3: the same claim twice is refused (same value, or same type + excerpt).
+  await expect(propose()).rejects.toThrow("facts_duplicate");
+  await expect(propose({ value: "SEK 12 300 monthly" })).rejects.toThrow("facts_duplicate");
   // Untyped facts are unchanged.
-  await propose({ type: null, num: null, cur: null, per: null });
+  await propose({ type: null, num: null, cur: null, per: null, value: "SEK 12 300 per month, untyped" });
   await db.query("UPDATE fact_types SET active=false WHERE id=$1", [metric]);
   await expect(propose()).rejects.toThrow("facts_type_invalid");
   const rows = (await db.query<{ value: string; value_number: string; value_currency: string; value_period: string }>("SELECT value,value_number,value_currency,value_period FROM facts WHERE fact_type_id IS NOT NULL ORDER BY created_at")).rows;

@@ -149,6 +149,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
        nextHref={selection.nextId?withParams("/facts/workspace",params,{fact:selection.nextId}):null}/>
      <div className="space-y-4">
      <FactCard fact={current} internal locale={locale}/>
+     <p className="px-1"><Link href={`/facts/map/${current.document_id}`} className={`${textLink} text-[14px]`}>{dict.factMap.openToMap}</Link></p>
      <div className="space-y-3 px-1">
      <VisibilityNote visibility={visibility(current)} publicHref="/facts" locale={locale}/>
      <SamePageFacts current={current} others={siblings} locale={locale}/>
