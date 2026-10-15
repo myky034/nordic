@@ -1,11 +1,12 @@
 # PR 1 — Nội dung có cấu trúc, song song với văn bản (thiết kế bản 2, chờ duyệt)
 
 > **Trạng thái:** bản 2 **đã duyệt** (2026-10-15) và **đã code** trên nhánh `extraction/pr-1-structured-content`.
-> **Chưa hoàn thành:** chờ nghiệm thu KTH (`docs/architecture/pr1-real-world-results.md`). Linear: KHLOE-161.
+> **Nghiệm thu trang thật: ĐẠT 80/80** trên SU (HT2026, HT2027) và KTH (2 chương trình),
+> `docs/architecture/pr1-real-world-results.md`. Chờ review. Linear: KHLOE-161.
 > Khác bản thiết kế khi code: cặp lưu `labelPath` / `valuePath` (domPath) thay cho `labelRef` / `valueRef`;
 > thêm loại khối `text` (chữ không nằm trong `p` / `li`…); hàm SQL nhận thêm `p_captured_at`; khóa
 > chống trùng là `(document_id, format_version, structure_hash, captured_at)` + advisory lock theo tài
-> liệu, để A → B → A vẫn ghi được.
+> liệu, để A → B → A vẫn ghi được; `<br>` giữ thành dòng riêng trong khối (phát hiện trên trang KTH).
 > Nhánh dự kiến: `extraction/pr-1-structured-content`, tách từ `extraction/pr-0-audit`.
 > **Ngoài phạm vi:** L7b, PR 2 (luật), extractor dùng cấu trúc, PDF, giao diện mới, database production.
 

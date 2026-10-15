@@ -105,8 +105,16 @@ export function extractStructure(html: string, selector: string | null | undefin
   // Visible words with a space at element boundaries ("<span>Beginning/End</span><span>week…"
   // reads "Beginning/End week…", not run together as in the flat text), without
   // a space before closing punctuation.
-  const words = (el: El): string => (el.children ?? []).map((k) => (k.type === "text" ? k.data ?? "" : k.type === "tag" ? ` ${words(k)} ` : "")).join("");
-  const tidy = (raw: string) => clip(clean(raw).replace(/\s+([.,;:!?)\]])/g, "$1").replace(/([(\[])\s+/g, "$1"));
+  // A <br> keeps its line break: lines such as "15 January: Last day to apply"
+  // stay separate (KTH deadline lists, found on the real page 2026-10-15).
+  // Source-code line breaks are plain whitespace (HTML collapses them); only
+  // <br>, or text inside <pre>, makes a new line. Otherwise re-indenting the
+  // page's HTML would change the structure and its hash.
+  const piece = (k: El, pre: boolean): string => k.type === "text" ? (pre ? k.data ?? "" : (k.data ?? "").replace(/\s+/g, " "))
+    : tag(k) === "br" ? "\n" : k.type === "tag" ? ` ${words(k, pre || tag(k) === "pre")} ` : "";
+  const words = (el: El, pre = tag(el) === "pre"): string => (el.children ?? []).map((k) => piece(k, pre)).join("");
+  const tidyLine = (line: string) => clean(line).replace(/\s+([.,;:!?)\]])/g, "$1").replace(/([(\[])\s+/g, "$1");
+  const tidy = (raw: string) => clip(raw.split("\n").map(tidyLine).filter(Boolean).join("\n"));
   const text = (el: El) => tidy(words(el));
   const tag = (el: El) => (el.type === "tag" || el.type === "script" || el.type === "style" ? el.name ?? "" : "");
   // Readable, structural path from the read region (tag + position among same-tag siblings);
@@ -185,7 +193,7 @@ export function extractStructure(html: string, selector: string | null | undefin
     // to a <p>) are visible words too: each run becomes one text block.
     let run: El[] = [];
     const flush = () => {
-      const t = tidy(run.map((k) => (k.type === "text" ? k.data ?? "" : ` ${words(k)} `)).join(""));
+      const t = tidy(run.map((k) => piece(k, false)).join(""));
       const first = run.find((k) => k.type === "tag");
       if (t) pushBlock({ domPath: first ? domPath(first) : domPath(el), kind: "text", text: t, section: section() });
       run = [];

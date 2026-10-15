@@ -112,3 +112,18 @@ describe("limits", () => {
     expect(extractStructure(fixture("programme-sidebar.html"), "aside", at).root).toEqual({ kind: "selector", selector: "aside" });
   });
 });
+
+describe("line breaks (found on KTH pages, 2026-10-15)", () => {
+  it("keeps <br> lines apart inside a block and inside loose inline text", () => {
+    const s = extractStructure(`<main><h2>Deadlines</h2><p><strong>15 January: </strong>Last day to apply<br><strong>1 April:</strong>&nbsp;Results</p>
+      <div><span>One</span><br><span>Two</span><p>Block</p></div></main>`, null, at);
+    expect(s.blocks.find((b) => b.kind === "p" && b.section.includes("Deadlines"))?.text).toBe("15 January: Last day to apply\n1 April: Results");
+    expect(s.blocks.map((b) => b.text)).toContain("One\nTwo");
+  });
+});
+describe("source whitespace vs. visible lines", () => {
+  it("treats source-code line breaks as spaces, except inside <pre>", () => {
+    const s = extractStructure("<main><p>One\n   two</p><pre>line 1\nline 2</pre><div><span>\n  Label\n</span><span>Value</span></div></main>", null, at);
+    expect(s.blocks.map((b) => b.text)).toEqual(["One two", "line 1\nline 2", "Label Value"]);
+  });
+});

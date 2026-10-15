@@ -1,7 +1,7 @@
 # PR 1 — Nội dung có cấu trúc, song song với văn bản (2026-10-15)
 
 > Thiết kế (bản 2, đã duyệt): `docs/architecture/pr1-structured-content-plan.md`.
-> Kết quả trang thật: `docs/architecture/pr1-real-world-results.md` (**SU đạt; KTH chờ URL**).
+> Kết quả trang thật: `docs/architecture/pr1-real-world-results.md` (**80/80 đạt: SU + KTH**).
 > Nhánh: `extraction/pr-1-structured-content`. Linear: KHLOE-161.
 
 ## Đã làm gì
@@ -67,6 +67,10 @@ crawler: GET (robots, origin, loại, cỡ) → Chromium vẽ trang → HTML
   giao dịch kết thúc. Hai lần chạy cùng ghi một tài liệu sẽ xếp hàng, nên không có chuyện cả hai cùng
   thấy "đã đổi" và ghi hai lần.
 - **jsonb chuẩn hóa thứ tự khóa.** `'{"b":1,"a":2}'::jsonb::text` = `{"a": 2, "b": 1}`, nên hash ổn định.
+- **Chỉ `<br>` và `<pre>` tạo dòng mới.** Xuống dòng trong mã nguồn HTML chỉ là khoảng trắng, nếu
+  không thì định dạng lại mã nguồn trang cũng làm đổi cấu trúc và hash.
+- **Điều kiện "không có" phải có đối tượng.** `real-check` báo FAIL nếu chuỗi kiểm "không có trong cấu
+  trúc" vốn không có trong HTML, vì khi đó nó không chứng minh được gì.
 - **Heuristic cặp nhãn–giá trị.** Nhãn ngắn (≤ 60 ký tự), không có chữ số, không kết thúc câu, không tự
   chứa "Nhãn: giá trị"; loại trừ danh sách và điều khiển biểu mẫu. Cặp loại này có `from: "label_value"`
   để luật PR 2 tự quyết có tin hay không.
