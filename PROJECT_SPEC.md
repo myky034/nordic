@@ -2190,3 +2190,32 @@ duplicates first (intake pages per programme follow as L7b).
   nothing is mapped twice.
 
 Plan: `docs/architecture/page-versions-plan.md`.
+
+### 2026-10-15 — Configurable extraction: PR 0 audit approved, with clarifications
+
+Spec: `documents/NORDIC_CONFIGURABLE_EXTRACTION_IMPLEMENTATION_SPEC.md`; audit:
+`docs/architecture/configurable-extraction-audit.md`. The owner approved the
+audit's direction with these clarifications:
+
+- Q1: L7b (programme pages per intake) after PR 1 and before rules are
+  integrated into the extraction pipeline.
+- Q2: extraction rules start as typed, version-controlled TypeScript
+  configuration; no executable rules through the admin UI.
+- Q3: keep the 1:1 fact–evidence relationship, but facts from several
+  sources must be reconcilable at programme, field and intake level.
+- Q4: the second university for generalisation tests is **KTH Royal
+  Institute of Technology**; programme URLs are requested from the owner or
+  verified, never invented.
+- Q5: one feature branch and pull request per step.
+- Deterministic unit conversion (2 years → 24 months) is not a derived
+  business fact and must not create a separate fact.
+- Programme and intake identifiers must keep admission cycles from
+  overwriting each other.
+- Raw value, normalized value, source evidence, extraction method and rule
+  version are preserved.
+- Regression tests for current crawler and extractor behaviour; tests on
+  representative real HTML snapshots as well as synthetic fixtures.
+- Production database changes only after the migrations are reviewed;
+  authorization, RLS and audit behaviour unchanged.
+- Order: PR 1 (structured content) is designed, reviewed, then built; L7b and
+  PR 2 wait for PR 1's approval.

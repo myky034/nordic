@@ -132,6 +132,8 @@ model Document {
   extractionItems ExtractionItem[]
   studyFields StudyField[]
   classifications ProgrammeClassification[]
+  evidenceHistory EvidenceHistory[] @relation("EvidenceHistoryDocument")
+  evidenceHistoryReplacements EvidenceHistory[] @relation("EvidenceHistoryReplacement")
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -238,6 +240,8 @@ model Fact {
   evidence Evidence?
   reviews FactReview[] @relation("ReviewedFact")
   conflicts FactReview[] @relation("RelatedFact")
+  typeChanges FactTypeChange[]
+  evidenceHistory EvidenceHistory[]
   @@index([status, createdAt])
   @@index([documentId])
   @@index([programmeId])
@@ -260,6 +264,42 @@ model Evidence {
   retrievedAt DateTime @map("retrieved_at") @db.Timestamptz(6)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   @@map("evidence")
+}
+
+// L4 (20261014100000_flexible_facts): a reviewer's change of a proposed fact's
+// type / structured value, append-only (written only by set_fact_type()).
+// actor_id -> auth.users FK lives in the SQL migration only.
+model FactTypeChange {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  factId    String   @map("fact_id") @db.Uuid
+  fact      Fact     @relation(fields: [factId], references: [id], onDelete: Cascade)
+  actorId   String   @map("actor_id") @db.Uuid
+  before    Json
+  after     Json
+  note      String?
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@index([factId, createdAt], map: "fact_type_changes_fact_idx")
+  @@map("fact_type_changes")
+}
+
+// L7a (20261015100000_page_versions): where a fact's evidence pointed before it
+// moved to a newer version of the same page, append-only (written only by
+// resolve_source_change()). actor_id -> auth.users FK lives in SQL only.
+model EvidenceHistory {
+  id                    String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  factId                String   @map("fact_id") @db.Uuid
+  fact                  Fact     @relation(fields: [factId], references: [id], onDelete: Restrict)
+  documentId            String   @map("document_id") @db.Uuid
+  document              Document @relation("EvidenceHistoryDocument", fields: [documentId], references: [id], onDelete: Restrict)
+  sourceUrl             String   @map("source_url")
+  excerpt               String
+  retrievedAt           DateTime @map("retrieved_at") @db.Timestamptz(6)
+  replacedByDocumentId  String   @map("replaced_by_document_id") @db.Uuid
+  replacedByDocument    Document @relation("EvidenceHistoryReplacement", fields: [replacedByDocumentId], references: [id], onDelete: Restrict)
+  actorId               String   @map("actor_id") @db.Uuid
+  createdAt             DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@index([factId, createdAt], map: "evidence_history_fact_idx")
+  @@map("evidence_history")
 }
 model FactReview {
   id String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -586,6 +626,8 @@ model CrawlTarget {
   maxUrls         Int      @default(20) @map("max_urls")
   contentSelector String?  @map("content_selector")
   active          Boolean  @default(true)
+  // L6 (20261015090000_crawler_browser): read in a headless browser by default.
+  renderJs        Boolean  @default(true) @map("render_js")
   createdBy       String   @map("created_by") @db.Uuid
   createdAt       DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt       DateTime @default(now()) @map("updated_at") @db.Timestamptz(6)
@@ -721,6 +763,8 @@ model ExtractionItem {
   factId     String?  @map("fact_id") @db.Uuid
   fact       Fact?    @relation(fields: [factId], references: [id], onDelete: SetNull)
   candidate  Json
+  // L4 (20261014100000_flexible_facts): parts of the candidate the database dropped, in words.
+  adjustments String[] @default([])
   createdAt  DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
 
   @@index([requestId], map: "extraction_items_request_idx")
