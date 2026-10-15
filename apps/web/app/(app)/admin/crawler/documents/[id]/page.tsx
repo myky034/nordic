@@ -5,14 +5,14 @@ import { accessContext } from "@/lib/rbac/access";
 import { permissionName } from "@/lib/rbac/labels";
 import { canOpenFactsWorkspace } from "@/lib/rbac/ui";
 import { crawlOutcome, crawlRunStatus } from "@/lib/crawler/domain";
-import { loadPreview, loadPreviewDocument, type SnapshotMeta, type SnapshotRow } from "@/lib/crawler/structure-queries";
+import { HISTORY_PAGE_SIZE, loadPreview, loadPreviewDocument, type SnapshotMeta, type SnapshotRow } from "@/lib/crawler/structure-queries";
 import { canOpenPreview, canReadStructures, diffStructures, filterStructure, previewState, sectionsOf, shortHash, STRUCTURE_READ_PERMISSIONS } from "@/lib/crawler/structure-view";
 import { uuidPattern } from "@/lib/documents/domain";
 import { statusLabel } from "@/lib/facts/domain";
 import { canonicalSourceUrl } from "@/lib/registry/domain";
 import { getDictionary, getLocale } from "@/lib/i18n/server";
-import { withParams } from "@/lib/pagination";
-import { BackLink, Badge, DescriptionList, Disclosure, EmptyState, ExternalLink, List, ListRow, NoAccess, Notice, PageHeader, SearchInput, Section, Segmented } from "@/components/ui";
+import { pageParam, pageSummary, withParams } from "@/lib/pagination";
+import { BackLink, Badge, DescriptionList, Disclosure, EmptyState, ExternalLink, List, ListRow, NoAccess, Notice, PageHeader, Pagination, SearchInput, Section, Segmented } from "@/components/ui";
 import { ReviewBadge } from "@/components/ui/badges";
 import { Inspector } from "@/components/ui/inspector";
 import { buttonSmall, control, textLink } from "@/components/ui/styles";
@@ -59,9 +59,12 @@ export default async function StructurePreviewPage({ params, searchParams }: Pag
   if (previewState({ ingestionMethod: doc.ingestion_method, canRead: true, snapshotCount: 0 }) === "not_crawled")
     return <>{header}<EmptyState title={t.notCrawledTitle}>{t.notCrawled}</EmptyState></>;
 
-  const data = await loadPreview(client, doc, { snapshotId: uuid("snapshot"), compareId: uuid("compare"), crawlerOperator });
+  // History and versions are paged (?hpage, ?vpage) with exact totals, so a long history is never cut silently.
+  const historyPage = pageParam({ page: str("hpage") }), versionsPage = pageParam({ page: str("vpage") });
+  const data = await loadPreview(client, doc, { snapshotId: uuid("snapshot"), compareId: uuid("compare"), crawlerOperator, historyPage, versionsPage });
   if (uuid("snapshot") && !data.current) notFound();
-  const state = previewState({ ingestionMethod: doc.ingestion_method, canRead: canReadStructures(permissions), snapshotCount: data.snapshots.length });
+  // Counted from the exact total; "available" also needs a readable current snapshot.
+  const state = previewState({ ingestionMethod: doc.ingestion_method, canRead: canReadStructures(permissions), snapshotCount: data.current ? data.snapshotsTotal : 0 });
 
   const attempts = <Section title={t.lastCrawl}>
     {crawlerOperator ? data.attempts.length ? <List label={t.lastCrawl}>{data.attempts.map((a, i) => {
@@ -88,7 +91,8 @@ export default async function StructurePreviewPage({ params, searchParams }: Pag
   if (state === "missing") return <>{header}{notice}<EmptyState title={t.missingTitle}>{t.missing}</EmptyState>{attempts}{facts}</>;
 
   const current = data.current as SnapshotRow;
-  const latestId = data.snapshots[0]?.id;
+  // "Latest" comes from document_structures_latest, never from the history page on screen.
+  const latestId = data.latestId;
   const versionOf = new Map(data.versions.map((v) => [v.id, v.retrieved_at]));
   const snapshotLabel = (s: SnapshotMeta) => `${stamp(s.captured_at)} · ${shortHash(s.structure_hash)}`;
   // Comparison candidates: older snapshots of this version, and the latest of each other version.
@@ -102,14 +106,16 @@ export default async function StructurePreviewPage({ params, searchParams }: Pag
       [t.run, <span key="r" className="font-mono text-[13px]">{current.crawler_run_id}</span>],
     ]} />
     <div className="mt-4 space-y-3">
-      <Disclosure small summary={`${t.history} (${data.snapshots.length})`}>
+      <Disclosure small summary={`${t.history} (${data.snapshotsTotal})`} open={str("hpage") ? true : undefined}>
         <List label={t.history}>{data.snapshots.map((s) => <ListRow key={s.id} href={here({ snapshot: s.id === latestId ? null : s.id, compare: null, ref: null })}
           title={<span className="tabular-nums">{snapshotLabel(s)}</span>}
           badges={<>{s.id === latestId && <Badge tone="accent">{t.latest}</Badge>}{s.id === current.id && <Badge>{t.viewing}</Badge>}</>} />)}</List>
+        <Pagination locale={locale} summary={pageSummary(data.snapshotsTotal, historyPage, HISTORY_PAGE_SIZE)} href={(n) => here({ hpage: n === 1 ? null : String(n) })} />
       </Disclosure>
-      <Disclosure small summary={`${t.versions} (${data.versions.length})`}>
+      <Disclosure small summary={`${t.versions} (${data.versionsTotal})`} open={str("vpage") ? true : undefined}>
         <List label={t.versions}>{data.versions.map((v) => <ListRow key={v.id} href={`/admin/crawler/documents/${v.id}`}
           title={<span className="tabular-nums">{stamp(v.retrieved_at)}</span>} badges={v.id === id ? <Badge>{t.viewing}</Badge> : undefined} />)}</List>
+        <Pagination locale={locale} summary={pageSummary(data.versionsTotal, versionsPage, HISTORY_PAGE_SIZE)} href={(n) => here({ vpage: n === 1 ? null : String(n) })} />
       </Disclosure>
       <Disclosure small summary={t.compareWith}>
         {candidates.length ? <List label={t.compareWith}>{candidates.map((s) => <ListRow key={s.id} href={here({ compare: s.id, tab: "diff", ref: null })}

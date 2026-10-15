@@ -24,7 +24,7 @@ const changed = () => { const s = structure(); s.pairs[3].value = "First instalm
 const snap = (id: string, document_id: string, captured_at: string, s: unknown) =>
   ({ id, document_id, format_version: "html-structure-v1", structure_hash: "ab".repeat(32), captured_at, crawler_run_id: "66666666-6666-4666-8666-666666666666", created_at: captured_at, structure: s });
 
-type Call = { table: string; filters: [string, string, unknown][]; select: string };
+type Call = { table: string; filters: [string, string, unknown][]; select: string; count?: string; range?: [number, number] };
 let calls: Call[];
 let db: { documents: Record<string, unknown>[]; structures: ReturnType<typeof snap>[]; facts: unknown[]; items: unknown[] };
 function client() {
@@ -38,18 +38,22 @@ function client() {
         return all.filter((r) => call.filters.every(([op, k, v]) => op === "eq" ? r[k] === v : op === "in" ? (v as unknown[]).includes(r[k]) : op === "neq" ? r[k] !== v : true));
       };
       const q = {
-        select: (s: string) => { call.select = s; return q; },
+        select: (s: string, o?: { count?: string }) => { call.select = s; call.count = o?.count; return q; },
         eq: (k: string, v: unknown) => { call.filters.push(["eq", k, v]); return q; },
         neq: (k: string, v: unknown) => { call.filters.push(["neq", k, v]); return q; },
         in: (k: string, v: unknown) => { call.filters.push(["in", k, v]); return q; },
         order: () => q, limit: () => q,
+        // Like PostgREST: range() pages the rows, count is the total before paging.
+        range: (from: number, to: number) => { call.range = [from, to]; return q; },
         maybeSingle: async () => ({ data: rows()[0] ?? null, error: null }),
-        then: (r: (v: unknown) => unknown) => r({ data: rows(), error: null }),
+        then: (r: (v: unknown) => unknown) => { const all = sorted(rows()); return r({ data: call.range ? all.slice(call.range[0], call.range[1] + 1) : all, count: call.count ? all.length : null, error: null }); },
       };
       return q;
     },
   };
 }
+// Newest first, as the queries order them (captured_at / retrieved_at desc).
+const sorted = (rows: Record<string, unknown>[]) => [...rows].sort((a, b) => String(b.captured_at ?? b.retrieved_at ?? "").localeCompare(String(a.captured_at ?? a.retrieved_at ?? "")));
 // The view returns one row per document: the newest capture.
 const latest = () => [...new Set(db.structures.map((s) => s.document_id))].map((d) => db.structures.filter((s) => s.document_id === d).sort((a, b) => b.captured_at.localeCompare(a.captured_at))[0]);
 
@@ -181,6 +185,37 @@ describe("views", () => {
   });
 });
 
+describe("long histories (review 2026-10-15)", () => {
+  const uuidN = (n: number) => `aaaaaaaa-aaaa-4aaa-8aaa-${String(n).padStart(12, "0")}`;
+  const at = (n: number) => new Date(Date.UTC(2026, 8, 1) + n * 3600_000).toISOString();
+  it("pages the snapshot history with an exact total; latest still comes from the view", async () => {
+    db.structures = Array.from({ length: 60 }, (_, i) => snap(uuidN(i + 1), DOC, at(i), structure()));
+    as(["facts.review"]);
+    const html = await page({ hpage: "2" });
+    const history = calls.find((c) => c.table === "document_structures" && c.count === "exact");
+    expect(history?.range).toEqual([50, 99]);
+    expect(html).toContain("Lịch sử snapshot của phiên bản này (60)");
+    expect(html).toContain("51–60 / 60");
+    // The newest capture (#60) is not on page 2, yet it is shown and marked latest via the view.
+    expect(calls.some((c) => c.table === "document_structures_latest" && c.filters.some(([, k, v]) => k === "document_id" && v === DOC))).toBe(true);
+    expect(html).toContain(`${at(59).replace("T", " ").slice(0, 16)}`);
+    expect(html).toContain("Mới nhất");
+    expect(html).not.toContain(`snapshot=${uuidN(60)}`);
+  });
+  it("pages the versions list and still compares with a version that is not on the page shown", async () => {
+    const versions = Array.from({ length: 55 }, (_, i) => doc({ id: uuidN(100 + i), retrieved_at: at(i) }));
+    db.documents = [doc(), ...versions];
+    db.structures.push(snap(uuidN(900), uuidN(100), at(0), changed()));
+    as(["facts.review"]);
+    const html = await page({ vpage: "1", tab: "diff", compare: uuidN(900) });
+    expect(calls.find((c) => c.table === "documents" && c.count === "exact")?.range).toEqual([0, 49]);
+    expect(html).toContain("Các phiên bản của trang (56)");
+    expect(html).toContain("1–50 / 56");
+    // Oldest version (page 2 of versions) is still a valid comparison: same source + URL, checked in the database.
+    expect(html).toContain("First instalment: 47000 SEK.");
+  });
+});
+
 describe("comparison by content", () => {
   it("compares with another version of the page and reports the changed value, not refs", async () => {
     as(["facts.review"]);
@@ -188,8 +223,9 @@ describe("comparison by content", () => {
     expect(html).toContain("Đổi giá trị");
     expect(html).toContain("First instalment: 47000 SEK.");
     expect(html).toContain("First instalment: 45000 SEK.");
-    const cmp = calls.find((c) => c.filters.some(([, , v]) => v === S_OTHER));
-    expect(cmp?.filters.some(([op, k]) => op === "in" && k === "document_id")).toBe(true);
+    // The comparison snapshot's document must be a version of THIS page (same source + canonical URL).
+    const sibling = calls.find((c) => c.table === "documents" && c.filters.some(([, k, v]) => k === "id" && v === OLD_DOC));
+    expect(sibling?.filters).toEqual(expect.arrayContaining([["eq", "source_id", "s1"], ["eq", "canonical_url", "https://uni.example.test/p"]]));
   });
   it("two snapshots with the same content are reported as identical", async () => {
     as(["facts.review"]);

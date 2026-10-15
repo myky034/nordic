@@ -35,6 +35,15 @@
 - **So sánh theo nội dung.** `ref`/`domPath` chỉ ổn định trong một snapshot; một thẻ `div` thêm vào đầu
   trang sẽ đổi hết. Nên `diffStructures` khớp cặp theo *mục + nhãn*, link theo *href + chữ*, khối và tiêu
   đề theo chữ (đếm lặp, không gộp).
+- **Nhãn lặp trong cùng mục** (ví dụ "Application deadline" cho mỗi đợt tuyển): `diffPairs` giữ **mọi**
+  cặp của nhóm *mục + nhãn*. Giá trị giống nhau triệt tiêu theo kiểu đếm, phần dư hai bên ghép theo thứ tự
+  trên trang thành "đổi giá trị", còn thừa thì là thêm/bỏ. Bản đầu dùng `Map` nên cặp sau ghi đè cặp
+  trước (review 2026-10-15).
+- **Lịch sử dài được phân trang, không bị cắt ngầm.** Supabase/PostgREST giới hạn số dòng mỗi lần đọc.
+  Lịch sử snapshot và danh sách phiên bản đọc theo trang (`?hpage`, `?vpage`, 50 dòng) kèm tổng chính
+  xác (`count: "exact"`). "Mới nhất" luôn lấy từ view `document_structures_latest`, không lấy dòng đầu của
+  trang lịch sử. Snapshot để so sánh được kiểm trong database là thuộc cùng trang (cùng nguồn + URL),
+  nên vẫn so được với phiên bản không nằm trên trang đang xem.
 - **Dữ liệu thô khác dữ liệu chuẩn hóa.** Có cảnh báo "NỘI DUNG THÔ" ở đầu trang; facts nằm trong một
   khung nền khác, có link sang màn hình ghép.
 

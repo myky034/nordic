@@ -58,6 +58,30 @@ describe("comparison by content (review requirement 5)", () => {
     b.links = [...b.links].reverse().reverse().map((l) => ({ ...l, ref: `l${50}`, domPath: "y" }));
     expect(diffStructures(a, b).same).toBe(true);
   });
+  describe("duplicate labels in one section (review 2026-10-15)", () => {
+    const withPairs = (values: string[], section = ["Admissions"]): DocumentStructure => ({
+      ...sidebar(), pairs: values.map((value, i) => ({ ref: `p${i + 1}`, domPath: `dl>dd:nth-of-type(${i + 1})`, label: "Application deadline", value, section, from: "dl" as const,
+        labelPath: `dl>dt:nth-of-type(${i + 1})`, valuePath: `dl>dd:nth-of-type(${i + 1})` })),
+    });
+    it("keeps every value: same values in another order are not a difference", () => {
+      expect(diffStructures(withPairs(["15 January 2027", "15 April 2027"]), withPairs(["15 April 2027", "15 January 2027"])).same).toBe(true);
+    });
+    it("reports a change to ONE of two same-label values, not an overwrite", () => {
+      const d = diffStructures(withPairs(["15 January 2027", "15 April 2027"]), withPairs(["15 January 2027", "1 May 2027"]));
+      expect(d.pairs).toEqual({ added: [], removed: [], changed: [{ label: "Application deadline", section: ["Admissions"], before: "15 April 2027", after: "1 May 2027" }] });
+    });
+    it("reports an added and a removed repeat of the label", () => {
+      expect(diffStructures(withPairs(["15 January 2027"]), withPairs(["15 January 2027", "15 April 2027"])).pairs.added.map((p) => p.value)).toEqual(["15 April 2027"]);
+      const removed = diffStructures(withPairs(["15 January 2027", "15 April 2027", "15 April 2027"]), withPairs(["15 January 2027", "15 April 2027"]));
+      expect(removed.pairs.removed.map((p) => p.value)).toEqual(["15 April 2027"]);
+      expect(removed.pairs.changed).toEqual([]);
+    });
+    it("keeps the same label in different sections apart", () => {
+      const d = diffStructures(withPairs(["15 January 2027"], ["Intake A"]), withPairs(["15 January 2027"], ["Intake B"]));
+      expect(d.pairs.removed.map((p) => p.section)).toEqual([["Intake A"]]);
+      expect(d.pairs.added.map((p) => p.section)).toEqual([["Intake B"]]);
+    });
+  });
   it("reports added, removed and changed pairs, headings, links and blocks", () => {
     const before = sidebar();
     const d = diffStructures(before, structure("programme-sidebar-changed"));

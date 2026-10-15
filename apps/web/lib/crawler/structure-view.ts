@@ -72,21 +72,40 @@ function minus<T>(a: T[], b: T[], key: (x: T) => string): T[] {
   const left = counts(b.map(key));
   return a.filter((x) => { const k = key(x), n = left.get(k) ?? 0; if (n > 0) { left.set(k, n - 1); return false; } return true; });
 }
+type Pair = DocumentStructure["pairs"][number];
+const pairKey = (p: Pair) => `${sectionLabel(p.section)}::${p.label}`;
+/**
+ * Pairs grouped by section + label. A label can repeat inside one section
+ * (e.g. "Application deadline" once per intake), so every group keeps ALL its
+ * pairs; identical values cancel out as a multiset, and only the values left
+ * over on each side are reported. Within a group, leftovers are matched in
+ * page order: before[i] ↔ after[i] is "changed"; extra ones are added/removed.
+ */
+function diffPairs(before: Pair[], after: Pair[]): StructureDiff["pairs"] {
+  const group = (pairs: Pair[]) => pairs.reduce((m, p) => m.set(pairKey(p), [...(m.get(pairKey(p)) ?? []), p]), new Map<string, Pair[]>());
+  const [olds, news] = [group(before), group(after)];
+  const out: StructureDiff["pairs"] = { added: [], removed: [], changed: [] };
+  for (const key of new Set([...olds.keys(), ...news.keys()])) {
+    const a = olds.get(key) ?? [], b = news.get(key) ?? [];
+    const gone = minus(a, b, (p) => p.value), came = minus(b, a, (p) => p.value);
+    const n = a.length && b.length ? Math.min(gone.length, came.length) : 0;
+    for (let i = 0; i < n; i++) out.changed.push({ label: came[i].label, section: came[i].section, before: gone[i].value, after: came[i].value });
+    out.removed.push(...gone.slice(n));
+    out.added.push(...came.slice(n));
+  }
+  return out;
+}
 /**
  * Compares two snapshots by content: pairs by section + label (value changes
- * reported as "changed"), headings by level + text, links by href + text,
- * blocks by text. ref and domPath are ignored on purpose.
+ * reported as "changed", repeated labels kept, see diffPairs), headings by
+ * level + text, links by href + text, blocks by text. ref and domPath are
+ * ignored on purpose.
  */
 export function diffStructures(before: DocumentStructure, after: DocumentStructure): StructureDiff {
-  const pairKey = (p: DocumentStructure["pairs"][number]) => `${sectionLabel(p.section)}::${p.label}`;
-  const oldPairs = new Map(before.pairs.map((p) => [pairKey(p), p]));
-  const newPairs = new Map(after.pairs.map((p) => [pairKey(p), p]));
-  const changed = [...newPairs].filter(([k, p]) => oldPairs.has(k) && oldPairs.get(k)!.value !== p.value)
-    .map(([k, p]) => ({ label: p.label, section: p.section, before: oldPairs.get(k)!.value, after: p.value }));
   const headingKey = (h: DocumentStructure["headings"][number]) => `h${h.level} ${h.text}`;
   const linkKey = (l: DocumentStructure["links"][number]) => `${l.href} ${l.text}`;
   const diff: StructureDiff = {
-    pairs: { added: after.pairs.filter((p) => !oldPairs.has(pairKey(p))), removed: before.pairs.filter((p) => !newPairs.has(pairKey(p))), changed },
+    pairs: diffPairs(before.pairs, after.pairs),
     headings: { added: minus(after.headings, before.headings, headingKey).map(headingKey), removed: minus(before.headings, after.headings, headingKey).map(headingKey) },
     links: { added: minus(after.links, before.links, linkKey), removed: minus(before.links, after.links, linkKey) },
     blocks: { added: minus(after.blocks, before.blocks, (b) => b.text).map((b) => b.text), removed: minus(before.blocks, after.blocks, (b) => b.text).map((b) => b.text) },
