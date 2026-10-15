@@ -1,7 +1,6 @@
 import { readFileSync } from "node:fs";
 import { renderToStaticMarkup } from "react-dom/server";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { extractStructure } from "../../../../../../../../crawler/src/structure";
 
 // PR 1.5 acceptance (docs/architecture/pr1.5-structure-preview-plan.md §8).
 // The real query module runs against a fake Supabase client that records every
@@ -18,8 +17,9 @@ const OLD_DOC = "22222222-2222-4222-8222-222222222222";
 const S_NEW = "33333333-3333-4333-8333-333333333333";
 const S_OLD = "44444444-4444-4444-8444-444444444444";
 const S_OTHER = "55555555-5555-4555-8555-555555555555";
-const fixture = readFileSync(new URL("../../../../../../../../crawler/test/fixtures/programme-sidebar.html", import.meta.url), "utf8");
-const structure = () => JSON.parse(JSON.stringify(extractStructure(fixture, null, "https://uni.example.test/p")));
+// The crawler's real output for a synthetic page, saved by the crawler (see crawler/scripts/structure-fixtures.ts).
+const fixture = readFileSync(new URL("../../../../../../../../crawler/test/fixtures/structures/programme-sidebar.json", import.meta.url), "utf8");
+const structure = () => JSON.parse(fixture);
 const changed = () => { const s = structure(); s.pairs[3].value = "First instalment: 47000 SEK."; return s; };
 const snap = (id: string, document_id: string, captured_at: string, s: unknown) =>
   ({ id, document_id, format_version: "html-structure-v1", structure_hash: "ab".repeat(32), captured_at, crawler_run_id: "66666666-6666-4666-8666-666666666666", created_at: captured_at, structure: s });

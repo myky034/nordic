@@ -1,0 +1,131 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "Demo Data Science — Demo College",
+  "lang": "en",
+  "canonicalUrl": null,
+  "root": {
+    "kind": "main",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "main>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "Demo Data Science (Master)",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "main>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "Entry requirements",
+      "section": [
+        "Demo Data Science (Master)"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "ref": "b1",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)",
+      "kind": "li",
+      "text": "Bachelor's degree (180 ECTS)",
+      "section": [
+        "Demo Data Science (Master)",
+        "Entry requirements"
+      ],
+      "depth": 0
+    },
+    {
+      "ref": "b2",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)>ul:nth-of-type(1)>li:nth-of-type(1)",
+      "kind": "li",
+      "text": "including 30 ECTS mathematics",
+      "section": [
+        "Demo Data Science (Master)",
+        "Entry requirements"
+      ],
+      "depth": 1
+    },
+    {
+      "ref": "b3",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(2)",
+      "kind": "li",
+      "text": "IELTS Academic 6.5 overall",
+      "section": [
+        "Demo Data Science (Master)",
+        "Entry requirements"
+      ],
+      "depth": 0
+    },
+    {
+      "ref": "b4",
+      "domPath": "main>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "More: fees (PDF)",
+      "section": [
+        "Demo Data Science (Master)",
+        "Entry requirements"
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "ref": "p1",
+      "domPath": "main>dl:nth-of-type(1)>dt:nth-of-type(1)",
+      "label": "Study pace",
+      "value": "Full-time, on campus",
+      "section": [
+        "Demo Data Science (Master)"
+      ],
+      "from": "dl",
+      "labelPath": "main>dl:nth-of-type(1)>dt:nth-of-type(1)",
+      "valuePath": "main>dl:nth-of-type(1)>dd:nth-of-type(1)"
+    },
+    {
+      "ref": "p2",
+      "domPath": "main>dl:nth-of-type(1)>dt:nth-of-type(2)",
+      "label": "Duration",
+      "value": "18 months",
+      "section": [
+        "Demo Data Science (Master)"
+      ],
+      "from": "dl",
+      "labelPath": "main>dl:nth-of-type(1)>dt:nth-of-type(2)",
+      "valuePath": "main>dl:nth-of-type(1)>dd:nth-of-type(2)"
+    },
+    {
+      "ref": "p3",
+      "domPath": "main>dl:nth-of-type(1)>dt:nth-of-type(3)",
+      "label": "Fee",
+      "value": "NOK 0 for EU/EEA students; other students see the fee page",
+      "section": [
+        "Demo Data Science (Master)"
+      ],
+      "from": "dl",
+      "labelPath": "main>dl:nth-of-type(1)>dt:nth-of-type(3)",
+      "valuePath": "main>dl:nth-of-type(1)>dd:nth-of-type(3)"
+    }
+  ],
+  "tables": [],
+  "links": [
+    {
+      "ref": "l1",
+      "domPath": "main>p:nth-of-type(1)>a:nth-of-type(1)",
+      "text": "fees (PDF)",
+      "href": "https://demo.example.test/fees.pdf",
+      "sameOrigin": false,
+      "fileType": "pdf",
+      "section": [
+        "Demo Data Science (Master)",
+        "Entry requirements"
+      ]
+    }
+  ],
+  "structuredData": [],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}

@@ -96,10 +96,16 @@
 - Assertion "rỗng" trên tab mặc định: tab Tổng quan không hiện cặp, nên test "không có trong khung facts"
   phải mở tab Cặp trước, nếu không assertion đúng một cách vô nghĩa.
 
+- **Test web không được import code của crawler.** `next build` type-check cả file test trong `apps/web`;
+  Vercel không cài dependency của crawler (`cheerio`), nên build preview bị lỗi `TS2307` (2026-10-15).
+  Cách làm đúng: crawler ghi đầu ra của `extractStructure` cho các fixture tổng hợp thành
+  `crawler/test/fixtures/structures/*.json` (`npm run structure-fixtures -w @nordic/crawler`).
+  `crawler/src/structure.fixtures.test.ts` báo lỗi khi JSON cũ hơn code, còn test web chỉ đọc JSON.
+
 ## Cách test
 
 - `npx vitest run "app/(app)/admin/crawler/documents"`: render trang với client Supabase giả có ghi lại
-  truy vấn. Dữ liệu là đầu ra thật của `extractStructure` trên fixture tổng hợp.
+  truy vấn. Dữ liệu là đầu ra thật của `extractStructure` trên fixture tổng hợp, đọc từ JSON do crawler sinh ra.
 - `npx vitest run lib/crawler/structure-preview.database.test.ts`: PGlite + toàn bộ migration. Mỗi vai
   trò (Administrator, Editor, AI Draft, chỉ `crawler.manage`, Member) chạy các câu SELECT của trang dưới
   RLS thật.

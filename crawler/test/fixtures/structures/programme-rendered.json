@@ -1,0 +1,131 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "Rendered Example | Example University",
+  "lang": "sv",
+  "canonicalUrl": "https://uni.example.test/en/rendered",
+  "root": {
+    "kind": "main",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "main>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "Rendered Example",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "main>section:nth-of-type(1)>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "Facts",
+      "section": [
+        "Rendered Example"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "ref": "b1",
+      "domPath": "main>section:nth-of-type(1)>div:nth-of-type(1)",
+      "kind": "text",
+      "text": "Start 31 August 2027",
+      "section": [
+        "Rendered Example",
+        "Facts"
+      ]
+    },
+    {
+      "ref": "b2",
+      "domPath": "main>section:nth-of-type(1)>div:nth-of-type(2)",
+      "kind": "text",
+      "text": "Study pace 50% Read more",
+      "section": [
+        "Rendered Example",
+        "Facts"
+      ]
+    },
+    {
+      "ref": "b3",
+      "domPath": "main>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "Contact us or see the brochure.",
+      "section": [
+        "Rendered Example"
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "ref": "p1",
+      "domPath": "main>section:nth-of-type(1)>div:nth-of-type(1)",
+      "label": "Start",
+      "value": "31 August 2027",
+      "section": [
+        "Rendered Example",
+        "Facts"
+      ],
+      "from": "label_value",
+      "labelPath": "main>section:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+      "valuePath": "main>section:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(2)"
+    },
+    {
+      "ref": "p2",
+      "domPath": "main>section:nth-of-type(1)>div:nth-of-type(2)",
+      "label": "Study pace",
+      "value": "50%",
+      "section": [
+        "Rendered Example",
+        "Facts"
+      ],
+      "from": "label_value",
+      "labelPath": "main>section:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)",
+      "valuePath": "main>section:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(2)"
+    }
+  ],
+  "tables": [],
+  "links": [
+    {
+      "ref": "l1",
+      "domPath": "main>section:nth-of-type(1)>div:nth-of-type(2)>a:nth-of-type(1)",
+      "text": "Read more",
+      "href": "https://uni.example.test/en/pace",
+      "sameOrigin": true,
+      "fileType": null,
+      "section": [
+        "Rendered Example",
+        "Facts"
+      ]
+    },
+    {
+      "ref": "l2",
+      "domPath": "main>p:nth-of-type(1)>a:nth-of-type(2)",
+      "text": "brochure",
+      "href": "https://other.example.test/brochure.pdf",
+      "sameOrigin": false,
+      "fileType": "pdf",
+      "section": [
+        "Rendered Example"
+      ]
+    }
+  ],
+  "structuredData": [
+    {
+      "adapter": "json-ld",
+      "adapterVersion": 1,
+      "items": [
+        {
+          "@context": "https://schema.org",
+          "@type": "EducationalOccupationalProgram",
+          "name": "Rendered Example",
+          "timeToComplete": "P2Y"
+        }
+      ]
+    }
+  ],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}
