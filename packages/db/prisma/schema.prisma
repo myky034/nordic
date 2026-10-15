@@ -134,6 +134,7 @@ model Document {
   classifications ProgrammeClassification[]
   evidenceHistory EvidenceHistory[] @relation("EvidenceHistoryDocument")
   evidenceHistoryReplacements EvidenceHistory[] @relation("EvidenceHistoryReplacement")
+  structures DocumentStructure[]
   @@unique([sourceId, canonicalUrl, contentHash])
   @@index([sourceId, retrievedAt])
   @@index([createdAt, id])
@@ -665,6 +666,7 @@ model CrawlerRun {
   items      CrawlerRunItem[]
 
   @@index([startedAt(sort: Desc)], map: "crawler_runs_started_idx")
+  structures DocumentStructure[]
   @@map("crawler_runs")
 }
 
@@ -686,6 +688,26 @@ model CrawlerRunItem {
 
   @@index([runId, createdAt], map: "crawler_run_items_run_idx")
   @@map("crawler_run_items")
+}
+
+// PR 1 (20261016090000_document_structures): structured snapshots of a crawled
+// page next to its readable text. A new row only when the structure differs
+// from the latest one of that document; readers take the latest by capturedAt.
+// Written only by crawler_record_structure(); editors read (RLS).
+model DocumentStructure {
+  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  documentId    String      @map("document_id") @db.Uuid
+  document      Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  formatVersion String      @map("format_version")
+  structure     Json
+  structureHash String      @map("structure_hash") @db.VarChar(64)
+  capturedAt    DateTime    @map("captured_at") @db.Timestamptz(6)
+  crawlerRunId  String      @map("crawler_run_id") @db.Uuid
+  crawlerRun    CrawlerRun  @relation(fields: [crawlerRunId], references: [id], onDelete: Restrict)
+  createdAt     DateTime    @default(now()) @map("created_at") @db.Timestamptz(6)
+  @@unique([documentId, formatVersion, structureHash, capturedAt])
+  @@index([documentId, formatVersion, capturedAt(sort: Desc)], map: "document_structures_latest_idx")
+  @@map("document_structures")
 }
 
 model DocumentText {

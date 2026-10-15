@@ -1,5 +1,6 @@
 import pg from "pg";
 import { workerPoolConfig } from "@nordic/db/pg-ssl";
+import type { DocumentStructure } from "./structure";
 
 // The crawler's only database surface: the crawler_* SQL functions. Its role
 // has no table privileges, so every rule is enforced (again) in the database.
@@ -17,6 +18,8 @@ export type CrawlerDb = {
   dueTargets(): Promise<Target[]>;
   urlStates(sourceId: string): Promise<UrlState[]>;
   record(input: RecordInput): Promise<{ outcome: string; document_id: string | null; flagged_facts: number }>;
+  /** PR 1: structured snapshot of a document this run just recorded; "created" or "unchanged". */
+  recordStructure(runId: string, documentId: string, structure: DocumentStructure, capturedAt: Date): Promise<"created" | "unchanged">;
   finishRun(runId: string, status: "succeeded" | "partial" | "failed", note: string | null): Promise<Record<string, number>>;
   close(): Promise<void>;
 };
@@ -34,6 +37,8 @@ export function pgCrawlerDb(connectionString: string, caCert?: string | null): C
       "SELECT crawler_record($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14) AS r",
       [r.runId, r.targetId, r.url, r.httpStatus, r.outcome, r.errorCategory ?? null, r.durationMs, r.title ?? null, r.contentHash ?? null,
         r.metadataHash ?? null, r.text ?? null, r.etag ?? null, r.lastModified ?? null, r.retrievedAt ?? null])).r,
+    recordStructure: async (runId, documentId, structure, capturedAt) => (await one<{ r: "created" | "unchanged" }>(
+      "SELECT crawler_record_structure($1,$2,$3,$4::jsonb,$5) AS r", [runId, documentId, structure.formatVersion, JSON.stringify(structure), capturedAt])).r,
     finishRun: async (runId, status, note) => (await one<{ c: Record<string, number> }>("SELECT crawler_finish_run($1,$2,$3) AS c", [runId, status, note])).c,
     close: () => pool.end(),
   };

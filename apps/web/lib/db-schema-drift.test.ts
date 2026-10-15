@@ -42,7 +42,12 @@ function prismaColumns(schema: string) {
 it("describes every migrated table and column in schema.prisma, and nothing more", async () => {
   const described = prismaColumns(readFileSync("../../packages/db/prisma/schema.prisma", "utf8"));
   const rows = (await db.query<{ table_name: string; column_name: string }>(
-    "SELECT table_name, column_name FROM information_schema.columns WHERE table_schema='public' AND table_name NOT LIKE '\\_prisma%' ORDER BY 1, 2")).rows;
+    // Base tables only: views (e.g. document_structures_latest, PR 1) are read-only
+    // definitions Prisma does not manage without a preview feature, and
+    // `prisma migrate dev` never drops them; the risk this test guards is tables.
+    `SELECT c.table_name, c.column_name FROM information_schema.columns c
+     JOIN information_schema.tables t ON t.table_schema=c.table_schema AND t.table_name=c.table_name AND t.table_type='BASE TABLE'
+     WHERE c.table_schema='public' AND c.table_name NOT LIKE '\\_prisma%' ORDER BY 1, 2`)).rows;
   const actual = new Map<string, Set<string>>();
   for (const r of rows) (actual.get(r.table_name) ?? actual.set(r.table_name, new Set()).get(r.table_name)!).add(r.column_name);
   const problems: string[] = [];

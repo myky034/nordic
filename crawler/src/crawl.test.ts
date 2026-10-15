@@ -6,15 +6,17 @@ import type { Renderer, RenderResult } from "./render";
 
 function fakeDb(targets: Target[], states: Record<string, { etag: string }> = {}) {
   const records: RecordInput[] = []; let finished: { status: string; note: string | null } | null = null;
+  const structures: { documentId: string; formatVersion: string; pairs: number; capturedAt: Date }[] = [];
   const db: CrawlerDb = {
     startRun: async () => "run-1",
     dueTargets: async () => targets,
     urlStates: async () => Object.entries(states).map(([url, s]) => ({ url, etag: s.etag, last_modified: null, last_hash: null })),
-    record: async (r) => { records.push(r); return { outcome: r.outcome === "fetched" ? "created" : r.outcome, document_id: null, flagged_facts: 0 }; },
+    record: async (r) => { records.push(r); return { outcome: r.outcome === "fetched" ? "created" : r.outcome, document_id: r.outcome === "fetched" ? `doc:${r.url}` : null, flagged_facts: 0 }; },
+    recordStructure: async (_run, documentId, structure, capturedAt) => { structures.push({ documentId, formatVersion: structure.formatVersion, pairs: structure.pairs.length, capturedAt }); return "created"; },
     finishRun: async (_id, status, note) => { finished = { status, note }; return {}; },
     close: async () => {},
   };
-  return { db, records, finished: () => finished };
+  return { db, records, structures, finished: () => finished };
 }
 const target = (over: Partial<Target>): Target => ({ target_id: "t1", source_id: "s1", source_url: "https://agency.example.test/", url: "https://agency.example.test/p",
   kind: "page", path_prefix: null, max_urls: 20, content_selector: null, render_js: false, ...over });
@@ -110,4 +112,27 @@ it("does not fetch or render a page whose plain GET already fails", async () => 
   await runCrawl({ db, trigger: "local", ...quiet, startRenderer: b.startRenderer });
   expect(records[0].outcome).toBe("skipped_type");
   expect(b.rendered).toEqual([]);
+});
+
+// PR 1 (KHLOE-161): structured snapshot next to the stored text.
+it("stores a structure snapshot for every stored or unchanged page, with the same capture time as the text", async () => {
+  const { db, records, structures } = fakeDb([target({}), target({ target_id: "t2", url: "https://agency.example.test/same" })], { "https://agency.example.test/same": { etag: '"old"' } });
+  await runCrawl({ db, trigger: "local", ...quiet });
+  expect(structures).toEqual([{ documentId: "doc:https://agency.example.test/p", formatVersion: "html-structure-v1", pairs: 0, capturedAt: records[0].retrievedAt }]);
+  // 304 (not modified) carries no HTML, so no snapshot.
+  expect(records.find((r) => r.url.endsWith("/same"))?.outcome).toBe("not_modified");
+});
+it("logs a failed structure save and ends the run partial, but keeps the stored text", async () => {
+  const { db, records, finished } = fakeDb([target({})]);
+  db.recordStructure = async () => { throw new Error("crawler_invalid"); };
+  const lines: string[] = [];
+  await runCrawl({ db, trigger: "local", ...quiet, log: (l) => lines.push(l) });
+  expect(records[0]).toMatchObject({ outcome: "fetched", text: "Rule A" });
+  expect(lines.some((l) => l.includes('"operation":"structure"') && l.includes('"category":"structure_failed"') && l.includes("crawler_invalid"))).toBe(true);
+  expect(finished()?.status).toBe("partial");
+});
+it("does not save a structure for pages that failed or were skipped", async () => {
+  const { db, structures } = fakeDb([target({ url: "https://agency.example.test/pdf" }), target({ target_id: "b", url: "https://agency.example.test/missing" })]);
+  await runCrawl({ db, trigger: "local", ...quiet });
+  expect(structures).toEqual([]);
 });

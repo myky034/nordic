@@ -1,0 +1,228 @@
+{
+  "_comment": "PR 1 real-world acceptance (docs/architecture/pr1-structured-content-plan.md §6). Conditions written from the actual rendered pages (2026-10-15); short phrases only, never page copies. Snapshots are local: npm run snapshot -w @nordic/crawler -- <id> <url>. A missing URL or snapshot is a FAILURE, never a skip.",
+  "pages": [
+    {
+      "id": "su-sprom-ht2027",
+      "university": "Stockholm University",
+      "url": "https://www.su.se/english/education/course-catalogue/sp/sprom?semester=HT2027&eventcode=43003",
+      "selector": "main",
+      "expect": {
+        "pairLabels": [
+          "Tuition fee",
+          "Selection",
+          "Eligibility",
+          "Level",
+          "Language",
+          "Subject"
+        ],
+        "pairValueMatches": {
+          "Tuition fee": "\\d+ SEK"
+        },
+        "sections": [
+          "Year 1",
+          "Year 2"
+        ],
+        "pdfLink": true,
+        "notInStructure": [
+          "firstInstallment",
+          "totalCost",
+          "registerInitialState"
+        ],
+        "minPairs": 8,
+        "title": "SPROM - Stockholms universitet",
+        "lang": "en",
+        "headings": [
+          "One Year Master’s Programme in IT Project Management",
+          "Programme overview",
+          "How to apply"
+        ],
+        "blockIncludes": [
+          {
+            "section": "One Year Master’s Programme in IT Project Management",
+            "text": "takes two years to complete"
+          },
+          {
+            "section": "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses without required physical meetings | For international students",
+            "text": "60 credits"
+          },
+          {
+            "section": "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses without required physical meetings | For international students",
+            "text": "30/08/2027 - 03/06/2029"
+          },
+          {
+            "section": "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses without required physical meetings | For international students",
+            "text": "Application opens 16 October 2026"
+          }
+        ],
+        "links": [
+          {
+            "text": "More information on tuition fees",
+            "hrefIncludes": "/how-to-apply/costs-fees-and-scholarships"
+          },
+          {
+            "text": "Read our step-by-step guide on how to apply",
+            "hrefIncludes": "/how-to-apply/"
+          }
+        ]
+      }
+    },
+    {
+      "id": "su-sprom-ht2026",
+      "university": "Stockholm University",
+      "url": "https://www.su.se/english/education/course-catalogue/sp/sprom?semester=HT2026&eventcode=43006",
+      "selector": "main",
+      "expect": {
+        "pairLabels": [
+          "Tuition fee",
+          "Selection",
+          "Eligibility"
+        ],
+        "pairValueMatches": {
+          "Tuition fee": "\\d+ SEK"
+        },
+        "sections": [
+          "Year 1"
+        ],
+        "notInStructure": [
+          "firstInstallment",
+          "totalCost",
+          "registerInitialState"
+        ],
+        "minPairs": 8,
+        "title": "SPROM - Stockholms universitet",
+        "lang": "en",
+        "headings": [
+          "One Year Master’s Programme in IT Project Management"
+        ],
+        "blockIncludes": [
+          {
+            "section": "One Year Master’s Programme in IT Project Management",
+            "text": "takes two years to complete"
+          },
+          {
+            "section": "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses without required physical meetings | For international students",
+            "text": "60 credits"
+          },
+          {
+            "section": "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses without required physical meetings | For international students",
+            "text": "31/08/2026 - 04/06/2028"
+          }
+        ]
+      }
+    },
+    {
+      "id": "kth-industrial-management",
+      "university": "KTH Royal Institute of Technology",
+      "url": "https://www.kth.se/en/studies/master/industrial-management",
+      "selector": null,
+      "expect": {
+        "title": "MSc Industrial Management | KTH | Sweden",
+        "lang": "en-GB",
+        "canonicalIncludes": "/studies/master/industrial-management/",
+        "headings": [
+          "MSc Industrial Management",
+          "Application deadlines for studies starting August 2027",
+          "Industrial Management at KTH",
+          "Future and career"
+        ],
+        "blockIncludes": [
+          {
+            "section": "Industrial Management at KTH",
+            "text": "This is a two-year programme (120 ECTS credits) given in English"
+          }
+        ],
+        "blockLines": [
+          {
+            "section": "Application deadlines for studies starting August 2027",
+            "lines": [
+              "16 October (2026): Application opens",
+              "15 January: Last day to apply",
+              "1 February: Submit documents and, if required, pay application fee",
+              "1 April: Admission results announced"
+            ]
+          }
+        ],
+        "links": [
+          {
+            "text": "Entry requirements",
+            "hrefIncludes": "/studies/master/industrial-management/entry-requirements"
+          },
+          {
+            "text": "Fees and scholarships",
+            "hrefIncludes": "/studies/master/industrial-management/fees"
+          },
+          {
+            "text": "Courses",
+            "hrefIncludes": "/studies/master/industrial-management/courses"
+          },
+          {
+            "text": "How to apply",
+            "hrefIncludes": "/studies/master/admissions/how-to-apply"
+          }
+        ],
+        "notInStructure": [
+          "klaroConfig",
+          "_mtm",
+          "widget.js"
+        ]
+      }
+    },
+    {
+      "id": "kth-interactive-media-technology",
+      "university": "KTH Royal Institute of Technology",
+      "url": "https://www.kth.se/en/studies/master/interactive-media-technology",
+      "selector": null,
+      "expect": {
+        "title": "MSc Interactive Media Technology | KTH | Sweden",
+        "lang": "en-GB",
+        "canonicalIncludes": "/studies/master/interactive-media-technology/",
+        "headings": [
+          "MSc Interactive Media Technology",
+          "Application deadlines for studies starting August 2027",
+          "Interactive Media Technology at KTH",
+          "Future and career"
+        ],
+        "blockIncludes": [
+          {
+            "section": "Interactive Media Technology at KTH",
+            "text": "This is a two year programme (120 ECTS credits) given in English"
+          }
+        ],
+        "blockLines": [
+          {
+            "section": "Application deadlines for studies starting August 2027",
+            "lines": [
+              "16 October (2026): Application opens",
+              "15 January: Last day to apply",
+              "1 February: Submit documents and, if required, pay application fee",
+              "1 April: Admission results announced"
+            ]
+          }
+        ],
+        "links": [
+          {
+            "text": "Entry requirements",
+            "hrefIncludes": "/studies/master/interactive-media-technology/entry-requirements"
+          },
+          {
+            "text": "Fees and scholarships",
+            "hrefIncludes": "/studies/master/interactive-media-technology/fees"
+          },
+          {
+            "text": "Courses",
+            "hrefIncludes": "/studies/master/interactive-media-technology/courses"
+          },
+          {
+            "text": "How to apply",
+            "hrefIncludes": "/studies/master/admissions/how-to-apply"
+          }
+        ],
+        "notInStructure": [
+          "klaroConfig",
+          "_mtm",
+          "widget.js"
+        ]
+      }
+    }
+  ]
+}

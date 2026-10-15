@@ -141,12 +141,132 @@ it("treats versions of one page as one page: no cross-version duplicates, move o
   await as("authenticated", async () => { expect((await db.query("SELECT * FROM evidence_history")).rows).toHaveLength(0); }, member);
   await as("authenticated", async () => { await expect(db.query("DELETE FROM evidence_history")).rejects.toThrow(/permission denied/); }, admin);
 });
+// PR 1 (docs/architecture/pr1-structured-content-plan.md §7, KHLOE-161).
+it("stores structure snapshots with history: database hash, no duplicate for an unchanged or reordered structure, serialised per document", async () => {
+  const url = "https://agency.example.test/permits";
+  const doc = (await record(pageTarget, url, "fetched", h("3"), "Structure page text")).document_id;
+  const s1 = { formatVersion: "html-structure-v1", title: "T", pairs: [{ label: "Tuition fee", value: "SEK 1" }] };
+  const s2 = { ...s1, pairs: [{ label: "Tuition fee", value: "SEK 2" }] };
+  const save = (structure: object | string, at: string, d = doc, version = "html-structure-v1") => crawler(() => db.query<{ r: string }>(
+    "SELECT crawler_record_structure($1,$2,$3,$4::jsonb,$5) AS r", [run, d, version, typeof structure === "string" ? structure : JSON.stringify(structure), at])).then((x) => x.rows[0].r);
+  expect(await save(s1, "2026-10-10T01:00:00Z")).toBe("created");
+  // Same content later, or the same JSON with keys in another order: no new snapshot.
+  expect(await save(s1, "2026-10-10T02:00:00Z")).toBe("unchanged");
+  expect(await save('{"pairs":[{"value":"SEK 1","label":"Tuition fee"}],"title":"T","formatVersion":"html-structure-v1"}', "2026-10-10T03:00:00Z")).toBe("unchanged");
+  // A retried call (same capture) after a change is a no-op too.
+  expect(await save(s2, "2026-10-10T04:00:00Z")).toBe("created");
+  expect(await save(s2, "2026-10-10T04:00:00Z")).toBe("unchanged");
+  // Back to s1: history keeps s1, s2, s1; the latest is s1 again (never stale).
+  expect(await save(s1, "2026-10-10T05:00:00Z")).toBe("created");
+  // A late-arriving older capture is kept as history and does not become the latest.
+  expect(await save({ ...s1, title: "Older" }, "2026-10-10T00:30:00Z")).toBe("created");
+  const rows = (await db.query<{ structure: { pairs: { value: string }[]; title: string }; structure_hash: string; crawler_run_id: string }>(
+    "SELECT structure, structure_hash, crawler_run_id FROM document_structures WHERE document_id=$1 ORDER BY captured_at DESC, created_at DESC", [doc])).rows;
+  expect(rows.map((r) => `${r.structure.title}:${r.structure.pairs[0].value}`)).toEqual(["T:SEK 1", "T:SEK 2", "T:SEK 1", "Older:SEK 1"]);
+  expect(rows[0].structure_hash).toBe(rows[2].structure_hash);
+  expect(rows[0].structure_hash).toMatch(/^[0-9a-f]{64}$/);
+  expect(rows[0].crawler_run_id).toBe(run);
+  // Refusals: a document this run did not record, a wrong or mismatched format, a non-object, oversize, a future capture.
+  const outside = (await db.query<{ id: string }>(`INSERT INTO documents(source_id,canonical_url,title,content_hash,hash_method,metadata_hash,retrieved_at,ingestion_method)
+    VALUES($1,'https://agency.example.test/outside','x',repeat('9',64),'sha256-text-v1',repeat('b',64),now(),'crawler') RETURNING id`, [source])).rows[0].id;
+  await expect(save(s1, "2026-10-10T06:00:00Z", outside)).rejects.toThrow("crawler_structure_not_recorded");
+  await expect(save(s1, "2026-10-10T06:00:00Z", doc, "html-structure-v9")).rejects.toThrow("crawler_invalid");
+  await expect(save({ ...s1, formatVersion: "other" }, "2026-10-10T06:00:00Z")).rejects.toThrow("crawler_invalid");
+  await expect(save("[1,2]", "2026-10-10T06:00:00Z")).rejects.toThrow("crawler_invalid");
+  await expect(save({ ...s1, big: "x".repeat(1_200_000) }, "2026-10-10T06:00:00Z")).rejects.toThrow(/crawler_invalid|check constraint/);
+  await expect(save(s1, "2099-01-01T00:00:00Z")).rejects.toThrow("crawler_invalid");
+  await db.query("UPDATE sources SET crawl_enabled=false WHERE id=$1", [source]);
+  await expect(save(s2, "2026-10-10T07:00:00Z")).rejects.toThrow("crawler_target_not_allowed");
+  await db.query("UPDATE sources SET crawl_enabled=true WHERE id=$1", [source]);
+  // Visibility as document_texts; the crawler role has no table access.
+  await as("anon", async () => { await expect(db.query("SELECT * FROM document_structures")).rejects.toThrow(/permission denied/); });
+  await as("authenticated", async () => { expect((await db.query("SELECT * FROM document_structures")).rows).toHaveLength(0); }, member);
+  await as("authenticated", async () => { expect((await db.query("SELECT * FROM document_structures WHERE document_id=$1", [doc])).rows).toHaveLength(4); }, admin);
+  await as("authenticated", async () => { await expect(db.query("DELETE FROM document_structures")).rejects.toThrow(/permission denied/); }, admin);
+  await crawler(async () => {
+    await expect(db.query("SELECT * FROM document_structures")).rejects.toThrow(/permission denied/);
+    await expect(db.query("INSERT INTO document_structures(document_id,format_version,structure,structure_hash,captured_at,crawler_run_id) VALUES($1,'html-structure-v1','{}',repeat('a',64),now(),$2)", [doc, run])).rejects.toThrow(/permission denied/);
+  });
+  await as("authenticated", async () => { await expect(db.query("SELECT crawler_record_structure($1,$2,'html-structure-v1','{}',now())", [run, doc])).rejects.toThrow(/permission denied/); }, admin);
+});
+// Implementation requirement 2: two runs open at the same time process the same
+// page (interleaved; PGlite has one connection, the per-document advisory lock
+// serialises real concurrency the same way).
+it("keeps one consistent snapshot history when two open runs record the same page", async () => {
+  const url = "https://agency.example.test/permits";
+  const run2 = (await crawler(() => db.query<{ id: string }>("SELECT crawler_start_run('manual') AS id"))).rows[0].id;
+  const recordIn = (r: string) => crawler(() => db.query<{ r: { outcome: string; document_id: string } }>(
+    "SELECT crawler_record($1,$2,$3,200,'fetched',null,10,'Synthetic title',$4,$5,'Concurrent page text','\"e\"',null,now()) AS r", [r, pageTarget, url, h("6"), h("b")])).then((x) => x.rows[0].r);
+  const a = await recordIn(run), b = await recordIn(run2);
+  expect([a.outcome, b.outcome]).toEqual(["created", "unchanged"]);
+  expect(b.document_id).toBe(a.document_id);
+  const save = (r: string, value: string, at: string) => crawler(() => db.query<{ r: string }>("SELECT crawler_record_structure($1,$2,'html-structure-v1',$3::jsonb,$4) AS r",
+    [r, a.document_id, JSON.stringify({ formatVersion: "html-structure-v1", v: value }), at])).then((x) => x.rows[0].r);
+  // Same structure from both runs (same or different capture times): one row.
+  expect(await save(run, "same", "2026-10-11T01:00:00Z")).toBe("created");
+  expect(await save(run2, "same", "2026-10-11T01:00:00Z")).toBe("unchanged");
+  expect(await save(run2, "same", "2026-10-11T01:00:05Z")).toBe("unchanged");
+  // A real difference from the second run is recorded once, attributed to that run.
+  expect(await save(run2, "changed", "2026-10-11T01:00:06Z")).toBe("created");
+  expect(await save(run, "changed", "2026-10-11T01:00:07Z")).toBe("unchanged");
+  expect((await db.query("SELECT structure->>'v' AS v, crawler_run_id FROM document_structures WHERE document_id=$1 ORDER BY captured_at", [a.document_id])).rows)
+    .toEqual([{ v: "same", crawler_run_id: run }, { v: "changed", crawler_run_id: run2 }]);
+  await crawler(() => db.query("SELECT crawler_finish_run($1,'succeeded',null)", [run2]));
+});
+// Review before merge (2026-10-15): captures recorded out of captured_at order
+// must never change which snapshot is the latest, readers must agree on one
+// deterministic "latest", and a late capture is compared with the capture just
+// before it in time (not with the latest), so it adds no redundant history.
+it("keeps the latest snapshot by capture time when older captures arrive late, with one deterministic reader", async () => {
+  const url = "https://agency.example.test/permits";
+  const doc = (await record(pageTarget, url, "fetched", h("7"), "Out of order page text")).document_id;
+  const save = (v: string, at: string) => crawler(() => db.query<{ r: string }>("SELECT crawler_record_structure($1,$2,'html-structure-v1',$3::jsonb,$4) AS r",
+    [run, doc, JSON.stringify({ formatVersion: "html-structure-v1", v }), at])).then((x) => x.rows[0].r);
+  const latest = () => db.query<{ v: string; captured_at: Date }>(
+    "SELECT structure->>'v' AS v, captured_at FROM document_structures_latest WHERE document_id=$1 AND format_version='html-structure-v1'", [doc]).then((x) => x.rows);
+  expect(await save("S1", "2026-10-12T10:00:00Z")).toBe("created");
+  expect(await save("S3", "2026-10-12T12:00:00Z")).toBe("created");
+  // An older capture arriving after the newer one: kept as history, never the latest.
+  expect(await save("S2", "2026-10-12T11:00:00Z")).toBe("created");
+  expect(await latest()).toEqual([{ v: "S3", captured_at: new Date("2026-10-12T12:00:00Z") }]);
+  // A late capture identical to the capture just before it in time adds nothing,
+  // even though it differs from the latest.
+  expect(await save("S1", "2026-10-12T10:30:00Z")).toBe("unchanged");
+  // A late capture older than everything: history only.
+  expect(await save("S0", "2026-10-12T09:00:00Z")).toBe("created");
+  expect(await latest()).toEqual([{ v: "S3", captured_at: new Date("2026-10-12T12:00:00Z") }]);
+  // Two different captures with the very same captured_at: readers agree on one
+  // (the later recorded), every time.
+  expect(await save("S4", "2026-10-12T12:00:00Z")).toBe("created");
+  const first = await latest(), again = await latest();
+  expect(first).toEqual([{ v: "S4", captured_at: new Date("2026-10-12T12:00:00Z") }]);
+  expect(again).toEqual(first);
+  expect((await db.query("SELECT structure->>'v' AS v FROM document_structures WHERE document_id=$1 ORDER BY captured_at, created_at", [doc])).rows.map((r) => (r as { v: string }).v))
+    .toEqual(["S0", "S1", "S2", "S3", "S4"]);
+  // The reader follows the table's RLS: editors only.
+  await as("anon", async () => { await expect(db.query("SELECT * FROM document_structures_latest")).rejects.toThrow(/permission denied/); });
+  await as("authenticated", async () => { expect((await db.query("SELECT * FROM document_structures_latest")).rows).toHaveLength(0); }, member);
+  await as("authenticated", async () => { expect((await db.query("SELECT * FROM document_structures_latest WHERE document_id=$1", [doc])).rows).toHaveLength(1); }, admin);
+});
+// Regression (PR 1 design §3.5): pins today's behaviour, not changed by PR 1.
+// Known bug, tracked separately as Linear KHLOE-162: when fixed, invert these expectations.
+it("records a page that returns to an earlier text (A -> B -> A) as unchanged, without flagging facts on B", async () => {
+  const url = "https://agency.example.test/permits";
+  await record(pageTarget, url, "fetched", h("4"), "Version A text");
+  const b = await record(pageTarget, url, "fetched", h("5"), "Version B text");
+  const onB = (await as("authenticated", () => db.query<{ id: string }>(
+    "SELECT propose_fact($1,'education','Synthetic programme','regression property','Version B','',null,null,null,'Version B text') AS id", [b.document_id]), admin)).rows[0].id;
+  await as("authenticated", () => db.query("SELECT review_fact($1,'reviewed','checked',null)", [onB]), admin);
+  const back = await record(pageTarget, url, "fetched", h("4"), "Version A text");
+  expect(back).toMatchObject({ outcome: "unchanged", flagged_facts: 0 });
+  expect((await db.query("SELECT source_changed_at FROM facts WHERE id=$1", [onB])).rows).toEqual([{ source_changed_at: null }]);
+});
 it("stops immediately when a source is switched off, and closes runs with counts", async () => {
   await db.query("UPDATE sources SET crawl_enabled=false WHERE id=$1", [source]);
   await expect(record(pageTarget, "https://agency.example.test/permits", "fetched", h("f"))).rejects.toThrow("crawler_target_not_allowed");
   expect((await crawler(() => db.query("SELECT * FROM crawler_due_targets()"))).rows).toHaveLength(0);
   const counts = (await crawler(() => db.query<{ c: Record<string, number> }>("SELECT crawler_finish_run($1,'succeeded',null) AS c", [run]))).rows[0].c;
-  expect(counts).toMatchObject({ created: 6, unchanged: 1, not_modified: 1 });
+  expect(counts).toMatchObject({ created: 11, unchanged: 2, not_modified: 1 });
   await db.query("UPDATE sources SET crawl_enabled=true WHERE id=$1", [source]);
   await expect(record(pageTarget, "https://agency.example.test/permits", "fetched")).rejects.toThrow("crawler_run_closed");
 });
