@@ -52,6 +52,11 @@ Bạn kiểm:
    thay đổi sau thời điểm sao lưu. Migration này chỉ thêm, nên tình huống bình thường dùng mục 5, không
    cần khôi phục toàn bộ.
 
+> **Gói Supabase Free (ghi nhận 2026-10-15):** không có bản sao lưu để khôi phục. Bản `pg_dump` ở bước 2 là
+> **bắt buộc** trước mỗi migration, không chỉ là khuyến nghị. Migration PR 1 đã chạy lúc 14:02 UTC mà
+> không có bản sao lưu (chỉ thêm đối tượng mới, đã kiểm sau migration);
+> xem `docs/architecture/extraction-merge-sequence.md`.
+
 ## 3. Thứ tự thực hiện (sau khi bạn phê duyệt từng bước)
 
 1. Merge PR 0 (`extraction/pr-0-audit` → `main`).
