@@ -1,0 +1,265 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "EXMP - Example University",
+  "lang": "en",
+  "canonicalUrl": null,
+  "root": {
+    "kind": "main",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "main>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "Master's Programme in Example Studies",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "main>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "Programme overview",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "h3",
+      "domPath": "main>h3:nth-of-type(1)",
+      "level": 3,
+      "text": "Year 1",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "ref": "b1",
+      "domPath": "main>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "The programme focuses on example methods.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b2",
+      "domPath": "main>div:nth-of-type(1)",
+      "kind": "text",
+      "text": "Autumn 2027 Autumn 2028",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b3",
+      "domPath": "main>div:nth-of-type(2)",
+      "kind": "text",
+      "text": "Beginning/End week commencing 30/08/2027 - 03/06/2029",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b4",
+      "domPath": "main>div:nth-of-type(3)",
+      "kind": "text",
+      "text": "Application opens 16 October 2026",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b5",
+      "domPath": "main>p:nth-of-type(2)",
+      "kind": "p",
+      "text": "This is a half-time study pace online programme. The programme takes two years to complete.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b6",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)",
+      "kind": "li",
+      "text": "Example Methods 7.5 credits",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ],
+      "depth": 0
+    },
+    {
+      "ref": "b7",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(2)",
+      "kind": "li",
+      "text": "Example Theory 7.5 credits",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ],
+      "depth": 0
+    },
+    {
+      "ref": "b8",
+      "domPath": "main>details:nth-of-type(1)>summary:nth-of-type(1)",
+      "kind": "summary",
+      "text": "Required supporting documentation",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ]
+    },
+    {
+      "ref": "b9",
+      "domPath": "main>details:nth-of-type(1)>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "Submit the summary sheet as a pdf.",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ]
+    },
+    {
+      "ref": "b10",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(1)",
+      "kind": "text",
+      "text": "Eligibility A Bachelor degree with at least 180 ECTS credits. English 6.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b11",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(2)",
+      "kind": "text",
+      "text": "Selection Grades and a motivation letter.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b12",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(3)",
+      "kind": "text",
+      "text": "Tuition fee First instalment: 45000 SEK. The complete course: 90000 SEK.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    },
+    {
+      "ref": "b13",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(4)",
+      "kind": "text",
+      "text": "Credits 60 credits",
+      "section": [
+        "Master's Programme in Example Studies"
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "ref": "p1",
+      "domPath": "main>details:nth-of-type(1)",
+      "label": "Required supporting documentation",
+      "value": "Submit the summary sheet as a pdf.",
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ],
+      "from": "label_value",
+      "labelPath": "main>details:nth-of-type(1)>summary:nth-of-type(1)",
+      "valuePath": "main>details:nth-of-type(1)>p:nth-of-type(1)"
+    },
+    {
+      "ref": "p2",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(1)",
+      "label": "Eligibility",
+      "value": "A Bachelor degree with at least 180 ECTS credits. English 6.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ],
+      "from": "label_value",
+      "labelPath": "main>aside:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(1)",
+      "valuePath": "main>aside:nth-of-type(1)>div:nth-of-type(1)>span:nth-of-type(2)"
+    },
+    {
+      "ref": "p3",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(2)",
+      "label": "Selection",
+      "value": "Grades and a motivation letter.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ],
+      "from": "label_value",
+      "labelPath": "main>aside:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(1)",
+      "valuePath": "main>aside:nth-of-type(1)>div:nth-of-type(2)>span:nth-of-type(2)"
+    },
+    {
+      "ref": "p4",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(3)",
+      "label": "Tuition fee",
+      "value": "First instalment: 45000 SEK. The complete course: 90000 SEK.",
+      "section": [
+        "Master's Programme in Example Studies"
+      ],
+      "from": "label_value",
+      "labelPath": "main>aside:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(1)",
+      "valuePath": "main>aside:nth-of-type(1)>div:nth-of-type(3)>span:nth-of-type(2)"
+    },
+    {
+      "ref": "p5",
+      "domPath": "main>aside:nth-of-type(1)>div:nth-of-type(4)",
+      "label": "Credits",
+      "value": "60 credits",
+      "section": [
+        "Master's Programme in Example Studies"
+      ],
+      "from": "label_value",
+      "labelPath": "main>aside:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(1)",
+      "valuePath": "main>aside:nth-of-type(1)>div:nth-of-type(4)>span:nth-of-type(2)"
+    }
+  ],
+  "tables": [],
+  "links": [
+    {
+      "ref": "l1",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)>a:nth-of-type(1)",
+      "text": "Example Methods 7.5 credits",
+      "href": "https://uni.example.test/course/ex1",
+      "sameOrigin": true,
+      "fileType": null,
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ]
+    },
+    {
+      "ref": "l2",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(2)>a:nth-of-type(1)",
+      "text": "Example Theory 7.5 credits",
+      "href": "https://uni.example.test/course/ex2",
+      "sameOrigin": true,
+      "fileType": null,
+      "section": [
+        "Master's Programme in Example Studies",
+        "Programme overview",
+        "Year 1"
+      ]
+    }
+  ],
+  "structuredData": [],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}

@@ -25,6 +25,7 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p .",
     "snapshot": "tsx scripts/snapshot.ts",
-    "real-check": "tsx scripts/real-check.ts"
+    "real-check": "tsx scripts/real-check.ts",
+    "structure-fixtures": "tsx scripts/structure-fixtures.ts"
   }
 }

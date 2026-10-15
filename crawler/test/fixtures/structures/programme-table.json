@@ -1,0 +1,170 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "MSc Sample Engineering | Sample Institute of Technology",
+  "lang": "en",
+  "canonicalUrl": null,
+  "root": {
+    "kind": "article",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "article>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "MSc Sample Engineering",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "article>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "Curriculum",
+      "section": [
+        "MSc Sample Engineering"
+      ]
+    }
+  ],
+  "blocks": [],
+  "pairs": [
+    {
+      "ref": "p1",
+      "domPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(1)",
+      "label": "Duration",
+      "value": "2 years, full-time",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "from": "th_row",
+      "labelPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(1)>th:nth-of-type(1)",
+      "valuePath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(1)>td:nth-of-type(1)"
+    },
+    {
+      "ref": "p2",
+      "domPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(2)",
+      "label": "Credits",
+      "value": "120 ECTS",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "from": "th_row",
+      "labelPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(2)>th:nth-of-type(1)",
+      "valuePath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(2)>td:nth-of-type(1)"
+    },
+    {
+      "ref": "p3",
+      "domPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(3)",
+      "label": "Tuition fee (non-EU)",
+      "value": "EUR 15,000 per year",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "from": "th_row",
+      "labelPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(3)>th:nth-of-type(1)",
+      "valuePath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(3)>td:nth-of-type(1)"
+    },
+    {
+      "ref": "p4",
+      "domPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(4)",
+      "label": "Application deadline",
+      "value": "15 January 2027",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "from": "th_row",
+      "labelPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(4)>th:nth-of-type(1)",
+      "valuePath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(4)>td:nth-of-type(1)"
+    },
+    {
+      "ref": "p5",
+      "domPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(5)",
+      "label": "Language",
+      "value": "English",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "from": "th_row",
+      "labelPath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(5)>th:nth-of-type(1)",
+      "valuePath": "article>table:nth-of-type(1)>tbody:nth-of-type(1)>tr:nth-of-type(5)>td:nth-of-type(1)"
+    }
+  ],
+  "tables": [
+    {
+      "ref": "t1",
+      "domPath": "article>table:nth-of-type(1)",
+      "section": [
+        "MSc Sample Engineering"
+      ],
+      "caption": null,
+      "headers": [],
+      "rows": [
+        {
+          "cells": [
+            "Duration",
+            "2 years, full-time"
+          ]
+        },
+        {
+          "cells": [
+            "Credits",
+            "120 ECTS"
+          ]
+        },
+        {
+          "cells": [
+            "Tuition fee (non-EU)",
+            "EUR 15,000 per year"
+          ]
+        },
+        {
+          "cells": [
+            "Application deadline",
+            "15 January 2027"
+          ]
+        },
+        {
+          "cells": [
+            "Language",
+            "English"
+          ]
+        }
+      ]
+    },
+    {
+      "ref": "t2",
+      "domPath": "article>table:nth-of-type(2)",
+      "section": [
+        "MSc Sample Engineering",
+        "Curriculum"
+      ],
+      "caption": null,
+      "headers": [
+        "Semester",
+        "Course",
+        "ECTS"
+      ],
+      "rows": [
+        {
+          "cells": [
+            "1",
+            "Sample Foundations",
+            "10"
+          ]
+        },
+        {
+          "cells": [
+            "4",
+            "Thesis",
+            "30"
+          ]
+        }
+      ]
+    }
+  ],
+  "links": [],
+  "structuredData": [],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}

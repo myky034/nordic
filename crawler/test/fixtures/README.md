@@ -16,3 +16,8 @@ forbids mirroring third-party content. Real page versions stay in the database
 (`extractPage`, hash method `sha256-text-v1`) produces for each file. PR 1 of
 the configurable-extraction plan must keep these outputs unchanged (or version
 the hash method explicitly).
+
+`structures/*.json` holds `extractStructure()` output for these pages, written by
+`npm run structure-fixtures -w @nordic/crawler` and checked by
+`src/structure.fixtures.test.ts`. The web app's tests read those JSON files
+instead of importing crawler code (the web build does not install cheerio).
