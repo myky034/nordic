@@ -13,12 +13,22 @@ Slice 9 crawler (see `docs/architecture/slice-09-crawler.md`,
 - Respects robots.txt (`NordicResearchBot`), one request at a time, 5 s between
   requests to the same domain, 2 MB / 30 s limits, HTML and XML only, an honest
   User-Agent, no redirects to other domains, conditional requests (ETag /
-  Last-Modified).
+  Last-Modified) for URLs read without a browser.
+- **Browser rendering (L6, 2026-10-15):** URLs are read in a headless Chromium
+  (Playwright) by default, after the plain GET has passed robots, origin, type
+  and size checks; a URL can opt out ("HTML only" in `/admin/crawler`).
+  Sitemaps are read without a browser. See `docs/architecture/browser-crawler-plan.md`.
+- **Structured snapshots (PR 1, 2026-10-15):** next to the readable text, each
+  stored or unchanged page gets a structured snapshot (`src/structure.ts`,
+  format `html-structure-v1`: headings, blocks, label/value pairs, tables,
+  links, JSON-LD) saved through `crawler_record_structure()` into
+  `document_structures`, with history. The readable text and its
+  `sha256-text-v1` hash are unchanged. See `docs/architecture/pr1-structured-content-plan.md`.
 - Hashes the normalised extracted text (`sha256-text-v1`). Unchanged pages do
   not create documents. A changed page creates a new document version, stores
   its text privately (`document_texts`) and flags published facts whose
   evidence was the previous version ("Nguồn đã đổi" review queue).
-- Talks to PostgreSQL through five `crawler_*` SQL functions only, as a login
+- Talks to PostgreSQL through six `crawler_*` SQL functions only, as a login
   role that is a member of `nordic_crawler_ops`. It holds **no** service-role
   key and has no table privileges.
 
@@ -29,6 +39,8 @@ npm run probe -w @nordic/crawler -- <url> [css-selector]  # one URL, no database
 npm run crawl -w @nordic/crawler                           # full run (needs CRAWLER_DATABASE_URL)
 npm run test -w @nordic/crawler
 npm run typecheck -w @nordic/crawler
+npm run snapshot -w @nordic/crawler -- <id> <url>         # save one rendered official page locally (git-ignored)
+npm run real-check -w @nordic/crawler [-- --md]           # real-world acceptance on local snapshots; missing = FAIL
 ```
 
 Environment: `CRAWLER_DATABASE_URL` (required for `crawl`), `CRAWLER_CONTACT_URL`

@@ -1,0 +1,34 @@
+{
+  "_comment": "PR 1 real-world acceptance (docs/architecture/pr1-structured-content-plan.md §6). Conditions only, never page content. Snapshots are local: npm run snapshot -w @nordic/crawler -- <id> <url>. A missing URL or snapshot is a FAILURE, never a skip.",
+  "pages": [
+    {
+      "id": "su-sprom-ht2027",
+      "university": "Stockholm University",
+      "url": "https://www.su.se/english/education/course-catalogue/sp/sprom?semester=HT2027&eventcode=43003",
+      "selector": "main",
+      "expect": {
+        "pairLabels": ["Tuition fee", "Selection", "Eligibility", "Level", "Language", "Subject"],
+        "pairValueMatches": { "Tuition fee": "\\d+ SEK" },
+        "sections": ["Year 1", "Year 2"],
+        "pdfLink": true,
+        "notInStructure": ["firstInstallment", "totalCost", "registerInitialState"],
+        "minPairs": 8
+      }
+    },
+    {
+      "id": "su-sprom-ht2026",
+      "university": "Stockholm University",
+      "url": "https://www.su.se/english/education/course-catalogue/sp/sprom?semester=HT2026&eventcode=43006",
+      "selector": "main",
+      "expect": {
+        "pairLabels": ["Tuition fee", "Selection", "Eligibility"],
+        "pairValueMatches": { "Tuition fee": "\\d+ SEK" },
+        "sections": ["Year 1"],
+        "notInStructure": ["firstInstallment", "totalCost", "registerInitialState"],
+        "minPairs": 8
+      }
+    },
+    { "id": "kth-programme-1", "university": "KTH Royal Institute of Technology", "url": null, "selector": null, "expect": {}, "pending": "URL to be provided by the project owner (Decision Log 2026-10-15, Q4)" },
+    { "id": "kth-programme-2", "university": "KTH Royal Institute of Technology", "url": null, "selector": null, "expect": {}, "pending": "URL to be provided by the project owner (Decision Log 2026-10-15, Q4)" }
+  ]
+}

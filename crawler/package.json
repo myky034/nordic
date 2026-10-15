@@ -23,6 +23,8 @@
     "crawl": "tsx src/main.ts",
     "probe": "tsx src/main.ts --probe",
     "test": "vitest run",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "snapshot": "tsx scripts/snapshot.ts",
+    "real-check": "tsx scripts/real-check.ts"
   }
 }

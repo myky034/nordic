@@ -6,6 +6,7 @@ import { extractPage } from "./extract";
 import { failureCategory, fetchLimited, type Fetcher } from "./fetch";
 import { sitemapUrls } from "./sitemap";
 import { playwrightRenderer, type Renderer } from "./render";
+import { extractStructure } from "./structure";
 
 type Job = { target: Target; url: string; phase: "sitemap" | "page"; state?: UrlState };
 export type CrawlOptions = {
@@ -83,11 +84,26 @@ export async function runCrawl(opts: CrawlOptions) {
       }
       const page = extractPage(html, job.target.content_selector);
       if (!page.text) return record({ ...base, outcome: "error", errorCategory: "empty_text" });
-      return record({
+      const retrievedAt = new Date();
+      const result = await record({
         ...base, outcome: "fetched", title: page.title, text: page.text, contentHash: textHash(page.text),
         metadataHash: metadataHash({ title: page.title, documentType: "webpage", excerpt: null, publishedAt: null, sourceUpdatedAt: null }),
-        etag: res.etag, lastModified: res.lastModified, retrievedAt: new Date(),
+        etag: res.etag, lastModified: res.lastModified, retrievedAt,
       });
+      // PR 1: the structured snapshot of the same HTML, next to the text. A
+      // failure here never undoes the stored text: it is logged and the run ends
+      // "partial" (AGENTS.md §13).
+      if (result.document_id && (result.outcome === "created" || result.outcome === "unchanged")) {
+        try {
+          const saved = await opts.db.recordStructure(runId, result.document_id, extractStructure(html, job.target.content_selector, job.url), retrievedAt);
+          log(JSON.stringify({ source: "crawler", operation: "structure", url: job.url, outcome: saved }));
+        } catch (error) {
+          failures += 1;
+          log(JSON.stringify({ source: "crawler", operation: "structure", url: job.url, status: "failed", category: "structure_failed",
+            message: error instanceof Error ? error.message.slice(0, 200) : "unknown" }));
+        }
+      }
+      return result;
     }, record, log);
     await closeBrowser();
     const counts = await opts.db.finishRun(runId, failures ? "partial" : "succeeded", failures ? `${failures} URL(s) failed` : null);
