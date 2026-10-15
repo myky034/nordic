@@ -112,14 +112,22 @@ export function ConflictForm({id,others,locale}:{id:string;others:{id:string;lab
  <button disabled={pending} className={buttonPrimary}>{pending?e.saving:t.markConflict}</button>
  </form>;
 }
-// Slice 9: a reviewer compares the claim with the NEW page version, then
-// either confirms it still holds or withdraws it. Never decided automatically.
-export function SourceChangeForm({id,locale}:{id:string;locale:Locale}) {
+// Slice 9 / L7a: a reviewer compares the claim with the NEW page version and
+// either moves it there (excerpt still verbatim), names the newer fact that
+// replaces it, or withdraws it. Never decided automatically.
+export function SourceChangeForm({id,excerptInNew,replacements=[],locale}:{id:string;excerptInNew:boolean|null;replacements?:{id:string;label:string}[];locale:Locale}) {
  const [state,action,pending]=useActionState(resolveSourceChange,{});
  const t=dictionaries[locale].factsWorkspace.form, e=dictionaries[locale].editor;
+ const [decision,setDecision]=useState(excerptInNew===false?(replacements.length?"superseded":"rejected"):"revalidated");
  return <form action={action} className="space-y-4 rounded-xl bg-fill/40 p-4">
  <input type="hidden" name="fact" value={id}/>
- <Field label={t.changeResult}><select name="decision" className={control}><option value="revalidated">{t.stillMatches}</option><option value="rejected">{t.noLongerTrue}</option></select></Field>
+ {excerptInNew!==null&&<p className={`text-[14px] ${excerptInNew?"text-positive":"text-caution"}`}>{excerptInNew?t.excerptInNew:t.excerptNotInNew}</p>}
+ <Field label={t.changeResult}><select name="decision" value={decision} onChange={ev=>setDecision(ev.target.value)} className={control}>
+  <option value="revalidated" disabled={excerptInNew===false}>{t.stillMatches}</option>
+  <option value="superseded" disabled={!replacements.length}>{t.supersededBy}</option>
+  <option value="rejected">{t.noLongerTrue}</option></select></Field>
+ {decision==="superseded"&&<Field label={t.replacement}><select name="related" required className={control}><option value="">{t.chooseReplacement}</option>
+  {replacements.map(r=><option key={r.id} value={r.id}>{r.label}</option>)}</select></Field>}
  <Field label={t.compareNote} hint={t.changeNoteHint}><textarea name="note" required maxLength={1000} rows={2} className={control}/></Field>
  <FormMessage error={state.error} message={state.message}/>
  <button disabled={pending} className={buttonPrimary}>{pending?e.saving:t.record}</button>

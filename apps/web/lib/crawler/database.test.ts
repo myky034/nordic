@@ -104,12 +104,49 @@ it("flags published facts when their page changes, keeps them public, and lets a
   expect((await db.query("SELECT decision FROM fact_reviews WHERE fact_id=$1 ORDER BY created_at", [fact])).rows.map((r) => (r as { decision: string }).decision))
     .toEqual(["reviewed", "revalidated", "rejected"]);
 });
+// L7a (Decision Log 2026-10-15, KHLOE-159): versions of one page are one page for facts.
+it("treats versions of one page as one page: no cross-version duplicates, move on confirm, superseded with a link", async () => {
+  const url = "https://agency.example.test/permits";
+  const v1 = (await record(pageTarget, url, "fetched", h("1"), "Tuition fee: SEK 100 per year.\nLanguage: English.")).document_id;
+  const propose = (doc: string, value: string, excerpt: string) => as("authenticated", () => db.query<{ id: string }>(
+    "SELECT propose_fact($1,'education','Synthetic programme',$2,$3,null,null,null,null,$4) AS id", [doc, `property ${value}`, value, excerpt]), admin);
+  const tuition = (await propose(v1, "SEK 100 per year", "Tuition fee: SEK 100 per year.")).rows[0].id;
+  const language = (await propose(v1, "Language: English", "Language: English.")).rows[0].id;
+  for (const id of [tuition, language]) await as("authenticated", () => db.query("SELECT review_fact($1,'reviewed','checked',null)", [id]), admin);
+  const v2 = await record(pageTarget, url, "fetched", h("2"), "Tuition fee: SEK 100 per year.\nTaught in English.");
+  expect(v2.flagged_facts).toBe(2);
+  // D2: the same claim on the new version is a duplicate of the old one.
+  await expect(propose(v2.document_id, "SEK 100 per year", "Tuition fee: SEK 100 per year.")).rejects.toThrow("facts_duplicate");
+  const taught = (await propose(v2.document_id, "Taught in English", "Taught in English.")).rows[0].id;
+  // D3: confirming moves the fact only if its excerpt is in the new version.
+  const resolve = (id: string, decision: string, related: string | null = null) =>
+    as("authenticated", () => db.query("SELECT resolve_source_change($1,$2,'synthetic note',$3)", [id, decision, related]), admin);
+  await expect(resolve(language, "revalidated")).rejects.toThrow("facts_excerpt_not_in_new_version");
+  await resolve(tuition, "revalidated");
+  const moved = (await db.query<{ document_id: string; source_changed_at: Date | null }>("SELECT document_id, source_changed_at FROM facts WHERE id=$1", [tuition])).rows[0];
+  expect(moved).toEqual({ document_id: v2.document_id, source_changed_at: null });
+  expect((await db.query("SELECT document_id FROM evidence WHERE fact_id=$1", [tuition])).rows).toEqual([{ document_id: v2.document_id }]);
+  expect((await db.query("SELECT document_id, replaced_by_document_id FROM evidence_history WHERE fact_id=$1", [tuition])).rows)
+    .toEqual([{ document_id: v1, replaced_by_document_id: v2.document_id }]);
+  // D4: superseded needs a live fact from the same page, and records the link.
+  await expect(resolve(language, "superseded", null)).rejects.toThrow("facts_invalid");
+  await expect(resolve(language, "superseded", fact)).rejects.toThrow("facts_invalid"); // rejected earlier
+  await expect(resolve(language, "superseded", language)).rejects.toThrow("facts_invalid");
+  await resolve(language, "superseded", taught);
+  expect((await db.query("SELECT status FROM facts WHERE id=$1", [language])).rows).toEqual([{ status: "rejected" }]);
+  expect((await db.query("SELECT decision, related_fact_id FROM fact_reviews WHERE fact_id=$1 ORDER BY created_at DESC LIMIT 1", [language])).rows)
+    .toEqual([{ decision: "superseded", related_fact_id: taught }]);
+  // The history is read-only and for editors only.
+  await as("anon", async () => { await expect(db.query("SELECT * FROM evidence_history")).rejects.toThrow(/permission denied/); });
+  await as("authenticated", async () => { expect((await db.query("SELECT * FROM evidence_history")).rows).toHaveLength(0); }, member);
+  await as("authenticated", async () => { await expect(db.query("DELETE FROM evidence_history")).rejects.toThrow(/permission denied/); }, admin);
+});
 it("stops immediately when a source is switched off, and closes runs with counts", async () => {
   await db.query("UPDATE sources SET crawl_enabled=false WHERE id=$1", [source]);
   await expect(record(pageTarget, "https://agency.example.test/permits", "fetched", h("f"))).rejects.toThrow("crawler_target_not_allowed");
   expect((await crawler(() => db.query("SELECT * FROM crawler_due_targets()"))).rows).toHaveLength(0);
   const counts = (await crawler(() => db.query<{ c: Record<string, number> }>("SELECT crawler_finish_run($1,'succeeded',null) AS c", [run]))).rows[0].c;
-  expect(counts).toMatchObject({ created: 4, unchanged: 1, not_modified: 1 });
+  expect(counts).toMatchObject({ created: 6, unchanged: 1, not_modified: 1 });
   await db.query("UPDATE sources SET crawl_enabled=true WHERE id=$1", [source]);
   await expect(record(pageTarget, "https://agency.example.test/permits", "fetched")).rejects.toThrow("crawler_run_closed");
 });

@@ -20,6 +20,7 @@ import { factBlockers, visibilityOf } from "@/lib/review/visibility";
 import { uuidPattern } from "@/lib/documents/domain";
 import { factTypeKindsFor } from "@/lib/facts/domain";
 import { adjustmentLabel } from "@/lib/extraction/domain";
+import { findExcerpt } from "@/lib/facts/mapping";
 import { likePattern } from "@/lib/education/domain";
 import { choiceParam, isPastLastPage, pageParam, pageSummary, pageWindow, searchParam, withParams } from "@/lib/pagination";
 import { Badge, Disclosure, EmptyState, NoAccess, PageHeader, SearchInput, Section, Segmented } from "@/components/ui";
@@ -109,6 +110,28 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
  ]);
  if(extraction.error) logAccessError("facts_workspace_extraction_item");
  const adjustments=((extraction.data as {adjustments:string[]}|null)?.adjustments ?? []).map(a=>adjustmentLabel(a,locale));
+ // L7a: for a flagged fact, is its excerpt still in the new version (so it can
+ // move there), and which facts of the same page (any version) could replace it.
+ let excerptInNew: boolean | null = null;
+ let replacements: { id: string; label: string }[] = [];
+ if(review&&current?.source_changed_at){
+   const [page,newText]=await Promise.all([
+     client.from("documents").select("source_id,canonical_url").eq("id",current.document_id).maybeSingle(),
+     current.source_changed_document_id?client.from("document_texts").select("text").eq("document_id",current.source_changed_document_id).maybeSingle():Promise.resolve({data:null,error:null}),
+   ]);
+   if(page.error||newText.error) logAccessError("facts_workspace_source_change");
+   const text=(newText.data as {text:string}|null)?.text;
+   excerptInNew=text&&current.evidence?findExcerpt(text,current.evidence.excerpt)!==null:null;
+   const pageRow=page.data as {source_id:string;canonical_url:string}|null;
+   if(pageRow){
+     const versions=await client.from("documents").select("id").eq("source_id",pageRow.source_id).eq("canonical_url",pageRow.canonical_url);
+     const ids=((versions.data ?? []) as {id:string}[]).map(v=>v.id);
+     const others=ids.length?await client.from("facts").select("id,predicate,value,fact_types(label_vi,label_en),documents!facts_document_id_fkey(retrieved_at)").in("document_id",ids).neq("status","rejected").neq("id",current.id).order("created_at",{ascending:false}).limit(50):{data:[],error:null};
+     if(versions.error||others.error) logAccessError("facts_workspace_replacements");
+     replacements=((others.data ?? []) as unknown as {id:string;predicate:string;value:string;fact_types:{label_vi:string;label_en:string}|null;documents:{retrieved_at:string}}[])
+       .map(o=>({id:o.id,label:`${o.fact_types?factTypeLabel(o.fact_types,locale):o.predicate}: ${o.value.length>60?o.value.slice(0,60)+"…":o.value} (${o.documents.retrieved_at.slice(0,10)})`}));
+   }
+ }
  // L4 Q3: types a reviewer may give the selected fact (its linked item's kind + country).
  const typeKinds=current?factTypeKindsFor(current):[];
  const typeChoices=metrics.filter(m=>typeKinds.includes(m.applies_to));
@@ -157,7 +180,7 @@ export default async function Page({searchParams}:PageProps<"/facts/workspace">)
      {review&&current.status==="proposed"&&typeChoices.length>0&&<FactTypeForm key={`type-${current.id}`} fact={current} types={typeChoices} adjustments={adjustments}
        currentLabel={current.fact_types?factTypeLabel(current.fact_types,locale):null} locale={locale}/>}
      {review&&current.status==="proposed"&&<ReviewForm key={current.id} id={current.id} ai={current.origin==="ai"} locale={locale}/>}
-     {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary={t.compareNewVersion}><SourceChangeForm key={current.id} id={current.id} locale={locale}/></Disclosure>}
+     {review&&current.source_changed_at&&<Disclosure small open={status==="source_changed"} summary={t.compareNewVersion}><SourceChangeForm key={current.id} id={current.id} excerptInNew={excerptInNew} replacements={replacements} locale={locale}/></Disclosure>}
      {review&&status!=="source_changed"&&(current.status==="reviewed"||current.status==="conflicted")&&conflictCandidates.length>1&&<Disclosure small summary={t.markConflict}><ConflictForm key={current.id} id={current.id} others={conflictCandidates} locale={locale}/></Disclosure>}
      </div></div>
    </>}/>

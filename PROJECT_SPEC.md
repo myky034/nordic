@@ -2166,3 +2166,27 @@ may opt out (e.g. plain pages where the static reader is enough).
 - Embedded JSON is not read as page text (it is not what a visitor sees).
 
 Plan: `docs/architecture/browser-crawler-plan.md`.
+
+### 2026-10-15 — L7a: versions of one page are one page for facts (owner request)
+
+After the first browser re-crawl of the Stockholm University page, every fact
+existed twice: the reviewed facts on the 14 Oct version (flagged "source
+changed") and the same facts mapped again on the 15 Oct version. The
+duplicate rule (L5) compared only within one document, and a still-valid
+fact could only stay on the old version. The owner asked to fix versions and
+duplicates first (intake pages per programme follow as L7b).
+
+- A **page** is one registered URL of one source; its documents are versions.
+  The shared duplicate rule now looks across all versions of the page.
+- Revises Slice 9 ("a still-valid claim is not re-sourced"): when a reviewer
+  confirms a flagged fact *and its excerpt is verbatim in the new version*,
+  the fact moves to the new version. The previous evidence is kept in an
+  append-only evidence history. If the excerpt is not in the new version the
+  move is refused; the reviewer rejects it or marks it superseded.
+- New reviewer decision **superseded**: the old fact is withdrawn because a
+  named fact on the same page (any version) now says it; recorded with that
+  link, distinct from "no longer true".
+- The mapping screen shows facts from earlier versions of the same page, so
+  nothing is mapped twice.
+
+Plan: `docs/architecture/page-versions-plan.md`.

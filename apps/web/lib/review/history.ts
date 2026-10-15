@@ -9,8 +9,9 @@ export const decisionLabels: Record<string, { label: string; tone: Tone }> = {
   rejected: { label: "Đã từ chối", tone: "neutral" },
   conflicted: { label: "Đánh dấu mâu thuẫn", tone: "critical" },
   revalidated: { label: "Vẫn khớp nguồn mới", tone: "accent" },
+  superseded: { label: "Được thay bằng thông tin mới", tone: "neutral" },
 };
-const decisionLabelsEn: Record<string, string> = { reviewed: "Reviewed", rejected: "Rejected", conflicted: "Marked as conflicting", revalidated: "Still matches the new source" };
+const decisionLabelsEn: Record<string, string> = { reviewed: "Reviewed", rejected: "Rejected", conflicted: "Marked as conflicting", revalidated: "Still matches the new source", superseded: "Replaced by a newer fact" };
 
 export function decisionLabel(decision: string, locale: Locale = defaultLocale) {
   const d = Object.hasOwn(decisionLabels, decision) ? decisionLabels[decision] : null;

@@ -14,7 +14,7 @@ import { ReviewForm } from "../../workspace/forms";
 import { RequestExtractionForm } from "@/app/(public)/(explore)/documents/[id]/extraction-forms";
 import { MapView, type Mark, type MapType } from "./map-view";
 
-type Fact = { id: string; status: string; origin: string; value: string; unit: string | null; deadline_type: string | null;
+type Fact = { id: string; document_id: string; source_changed_at: string | null; status: string; origin: string; value: string; unit: string | null; deadline_type: string | null;
   fact_types: { key: string; label_vi: string; label_en: string } | null; evidence: { excerpt: string } | null };
 type TypeRow = { id: string; key: string; label_vi: string; label_en: string; definition_vi: string; definition_en: string; value_kind: string;
   applies_to: string; unit_hint: string | null; min_value: number | string | null; max_value: number | string | null; category: string };
@@ -33,17 +33,23 @@ export default async function MapPage({ params }: PageProps<"/facts/map/[id]">) 
   if (!propose && !review) return <NoAccess title={w.noAccessTitle} back="/facts" backLabel={w.seePublic} locale={locale}>
     {e.noAccessHelp(permissionName("facts.propose", locale), permissionName("facts.review", locale))}</NoAccess>;
 
-  const [doc, text, entity, facts, types, countries, open] = await Promise.all([
-    client.from("documents").select("id,title,canonical_url,retrieved_at,sources(name)").eq("id", id).maybeSingle(),
+  // L7a: facts belong to the PAGE (every stored version of this URL), so a
+  // fact mapped on the 14 Oct version is not mapped again on the 15 Oct one.
+  const doc = await client.from("documents").select("id,source_id,title,canonical_url,retrieved_at,sources(name)").eq("id", id).maybeSingle();
+  if (doc.error) { logAccessError("fact_map_document"); throw new Error("Không tải được dữ liệu biên tập."); }
+  if (!doc.data) notFound();
+  const versions = await client.from("documents").select("id").eq("source_id", (doc.data as { source_id: string }).source_id).eq("canonical_url", (doc.data as { canonical_url: string }).canonical_url);
+  if (versions.error) { logAccessError("fact_map_versions"); throw new Error("Không tải được dữ liệu biên tập."); }
+  const versionIds = (versions.data as { id: string }[]).map((v) => v.id);
+  const [text, entity, facts, types, countries, open] = await Promise.all([
     client.from("document_texts").select("text").eq("document_id", id).maybeSingle(),
     client.rpc("editor_document_entity", { p_document: id }),
-    client.from("facts").select("id,status,origin,value,unit,deadline_type,fact_types(key,label_vi,label_en),evidence(excerpt)").eq("document_id", id).neq("status", "rejected").order("created_at"),
+    client.from("facts").select("id,document_id,source_changed_at,status,origin,value,unit,deadline_type,fact_types(key,label_vi,label_en),evidence(excerpt)").in("document_id", versionIds).neq("status", "rejected").order("created_at"),
     client.from("fact_types").select("id,key,label_vi,label_en,definition_vi,definition_en,value_kind,applies_to,unit_hint,min_value,max_value,category").eq("active", true).order("label_vi"),
     client.from("countries").select("id,name").order("name"),
     client.from("extraction_requests").select("id").eq("document_id", id).in("status", ["pending", "running"]).limit(1),
   ]);
-  if ([doc, text, entity, facts, types, countries, open].some((r) => r.error)) { logAccessError("fact_map"); throw new Error("Không tải được dữ liệu biên tập."); }
-  if (!doc.data) notFound();
+  if ([text, entity, facts, types, countries, open].some((r) => r.error)) { logAccessError("fact_map"); throw new Error("Không tải được dữ liệu biên tập."); }
   const document = doc.data as unknown as { id: string; title: string | null; canonical_url: string; retrieved_at: string; sources: { name: string } };
   const linked = (entity.data as { kind: string; entity_id: string; name: string | null; country_id: string | null }[])[0] ?? null;
   const rows = facts.data as unknown as Fact[];
@@ -76,6 +82,7 @@ export default async function MapPage({ params }: PageProps<"/facts/map/[id]">) 
 
   const factLine = (f: Fact) => <li key={f.id} className="space-y-1">
     <p className="text-[14px] text-ink">{f.value}{f.unit ? ` ${f.unit}` : ""}{f.origin === "ai" && <> <Badge tone="accent">AI</Badge></>}</p>
+    {f.document_id !== id && <p className="text-[12px] text-caution">{t.otherVersion}{f.source_changed_at ? ` · ${t.awaitingSourceCheck}` : ""}</p>}
     {missing.has(f.id) && <p className="text-[12px] text-ink-3">{t.notOnPage}</p>}
     {review && f.status === "proposed" && <Disclosure small summary={t.review}><ReviewForm id={f.id} ai={f.origin === "ai"} locale={locale} /></Disclosure>}
   </li>;

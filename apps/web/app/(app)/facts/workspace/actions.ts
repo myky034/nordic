@@ -61,12 +61,15 @@ export async function resolveSourceChange(_: FactState, form: FormData): Promise
   const [locale, dict] = [await getLocale(), await getDictionary()];
   try {
     const { client } = await requirePermission("facts.review");
-    const decision = form.get("decision");
-    if (!uuidPattern.test(String(form.get("fact") ?? "")) || (decision !== "revalidated" && decision !== "rejected")) return {error:factError("facts_invalid", locale)};
-    const { error } = await client.rpc("resolve_source_change",{p_fact:form.get("fact"),p_decision:decision,p_note:form.get("note")});
+    const decision = form.get("decision"), related = String(form.get("related") ?? "");
+    // L7a: "superseded" names the replacing fact from the same page; the database checks it.
+    if (!uuidPattern.test(String(form.get("fact") ?? "")) || !["revalidated", "rejected", "superseded"].includes(String(decision))
+      || (decision === "superseded" && !uuidPattern.test(related))) return {error:factError("facts_invalid", locale)};
+    const { error } = await client.rpc("resolve_source_change",{p_fact:form.get("fact"),p_decision:decision,p_note:form.get("note"),p_related:decision === "superseded" ? related : null});
     if(error) throw new Error(error.message);
-    revalidatePath("/facts/workspace"); revalidatePath("/facts");
-    return {message:decision==="revalidated"?dict.factsWorkspace.messages.revalidated:dict.factsWorkspace.messages.withdrawn};
+    revalidatePath("/facts/workspace"); revalidatePath("/facts"); revalidatePath("/facts/map/[id]", "page");
+    const m = dict.factsWorkspace.messages;
+    return {message:decision==="revalidated"?m.revalidated:decision==="superseded"?m.superseded:m.withdrawn};
   } catch(e) { logAccessError("resolve_source_change"); return {error:factError(e instanceof Error ? e.message : "", locale)}; }
 }
 // L4 (Q3): a reviewer sets, changes or removes the type and structured value
