@@ -7,6 +7,11 @@
 > thêm loại khối `text` (chữ không nằm trong `p` / `li`…); hàm SQL nhận thêm `p_captured_at`; khóa
 > chống trùng là `(document_id, format_version, structure_hash, captured_at)` + advisory lock theo tài
 > liệu, để A → B → A vẫn ghi được; `<br>` giữ thành dòng riêng trong khối (phát hiện trên trang KTH).
+> Review trước merge (2026-10-15):
+> - bản chụp mới được so với bản chụp **đứng ngay trước nó theo thời gian** (không phải bản mới nhất);
+> - "bản mới nhất" có **một** định nghĩa duy nhất: view `document_structures_latest`, sắp theo
+>   `captured_at`, rồi `created_at`, rồi `id`, đều giảm dần (`security_invoker`, theo RLS của bảng);
+> - lỗi A → B → A (có từ trước): Linear KHLOE-162, ngoài phạm vi PR 1.
 > Nhánh dự kiến: `extraction/pr-1-structured-content`, tách từ `extraction/pr-0-audit`.
 > **Ngoài phạm vi:** L7b, PR 2 (luật), extractor dùng cấu trúc, PDF, giao diện mới, database production.
 

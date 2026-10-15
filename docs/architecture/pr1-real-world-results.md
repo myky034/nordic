@@ -175,5 +175,6 @@ Theo từng mục spec yêu cầu:
 - **Chữ của hộp đồng ý cookie** ("You have previously denied the display of content of the type
   'External media'…") lọt vào khối trên trang KTH Interactive Media Technology. Đó là chữ hiển thị thật,
   không phải script; có thể loại bằng `content_selector` hoặc luật ở PR 2.
+- Lỗi có từ trước A → B → A trong phát hiện thay đổi tài liệu: Linear **KHLOE-162** (không thuộc PR 1).
 - Snapshot chỉ là ảnh chụp ngày 2026-10-15. Trang đổi thì phải chụp lại và xem lại điều kiện; đây là
   kiểm tra thủ công, không chạy trong CI.

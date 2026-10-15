@@ -8,8 +8,10 @@ BEGIN;
 -- A document version is created only when the normalised TEXT changes
 -- (sha256-text-v1). Links, tables or attributes can change without that, so a
 -- structure is not keyed by document alone: each capture whose content differs
--- from the latest snapshot of that document is a new row (history kept), and
--- readers take the latest by captured_at for the format version they know.
+-- from the capture just before it in time is a new row (history kept).
+-- "Latest" has ONE definition, the view document_structures_latest:
+-- captured_at, then created_at, then id, all descending. Captures recorded out
+-- of order (an older capture arriving late) therefore never become the latest.
 
 CREATE TABLE public.document_structures (
  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -37,7 +39,7 @@ CREATE POLICY document_structures_editors ON public.document_structures FOR SELE
 -- The crawler's only way in. Returns 'created' or 'unchanged'.
 CREATE FUNCTION public.crawler_record_structure(p_run uuid, p_document uuid, p_format_version text, p_structure jsonb, p_captured_at timestamptz)
 RETURNS text LANGUAGE plpgsql SECURITY DEFINER SET search_path='' AS $$
-DECLARE v_source uuid; v_hash text; v_latest text;
+DECLARE v_source uuid; v_hash text; v_previous text;
 BEGIN
  IF NOT EXISTS(SELECT 1 FROM public.crawler_runs WHERE id=p_run AND status='running') THEN RAISE EXCEPTION 'crawler_run_closed'; END IF;
  -- Only a document this very run has just recorded (created or unchanged),
@@ -54,14 +56,28 @@ BEGIN
  -- decide "changed" and write the same snapshot twice.
  PERFORM pg_advisory_xact_lock(hashtextextended('document_structures:' || p_document::text, 0));
  v_hash := encode(sha256(convert_to(p_structure::text, 'UTF8')), 'hex');
- SELECT structure_hash INTO v_latest FROM public.document_structures
-  WHERE document_id=p_document AND format_version=p_format_version ORDER BY captured_at DESC, created_at DESC LIMIT 1;
- IF v_latest = v_hash THEN RETURN 'unchanged'; END IF;
+ -- Compare with the capture just before this one IN TIME (same order as the
+ -- reader view), not with the latest: a late, older capture that repeats its
+ -- predecessor adds no row, and in-order captures behave as "compare with latest".
+ SELECT structure_hash INTO v_previous FROM public.document_structures
+  WHERE document_id=p_document AND format_version=p_format_version AND captured_at <= p_captured_at
+  ORDER BY captured_at DESC, created_at DESC, id DESC LIMIT 1;
+ IF v_previous = v_hash THEN RETURN 'unchanged'; END IF;
  INSERT INTO public.document_structures(document_id,format_version,structure,structure_hash,captured_at,crawler_run_id)
  VALUES(p_document,p_format_version,p_structure,v_hash,p_captured_at,p_run)
  ON CONFLICT (document_id, format_version, structure_hash, captured_at) DO NOTHING;
  RETURN CASE WHEN FOUND THEN 'created' ELSE 'unchanged' END;
 END $$;
+
+-- The one definition of "latest snapshot per document and format version",
+-- for every reader (PR 2+). security_invoker: the caller's RLS on
+-- document_structures applies (editors only), exactly as for the table.
+CREATE VIEW public.document_structures_latest WITH (security_invoker = true) AS
+ SELECT DISTINCT ON (document_id, format_version) id, document_id, format_version, structure, structure_hash, captured_at, crawler_run_id, created_at
+ FROM public.document_structures
+ ORDER BY document_id, format_version, captured_at DESC, created_at DESC, id DESC;
+REVOKE ALL ON public.document_structures_latest FROM PUBLIC, anon, authenticated;
+GRANT SELECT ON public.document_structures_latest TO authenticated;
 
 REVOKE ALL ON FUNCTION public.crawler_record_structure(uuid,uuid,text,jsonb,timestamptz) FROM PUBLIC, anon, authenticated, service_role;
 GRANT EXECUTE ON FUNCTION public.crawler_record_structure(uuid,uuid,text,jsonb,timestamptz) TO nordic_crawler_ops;

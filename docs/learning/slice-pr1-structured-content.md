@@ -63,6 +63,12 @@ crawler: GET (robots, origin, loại, cỡ) → Chromium vẽ trang → HTML
 - **`ref` vs `domPath`.** `ref` (`p11`) là định danh trong **một** snapshot; bằng chứng về sau lưu
   `structure_id + ref`. `domPath` (`main>div:nth-of-type(8)>span:nth-of-type(1)`) để người đọc tìm lại
   phần tử. Nó chỉ dùng thẻ và vị trí, không dùng class/id (hay đổi giữa các lần tải trang).
+- **Bản chụp đến không đúng thứ tự.** Hai lần chạy có thể ghi bản chụp cũ **sau** bản mới. Vì thế:
+  - (1) "bản mới nhất" chỉ đọc qua view `document_structures_latest` (sắp theo `captured_at`, rồi
+    `created_at`, rồi `id`, đều giảm dần): bản cũ đến muộn không bao giờ thành bản mới nhất, và mọi chỗ
+    đọc thống nhất một kết quả;
+  - (2) bản chụp mới được so với bản **đứng ngay trước nó theo thời gian**, nên bản cũ đến muộn mà giống
+    bản trước nó thì không sinh dòng thừa.
 - **`pg_advisory_xact_lock`.** Khóa theo khóa số tự chọn (ở đây là hash của id tài liệu), tự nhả khi
   giao dịch kết thúc. Hai lần chạy cùng ghi một tài liệu sẽ xếp hàng, nên không có chuyện cả hai cùng
   thấy "đã đổi" và ghi hai lần.
