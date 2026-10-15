@@ -10,6 +10,7 @@ import { InternalText } from "./internal-text";
 import { ExtractionPanel } from "./extraction-panel";
 import { viewerPermissions } from "@/lib/rbac/viewer";
 import { canProposeFacts, seesInternalDetails } from "@/lib/rbac/ui";
+import { canOpenPreview } from "@/lib/crawler/structure-view";
 
 export default async function DocumentPage({ params }: PageProps<"/documents/[id]">) {
   const { id } = await params;
@@ -25,14 +26,17 @@ export default async function DocumentPage({ params }: PageProps<"/documents/[id
   // are for editors; visitors keep source, URL, dates and the excerpt notice
   // (UX review 2026-10-13, B4; AGENTS.md §23).
   const internal = seesInternalDetails(permissions);
+  // PR 1.5: crawler operators and editors can open the read-only structure preview.
+  const structure = !!permissions && canOpenPreview(permissions);
   const [locale, dict] = [await getLocale(), await getDictionary()];
   const [t, c] = [dict.documents, dict.common];
   return <>
     <PageHeader back={<BackLink href="/documents">{t.back}</BackLink>} eyebrow={t.eyebrow}
       title={<span className="break-words">{document.title ?? c.untitledDocument}</span>}
       description={internal ? <div className="flex flex-wrap gap-2 pt-1"><Badge>{t.savedBadge}</Badge></div> : undefined}
-      actions={canPropose ? <><Link href={`/facts/map/${id}`} className={buttonPrimary}>{dict.factMap.entry}</Link>
-        <Link href={`/facts/workspace?document=${id}`} className={`${textLink} text-[15px]`}>{t.addFact}</Link></> : undefined} />
+      actions={canPropose || structure ? <>{canPropose && <><Link href={`/facts/map/${id}`} className={buttonPrimary}>{dict.factMap.entry}</Link>
+        <Link href={`/facts/workspace?document=${id}`} className={`${textLink} text-[15px]`}>{t.addFact}</Link></>}
+        {structure && <Link href={`/admin/crawler/documents/${id}`} className={`${textLink} text-[15px]`}>{dict.structurePreview.viewStructure}</Link>}</> : undefined} />
     {url && <p className="-mt-4 mb-10 text-[15px]"><ExternalLink href={url}>{t.openOriginal(url)}</ExternalLink></p>}
     <DescriptionList items={[
       [t.source, sourceUrl ? <a href={sourceUrl} className={textLink}>{document.source.name}</a> : document.source.name],

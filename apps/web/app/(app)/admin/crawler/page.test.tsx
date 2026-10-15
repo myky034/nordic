@@ -39,6 +39,11 @@ it("opens a target and a run in the inspector", async () => {
   const target = renderToStaticMarkup(await page({ target: "11111111-1111-4111-8111-111111111111" }));
   expect(target).toContain('role="dialog"');
   expect(target).toContain("/documents/d1");
+  // PR 1.5 entry points: the URL inspector and run items open the structure preview.
+  expect(target).toContain('href="/admin/crawler/documents/d1"');
   const run = renderToStaticMarkup(await page({ tab: "runs", run: "22222222-2222-4222-8222-222222222222" }));
   expect(run).toContain("2 thông tin cần xem lại");
+  expect(run).toContain('href="/admin/crawler/documents/d1"');
+  rows.crawl_url_states = [{ ...(rows.crawl_url_states[0] as object), last_document_id: null }];
+  expect(renderToStaticMarkup(await page({ target: "11111111-1111-4111-8111-111111111111" }))).toContain("Chưa crawl thành công lần nào");
 });

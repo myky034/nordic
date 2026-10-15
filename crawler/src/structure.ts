@@ -8,28 +8,10 @@ import { canonical, sameOrigin } from "./urls";
 // content always gives the same JSON (no timestamps, ids, classes or styles),
 // so the database's structure hash only changes when the page really does.
 
-export const STRUCTURE_FORMAT = "html-structure-v1" as const;
-
-type Ref = string;
-type DomPath = string;
-type Section = string[];
-export type StructureBlockKind = "p" | "li" | "dd" | "blockquote" | "pre" | "summary" | "text";
-export type DocumentStructure = {
-  formatVersion: typeof STRUCTURE_FORMAT;
-  title: string | null;
-  lang: string | null;
-  canonicalUrl: string | null;
-  root: { kind: "selector" | "main" | "article" | "body"; selector: string | null };
-  headings: { ref: Ref; domPath: DomPath; level: number; text: string; section: Section }[];
-  blocks: { ref: Ref; domPath: DomPath; kind: StructureBlockKind; text: string; section: Section; depth?: number }[];
-  pairs: { ref: Ref; domPath: DomPath; label: string; value: string; section: Section; from: "dl" | "th_row" | "label_value"; labelPath: DomPath; valuePath: DomPath }[];
-  tables: { ref: Ref; domPath: DomPath; section: Section; caption: string | null; headers: string[]; rows: { cells: string[] }[] }[];
-  links: { ref: Ref; domPath: DomPath; text: string; href: string; sameOrigin: boolean; fileType: "pdf" | "doc" | null; section: Section }[];
-  // Extension point (review item 2): one entry per approved adapter. PR 1 has
-  // only json-ld; arbitrary script state is never read.
-  structuredData: { adapter: "json-ld"; adapterVersion: 1; items: unknown[] }[];
-  limits: { truncated: boolean; dropped: Partial<Record<"blocks" | "pairs" | "tables" | "links" | "structuredData" | "rows" | "cells", number>> };
-};
+// The format is a shared contract (written here, read by the web app's preview):
+// packages/db/src/document-structure.ts.
+import { STRUCTURE_FORMAT, type DocumentStructure, type StructureBlockKind } from "@nordic/db/document-structure";
+export { STRUCTURE_FORMAT, type DocumentStructure, type StructureBlockKind };
 
 export const STRUCTURE_LIMITS = {
   blocks: 1000, pairs: 300, tables: 50, rows: 200, cells: 20, links: 500, structuredData: 20,

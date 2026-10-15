@@ -83,7 +83,9 @@ export default async function CrawlerAdminPage({ searchParams }: PageProps<"/adm
         <div className="mb-5 space-y-3">
           {ready && <Notice tone={ready.ready ? "positive" : "caution"}>{ready.reason}</Notice>}
           <p className="text-[15px] text-ink-2">{t.lastFetch(when(st?.last_fetched_at ?? null))}{st?.last_status ? t.httpCode(st.last_status) : ""}
-            {st?.last_document_id && <> · <Link href={`/documents/${st.last_document_id}`} className={textLink}>{t.latestDocument}</Link></>}</p>
+            {st?.last_document_id ? <> · <Link href={`/admin/crawler/documents/${st.last_document_id}`} className={textLink}>{dict.structurePreview.viewStructure}</Link>
+              {" · "}<Link href={`/documents/${st.last_document_id}`} className={textLink}>{t.latestDocument}</Link></>
+              : <span className="text-ink-3"> · {dict.structurePreview.notCrawledYet}</span>}</p>
         </div>
         <TargetForm sources={[]} target={open} locale={locale} />
       </Inspector>;
@@ -111,7 +113,7 @@ export default async function CrawlerAdminPage({ searchParams }: PageProps<"/adm
         {open.note && <p className="mb-4 text-[15px] text-ink-2">{open.note}</p>}
         <p className="mb-3 text-[13px] text-ink-3">{t.flaggedHelp}</p>
         {open.crawler_run_items.length ? <List label={t.processed}>{open.crawler_run_items.map((i) => <ListRow key={i.id} title={<span className="break-all text-[14px] font-normal">{i.url}</span>}
-          href={i.document_id ? `/documents/${i.document_id}` : undefined}
+          href={i.document_id ? `/admin/crawler/documents/${i.document_id}` : undefined}
           badges={<Badge tone={crawlOutcome(i.outcome, locale).tone}>{crawlOutcome(i.outcome, locale).label}</Badge>}
           meta={[i.http_status && `HTTP ${i.http_status}`, i.error_category, i.flagged_facts ? t.nFlagged(i.flagged_facts) : null].filter(Boolean).join(" · ") || undefined} />)}</List>
           : <EmptyState>{t.noItems}</EmptyState>}
