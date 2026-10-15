@@ -1,0 +1,58 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`pins the readable text and hash of programme-dl.html 1`] = `
+{
+  "hash": "3064618b0a8ecc0983ad7da3c27acd46275a8746a8d2d8a75206998ab577b9fd",
+  "text": "Demo Data Science (Master)
+Study pace
+Full-time, on campus
+Duration
+18 months
+Fee
+NOK 0 for EU/EEA students; other students see the fee page
+Entry requirements
+Bachelor's degree (180 ECTS)including 30 ECTS mathematics
+IELTS Academic 6.5 overall
+More: fees (PDF)",
+  "title": "Demo Data Science — Demo College",
+}
+`;
+
+exports[`pins the readable text and hash of programme-sidebar.html 1`] = `
+{
+  "hash": "041db880ec47c2e1629e392c92339c701f7a2c7a9888d25d1195f6caac798a61",
+  "text": "Master's Programme in Example Studies
+The programme focuses on example methods.
+Autumn 2027 Autumn 2028
+Beginning/Endweek commencing30/08/2027 - 03/06/2029
+Application opens 16 October 2026
+This is a half-time study pace online programme. The programme takes two years to complete.
+Programme overview
+Year 1
+Example Methods 7.5 credits
+Example Theory 7.5 credits
+Required supporting documentationSubmit the summary sheet as a pdf.
+EligibilityA Bachelor degree with at least 180 ECTS credits. English 6.
+SelectionGrades and a motivation letter.
+Tuition feeFirst instalment: 45000 SEK. The complete course: 90000 SEK.
+Credits60 credits",
+  "title": "EXMP - Example University",
+}
+`;
+
+exports[`pins the readable text and hash of programme-table.html 1`] = `
+{
+  "hash": "76141cadcc635e32dcfa3930dae5ae0e2e5cbe7f5fa068567c4ff425840d8d2b",
+  "text": "MSc Sample Engineering
+Duration2 years, full-time
+Credits120 ECTS
+Tuition fee (non-EU)EUR 15,000 per year
+Application deadline15 January 2027
+LanguageEnglish
+Curriculum
+SemesterCourseECTS
+1Sample Foundations10
+4Thesis30",
+  "title": "MSc Sample Engineering | Sample Institute of Technology",
+}
+`;
