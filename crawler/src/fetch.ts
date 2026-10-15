@@ -46,3 +46,17 @@ export async function fetchLimited(url: string, opts: {
   }
   return { kind: "ok", status: res.status, body: Buffer.concat(chunks).toString("utf8"), etag, lastModified };
 }
+
+/**
+ * A short, loggable reason for a failed request. Node's fetch reports every
+ * network problem as "fetch failed" and keeps the real reason in `cause`
+ * (ECONNRESET, UND_ERR_CONNECT_TIMEOUT, a certificate error…), which is what
+ * tells an operator where it broke (AGENTS.md §13–14). Never includes URLs'
+ * query strings or headers.
+ */
+export function failureCategory(error: unknown): string {
+  if (!(error instanceof Error)) return "fetch_failed";
+  const cause = (error as Error & { cause?: unknown }).cause as { code?: unknown; name?: unknown } | undefined;
+  const code = typeof cause?.code === "string" ? cause.code : typeof cause?.name === "string" ? cause.name : null;
+  return `${error.message || "fetch_failed"}${code ? `: ${code}` : ""}`.slice(0, 100);
+}

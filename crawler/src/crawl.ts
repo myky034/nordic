@@ -3,7 +3,7 @@ import { metadataHash, textHash } from "@nordic/db/document-hash";
 import { BOT_NAME, LIMITS, PAGE_TYPES, SITEMAP_TYPES, userAgent } from "./config";
 import type { CrawlerDb, RecordInput, Target, UrlState } from "./db";
 import { extractPage } from "./extract";
-import { fetchLimited, type Fetcher } from "./fetch";
+import { failureCategory, fetchLimited, type Fetcher } from "./fetch";
 import { sitemapUrls } from "./sitemap";
 import { playwrightRenderer, type Renderer } from "./render";
 
@@ -120,8 +120,9 @@ async function crawlJobs(jobs: Job[], opts: CrawlOptions, handle: (job: Job) => 
     requestHandler: async ({ request }) => { await handle(byKey.get(request.uniqueKey)!); },
     failedRequestHandler: async ({ request }, error) => {
       const job = byKey.get(request.uniqueKey)!;
-      log(JSON.stringify({ source: "crawler", operation: "fetch", url: job.url, status: "failed", category: "fetch_failed" }));
-      await record({ targetId: job.target.target_id, url: job.url, httpStatus: null, outcome: "error", errorCategory: (error.message || "fetch_failed").slice(0, 100), durationMs: 0 });
+      const category = failureCategory(error);
+      log(JSON.stringify({ source: "crawler", operation: "fetch", url: job.url, status: "failed", category }));
+      await record({ targetId: job.target.target_id, url: job.url, httpStatus: null, outcome: "error", errorCategory: category, durationMs: 0 });
     },
   }, config);
   await crawler.run([...byKey.entries()].map(([uniqueKey, j]) => ({ url: j.url, uniqueKey })));

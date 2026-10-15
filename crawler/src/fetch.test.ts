@@ -1,5 +1,5 @@
 import { expect, it } from "vitest";
-import { fetchLimited, type Fetcher } from "./fetch";
+import { failureCategory, fetchLimited, type Fetcher } from "./fetch";
 
 const html = { "content-type": "text/html; charset=utf-8" };
 const reply = (body: BodyInit | null, init: ResponseInit & { url?: string }): Fetcher => (async (_input: RequestInfo | URL, req?: RequestInit) => {
@@ -31,4 +31,11 @@ it("stops reading at the byte limit even without a content-length header", async
 it("returns the body and validators for a normal page", async () => {
   const res = await fetchLimited(url, { ...base, fetcher: reply("<p>ok</p>", { status: 200, headers: { ...html, etag: '"v3"' } }) });
   expect(res).toMatchObject({ kind: "ok", body: "<p>ok</p>", etag: '"v3"' });
+});
+
+it("keeps the network reason behind Node's generic 'fetch failed'", () => {
+  expect(failureCategory(new TypeError("fetch failed", { cause: Object.assign(new Error("reset"), { code: "ECONNRESET" }) }))).toBe("fetch failed: ECONNRESET");
+  expect(failureCategory(new TypeError("fetch failed", { cause: new DOMException("timed out", "TimeoutError") }))).toBe("fetch failed: TimeoutError");
+  expect(failureCategory(new Error("http_503"))).toBe("http_503");
+  expect(failureCategory("weird")).toBe("fetch_failed");
 });
