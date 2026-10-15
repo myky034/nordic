@@ -20,6 +20,7 @@ export async function saveCrawlTarget(_: CrawlerState, form: FormData): Promise<
     const { error } = await client.rpc("save_crawl_target", {
       p_id: id || null, p_source: source, p_url: url, p_kind: kind, p_prefix: kind === "sitemap" ? text(form, "prefix") || null : null,
       p_max_urls: max, p_selector: text(form, "selector") || null, p_active: form.get("active") === "on",
+      p_render_js: form.get("renderJs") === "on",
     });
     if (error) throw new Error(error.message);
     revalidatePath("/admin/crawler");

@@ -5,12 +5,15 @@ import type { CrawlerDb, RecordInput, Target, UrlState } from "./db";
 import { extractPage } from "./extract";
 import { fetchLimited, type Fetcher } from "./fetch";
 import { sitemapUrls } from "./sitemap";
+import { playwrightRenderer, type Renderer } from "./render";
 
 type Job = { target: Target; url: string; phase: "sitemap" | "page"; state?: UrlState };
 export type CrawlOptions = {
   db: CrawlerDb; trigger: "schedule" | "manual" | "local"; contactUrl?: string;
   // Test seams; production uses real network, robots.txt and delays.
   fetcher?: Fetcher; respectRobots?: boolean; delaySecs?: number; log?: (line: string) => void;
+  // L6: how to start the browser (tests pass a fake; production uses Playwright).
+  startRenderer?: () => Promise<Renderer>;
 };
 
 /**
@@ -23,6 +26,15 @@ export async function runCrawl(opts: CrawlOptions) {
   const ua = userAgent(opts.contactUrl);
   const runId = await opts.db.startRun(opts.trigger);
   let failures = 0;
+  // One browser per run, started only when a page needs it, always closed.
+  const session: { renderer: Promise<Renderer> | null } = { renderer: null };
+  const browser = () => (session.renderer ??= (opts.startRenderer ?? (() => playwrightRenderer(ua)))());
+  const closeBrowser = async () => {
+    const started = session.renderer; session.renderer = null;
+    // A browser that failed to start was already reported by the page that needed it.
+    if (started) await (await started.catch(() => null))?.close().catch((e: unknown) =>
+      log(JSON.stringify({ source: "crawler", operation: "browser_close", status: "failed", message: e instanceof Error ? e.message.slice(0, 200) : "unknown" })));
+  };
   const record = async (input: Omit<RecordInput, "runId">) => {
     const result = await opts.db.record({ runId, ...input });
     // robots.txt refusals are expected behaviour, not failures.
@@ -50,13 +62,26 @@ export async function runCrawl(opts: CrawlOptions) {
     }, record, log);
     await crawlJobs(pages, opts, async (job) => {
       const started = Date.now();
-      const res = await fetchLimited(job.url, { userAgent: ua, accept: PAGE_TYPES, etag: job.state?.etag, lastModified: job.state?.last_modified, fetcher: opts.fetcher });
+      // The plain GET always runs first: robots.txt (crawlee), origin, type and
+      // size checks. Browser pages skip "not modified": a page may keep its HTML
+      // shell and load new data with JavaScript, which a 304 would hide.
+      const render = job.target.render_js;
+      const res = await fetchLimited(job.url, { userAgent: ua, accept: PAGE_TYPES, fetcher: opts.fetcher,
+        etag: render ? null : job.state?.etag, lastModified: render ? null : job.state?.last_modified });
       const base = { targetId: job.target.target_id, url: job.url, httpStatus: res.status, durationMs: Date.now() - started };
       if (res.kind === "http_error" && res.retryable) throw new Error(`http_${res.status}`);
       if (res.kind === "not_modified") return record({ ...base, outcome: "not_modified", etag: res.etag, lastModified: res.lastModified });
       if (res.kind === "skipped_type" || res.kind === "too_large") return record({ ...base, outcome: res.kind });
       if (res.kind !== "ok") return record({ ...base, outcome: "error", errorCategory: res.kind === "http_error" ? `http_${res.status}` : res.kind });
-      const page = extractPage(res.body, job.target.content_selector);
+      let html = res.body;
+      if (render) {
+        const rendered = await (await browser()).render(job.url);
+        // Never fall back to the static text silently: the URL is recorded as failed.
+        if (rendered.kind === "too_large") return record({ ...base, outcome: "too_large", errorCategory: "rendered_too_large" });
+        if (rendered.kind !== "ok") return record({ ...base, outcome: "error", errorCategory: rendered.kind });
+        html = rendered.html;
+      }
+      const page = extractPage(html, job.target.content_selector);
       if (!page.text) return record({ ...base, outcome: "error", errorCategory: "empty_text" });
       return record({
         ...base, outcome: "fetched", title: page.title, text: page.text, contentHash: textHash(page.text),
@@ -64,10 +89,12 @@ export async function runCrawl(opts: CrawlOptions) {
         etag: res.etag, lastModified: res.lastModified, retrievedAt: new Date(),
       });
     }, record, log);
+    await closeBrowser();
     const counts = await opts.db.finishRun(runId, failures ? "partial" : "succeeded", failures ? `${failures} URL(s) failed` : null);
     log(JSON.stringify({ source: "crawler", operation: "finish", runId, counts }));
     return { runId, counts };
   } catch (error) {
+    await closeBrowser();
     // Never swallow: close the run as failed, then surface the error.
     await opts.db.finishRun(runId, "failed", error instanceof Error ? error.message.slice(0, 500) : "unknown").catch(() => {});
     throw error;

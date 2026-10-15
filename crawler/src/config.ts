@@ -8,6 +8,10 @@ export const LIMITS = {
   timeoutMs: 30_000,
   sameDomainDelaySecs: 5,
   maxRetries: 2,
+  // L6 browser rendering: a page and its own data calls must settle in this time;
+  // the rendered DOM is larger than the raw HTML, hence its own cap.
+  renderTimeoutMs: 45_000,
+  maxRenderedBytes: 5 * 1024 * 1024,
 } as const;
 export const PAGE_TYPES = ["text/html", "application/xhtml+xml"];
 export const SITEMAP_TYPES = ["application/xml", "text/xml"];

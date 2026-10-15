@@ -2140,3 +2140,29 @@ O3 (self-review with a single reviewer) stays **pending**; the current
 behaviour is unchanged and the screen adds no "map and approve" shortcut.
 Phase 2 (saving mappings as per-source rules) and JavaScript rendering
 (Playwright) are separate, later plans.
+
+### 2026-10-15 — Crawler reads pages with a real browser by default (approved)
+
+Revises §3 Crawler ("Playwright only where dynamic rendering is actually
+required"). The first university programme page crawled (Stockholm
+University) draws its tuition fee, start date and selection criteria with
+JavaScript from embedded data, so the static HTML reader stored the headings
+without the values; the AI could not see them. Checking one representative
+university page before Slice 9 would have shown this. Owner decision: use a
+real headless browser (Playwright, Chromium) **by default**; a registered URL
+may opt out (e.g. plain pages where the static reader is enough).
+
+- Kept: only registered URLs of approved sources; robots.txt checked first;
+  one page at a time with the same per-domain delay; honest user agent; no
+  login, CAPTCHA or anti-bot bypass; the browser never follows links;
+  images, media and fonts are not loaded.
+- A plain conditional GET still runs first: a 304 (not modified) skips the
+  browser, redirects off the registered origin, wrong content types and
+  oversized pages are refused as before.
+- The stored text is what a visitor sees, so excerpts stay verbatim and every
+  grounding rule applies unchanged. A rendering failure is recorded as an
+  error for that URL; it never silently falls back to the static text.
+- Sitemaps are still read without a browser.
+- Embedded JSON is not read as page text (it is not what a visitor sees).
+
+Plan: `docs/architecture/browser-crawler-plan.md`.

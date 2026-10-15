@@ -51,6 +51,19 @@ it("gives the crawler role no table access at all — functions only", async () 
   const due = (await crawler(() => db.query<{ url: string }>("SELECT * FROM crawler_due_targets()"))).rows.map((r) => r.url);
   expect(due.sort()).toEqual(["https://agency.example.test/permits", "https://agency.example.test/sitemap.xml"]);
 });
+// L6 (Decision Log 2026-10-15, KHLOE-158): a real browser by default, per-URL opt-out.
+it("renders pages in a browser by default, lets an admin opt a URL out, and tells the worker", async () => {
+  const due = async () => (await crawler(() => db.query<{ url: string; render_js: boolean }>("SELECT url, render_js FROM crawler_due_targets()"))).rows;
+  expect((await due()).every((t) => t.render_js)).toBe(true);
+  const plain = (await as("authenticated", () => db.query<{ id: string }>(
+    "SELECT save_crawl_target(null,$1,'https://agency.example.test/plain','page',null,20,null,true,false) AS id", [source]), admin)).rows[0].id;
+  expect((await due()).find((t) => t.url === "https://agency.example.test/plain")).toEqual({ url: "https://agency.example.test/plain", render_js: false });
+  await expect(as("authenticated", () => db.query("SELECT save_crawl_target($1,$2,'https://agency.example.test/plain','page',null,20,null,true,null)", [plain, source]), admin))
+    .rejects.toThrow("crawler_invalid");
+  const audit = (await db.query<{ details: { after: { render_js: boolean } } }>("SELECT details FROM access_audit WHERE action='crawl_target.saved' AND target_id=$1", [plain])).rows[0];
+  expect(audit.details.after.render_js).toBe(false);
+  await as("authenticated", () => db.query("SELECT save_crawl_target($1,$2,'https://agency.example.test/plain','page',null,20,null,false,false)", [plain, source]), admin);
+});
 it("stores a new version once, with private text, and treats repeats as unchanged", async () => {
   const first = await record(pageTarget, "https://agency.example.test/permits", "fetched");
   expect(first.outcome).toBe("created");

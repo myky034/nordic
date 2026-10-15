@@ -42,5 +42,9 @@ jobs:
           cache: npm
       - if: steps.config.outputs.ready == 'true'
         run: npm ci --workspace @nordic/crawler --include-workspace-root
+      # L6 (Decision Log 2026-10-15): pages are read in a headless Chromium by
+      # default; --with-deps adds the system libraries it needs on Ubuntu.
+      - if: steps.config.outputs.ready == 'true'
+        run: npx playwright install --with-deps chromium
       - if: steps.config.outputs.ready == 'true'
         run: npm run crawl --workspace @nordic/crawler

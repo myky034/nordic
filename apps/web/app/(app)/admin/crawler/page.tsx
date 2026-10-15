@@ -14,7 +14,7 @@ import { buttonPrimary, textLink } from "@/components/ui/styles";
 import { TargetForm } from "./forms";
 
 type Source = { id: string; name: string; canonical_url: string; crawl_enabled: boolean; crawl_policy: string; status: string };
-type Target = { id: string; source_id: string; url: string; kind: string; path_prefix: string | null; max_urls: number; content_selector: string | null; active: boolean };
+type Target = { id: string; source_id: string; url: string; kind: string; path_prefix: string | null; max_urls: number; content_selector: string | null; active: boolean; render_js: boolean };
 type State = { source_id: string; url: string; last_status: number | null; last_outcome: string | null; last_fetched_at: string | null; last_document_id: string | null };
 type Run = { id: string; trigger: string; status: string; started_at: string; finished_at: string | null; note: string | null; counts: Record<string, number> | null;
   crawler_run_items: { id: string; url: string; http_status: number | null; outcome: string; error_category: string | null; flagged_facts: number; document_id: string | null }[] };
@@ -33,7 +33,7 @@ export default async function CrawlerAdminPage({ searchParams }: PageProps<"/adm
   const tab = params.tab === "runs" ? "runs" : "urls";
   const results = await Promise.all([
     client.from("sources").select("id,name,canonical_url,crawl_enabled,crawl_policy,status").order("name"),
-    client.from("crawl_targets").select("id,source_id,url,kind,path_prefix,max_urls,content_selector,active").order("url"),
+    client.from("crawl_targets").select("id,source_id,url,kind,path_prefix,max_urls,content_selector,active,render_js").order("url"),
     client.from("crawl_url_states").select("source_id,url,last_status,last_outcome,last_fetched_at,last_document_id"),
     client.from("crawler_runs").select("id,trigger,status,started_at,finished_at,note,counts,crawler_run_items(id,url,http_status,outcome,error_category,flagged_facts,document_id)").order("started_at", { ascending: false }).limit(10),
   ]);
@@ -64,7 +64,7 @@ export default async function CrawlerAdminPage({ searchParams }: PageProps<"/adm
           const o = st?.last_outcome ? crawlOutcome(st.last_outcome, locale) : null;
           return <DataRow key={target.id} href={here({ target: target.id, new: null })} selected={target.id === id("target")} title={<span className="break-all">{target.url}</span>}>
             <Cell>{s?.name ?? "—"}{ready && !ready.ready && <span className="block text-[12px] text-caution">{ready.reason}</span>}</Cell>
-            <Cell><span className="flex flex-wrap gap-1.5"><Badge>{target.kind === "sitemap" ? t.sitemap : t.page}</Badge>{!target.active && <Badge tone="caution">{t.off}</Badge>}</span></Cell>
+            <Cell><span className="flex flex-wrap gap-1.5"><Badge>{target.kind === "sitemap" ? t.sitemap : t.page}</Badge>{target.kind === "page" && !target.render_js && <Badge>{t.staticHtml}</Badge>}{!target.active && <Badge tone="caution">{t.off}</Badge>}</span></Cell>
             <Cell>{o ? <Badge tone={o.tone}>{o.label}</Badge> : <span className="text-ink-3">—</span>}</Cell>
             <Cell className="whitespace-nowrap tabular-nums">{when(st?.last_fetched_at ?? null)}</Cell>
           </DataRow>;

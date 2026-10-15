@@ -6,7 +6,7 @@ import { buttonPrimary, control } from "@/components/ui/styles";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { defaultLocale, type Locale } from "@/lib/i18n/locales";
 
-type Target = { id: string; source_id: string; url: string; kind: string; path_prefix: string | null; max_urls: number; content_selector: string | null; active: boolean };
+type Target = { id: string; source_id: string; url: string; kind: string; path_prefix: string | null; max_urls: number; content_selector: string | null; active: boolean; render_js?: boolean };
 export function TargetForm({ sources, target, locale = defaultLocale }: { sources: { id: string; label: string }[]; target?: Target; locale?: Locale }) {
   const t = dictionaries[locale].adminCrawler;
   const [s, action, pending] = useActionState(saveCrawlTarget, {});
@@ -22,6 +22,9 @@ export function TargetForm({ sources, target, locale = defaultLocale }: { source
     <Field label={t.selector} hint={t.selectorHint}>
       <input name="selector" maxLength={200} defaultValue={target?.content_selector ?? ""} className={control} />
     </Field>
+    {/* L6: on by default; only sitemap URLs ignore it (always read without a browser). */}
+    <label className="flex items-start gap-3 text-[15px]"><input type="checkbox" name="renderJs" defaultChecked={target?.render_js ?? true} className="mt-1 h-4 w-4 accent-accent" />
+      <span>{t.renderJs}<span className="block text-[13px] text-ink-3">{t.renderJsHint}</span></span></label>
     <label className="flex items-center gap-3 text-[15px]"><input type="checkbox" name="active" defaultChecked={target?.active ?? true} className="h-4 w-4 accent-accent" /> {t.active}</label>
     <FormMessage error={s.error} message={s.message} />
     <button disabled={pending} className={buttonPrimary}>{pending ? t.saving : target ? t.save : t.register}</button>

@@ -7,7 +7,7 @@ import Page from "./page";
 
 const rows: Record<string, unknown[]> = {
   sources: [{ id: "s1", name: "Synthetic agency", canonical_url: "https://agency.example.test/", crawl_enabled: false, crawl_policy: "approved", status: "verified" }],
-  crawl_targets: [{ id: "t1", source_id: "s1", url: "https://agency.example.test/permits", kind: "page", path_prefix: null, max_urls: 20, content_selector: "main", active: true }],
+  crawl_targets: [{ id: "t1", source_id: "s1", url: "https://agency.example.test/permits", kind: "page", path_prefix: null, max_urls: 20, content_selector: "main", active: true, render_js: false }],
   crawl_url_states: [{ source_id: "s1", url: "https://agency.example.test/permits", last_status: 200, last_outcome: "created", last_fetched_at: "2026-09-25T08:00:00Z", last_document_id: "d1" }],
   crawler_runs: [{ id: "r1", trigger: "schedule", status: "partial", started_at: "2026-09-25T08:00:00Z", finished_at: null, note: null, counts: { created: 1, error: 1 },
     crawler_run_items: [{ id: "i1", url: "https://agency.example.test/permits", http_status: 200, outcome: "created", error_category: null, flagged_facts: 2, document_id: "d1" }] }],
@@ -25,6 +25,7 @@ it("explains why a registered source is not crawled and summarises runs", async 
   const urls = renderToStaticMarkup(await page());
   expect(urls).toContain("chưa bật crawl");
   expect(urls).toContain("https://agency.example.test/permits");
+  expect(urls).toContain("Chỉ HTML");
   expect(urls).toContain("Phiên bản mới");
   const target = renderToStaticMarkup(await page({ target: "00000000-0000-4000-8000-000000000000" }));
   expect(target).not.toContain('role="dialog"');

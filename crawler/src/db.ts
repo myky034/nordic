@@ -4,7 +4,9 @@ import { workerPoolConfig } from "@nordic/db/pg-ssl";
 // The crawler's only database surface: the crawler_* SQL functions. Its role
 // has no table privileges, so every rule is enforced (again) in the database.
 export type Target = { target_id: string; source_id: string; source_url: string; url: string; kind: "page" | "sitemap";
-  path_prefix: string | null; max_urls: number; content_selector: string | null };
+  path_prefix: string | null; max_urls: number; content_selector: string | null;
+  // L6: read the page in a real browser (default) instead of the static HTML.
+  render_js: boolean };
 export type UrlState = { url: string; etag: string | null; last_modified: string | null; last_hash: string | null };
 export type RecordInput = { runId: string; targetId: string; url: string; httpStatus: number | null;
   outcome: "fetched" | "not_modified" | "robots_disallowed" | "skipped_type" | "too_large" | "error"; errorCategory?: string | null;
