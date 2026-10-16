@@ -1,0 +1,162 @@
+import type { DocumentStructure } from "@nordic/db/document-structure";
+import { evidenceRefProblems, type EvidenceRef, type IntakeRef, type NormalizedValue, type RuleCandidate, type RuleIssue, type RuleOutput } from "@nordic/db/rule-output";
+import { INTAKE_SCOPE } from "./fact-types";
+import { compareCodeUnits, rulesetVersion } from "./fingerprint";
+import { intakeFromHeading, type PageIntake } from "./intake";
+import { applicableRules, pageContext, specificity, type PageTypeDef } from "./match";
+import { normalize } from "./normalizers";
+import { elementString, findHits, type Hit } from "./strategies";
+import type { Rule } from "./types";
+
+// PR 2b (review §5.4–§5.8): runs rules over ONE structure snapshot and returns
+// RuleOutput (PR 2a contract). Pure and deterministic: no clock, network or
+// randomness; the output order does not depend on the order of `rules`.
+// Nothing here stores anything or calls the database (PR 3 does that).
+//
+// Safety rules enforced here:
+// - an intake comes only from a stated heading or the reviewed page binding
+//   (never a URL, never a yearless date), and only for intake-specific types;
+// - applicability is "intake" only when the type is intake-specific (D2) AND
+//   the intake was resolved; otherwise null (Risk C);
+// - for each fact type and intake, the most specific rules win; when they
+//   disagree the result is "ambiguous" and no candidate is emitted;
+// - a rule that finds nothing is reported as "not_found";
+// - every candidate's excerpt is checked against the element it names.
+
+export type EngineInput = {
+  documentId: string;
+  structureId: string | null;
+  structureHash: string;
+  structure: DocumentStructure;
+  pageUrl: string;
+  country: string | null;
+  /** The intake the reviewed L7b records bind this page to (PR 3); absent until then. */
+  pageIntake?: PageIntake | null;
+};
+
+type Found = { rule: Rule; level: number; hit: Hit; candidate: RuleCandidate };
+type Raised = { rule: Rule; level: number; issue: RuleIssue };
+
+const EMPTY = (v: NormalizedValue) => Object.values(v).every((x) => x === null);
+const intakeKey = (i: IntakeRef | null) => (i ? `${i.year}|${i.term ?? ""}|${i.month ?? ""}` : "");
+const byOrder = (a: Hit, b: Hit) => a.order[0] - b.order[0] || a.order[1] - b.order[1];
+
+/** The excerpt must sit inside the one element string the hit names; a miss is a bug in a strategy. */
+function verifyHit(s: DocumentStructure, hit: Hit) {
+  const target = elementString(s, hit);
+  const inside = target !== null && (hit.ref.startsWith("sd") ? target.includes(JSON.stringify(hit.excerpt).slice(1, -1)) : target.includes(hit.excerpt));
+  if (!inside) throw new Error(`rule engine: excerpt not found in ${hit.ref}/${hit.field}`);
+}
+
+export function runRules(input: EngineInput, rules: readonly Rule[], pageTypes: readonly PageTypeDef[]): RuleOutput[] {
+  const page = pageContext(input.pageUrl, input.country, pageTypes);
+  const ruleset = rulesetVersion(rules);
+  const doc = { documentId: input.documentId, structureId: input.structureId, structureHash: input.structureHash };
+  const found: Found[] = [];
+  const raised: Raised[] = [];
+  const active = applicableRules(rules, page).sort((a, b) => compareCodeUnits(a.id, b.id));
+
+  for (const rule of active) {
+    const level = specificity(rule.scope);
+    const hits = findHits(input.structure, rule.strategy, rule.evidence).sort(byOrder);
+    if (!hits.length) {
+      raised.push({ rule, level, issue: { kind: "not_found", factType: rule.field, ruleIds: [rule.id], detail: `${rule.strategy.kind} found nothing` } });
+      continue;
+    }
+    for (const hit of hits) {
+      verifyHit(input.structure, hit);
+      let intake: IntakeRef | null = null;
+      if (rule.intake.from !== "none") {
+        const r = rule.intake.from === "heading" ? intakeFromHeading(input.structure, doc, hit.section, rule.intake.pattern)
+          : input.pageIntake ? { intake: input.pageIntake } : { unresolved: null };
+        if ("unresolved" in r) {
+          raised.push({ rule, level, issue: { kind: "intake_unresolved", factType: rule.field, ruleIds: [rule.id],
+            detail: r.unresolved ? `"${r.unresolved}" names no term or month, or is not a heading` : `no intake ${rule.intake.from === "page" ? "is bound to this page" : "heading above"} ${hit.ref}`,
+            ...(r.unresolved ? { intakeText: r.unresolved } : {}) } });
+          continue;
+        }
+        intake = r.intake;
+      }
+      const result = normalize(rule.normalize, hit.value);
+      if (result.failure) {
+        raised.push({ rule, level, issue: { kind: "normalize_failed", factType: rule.field, ruleIds: [rule.id], detail: `${hit.ref}: ${result.failure.code}: ${result.failure.detail}` } });
+        continue;
+      }
+      const evidence = { ...doc, ref: hit.ref, field: hit.field, excerpt: hit.excerpt, ...(hit.field === "cell" ? { cell: hit.cell } : {}) } as EvidenceRef;
+      const problems = evidenceRefProblems(evidence);
+      if (problems.length) throw new Error(`rule engine: invalid evidence for ${rule.id}: ${problems.join("; ")}`);
+      for (const reading of result.readings) {
+        const value = reading.status === "ok" && !EMPTY(reading.value) ? reading.value : null;
+        const notes = reading.status === "unresolved" ? [...reading.notes, `${reading.reason.code}: ${reading.reason.detail}`] : reading.notes;
+        found.push({ rule, level, hit, candidate: {
+          kind: "candidate", ruleId: rule.id, ruleVersion: rule.version, rulesetVersion: ruleset, factType: rule.field, method: rule.strategy.kind,
+          raw: { text: reading.text, unit: result.raw.unit }, normalized: value, derivation: null, intake,
+          applicability: intake && INTAKE_SCOPE[rule.field] === "intake" ? "intake" : null, evidence, notes,
+        } });
+      }
+    }
+  }
+  return resolve(found, raised);
+}
+
+/**
+ * Per fact type: rules below the most specific level that produced a
+ * candidate are fallbacks and are dropped (with their issues). Per fact type
+ * and intake: the highest priority among the remaining rules wins; one
+ * statement (one element's excerpt) may hold several readings, but two
+ * different statements are a conflict → "ambiguous", nothing chosen. The
+ * same statement repeated in another element is a duplicate, kept once.
+ */
+function resolve(found: Found[], raised: Raised[]): RuleOutput[] {
+  const out: RuleOutput[] = [];
+  const topLevel = new Map<string, number>();
+  for (const f of found) topLevel.set(f.candidate.factType, Math.max(topLevel.get(f.candidate.factType) ?? -1, f.level));
+
+  const groups = new Map<string, Found[]>();
+  for (const f of found) {
+    if (f.level < (topLevel.get(f.candidate.factType) ?? -1)) continue;
+    const key = `${f.candidate.factType}\u0000${intakeKey(f.candidate.intake)}`;
+    groups.set(key, [...(groups.get(key) ?? []), f]);
+  }
+  for (const key of [...groups.keys()].sort(compareCodeUnits)) {
+    const group = groups.get(key)!;
+    const top = Math.max(...group.map((f) => f.rule.priority));
+    const winners = group.filter((f) => f.rule.priority === top);
+    // One statement = one excerpt text; the first element (document order, then rule id) that states it is kept.
+    const statements = new Map<string, Found[]>();
+    for (const f of [...winners].sort((a, b) => byOrder(a.hit, b.hit) || compareCodeUnits(a.rule.id, b.rule.id))) {
+      const first = statements.get(f.hit.excerpt);
+      if (!first) statements.set(f.hit.excerpt, [f]);
+      else if (first[0].hit.ref === f.hit.ref && first[0].rule.id === f.rule.id) first.push(f);
+    }
+    const kept = [...statements.values()];
+    if (kept.length > 1) {
+      const ruleIds = [...new Set(kept.flat().map((f) => f.rule.id))].sort(compareCodeUnits);
+      out.push({ kind: "ambiguous", factType: group[0].candidate.factType, ruleIds,
+        detail: `${kept.length} different statements: ${kept.map((k) => `${k[0].hit.ref} "${k[0].hit.excerpt}"`).join(" / ")}`,
+        candidates: kept.flat().map((f) => f.candidate) });
+    } else {
+      out.push(...kept[0].map((f) => f.candidate));
+    }
+  }
+  // "not_found" means the fact type has no candidate at all; other issues are
+  // kept unless they come from a fallback level that a more specific rule beat.
+  const notFound = new Map<string, Raised[]>();
+  for (const r of raised) {
+    const top = topLevel.get(r.issue.factType);
+    if (r.issue.kind === "not_found") { if (top === undefined) notFound.set(r.issue.factType, [...(notFound.get(r.issue.factType) ?? []), r]); }
+    else if (top === undefined || r.level >= top) out.push(r.issue);
+  }
+  for (const [factType, rs] of notFound) {
+    out.push({ kind: "not_found", factType, ruleIds: rs.map((r) => r.rule.id).sort(compareCodeUnits), detail: rs.map((r) => `${r.rule.id}: ${r.issue.detail}`).sort(compareCodeUnits).join("; ") });
+  }
+  return sortOutputs(out);
+}
+
+const KIND_RANK: Record<RuleOutput["kind"], number> = { candidate: 0, ambiguous: 1, intake_unresolved: 2, normalize_failed: 3, not_found: 4 };
+function sortOutputs(out: RuleOutput[]) {
+  const key = (o: RuleOutput) => o.kind === "candidate"
+    ? [o.factType, KIND_RANK[o.kind], intakeKey(o.intake), o.ruleId, o.evidence.ref, o.raw.text].join("\u0000")
+    : [o.factType, KIND_RANK[o.kind], "", o.ruleIds.join(","), o.detail].join("\u0000");
+  return out.map((o) => [key(o), o] as const).sort((a, b) => compareCodeUnits(a[0], b[0])).map(([, o]) => o);
+}

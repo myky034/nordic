@@ -28,3 +28,19 @@ export const KNOWN_FACT_TYPES: Readonly<Record<string, ValueKind>> = {
   maintenance_requirement: "money",
   tuition_fee: "money",
 };
+
+/**
+ * D2 (approved 2026-10-16): which fact types belong to an intake.
+ * - "intake": always about one intake (application dates and periods; the
+ *   D8 types application_status, intake_start_date, intake_end_date join
+ *   when they exist). A rule may take the intake from a heading or the page.
+ * - "optional": may be intake-specific or broader, depending on what the
+ *   source says (tuition). Appearing on an intake page is not enough, so in
+ *   PR 2b such rules cannot attach an intake at all.
+ * - anything else: never intake-specific.
+ */
+export const INTAKE_SCOPE: Readonly<Record<string, "intake" | "optional">> = {
+  application_deadline: "intake",
+  application_period: "intake",
+  tuition_fee: "optional",
+};

@@ -1,0 +1,50 @@
+{
+  "_note": "PR 2b real-page acceptance. Expected rule outputs written from the actual content of the local snapshots captured 2026-10-15 (crawler/test/real/snapshots, git-ignored). A missing snapshot is a failure, never a skip.",
+  "pages": {
+    "su-sprom-ht2026": {
+      "candidates": [
+        { "factType": "programme_credits", "raw": "60 credits", "number": "60", "unit": "credits", "intake": null, "applicability": null },
+        { "factType": "programme_duration", "raw": "two years", "number": "24", "unit": "months", "intake": null, "applicability": null },
+        { "factType": "teaching_language", "raw": "English", "intake": null, "applicability": null },
+        { "factType": "tuition_fee", "raw": "135000 SEK", "number": "135000", "currency": "SEK", "period": "total", "intake": null, "applicability": null },
+        { "factType": "tuition_fee", "raw": "67500 SEK", "unresolved": "period_unknown", "intake": null, "applicability": null }
+      ],
+      "notFound": ["application_period"],
+      "forbiddenIntakeYears": [2027]
+    },
+    "su-sprom-ht2027": {
+      "candidates": [
+        { "factType": "application_period", "raw": "Application opens 16 October 2026", "intake": { "year": 2027, "term": "autumn", "month": null }, "applicability": "intake" },
+        { "factType": "programme_credits", "raw": "60 credits", "number": "60", "unit": "credits", "intake": null, "applicability": null },
+        { "factType": "programme_duration", "raw": "two years", "number": "24", "unit": "months", "intake": null, "applicability": null },
+        { "factType": "teaching_language", "raw": "English", "intake": null, "applicability": null },
+        { "factType": "tuition_fee", "raw": "135000 SEK", "number": "135000", "currency": "SEK", "period": "total", "intake": null, "applicability": null },
+        { "factType": "tuition_fee", "raw": "67500 SEK", "unresolved": "period_unknown", "intake": null, "applicability": null }
+      ],
+      "notFound": [],
+      "forbiddenIntakeYears": [2026]
+    },
+    "kth-industrial-management": {
+      "candidates": [
+        { "factType": "application_deadline", "raw": "15 January", "unresolved": "year_missing", "intake": { "year": 2027, "term": null, "month": 8 }, "applicability": "intake" },
+        { "factType": "application_period", "raw": "16 October (2026): Application opens", "intake": { "year": 2027, "term": null, "month": 8 }, "applicability": "intake" },
+        { "factType": "programme_credits", "raw": "120 ECTS credits", "number": "120", "unit": "ECTS", "intake": null, "applicability": null },
+        { "factType": "programme_duration", "raw": "two-year", "number": "24", "unit": "months", "intake": null, "applicability": null },
+        { "factType": "teaching_language", "raw": "English", "intake": null, "applicability": null }
+      ],
+      "notFound": [],
+      "forbiddenIntakeYears": [2026]
+    },
+    "kth-interactive-media-technology": {
+      "candidates": [
+        { "factType": "application_deadline", "raw": "15 January", "unresolved": "year_missing", "intake": { "year": 2027, "term": null, "month": 8 }, "applicability": "intake" },
+        { "factType": "application_period", "raw": "16 October (2026): Application opens", "intake": { "year": 2027, "term": null, "month": 8 }, "applicability": "intake" },
+        { "factType": "programme_credits", "raw": "120 ECTS credits", "number": "120", "unit": "ECTS", "intake": null, "applicability": null },
+        { "factType": "programme_duration", "raw": "two year", "number": "24", "unit": "months", "intake": null, "applicability": null },
+        { "factType": "teaching_language", "raw": "English", "intake": null, "applicability": null }
+      ],
+      "notFound": [],
+      "forbiddenIntakeYears": [2026]
+    }
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "MSc Example Engineering | Example Tech",
+  "lang": "en-GB",
+  "canonicalUrl": null,
+  "root": {
+    "kind": "main",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "main>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "MSc Example Engineering",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "main>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "Application deadlines for studies starting August 2027",
+      "section": [
+        "MSc Example Engineering"
+      ]
+    },
+    {
+      "ref": "h3",
+      "domPath": "main>h2:nth-of-type(2)",
+      "level": 2,
+      "text": "Example Engineering at Example Tech",
+      "section": [
+        "MSc Example Engineering"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "ref": "b1",
+      "domPath": "main>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "16 October (2026): Application opens\n15 January: Last day to apply\n1 February: Submit documents\n1 April: Admission results announced",
+      "section": [
+        "MSc Example Engineering",
+        "Application deadlines for studies starting August 2027"
+      ]
+    },
+    {
+      "ref": "b2",
+      "domPath": "main>p:nth-of-type(2)",
+      "kind": "p",
+      "text": "This is a two-year programme (120 ECTS credits) given in English. Graduates are awarded a degree of Master of Science.",
+      "section": [
+        "MSc Example Engineering",
+        "Example Engineering at Example Tech"
+      ]
+    },
+    {
+      "ref": "b3",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)",
+      "kind": "li",
+      "text": "Fees",
+      "section": [
+        "MSc Example Engineering",
+        "Example Engineering at Example Tech"
+      ],
+      "depth": 0
+    }
+  ],
+  "pairs": [],
+  "tables": [],
+  "links": [
+    {
+      "ref": "l1",
+      "domPath": "main>ul:nth-of-type(1)>li:nth-of-type(1)>a:nth-of-type(1)",
+      "text": "Fees",
+      "href": "https://tech.example.test/fees",
+      "sameOrigin": false,
+      "fileType": null,
+      "section": [
+        "MSc Example Engineering",
+        "Example Engineering at Example Tech"
+      ]
+    }
+  ],
+  "structuredData": [],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}

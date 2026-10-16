@@ -1,4 +1,4 @@
-import { KNOWN_FACT_TYPES, type ValueKind } from "./fact-types";
+import { INTAKE_SCOPE, KNOWN_FACT_TYPES, type ValueKind } from "./fact-types";
 import type { NormalizeSpec, Rule, RuleScope } from "./types";
 
 // PR 2a (review §5.3): checks every rule definition before it can be used.
@@ -80,9 +80,14 @@ export function validateRules(rules: readonly Rule[], factTypes: Readonly<Record
       else {
         add(patternProblem(intake.pattern, "intake.pattern", true));
         if (!/\(\?<year>/.test(intake.pattern.source)) add("intake.pattern must capture the year as (?<year>…)");
+        if (!/\(\?<(?:term|month)>/.test(intake.pattern.source)) add("intake.pattern must capture (?<term>…) or (?<month>…): a year alone is not an intake");
       }
     } else if (intake.from !== "page" && intake.from !== "none") {
       add(`intake source "${intake.from}" is not allowed (a URL alone never decides an intake)`);
+    }
+    // D2 / Risk C: only intake-specific fact types may take an intake from context.
+    if (intake.from !== "none" && INTAKE_SCOPE[rule.field] !== "intake") {
+      add(`field "${rule.field}" is not intake-specific; it cannot take an intake from a ${intake.from} (being on an intake page is not evidence)`);
     }
   }
   // Second pass: references and collisions need the full list.

@@ -13,7 +13,7 @@ const base: Rule = {
   id: "example.tuition.pair", version: 1, enabled: true, mode: "shadow", priority: 0,
   scope: { country: "sweden", source: "https://uni.example.test", pageType: "programme_intake" },
   field: "tuition_fee", strategy: { kind: "pair", labels: ["Tuition fee"] },
-  normalize: { kind: "money" }, intake: { from: "page" }, evidence: "value",
+  normalize: { kind: "money" }, intake: { from: "none" }, evidence: "value",
 };
 const deadlines: Rule = {
   id: "example.deadline.section", version: 1, enabled: true, mode: "shadow", priority: 0,
@@ -51,6 +51,13 @@ describe("rule validation", () => {
   it("never lets a URL decide the intake, and needs the year from a heading", () => {
     expect(check({ ...base, intake: { from: "url" } as unknown as Rule["intake"] }).join("\n")).toMatch(/a URL alone never decides an intake/);
     expect(check({ ...deadlines, intake: { from: "heading", pattern: /^Autumn \d{4}$/ } }).join("\n")).toMatch(/capture the year/);
+    expect(check({ ...deadlines, intake: { from: "heading", pattern: /^Intake (?<year>\d{4})$/ } }).join("\n")).toMatch(/a year alone is not an intake/);
+  });
+  it("only intake-specific fact types may take an intake from a heading or the page (D2, Risk C)", () => {
+    expect(check({ ...base, intake: { from: "page" } }).join("\n")).toMatch(/"tuition_fee" is not intake-specific/);
+    expect(check({ ...base, field: "teaching_language", normalize: { kind: "text" }, intake: { from: "heading", pattern: /^Autumn (?<year>\d{4})$/ } }).join("\n"))
+      .toMatch(/"teaching_language" is not intake-specific/);
+    expect(check({ ...deadlines, intake: { from: "page" } })).toEqual([]);
   });
   it("checks overrides and collisions across rules", () => {
     expect(check({ ...base, overrides: ["missing.rule"] }).join("\n")).toMatch(/overrides unknown rule/);
@@ -90,7 +97,7 @@ describe("versions", () => {
       ["field", { field: "application_fee" }],
       ["strategy", { strategy: { kind: "pair", labels: ["Fees"] } }],
       ["normalize", { normalize: { kind: "money", periods: { "first instalment": "one_off" } } }],
-      ["intake", { intake: { from: "none" } }],
+      ["intake", { intake: { from: "page" } }],
       ["evidence", { evidence: "canonical" }],
       ["priority", { priority: 5 }],
       ["overrides", { overrides: ["example.other"] }],

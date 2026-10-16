@@ -20,6 +20,7 @@
     "dry-run": "tsx src/main.ts --dry-run",
     "test": "vitest run",
     "typecheck": "tsc --noEmit -p .",
-    "check-llm": "tsx src/main.ts --check"
+    "check-llm": "tsx src/main.ts --check",
+    "rules:check": "tsx scripts/rules-check.ts"
   }
 }
