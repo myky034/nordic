@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { DocumentStructure } from "@nordic/db/document-structure";
-import { evidenceRefProblems, type RuleCandidate, type RuleIssue, type RuleOutput } from "@nordic/db/rule-output";
+import { eligibleForAutoProposal, evidenceRefProblems, type RuleCandidate, type RuleIssue, type RuleOutput } from "@nordic/db/rule-output";
 import { EngineInputError, runRules, type EngineInput } from "./engine";
 import { elementString } from "./strategies";
 import { PAGE_TYPES, RULES } from "./registry";
@@ -147,6 +147,7 @@ describe("matching and precedence (synthetic rules)", () => {
     { ref: "p2", domPath: "y", label: "Teaching language", value: "Swedish", section: [], from: "label_value", labelPath: "y", valuePath: "y" },
   ] };
   const go = (rules: Rule[], url = page) => runRules(input(s, url), rules, types);
+  const base_ = s;
   it("the most specific rule wins; a less specific one is only a fallback", () => {
     const out = go([rule("x.global", {}, ["Language"]), rule("x.site", { source: SITE }, ["Teaching language"])]);
     expect(candidates(out).map((c) => [c.ruleId, c.raw.text])).toEqual([["x.site", "Swedish"]]);
@@ -246,6 +247,97 @@ describe("matching and precedence (synthetic rules)", () => {
       const out = runRules(input(noIntake, page), [specific, loose], types);
       expect(candidates(out).map((c) => c.ruleId)).toEqual(["x.specific"]);
       expect(issues(out, "intake_unresolved")).toMatchObject([{ ruleIds: ["x.loose"], intakeText: "Deadlines for 2028 start" }]);
+    });
+  });
+  describe("M1: conflicting candidates set aside by precedence stay visible (PR #6)", () => {
+    const pair = (ref: string, label: string, value: string) => ({ ref, domPath: ref, label, value, section: [] as string[], from: "label_value" as const, labelPath: ref, valuePath: ref });
+    const page_ = (...pairs: ReturnType<typeof pair>[]): DocumentStructure => ({ ...s, pairs });
+    const typed = (id: string, scope: Rule["scope"], label: string, field: string, normalize: Rule["normalize"], extra: Partial<Rule> = {}) =>
+      rule(id, scope, [label], { field, normalize, ...extra });
+    const go = (st: DocumentStructure, rules: Rule[]) => runRules(input(st, page), rules, types);
+
+    it("1. site rule \"Swedish\" wins over generic \"English\"; the English candidate is kept with its provenance", () => {
+      const out = go(base_, [rule("x.global", {}, ["Language"]), rule("x.site", { source: SITE }, ["Teaching language"])]);
+      const [c] = candidates(out);
+      expect(c).toMatchObject({ ruleId: "x.site", raw: { text: "Swedish" } });
+      expect(c.suppressed).toEqual([{ reason: "lower_specificity", candidate: expect.objectContaining({
+        ruleId: "x.global", ruleVersion: 1, raw: { text: "English", unit: null }, normalized: null, intake: null,
+        evidence: { documentId: "doc-1", structureId: "struct-1", structureHash: HASH, ref: "p1", field: "value", excerpt: "English" } }) }]);
+      expect(eligibleForAutoProposal(c)).toBe(false);
+      expect(issues(out, "ambiguous")).toEqual([]);
+    });
+    it("2. \"2 years\" and \"24 months\" mean the same: no conflict", () => {
+      const st = page_(pair("p1", "Duration A", "2 years"), pair("p2", "Duration B", "24 months"));
+      const out = go(st, [typed("x.global", {}, "Duration A", "programme_duration", { kind: "duration" }), typed("x.site", { source: SITE }, "Duration B", "programme_duration", { kind: "duration" })]);
+      const [c] = candidates(out);
+      expect(c).toMatchObject({ ruleId: "x.site", raw: { text: "24 months" }, normalized: { number: "24", unit: "months" } });
+      expect(c.suppressed).toBeUndefined();
+      expect(eligibleForAutoProposal(c)).toBe(true);
+    });
+    it("3 + 4. different amounts (same currency and period) and different currencies are conflicts", () => {
+      const st = page_(pair("p1", "Fee A", "Total: 100000 SEK"), pair("p2", "Fee B", "Total: 120000 SEK"), pair("p3", "Fee C", "Total: 100000 EUR"));
+      const money = (id: string, scope: Rule["scope"], label: string, priority = 0) => typed(id, scope, label, "tuition_fee", { kind: "money" }, { priority });
+      const [c] = candidates(go(st, [money("x.country", { country: "sweden" }, "Fee B"), money("x.global", {}, "Fee C"), money("x.site", { source: SITE }, "Fee A")]));
+      expect(c).toMatchObject({ ruleId: "x.site", normalized: { number: "100000", currency: "SEK", period: "total" } });
+      expect(c.suppressed?.map((x) => [x.reason, x.candidate.ruleId, x.candidate.normalized?.number, x.candidate.normalized?.currency])).toEqual([
+        ["lower_specificity", "x.country", "120000", "SEK"],
+        ["lower_specificity", "x.global", "100000", "EUR"],
+      ]);
+    });
+    it("5. unresolved or null values are compared by their words only: different wording stays a conflict", () => {
+      const st = page_(pair("p1", "Deadline A", "15 January"), pair("p2", "Deadline B", "January 15"), pair("p3", "Deadline C", "15  january"));
+      const deadline = (id: string, scope: Rule["scope"], label: string) => typed(id, scope, label, "application_period", { kind: "date" });
+      const different = candidates(go(st, [deadline("x.global", {}, "Deadline B"), deadline("x.site", { source: SITE }, "Deadline A")]))[0];
+      expect(different).toMatchObject({ raw: { text: "15 January" }, normalized: null });
+      expect(different.suppressed?.map((x) => x.candidate.raw.text)).toEqual(["January 15"]);
+      const same = candidates(go(st, [deadline("x.global", {}, "Deadline C"), deadline("x.site", { source: SITE }, "Deadline A")]))[0];
+      expect(same.suppressed).toBeUndefined();
+    });
+    it("6. equal precedence with different values stays ambiguous (not a suppression)", () => {
+      const out = go(base_, [rule("x.a", { source: SITE }, ["Language"]), rule("x.b", { source: SITE }, ["Teaching language"])]);
+      expect(candidates(out)).toEqual([]);
+      expect(issues(out, "ambiguous")[0].candidates?.every((c) => c.suppressed === undefined)).toBe(true);
+    });
+    it("7. several set-aside candidates, with lower priority and lower specificity, in a fixed order", () => {
+      const st = page_(pair("p1", "L1", "English"), pair("p2", "L2", "Swedish"), pair("p3", "L3", "German"), pair("p4", "L4", "French"));
+      const [c] = candidates(go(st, [rule("x.global", {}, ["L4"]), rule("x.site.low", { source: SITE }, ["L2"]), rule("x.country", { country: "sweden" }, ["L3"]),
+        rule("x.site.high", { source: SITE }, ["L1"], { priority: 2 })]));
+      expect(c.ruleId).toBe("x.site.high");
+      expect(c.suppressed?.map((x) => [x.reason, x.candidate.ruleId, x.candidate.raw.text])).toEqual([
+        ["lower_priority", "x.site.low", "Swedish"], ["lower_specificity", "x.country", "German"], ["lower_specificity", "x.global", "French"],
+      ]);
+    });
+    it("8. different verified intakes never suppress one another", () => {
+      const heading = (ref: string, text: string) => ({ ref, domPath: ref, level: 2, text, section: [] as string[] });
+      const block = (ref: string, text: string, under: string) => ({ ref, domPath: ref, kind: "p" as const, text, section: [under] });
+      const A = "Application deadlines for studies starting August 2027", B = "Application deadlines for studies starting January 2028";
+      const st: DocumentStructure = { ...s, pairs: [], headings: [heading("h1", A), heading("h2", B)],
+        blocks: [block("b1", "15 January 2027: Last day to apply", A), block("b2", "1 October 2027: Last day to apply", B)] };
+      const r = (id: string, scope: Rule["scope"]): Rule => ({ ...rule(id, scope, []), field: "application_deadline", normalize: { kind: "date" }, evidence: "text",
+        strategy: { kind: "section_lines", heading: /^Application deadlines for studies starting \w+ \d{4}$/, line: /^(?<value>.+): Last day to apply$/ },
+        intake: { from: "heading", pattern: /^Application deadlines for studies starting (?<month>[A-Z][a-z]+) (?<year>\d{4})$/ } });
+      const out = go(st, [r("x.site", { source: SITE }), r("x.global", {})]);
+      expect(candidates(out).map((c) => [c.ruleId, c.intake?.year, c.suppressed])).toEqual([["x.site", 2027, undefined], ["x.site", 2028, undefined]]);
+    });
+    it("9. registry order does not change the output", () => {
+      const rules = [rule("x.global", {}, ["Language"]), rule("x.site", { source: SITE }, ["Teaching language"]), rule("x.country", { country: "sweden" }, ["Language"], { priority: 3 })];
+      const expected = JSON.stringify(go(base_, rules));
+      for (const order of [[...rules].reverse(), [rules[1], rules[2], rules[0]]]) expect(JSON.stringify(go(base_, order))).toBe(expected);
+    });
+    it("10. serializes as JSON without nested suppression, and round-trips", () => {
+      const out = go(base_, [rule("x.global", {}, ["Language"]), rule("x.site", { source: SITE }, ["Teaching language"])]);
+      const back = JSON.parse(JSON.stringify(out)) as RuleOutput[];
+      expect(back).toEqual(out);
+      for (const c of candidates(back)) for (const x of c.suppressed ?? []) expect("suppressed" in x.candidate).toBe(false);
+      expect(JSON.stringify(out).match(/"suppressed"/g)).toHaveLength(1);
+    });
+    it("PR 3 safety contract: only candidates without suppression conflicts are eligible for automatic proposal", () => {
+      const out = go(base_, [rule("x.global", {}, ["Language"]), rule("x.site", { source: SITE }, ["Teaching language"])]);
+      expect(out.filter(eligibleForAutoProposal)).toEqual([]);
+      const clean = go(base_, [rule("x.site", { source: SITE }, ["Teaching language"])]);
+      expect(clean.filter(eligibleForAutoProposal).map((c) => c.raw.text)).toEqual(["Swedish"]);
+      expect(eligibleForAutoProposal({ kind: "not_found", factType: "x", ruleIds: [], detail: "" })).toBe(false);
+      expect(eligibleForAutoProposal({ ...candidates(clean)[0], suppressed: [] })).toBe(true);
     });
   });
   it("m3: an invalid page URL is an explicit input error, not a TypeError", () => {

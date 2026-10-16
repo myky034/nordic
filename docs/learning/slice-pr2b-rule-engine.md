@@ -57,8 +57,9 @@
 | m3 | URL sai làm văng `TypeError` | `EngineInputError` có lý do |
 | m5 | Kỳ vọng thừa trong `rules-expectations.json` không bị phát hiện | `rules:check` báo FAIL |
 
-**M1 (dấu vết ứng viên bị gạt) chưa làm:** cần duyệt mở rộng hợp đồng (`suppressed?` trên `RuleCandidate`), xem
-mục 9 của bản review kiến trúc.
+**M1 (đã duyệt và đã làm):** ứng viên bị thứ tự ưu tiên gạt mà **nói khác** được giữ trong `suppressed` của ứng viên
+thắng, kèm lý do (`lower_specificity` / `lower_priority`), không lồng nhau. "2 years" và "24 months" cùng nghĩa nên không
+bị coi là mâu thuẫn. `eligibleForAutoProposal()` là quy tắc cho PR 3: ứng viên có `suppressed` không được tự đề xuất.
 
 ## Luồng
 
@@ -105,7 +106,6 @@ npm run structure-fixtures -w @nordic/crawler  # sinh lại JSON fixture khi s�
 - Chưa có luật cho `application_status`, ngày bắt đầu / kết thúc kỳ, nhịp học, vì các loại fact này chưa tồn
   tại (D8).
 - Mâu thuẫn được xét theo **loại fact + kỳ**; giữa nhiều tài liệu là việc của PR 4.
-- Ứng viên kém ưu tiên có giá trị khác vẫn bị bỏ tới khi M1 được duyệt.
 - `ENGINE_VERSION` phải tăng tay khi code của engine hoặc normalizer đổi kết quả.
 
 ## Thứ tự đọc code

@@ -381,7 +381,13 @@ export type RuleCandidate = {
   applicability: "intake" | "programme" | null;   // chỉ khi bằng chứng nói rõ (Risk C)
   evidence: EvidenceRef;
   notes: string[];                                // lý do bỏ phần chuẩn hóa, như adjustments
+  suppressed?: SuppressedCandidate[];             // M1 (PR #6): ứng viên bị thứ tự ưu tiên gạt mà nói khác
 };
+export type SuppressedCandidate = {               // không đệ quy
+  reason: "lower_specificity" | "lower_priority";
+  candidate: Omit<RuleCandidate, "suppressed">;
+};
+export function eligibleForAutoProposal(o: RuleOutput): o is RuleCandidate;   // candidate && !suppressed?.length
 export type RuleIssue = {
   kind: "not_found" | "ambiguous" | "intake_unresolved" | "normalize_failed";
   factType: string; ruleIds: string[]; detail: string; candidates?: RuleCandidate[];
@@ -667,16 +673,15 @@ Không có phụ thuộc vòng. PR 2 và L7b chỉ chung kiểu TypeScript `Inta
 - **Mã phiên bản bộ luật** (M4) = luật + định nghĩa loại trang + `INTAKE_SCOPE` + `ENGINE_VERSION` (tăng tay khi
   code của engine/normalizer đổi kết quả). `RULESET_LOCK` trong registry bắt buộc cập nhật cùng thay đổi.
 - **Bằng chứng JSON-LD** (M5): mục 3.3 và 5.2 ở trên.
-- **[Cần xác nhận] M1, dấu vết ứng viên bị gạt:** hợp đồng hiện tại không biểu diễn được có cấu trúc (chỉ có
-  `notes` dạng chữ). Đề xuất mở rộng nhỏ nhất, tương thích ngược (trường tùy chọn):
-
-  ```ts
-  export type Suppression = {
-    reason: "lower_specificity" | "lower_priority";
-    candidate: RuleCandidate;        // giá trị, rule id/version, bằng chứng của ứng viên bị gạt, giữ nguyên
-  };
-  // RuleCandidate thêm:
-  suppressed?: Suppression[];        // chỉ những ứng viên có CÂU KHÁC ứng viên thắng (cùng loại fact + kỳ)
-  ```
-  Quy tắc PR 3: ứng viên có `suppressed` không rỗng là **mâu thuẫn chưa giải quyết** → không tự đề xuất, chuyển
-  người duyệt. Cùng mức + cùng priority vẫn là `ambiguous` như hiện nay.
+- **M1, dấu vết ứng viên bị gạt** [Đã duyệt 2026-10-16, đã có trong code]:
+  - `RuleCandidate.suppressed?: SuppressedCandidate[]`, với `SuppressedCandidate = { reason: "lower_specificity" |
+    "lower_priority"; candidate: Omit<RuleCandidate, "suppressed"> }`. Trường tùy chọn, không đệ quy, giữ nguyên giá trị
+    gốc, giá trị chuẩn hóa, rule id/version, bằng chứng, kỳ.
+  - Thứ tự ưu tiên giữ nguyên. Ứng viên kém ưu tiên **cùng nghĩa** với ứng viên thắng là trùng, không lặp lại; **khác
+    nghĩa** thì nằm trong `suppressed` của ứng viên thắng.
+  - So nghĩa: theo giá trị chuẩn hóa khi có ("2 years" = "24 months"; 100000 SEK ≠ 120000 SEK; SEK ≠ EUR); khi không có
+    (loại chữ, giá trị chưa giải được) thì theo chữ, chỉ bỏ qua hoa/thường và khoảng trắng. Khi so không an toàn thì coi
+    là khác, để giữ sự không chắc chắn.
+  - Cùng mức + cùng priority vẫn là `ambiguous`.
+  - **Quy tắc an toàn cho PR 3:** `eligibleForAutoProposal(o)` chỉ đúng với ứng viên **không** có `suppressed`; issue
+    không bao giờ đủ điều kiện. Ứng viên có `suppressed` là mâu thuẫn chưa giải quyết → người duyệt.

@@ -106,17 +106,45 @@ export function runRules(input: EngineInput, rules: readonly Rule[], pageTypes: 
   return resolve(found, raised);
 }
 
+/** Candidates found by one rule in one element with one excerpt: one statement, possibly several readings. */
+function statementsOf(list: Found[]): Found[][] {
+  const statements = new Map<string, Found[]>();
+  for (const f of [...list].sort((a, b) => byOrder(a.hit, b.hit) || compareCodeUnits(a.rule.id, b.rule.id))) {
+    // The same excerpt from another element or rule is a repeat of the statement, kept once.
+    const first = statements.get(f.hit.excerpt);
+    if (!first) statements.set(f.hit.excerpt, [f]);
+    else if (first[0].hit.ref === f.hit.ref && first[0].rule.id === f.rule.id) first.push(f);
+  }
+  return [...statements.values()];
+}
+
 /**
- * Per fact type AND intake (PR #6 review M2): rules below the most specific
- * level that produced a candidate for that intake are fallbacks, then the
- * highest priority wins. Candidates of different intakes never suppress one
- * another; "no intake" (a programme-level type) is its own group, and an
- * unresolved intake is not a group at all: it is an intake_unresolved issue.
- * One statement (one element's excerpt) may hold several readings, but two
- * different statements are a conflict → "ambiguous", nothing chosen. The
- * same statement repeated in another element is a duplicate, kept once.
- * Lower-precedence candidates with a different value are still dropped
- * here: their structured trace (M1) waits for an approved contract change.
+ * What a statement says, for comparing statements (M1). A reading with a
+ * normalized value compares by that value, so "2 years" and "24 months"
+ * (both 24 months) agree and "100000 SEK" vs "120000 SEK", or SEK vs EUR,
+ * do not. A reading without one (text types, or unresolved values such as
+ * "15 January") compares by its words, ignoring case and spacing only: when
+ * the comparison is not safe, different wording stays a difference.
+ */
+function meaning(statement: Found[]) {
+  const keys = statement.map(({ candidate: c }) => (c.normalized ? `v:${JSON.stringify(c.normalized)}` : `t:${c.raw.text.trim().replace(/\s+/g, " ").toLowerCase()}`));
+  return [...new Set(keys)].sort(compareCodeUnits).join("\u0001");
+}
+
+const plain = ({ suppressed: _omit, ...c }: RuleCandidate): Omit<RuleCandidate, "suppressed"> => c;
+
+/**
+ * Per fact type AND intake (PR #6 review M2): the most specific level that
+ * produced a candidate for that intake wins, then the highest priority.
+ * Candidates of different intakes never suppress one another; "no intake"
+ * (a programme-level type) is its own group, and an unresolved intake is
+ * not a group at all: it is an intake_unresolved issue.
+ * - Winning rules with two different statements → "ambiguous", nothing chosen.
+ * - Lower-precedence statements that MEAN the same as the winner are
+ *   duplicates and are not repeated.
+ * - Lower-precedence statements that mean something else are kept in the
+ *   winner's `suppressed` (M1) with the reason, never dropped; such a winner
+ *   is not eligible for automatic proposal (eligibleForAutoProposal).
  */
 function resolve(found: Found[], raised: Raised[]): RuleOutput[] {
   const out: RuleOutput[] = [];
@@ -128,24 +156,25 @@ function resolve(found: Found[], raised: Raised[]): RuleOutput[] {
   for (const key of [...groups.keys()].sort(compareCodeUnits)) {
     const all = groups.get(key)!;
     const level = Math.max(...all.map((f) => f.level));
-    const group = all.filter((f) => f.level === level);
-    const top = Math.max(...group.map((f) => f.rule.priority));
-    const winners = group.filter((f) => f.rule.priority === top);
-    // One statement = one excerpt text; the first element (document order, then rule id) that states it is kept.
-    const statements = new Map<string, Found[]>();
-    for (const f of [...winners].sort((a, b) => byOrder(a.hit, b.hit) || compareCodeUnits(a.rule.id, b.rule.id))) {
-      const first = statements.get(f.hit.excerpt);
-      if (!first) statements.set(f.hit.excerpt, [f]);
-      else if (first[0].hit.ref === f.hit.ref && first[0].rule.id === f.rule.id) first.push(f);
-    }
-    const kept = [...statements.values()];
+    const top = Math.max(...all.filter((f) => f.level === level).map((f) => f.rule.priority));
+    const isWinner = (f: Found) => f.level === level && f.rule.priority === top;
+    const kept = statementsOf(all.filter(isWinner));
+    // Set-aside statements, most precedent first (level, priority, rule id, document order).
+    const losers = statementsOf(all.filter((f) => !isWinner(f)))
+      .sort((a, b) => b[0].level - a[0].level || b[0].rule.priority - a[0].rule.priority || compareCodeUnits(a[0].rule.id, b[0].rule.id) || byOrder(a[0].hit, b[0].hit));
+    const withSuppressed = (statement: Found[]): RuleCandidate[] => {
+      const says = meaning(statement);
+      const suppressed = losers.filter((l) => meaning(l) !== says).flatMap((l) => l.map((f) => ({
+        reason: f.level < level ? "lower_specificity" as const : "lower_priority" as const, candidate: plain(f.candidate) })));
+      return statement.map((f) => (suppressed.length ? { ...f.candidate, suppressed } : f.candidate));
+    };
     if (kept.length > 1) {
       const ruleIds = [...new Set(kept.flat().map((f) => f.rule.id))].sort(compareCodeUnits);
       out.push({ kind: "ambiguous", factType: all[0].candidate.factType, ruleIds,
         detail: `${kept.length} different statements: ${kept.map((k) => `${k[0].hit.ref} "${k[0].hit.excerpt}"`).join(" / ")}`,
-        candidates: kept.flat().map((f) => f.candidate) });
+        candidates: kept.flatMap(withSuppressed) });
     } else {
-      out.push(...kept[0].map((f) => f.candidate));
+      out.push(...withSuppressed(kept[0]));
     }
   }
   // Issues are never dropped by precedence: an intake that could not be

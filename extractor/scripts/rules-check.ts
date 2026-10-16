@@ -17,7 +17,7 @@ type Expected = { factType: string; raw: string; number?: string; unit?: string;
 const root = new URL("../../crawler/test/real/", import.meta.url);
 const pages = (JSON.parse(readFileSync(new URL("expectations.json", root), "utf8")).pages) as { id: string; url: string; selector: string | null }[];
 const expected = JSON.parse(readFileSync(new URL("../test/real/rules-expectations.json", import.meta.url), "utf8")).pages as
-  Record<string, { candidates: Expected[]; notFound: string[]; forbiddenIntakeYears: number[] }>;
+  Record<string, { candidates: Expected[]; notFound: string[]; forbiddenIntakeYears: number[]; suppressed?: number }>;
 const snapshots = readdirSync(new URL("snapshots/", root));
 
 let passed = 0, failed = 0;
@@ -49,6 +49,9 @@ for (const page of pages) {
   check(JSON.stringify(notFound) === JSON.stringify([...want.notFound].sort()), `${page.id}: not_found ${notFound.join(",")} vs ${want.notFound.join(",")}`);
   const others = out.filter((o) => o.kind !== "candidate" && o.kind !== "not_found");
   check(others.length === 0, `${page.id}: no ambiguous / intake_unresolved / normalize_failed (${others.map((o) => o.kind).join(",")})`);
+  // M1: a set-aside conflicting candidate on a real page must be expected, never silent.
+  const suppressed = cands.reduce((n, c) => n + (c.suppressed?.length ?? 0), 0);
+  check(suppressed === (want.suppressed ?? 0), `${page.id}: ${suppressed} suppressed candidates (expected ${want.suppressed ?? 0})`);
   for (const c of cands) {
     check(evidenceRefProblems(c.evidence).length === 0 && (elementString(structure, c.evidence) ?? "").includes(c.evidence.excerpt), `${page.id}: evidence of ${c.ruleId} is inside ${c.evidence.ref}`);
     check(!c.intake || !want.forbiddenIntakeYears.includes(c.intake.year), `${page.id}: ${c.ruleId} has no intake year from another intake`);

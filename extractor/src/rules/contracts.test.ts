@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evidenceRefProblems, intakeRefProblems, type EvidenceRef, type IntakeRef } from "@nordic/db/rule-output";
+import { eligibleForAutoProposal, evidenceRefProblems, intakeRefProblems, type EvidenceRef, type IntakeRef, type RuleCandidate, type SuppressedCandidate } from "@nordic/db/rule-output";
 
 // Task 5 of the PR #5 review: the shared contracts cannot express evidence
 // with a stray cell, an intake without a term or month, or an intake from a
@@ -66,5 +66,24 @@ describe("IntakeRef", () => {
     const fromUrl: IntakeRef = { ...heading, from: "url" };
     expect(intakeRefProblems(fromUrl)).toEqual(['intake: source "url" is not allowed (a URL alone never decides an intake)']);
     expect(intakeRefProblems({ ...month, month: 13, year: 27 })).toEqual(["intake: year must be a whole number 2000–2100", "intake: month must be 1–12"]);
+  });
+});
+
+describe("SuppressedCandidate (M1, PR #6)", () => {
+  const candidate: RuleCandidate = { kind: "candidate", ruleId: "x.site", ruleVersion: 1, rulesetVersion: "ruleset-000000000000", factType: "teaching_language",
+    method: "pair", raw: { text: "Swedish", unit: null }, normalized: null, derivation: null, intake: null, applicability: null, evidence: textEvidence, notes: [] };
+  const { suppressed: _none, ...inner } = { ...candidate, ruleId: "x.global", raw: { text: "English", unit: null } };
+  const entry: SuppressedCandidate = { reason: "lower_specificity", candidate: inner };
+  it("is optional: candidates without it are unchanged and eligible", () => {
+    expect(eligibleForAutoProposal(candidate)).toBe(true);
+    expect(eligibleForAutoProposal({ ...candidate, suppressed: [entry] })).toBe(false);
+  });
+  it("cannot nest: a suppressed candidate has no suppressed list of its own", () => {
+    // @ts-expect-error: a suppressed candidate cannot carry `suppressed` (no recursion).
+    const nested: SuppressedCandidate = { reason: "lower_priority", candidate: { ...inner, suppressed: [entry] } };
+    expect(nested.reason).toBe("lower_priority");
+    // @ts-expect-error: only the two precedence reasons exist.
+    const other: SuppressedCandidate["reason"] = "conflict";
+    expect(other).toBe("conflict");
   });
 });

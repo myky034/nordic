@@ -90,6 +90,20 @@ export type RuleCandidate = {
   applicability: "intake" | "programme" | null;
   evidence: EvidenceRef;
   notes: string[];
+  /**
+   * PR #6 review M1 (approved extension, optional): candidates of the same
+   * fact type and intake that rule precedence set aside although they state
+   * something DIFFERENT. Kept whole (value, rule id/version, evidence, intake)
+   * so the conflict stays visible; never nested (a suppressed candidate has
+   * no `suppressed` of its own). Absent or empty: no conflicting fallback.
+   */
+  suppressed?: SuppressedCandidate[];
+};
+
+/** Why precedence set a conflicting candidate aside: a less specific scope, or a lower priority at the same scope level. */
+export type SuppressedCandidate = {
+  reason: "lower_specificity" | "lower_priority";
+  candidate: Omit<RuleCandidate, "suppressed">;
 };
 
 /** Outcomes that are reported instead of guessed. */
@@ -104,6 +118,17 @@ export type RuleIssue = {
 };
 
 export type RuleOutput = RuleCandidate | RuleIssue;
+
+/**
+ * PR 3 safety rule (M1): only a candidate WITHOUT unresolved suppression
+ * conflicts may ever be proposed automatically. Issues never are, and a
+ * candidate whose `suppressed` list is not empty goes to a person, because
+ * precedence chose a value that another rule contradicts. (Shadow mode and
+ * the database checks in extractor_propose() still apply on top of this.)
+ */
+export function eligibleForAutoProposal(o: RuleOutput): o is RuleCandidate {
+  return o.kind === "candidate" && !(o.suppressed?.length);
+}
 
 // Run-time checks for values that cross a boundary (rules → PR 3 storage).
 // The types above already rule these out in TypeScript; these catch data
