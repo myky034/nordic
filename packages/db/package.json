@@ -8,7 +8,8 @@
     "./client": "./prisma/generated/client/client.ts",
     "./document-hash": "./src/document-hash.ts",
     "./pg-ssl": "./src/pg-ssl.ts",
-    "./document-structure": "./src/document-structure.ts"
+    "./document-structure": "./src/document-structure.ts",
+    "./rule-output": "./src/rule-output.ts"
   },
   "scripts": {
     "generate": "prisma generate",
