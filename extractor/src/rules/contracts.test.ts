@@ -23,6 +23,19 @@ describe("EvidenceRef", () => {
     expect(evidenceRefProblems(missing)).toEqual(["evidence: a cell needs [row, column] as whole numbers from 0"]);
     expect(evidenceRefProblems({ ...cellEvidence, cell: [-1, 0.5] })).toEqual(["evidence: a cell needs [row, column] as whole numbers from 0"]);
   });
+  it("JSON-LD evidence needs an sd<adapter>.<item> ref and a path; other fields cannot carry a path (M5)", () => {
+    const jsonLd: EvidenceRef = { documentId: "d1", structureId: null, structureHash: hash, ref: "sd0.1", field: "json_ld", path: ["offers", 0, "price"], excerpt: "15000" };
+    expect(evidenceRefProblems(jsonLd)).toEqual([]);
+    expect(evidenceRefProblems({ ...jsonLd, ref: "p1" })).toEqual(['evidence: a JSON-LD ref must be "sd<adapter>.<item>"']);
+    expect(evidenceRefProblems({ ...jsonLd, path: [] })).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    expect(evidenceRefProblems({ ...jsonLd, path: ["", -1] })).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    // @ts-expect-error: JSON-LD evidence without a path does not type-check.
+    const noPath: EvidenceRef = { ...textEvidence, ref: "sd0.0", field: "json_ld" };
+    expect(evidenceRefProblems(noPath)).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    // @ts-expect-error: a path on text evidence does not type-check.
+    const strayPath: EvidenceRef = { ...textEvidence, path: ["name"] };
+    expect(evidenceRefProblems(strayPath)).toEqual(['evidence: field "text" cannot have a JSON path']);
+  });
   it("rejects empty excerpts and malformed hashes", () => {
     expect(evidenceRefProblems({ ...textEvidence, excerpt: " ", structureHash: "x" })).toEqual([
       "evidence: structureHash must be 64 hex characters", "evidence: excerpt is empty",

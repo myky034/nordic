@@ -16,7 +16,7 @@ const AMBIGUOUS = ["$", "kr", "kr.", "kronor", "krona"];
 
 // Thousands may be grouped by a space, a no-break space (U+00A0), a narrow
 // no-break space (U+202F), a comma or a dot.
-const SPACES = String.raw`   `;
+const SPACES = String.raw`\u0020\u00a0\u202f`;
 const AMOUNT = String.raw`\d{1,3}(?:[${SPACES},.]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?`;
 const SIGN = String.raw`[A-Z]{3}|€|£|\$|kronor|krona|kr\.?`;
 // Left and right boundaries keep "kr" or "SEK" inside a word, and digits of a
@@ -24,20 +24,45 @@ const SIGN = String.raw`[A-Z]{3}|€|£|\$|kronor|krona|kr\.?`;
 const MONEY = new RegExp(String.raw`(?<![\p{L}\d.,])(?:(${SIGN})\s?(${AMOUNT})|(${AMOUNT})\s?(${SIGN}))(?![\p{L}\d])`, "gu");
 const SPACE_GROUP = new RegExp(String.raw`^(\d{1,3})[${SPACES}](\d{3})`, "u");
 
-// Generic period phrases; a rule may add site wording through `periods`.
+// Which period an amount covers (PR #6 review M3). A phrase qualifies an
+// amount only inside that amount's own part of the sentence: the words after
+// it up to the next clause break or amount, and the words before it back to
+// the previous clause break or amount. Breaks: sentence ends , ; ( ) and the
+// joining words "and", "or", "but", "while", "whereas", "plus", "of which".
+// So in "100000 SEK, of which a total of 20000 SEK …" neither amount is a
+// total, and in "30000 SEK per semester, total 120000 SEK" each gets its own.
+const BREAK = /[,;()]|[.!?](?=\s)|\n|\s(?:and|or|but|while|whereas|plus|of which)\s/gi;
+const PERIOD_WORD: Record<string, ValuePeriod> = { year: "year", semester: "semester", term: "semester", month: "month", week: "week" };
+// "a year" / "/ year" counts only right after the amount ("£12,000 a year"),
+// never in descriptive text ("students who spend a year in Sweden").
+const ADJACENT = /^\s*(?:a|\/)\s*(year|semester|term|month|week)\b/i;
+// Explicit wording, before or after the amount.
 const PERIOD_PHRASES: [ValuePeriod, RegExp][] = [
-  ["semester", /\b(?:per|each|every|a)\s+(?:semester|term)\b|\/\s*(?:semester|term)\b/i],
-  ["year", /\b(?:per|each|every|a)\s+(?:academic\s+)?year\b|\bannual(?:ly)?\b|\byearly\b|\/\s*year\b/i],
-  ["month", /\b(?:per|each|every|a)\s+month\b|\bmonthly\b|\/\s*month\b/i],
-  ["week", /\b(?:per|each|every|a)\s+week\b|\bweekly\b|\/\s*week\b/i],
-  ["total", /\b(?:in\s+)?total\b|\b(?:complete|entire|full|whole)\s+(?:course|programme|program|education)\b/i],
+  ["semester", /\b(?:per|each|every)\s+(?:semester|term)\b|\/\s*(?:semester|term)\b/i],
+  ["year", /\b(?:per|each|every)\s+(?:academic\s+)?year\b|\bannual(?:ly)?\b|\byearly\b|\/\s*year\b/i],
+  ["month", /\b(?:per|each|every)\s+month\b|\bmonthly\b|\/\s*month\b/i],
+  ["week", /\b(?:per|each|every)\s+week\b|\bweekly\b|\/\s*week\b/i],
+  // "total" but not "a total of" (a sum of something, not the programme total).
+  ["total", /\bin\s+total\b|\btotal\b(?!\s+of\b)|\b(?:complete|entire|full|whole)\s+(?:course|programme|program|education)\b/i],
   ["one_off", /\bone[\s-](?:off|time)\b/i],
 ];
+
+/** The words that may qualify the amount at [at, after): its own part of the sentence. */
+function ownWords(text: string, at: number, after: number, prevEnd: number, nextStart: number) {
+  const breaks = [...text.matchAll(BREAK)].map((b) => [b.index ?? 0, (b.index ?? 0) + b[0].length] as const);
+  const start = Math.max(prevEnd, ...breaks.filter(([, e]) => e <= at).map(([, e]) => e));
+  // A parenthesis right after the amount belongs to it: "900 SEK (one-off)".
+  const rest = text.slice(after, nextStart);
+  const paren = /^\s*\(([^()]*)\)/.exec(rest);
+  const from = paren ? after + paren[0].length : after;
+  const end = Math.min(nextStart, ...breaks.filter(([b]) => b >= from).map(([b]) => b));
+  return { before: text.slice(start, at), after: text.slice(after, Math.max(end, from)) };
+}
 
 /** "135 000" / "135,000" / "1.234,50" → "135000" / "135000" / "1234.50". */
 function amountText(s: string) {
   const decimal = /[.,](\d{1,2})$/.exec(s);
-  const whole = (decimal ? s.slice(0, decimal.index) : s).replace(/[   ,.]/gu, "");
+  const whole = (decimal ? s.slice(0, decimal.index) : s).replace(/[\u0020\u00a0\u202f,.]/gu, "");
   return decimal ? `${whole}.${decimal[1]}` : whole;
 }
 
@@ -72,8 +97,6 @@ export function normalizeMoney(text: string, options: MoneyOptions = {}): Normal
     return !/^[A-Z]{3}$/.test(sign) || (CODES as readonly string[]).includes(sign);
   });
   if (!matches.length) return fail(text, "no_value", "No amount with a currency");
-  // Sentence ends: . ; ! ? followed by white space, or a line break ("1.234,50" has no space after the dot).
-  const boundaries = [...text.matchAll(/[.;!?](?=\s)|\n/g)].map((b) => (b.index ?? 0) + 1);
   const readings: Reading[] = matches.map((m, i) => {
     const signFirst = m[1] !== undefined;
     const sign = m[1] ?? m[4];
@@ -86,17 +109,16 @@ export function normalizeMoney(text: string, options: MoneyOptions = {}): Normal
     if (AMBIGUOUS.includes(sign.toLowerCase()) || sign === "$") {
       return { status: "unresolved", text: m[0], reason: { code: "currency_ambiguous", detail: `"${sign}" names several currencies` }, notes: [] };
     }
-    // The clause an amount belongs to: its sentence, cut at the neighbouring
-    // amounts, so "The complete course" never describes the amount before it.
     const prevEnd = i === 0 ? 0 : (matches[i - 1].index ?? 0) + matches[i - 1][0].length;
     const nextStart = i === matches.length - 1 ? text.length : matches[i + 1].index ?? text.length;
-    const start = Math.max(prevEnd, ...boundaries.filter((b) => b <= at));
-    const end = Math.min(nextStart, ...boundaries.filter((b) => b >= after));
-    const clause = text.slice(start, end);
+    const words = ownWords(text, at, after, prevEnd, nextStart);
+    const own = `${words.before} ${words.after}`;
     const currency = SYMBOLS[sign] ?? sign;
-    const lower = clause.toLowerCase();
+    const lower = own.toLowerCase();
     const fromRule = Object.entries(options.periods ?? {}).filter(([phrase]) => lower.includes(phrase.toLowerCase())).map(([, p]) => p);
-    const periods = [...new Set(fromRule.length ? fromRule : PERIOD_PHRASES.filter(([, re]) => re.test(clause)).map(([p]) => p))];
+    const adjacent = ADJACENT.exec(words.after);
+    const generic = [...PERIOD_PHRASES.filter(([, re]) => re.test(own)).map(([p]) => p), ...(adjacent ? [PERIOD_WORD[adjacent[1].toLowerCase()]] : [])];
+    const periods = [...new Set(fromRule.length ? fromRule : generic)];
     if (periods.length !== 1) {
       return { status: "unresolved", text: m[0],
         reason: periods.length ? { code: "period_ambiguous", detail: `Several periods: ${periods.join(", ")}` } : { code: "period_unknown", detail: "The source does not say what the amount covers" },

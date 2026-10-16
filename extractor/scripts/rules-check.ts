@@ -55,5 +55,8 @@ for (const page of pages) {
   }
   console.log(`info  ${page.id}: ${cands.length} candidates, not_found ${notFound.join(",") || "-"}`);
 }
+// Every expectation must be checked: a page listed here but missing from the
+// crawler's page list would otherwise pass unnoticed (PR #6 review m5).
+for (const id of Object.keys(expected)) check(pages.some((p) => p.id === id), `${id}: expected in rules-expectations.json but not in crawler/test/real/expectations.json`);
 console.log(`${passed} passed, ${failed} failed`);
 process.exit(failed ? 1 : 0);

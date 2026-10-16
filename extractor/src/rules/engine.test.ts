@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import type { DocumentStructure } from "@nordic/db/document-structure";
 import { evidenceRefProblems, type RuleCandidate, type RuleIssue, type RuleOutput } from "@nordic/db/rule-output";
-import { runRules, type EngineInput } from "./engine";
+import { EngineInputError, runRules, type EngineInput } from "./engine";
 import { elementString } from "./strategies";
 import { PAGE_TYPES, RULES } from "./registry";
 import type { Rule } from "./types";
@@ -39,6 +39,14 @@ describe("Stockholm-University-like intake page", () => {
     ]);
     expect(fees[1].notes.join(" ")).toMatch(/period_unknown/);
     expect(fees.every((f) => f.evidence.excerpt.startsWith("Applies to citizens from outside EU"))).toBe(true);
+  });
+  it("m1: a heading that only starts with a term and year is not an intake heading", () => {
+    const s = fixture("programme-intake-next");
+    const swapped = { ...s, headings: s.headings.map((h) => (h.text.startsWith("Autumn 2027 |") ? { ...h, text: "Autumn 2027 selection changes" } : h)),
+      blocks: s.blocks.map((b) => ({ ...b, section: b.section.map((x) => (x.startsWith("Autumn 2027 |") ? "Autumn 2027 selection changes" : x)) })) };
+    const out = run(input(swapped, SU_2027));
+    expect(candidates(out, "application_period")).toEqual([]);
+    expect(JSON.stringify(out)).not.toMatch(/"year":2027/);
   });
   it("4. a mention of ANOTHER intake (autumn 2027) is never used: the 2026 page has no 2027 candidate", () => {
     expect(JSON.stringify(out)).not.toMatch(/"year":2027/);
@@ -172,7 +180,7 @@ describe("matching and precedence (synthetic rules)", () => {
       .toMatchObject({ method: "table", raw: { text: "Thesis" }, evidence: { ref: "t2", field: "cell", cell: [1, 1], excerpt: "Thesis" } });
   });
   it("JSON-LD: an ISO 8601 duration is not converted (normalize_failed, nothing assumed)", () => {
-    const r = rule("x.jsonld", { source: SITE }, [], { field: "programme_duration", strategy: { kind: "json_ld", type: "EducationalOccupationalProgram", path: ["timeToComplete"] }, normalize: { kind: "duration" }, evidence: "text" });
+    const r = rule("x.jsonld", { source: SITE }, [], { field: "programme_duration", strategy: { kind: "json_ld", type: "EducationalOccupationalProgram", path: ["timeToComplete"] }, normalize: { kind: "duration" }, evidence: "json_ld" });
     const out = runRules(input(fixture("programme-rendered"), page), [r], types);
     expect(candidates(out)).toEqual([]);
     expect(issues(out, "normalize_failed")[0].detail).toMatch(/^sd0\.0: no_value/);
@@ -183,6 +191,66 @@ describe("matching and precedence (synthetic rules)", () => {
     const pageIntake = { label: "Autumn 2027", year: 2027, term: "autumn" as const, month: null, from: "page" as const, record: { programmePageId: "pp1", intakeId: "in1" } };
     const [c] = candidates(runRules(input(s, page, { pageIntake }), [period], types));
     expect(c).toMatchObject({ intake: pageIntake, applicability: "intake" });
+  });
+  describe("M5: JSON-LD evidence names one property and is checked against it (PR #6 review)", () => {
+    const item = { "@type": "Course", name: "Example Course 2 years", timeToComplete: "2 years", offers: [{ price: 15000 }] };
+    const sd: DocumentStructure = { ...s, pairs: [], structuredData: [{ adapter: "json-ld", adapterVersion: 1, items: [{ "@type": "Thing", name: "x" }, item] }] };
+    const jr = (path: string[]) => rule("x.jsonld", { source: SITE }, [], { field: "programme_duration", strategy: { kind: "json_ld", type: "Course", path }, normalize: { kind: "duration" }, evidence: "json_ld" });
+    it("the candidate's evidence locates the item and the property", () => {
+      const [c] = candidates(runRules(input(sd, page), [jr(["timeToComplete"])], types));
+      expect(c).toMatchObject({ method: "json_ld", raw: { text: "2 years" }, normalized: { number: "24" }, evidence: { ref: "sd0.1", field: "json_ld", path: ["timeToComplete"], excerpt: "2 years" } });
+      expect(evidenceRefProblems(c.evidence)).toEqual([]);
+      expect(elementString(sd, c.evidence)).toBe("2 years");
+    });
+    it("the value is read from that property only: another property holding similar text is not used", () => {
+      expect(elementString(sd, { ref: "sd0.1", field: "json_ld", path: ["name"] })).toBe("Example Course 2 years");
+      expect(elementString(sd, { ref: "sd0.1", field: "json_ld", path: ["timeToComplete"] })).not.toContain("Example");
+    });
+    it("missing paths, wrong properties and non-text values give no candidate", () => {
+      for (const path of [["missing"], ["timeToComplete", "x"], ["offers"], ["offers", "0"]]) {
+        const out = runRules(input(sd, page), [jr(path)], types);
+        expect(candidates(out)).toEqual([]);
+        expect(issues(out, "not_found")).toHaveLength(1);
+      }
+      expect(elementString(sd, { ref: "sd0.1", field: "json_ld", path: [] })).toBeNull();
+      expect(elementString(sd, { ref: "sd5.0", field: "json_ld", path: ["name"] })).toBeNull();
+      expect(elementString(sd, { ref: "sd0.1", field: "json_ld", path: ["offers", 0, "price"] })).toBe("15000");
+    });
+  });
+  describe("M2: precedence is per fact type AND intake (PR #6 review)", () => {
+    const heading = (ref: string, text: string) => ({ ref, domPath: ref, level: 2, text, section: [] as string[] });
+    const block = (ref: string, text: string, under: string) => ({ ref, domPath: ref, kind: "p" as const, text, section: [under] });
+    const A = "Application deadlines for studies starting August 2027", B = "Deadlines for January 2028 start";
+    const twoIntakes: DocumentStructure = { ...s, pairs: [], headings: [heading("h1", A), heading("h2", B)],
+      blocks: [block("b1", "15 January 2027: Last day to apply", A), block("b2", "1 October 2027: Last day to apply", B)] };
+    const deadline = (id: string, scope: Rule["scope"], headingRe: RegExp, intakeRe: RegExp): Rule => ({ ...rule(id, scope, []), field: "application_deadline",
+      normalize: { kind: "date" }, evidence: "text", strategy: { kind: "section_lines", heading: headingRe, line: /^(?<value>.+): Last day to apply$/ }, intake: { from: "heading", pattern: intakeRe } });
+    const specific = deadline("x.specific", { source: SITE }, /^Application deadlines for studies starting \w+ \d{4}$/, /^Application deadlines for studies starting (?<month>[A-Z][a-z]+) (?<year>\d{4})$/);
+    const general = deadline("x.general", {}, /^Deadlines for \w+ \d{4} start$/, /^Deadlines for (?<month>[A-Z][a-z]+) (?<year>\d{4}) start$/);
+    it("a specific rule for one intake does not suppress a general rule's value for another intake", () => {
+      const out = runRules(input(twoIntakes, page), [specific, general], types);
+      expect(candidates(out).map((c) => [c.ruleId, c.raw.text, c.intake?.year, c.intake?.month])).toEqual([
+        ["x.specific", "15 January 2027", 2027, 8],
+        ["x.general", "1 October 2027", 2028, 1],
+      ]);
+    });
+    it("within one intake the more specific rule still wins", () => {
+      const sameIntake: DocumentStructure = { ...twoIntakes, headings: [heading("h1", A), heading("h2", "Deadlines for August 2027 start")],
+        blocks: [block("b1", "15 January 2027: Last day to apply", A), block("b2", "1 February 2027: Last day to apply", "Deadlines for August 2027 start")] };
+      expect(candidates(runRules(input(sameIntake, page), [specific, general], types)).map((c) => c.ruleId)).toEqual(["x.specific"]);
+    });
+    it("an unresolved intake is reported, never merged with programme-level values, and not dropped by precedence", () => {
+      const noIntake: DocumentStructure = { ...twoIntakes, headings: [heading("h1", A), heading("h3", "Deadlines for 2028 start")],
+        blocks: [block("b1", "15 January 2027: Last day to apply", A), block("b3", "2 May 2027: Last day to apply", "Deadlines for 2028 start")] };
+      const loose = deadline("x.loose", {}, /^Deadlines for .+ start$/, /^Deadlines for (?<month>[A-Z][a-z]+ )?(?<year>\d{4}) start$/);
+      const out = runRules(input(noIntake, page), [specific, loose], types);
+      expect(candidates(out).map((c) => c.ruleId)).toEqual(["x.specific"]);
+      expect(issues(out, "intake_unresolved")).toMatchObject([{ ruleIds: ["x.loose"], intakeText: "Deadlines for 2028 start" }]);
+    });
+  });
+  it("m3: an invalid page URL is an explicit input error, not a TypeError", () => {
+    expect(() => runRules(input(s, "not a url"), [], types)).toThrow(EngineInputError);
+    expect(() => runRules(input(s, "ftp://uni.example.test/x"), [], types)).toThrow(/not an http\(s\) URL/);
   });
   it("a heading that names no term or month leaves the intake unresolved, with the words kept", () => {
     const structure: DocumentStructure = { ...s, pairs: [], headings: [{ ref: "h1", domPath: "h", level: 2, text: "Intake 2027", section: [] }],

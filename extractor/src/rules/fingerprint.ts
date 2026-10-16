@@ -50,8 +50,31 @@ export function checkVersions(rules: readonly Rule[], lock: VersionLock): string
   return problems;
 }
 
-/** One string for a whole rule set, sorted by id, so outputs can name the exact set that produced them. */
-export function rulesetVersion(rules: readonly Rule[]): string {
+/**
+ * Raised by hand whenever strategies, intake detection, precedence or a
+ * normalizer change what the same rules produce (code, not configuration,
+ * so no test can see it; the PR that changes them must raise it).
+ * 1 = PR 2b.
+ */
+export const ENGINE_VERSION = 1;
+
+/** Shared configuration that changes what rules produce without changing any rule (PR #6 review M4). */
+export type RulesetDependencies = {
+  /** Which pages a pageType scope matches. */
+  pageTypes?: readonly { source: string; type: string; url: RegExp }[];
+  /** Which fact types belong to an intake (applicability, D2). */
+  intakeScope?: Readonly<Record<string, string>>;
+};
+
+/**
+ * One string for a whole rule set and the configuration it runs with, so
+ * outputs name the exact set that produced them. Independent of the order of
+ * rules, page types and keys; `mode` and `enabled` stay out (rollout state).
+ */
+export function rulesetVersion(rules: readonly Rule[], deps: RulesetDependencies = {}): string {
   const parts = [...rules].sort((a, b) => compareCodeUnits(a.id, b.id)).map((r) => `${r.id}@${r.version}:${ruleFingerprint(r)}`);
-  return `ruleset-${createHash("sha256").update(parts.join("\n")).digest("hex").slice(0, 12)}`;
+  const pageTypes = [...(deps.pageTypes ?? [])].map((d) => JSON.stringify(canonical(d))).sort(compareCodeUnits);
+  const intakeScope = JSON.stringify(canonical(deps.intakeScope ?? {}));
+  const all = [`engine@${ENGINE_VERSION}`, ...parts, "page-types", ...pageTypes, "intake-scope", intakeScope].join("\n");
+  return `ruleset-${createHash("sha256").update(all).digest("hex").slice(0, 12)}`;
 }

@@ -44,13 +44,19 @@ const byOrder = (a: Hit, b: Hit) => a.order[0] - b.order[0] || a.order[1] - b.or
 /** The excerpt must sit inside the one element string the hit names; a miss is a bug in a strategy. */
 function verifyHit(s: DocumentStructure, hit: Hit) {
   const target = elementString(s, hit);
-  const inside = target !== null && (hit.ref.startsWith("sd") ? target.includes(JSON.stringify(hit.excerpt).slice(1, -1)) : target.includes(hit.excerpt));
-  if (!inside) throw new Error(`rule engine: excerpt not found in ${hit.ref}/${hit.field}`);
+  if (target === null || !target.includes(hit.excerpt)) throw new Error(`rule engine: excerpt not found in ${hit.ref}/${hit.field}`);
+}
+
+/** Input the engine cannot work with (PR #6 review m3): reported with its reason, never a bare TypeError. */
+export class EngineInputError extends Error {
+  constructor(message: string) { super(`rule engine input: ${message}`); this.name = "EngineInputError"; }
 }
 
 export function runRules(input: EngineInput, rules: readonly Rule[], pageTypes: readonly PageTypeDef[]): RuleOutput[] {
+  if (!URL.canParse(input.pageUrl) || !/^https?:$/.test(new URL(input.pageUrl).protocol)) throw new EngineInputError(`page URL "${input.pageUrl}" is not an http(s) URL`);
   const page = pageContext(input.pageUrl, input.country, pageTypes);
-  const ruleset = rulesetVersion(rules);
+  // M4: the ruleset id also covers the shared configuration that changes results.
+  const ruleset = rulesetVersion(rules, { pageTypes, intakeScope: INTAKE_SCOPE });
   const doc = { documentId: input.documentId, structureId: input.structureId, structureHash: input.structureHash };
   const found: Found[] = [];
   const raised: Raised[] = [];
@@ -82,7 +88,8 @@ export function runRules(input: EngineInput, rules: readonly Rule[], pageTypes: 
         raised.push({ rule, level, issue: { kind: "normalize_failed", factType: rule.field, ruleIds: [rule.id], detail: `${hit.ref}: ${result.failure.code}: ${result.failure.detail}` } });
         continue;
       }
-      const evidence = { ...doc, ref: hit.ref, field: hit.field, excerpt: hit.excerpt, ...(hit.field === "cell" ? { cell: hit.cell } : {}) } as EvidenceRef;
+      const evidence = { ...doc, ref: hit.ref, field: hit.field, excerpt: hit.excerpt,
+        ...(hit.field === "cell" ? { cell: hit.cell } : {}), ...(hit.field === "json_ld" ? { path: hit.path } : {}) } as EvidenceRef;
       const problems = evidenceRefProblems(evidence);
       if (problems.length) throw new Error(`rule engine: invalid evidence for ${rule.id}: ${problems.join("; ")}`);
       for (const reading of result.readings) {
@@ -100,26 +107,28 @@ export function runRules(input: EngineInput, rules: readonly Rule[], pageTypes: 
 }
 
 /**
- * Per fact type: rules below the most specific level that produced a
- * candidate are fallbacks and are dropped (with their issues). Per fact type
- * and intake: the highest priority among the remaining rules wins; one
- * statement (one element's excerpt) may hold several readings, but two
+ * Per fact type AND intake (PR #6 review M2): rules below the most specific
+ * level that produced a candidate for that intake are fallbacks, then the
+ * highest priority wins. Candidates of different intakes never suppress one
+ * another; "no intake" (a programme-level type) is its own group, and an
+ * unresolved intake is not a group at all: it is an intake_unresolved issue.
+ * One statement (one element's excerpt) may hold several readings, but two
  * different statements are a conflict → "ambiguous", nothing chosen. The
  * same statement repeated in another element is a duplicate, kept once.
+ * Lower-precedence candidates with a different value are still dropped
+ * here: their structured trace (M1) waits for an approved contract change.
  */
 function resolve(found: Found[], raised: Raised[]): RuleOutput[] {
   const out: RuleOutput[] = [];
-  const topLevel = new Map<string, number>();
-  for (const f of found) topLevel.set(f.candidate.factType, Math.max(topLevel.get(f.candidate.factType) ?? -1, f.level));
-
   const groups = new Map<string, Found[]>();
   for (const f of found) {
-    if (f.level < (topLevel.get(f.candidate.factType) ?? -1)) continue;
     const key = `${f.candidate.factType}\u0000${intakeKey(f.candidate.intake)}`;
     groups.set(key, [...(groups.get(key) ?? []), f]);
   }
   for (const key of [...groups.keys()].sort(compareCodeUnits)) {
-    const group = groups.get(key)!;
+    const all = groups.get(key)!;
+    const level = Math.max(...all.map((f) => f.level));
+    const group = all.filter((f) => f.level === level);
     const top = Math.max(...group.map((f) => f.rule.priority));
     const winners = group.filter((f) => f.rule.priority === top);
     // One statement = one excerpt text; the first element (document order, then rule id) that states it is kept.
@@ -132,20 +141,21 @@ function resolve(found: Found[], raised: Raised[]): RuleOutput[] {
     const kept = [...statements.values()];
     if (kept.length > 1) {
       const ruleIds = [...new Set(kept.flat().map((f) => f.rule.id))].sort(compareCodeUnits);
-      out.push({ kind: "ambiguous", factType: group[0].candidate.factType, ruleIds,
+      out.push({ kind: "ambiguous", factType: all[0].candidate.factType, ruleIds,
         detail: `${kept.length} different statements: ${kept.map((k) => `${k[0].hit.ref} "${k[0].hit.excerpt}"`).join(" / ")}`,
         candidates: kept.flat().map((f) => f.candidate) });
     } else {
       out.push(...kept[0].map((f) => f.candidate));
     }
   }
-  // "not_found" means the fact type has no candidate at all; other issues are
-  // kept unless they come from a fallback level that a more specific rule beat.
+  // Issues are never dropped by precedence: an intake that could not be
+  // resolved, or a value the normalizer refused, is reported whichever rule
+  // found it. "not_found" means the fact type has no candidate at all.
+  const withCandidates = new Set(found.map((f) => f.candidate.factType));
   const notFound = new Map<string, Raised[]>();
   for (const r of raised) {
-    const top = topLevel.get(r.issue.factType);
-    if (r.issue.kind === "not_found") { if (top === undefined) notFound.set(r.issue.factType, [...(notFound.get(r.issue.factType) ?? []), r]); }
-    else if (top === undefined || r.level >= top) out.push(r.issue);
+    if (r.issue.kind !== "not_found") out.push(r.issue);
+    else if (!withCandidates.has(r.issue.factType)) notFound.set(r.issue.factType, [...(notFound.get(r.issue.factType) ?? []), r]);
   }
   for (const [factType, rs] of notFound) {
     out.push({ kind: "not_found", factType, ruleIds: rs.map((r) => r.rule.id).sort(compareCodeUnits), detail: rs.map((r) => `${r.rule.id}: ${r.issue.detail}`).sort(compareCodeUnits).join("; ") });

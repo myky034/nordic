@@ -3,7 +3,8 @@ import { VALUE_PERIODS as DB_PERIODS, type IntakeRef } from "@nordic/db/rule-out
 import { VALUE_PERIODS as PROMPT_PERIODS } from "../prompt";
 import { validateRules } from "./config";
 import { checkVersions, compareCodeUnits, ruleFingerprint, rulesetVersion } from "./fingerprint";
-import { RULES, VERSIONS } from "./registry";
+import { INTAKE_SCOPE } from "./fact-types";
+import { RULES, RULESET_DEPENDENCIES, RULESET_LOCK, VERSIONS } from "./registry";
 import type { Rule } from "./types";
 
 // PR 2a (review §5.3): rule definitions are checked before use, and a
@@ -38,7 +39,9 @@ describe("rule validation", () => {
     ["page without source", { scope: { page: /^https:\/\/x\.test\/a$/ } }, /scope.page needs scope.source/],
     ["page not anchored", { scope: { source: "https://uni.example.test", page: /programme/ } }, /must be anchored/],
     ["empty labels", { strategy: { kind: "pair", labels: [" "] } }, /non-empty labels/],
-    ["pair with text evidence", { evidence: "text" }, /evidence "label", "value" or "canonical"/],
+    ["pair with text evidence", { evidence: "text" }, /pair strategy takes evidence "value" or "canonical"/],
+    ["pair with label-only evidence (m2)", { evidence: "label" }, /pair strategy takes evidence "value" or "canonical"/],
+    ["json_ld without json_ld evidence", { strategy: { kind: "json_ld", type: "Course", path: ["name"] }, evidence: "text" }, /json_ld strategy takes evidence "json_ld"/],
   ])("rejects %s", (_name, change, problem) => {
     expect(check({ ...base, ...change }).join("\n")).toMatch(problem);
   });
@@ -118,6 +121,30 @@ describe("versions", () => {
       for (const order of [[...rules].reverse(), [rules[2], rules[0], rules[4], rules[1], rules[3]], [rules[1], rules[0], ...rules.slice(2)]]) {
         expect(rulesetVersion(order)).toBe(expected);
       }
+    });
+  });
+  describe("M4: the ruleset id covers the shared configuration (PR #6 review)", () => {
+    const pageTypes = [{ source: "https://uni.example.test", type: "programme", url: /^https:\/\/uni\.example\.test\/p\/[a-z]+$/ },
+      { source: "https://uni.example.test", type: "intake", url: /^https:\/\/uni\.example\.test\/i\/[a-z]+$/ }];
+    const deps = { pageTypes, intakeScope: { application_deadline: "intake", tuition_fee: "optional" } };
+    const id = rulesetVersion([base, deadlines], deps);
+    it.each<[string, Parameters<typeof rulesetVersion>[1]]>([
+      ["a page type pattern", { ...deps, pageTypes: [{ ...pageTypes[0], url: /^https:\/\/uni\.example\.test\/p\/.+$/ }, pageTypes[1]] }],
+      ["a page type name", { ...deps, pageTypes: [{ ...pageTypes[0], type: "programme_page" }, pageTypes[1]] }],
+      ["a removed page type", { ...deps, pageTypes: [pageTypes[0]] }],
+      ["the intake scope", { ...deps, intakeScope: { application_deadline: "intake", tuition_fee: "intake" } }],
+    ])("changing %s changes the ruleset id", (_what, changed) => {
+      expect(rulesetVersion([base, deadlines], changed)).not.toBe(id);
+    });
+    it("order of rules, page types and scope keys does not", () => {
+      expect(rulesetVersion([deadlines, base], { pageTypes: [...pageTypes].reverse(), intakeScope: { tuition_fee: "optional", application_deadline: "intake" } })).toBe(id);
+    });
+    it("rollout state (mode, enabled) does not", () => {
+      expect(rulesetVersion([{ ...base, mode: "propose" }, { ...deadlines, enabled: false }], deps)).toBe(id);
+    });
+    it("the registry's ruleset is locked: any change to rules, page types, intake scope or ENGINE_VERSION must update RULESET_LOCK", () => {
+      expect(RULESET_DEPENDENCIES.intakeScope).toBe(INTAKE_SCOPE);
+      expect(rulesetVersion(RULES, RULESET_DEPENDENCIES)).toBe(RULESET_LOCK);
     });
   });
   it("names a rule set independently of order", () => {

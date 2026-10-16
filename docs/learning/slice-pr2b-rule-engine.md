@@ -44,6 +44,22 @@
 - **Tất định.** Luật được sắp theo id (so mã ký tự), và đầu ra có thứ tự cố định. Test đảo thứ tự registry vẫn ra
   kết quả giống hệt.
 
+## Sửa sau review PR #6 (2026-10-16)
+
+| # | Lỗi | Cách sửa |
+|---|---|---|
+| M2 | Mức cụ thể chọn theo loại fact, nên hạn của kỳ khác bị mất | Chọn theo **loại fact + kỳ**; issue không bao giờ bị bỏ vì thứ tự ưu tiên |
+| M3 | "100000 SEK, of which a total of 20000 SEK": cả hai thành `total`; "a year" trong câu mô tả thành `year` | Một cụm chỉ gán cho số tiền **trong cùng vế câu** (ngắt ở `, ; ( )`, cuối câu, "and/or/but/while/whereas/plus/of which"); "a year" chỉ khi đứng ngay sau số tiền; "a total of" không phải "toàn khóa" |
+| M4 | Mã phiên bản bộ luật không gồm loại trang, `INTAKE_SCOPE` | `rulesetVersion(rules, { pageTypes, intakeScope })` + `ENGINE_VERSION`; `RULESET_LOCK` có test |
+| M5 | Bằng chứng JSON-LD chỉ "có trong mục" | `EvidenceRef` thêm dạng `json_ld` có `path`; chỉ đọc đúng giá trị tại đường dẫn |
+| m1 | Heading SU "Autumn 2027 selection changes" bị coi là heading kỳ | Bắt buộc dấu " \| " như trang thật; fixture có dấu này; 2 luật SU lên version 2 |
+| m2 | Luật cặp được lấy bằng chứng là nhãn | Chỉ `value` hoặc `canonical` |
+| m3 | URL sai làm văng `TypeError` | `EngineInputError` có lý do |
+| m5 | Kỳ vọng thừa trong `rules-expectations.json` không bị phát hiện | `rules:check` báo FAIL |
+
+**M1 (dấu vết ứng viên bị gạt) chưa làm:** cần duyệt mở rộng hợp đồng (`suppressed?` trên `RuleCandidate`), xem
+mục 9 của bản review kiến trúc.
+
 ## Luồng
 
 ```
@@ -84,12 +100,13 @@ npm run structure-fixtures -w @nordic/crawler  # sinh lại JSON fixture khi s�
 
 ## Hạn chế đã biết
 
-- JSON-LD không có `ref` phần tử trong `html-structure-v1`; engine dùng `sd<adapter>.<item>`. PR 3 phải kiểm
-  bằng chứng JSON-LD theo chỉ số item.
+- JSON-LD: bằng chứng là `sd<adapter>.<item>` + `path`; PR 3 phải hiện thực cùng phép kiểm này trong database.
 - Kỳ theo trang (`from: "page"`) cần bản ghi L7b. Hiện engine chỉ nhận qua tham số `pageIntake`.
 - Chưa có luật cho `application_status`, ngày bắt đầu / kết thúc kỳ, nhịp học, vì các loại fact này chưa tồn
   tại (D8).
 - Mâu thuẫn được xét theo **loại fact + kỳ**; giữa nhiều tài liệu là việc của PR 4.
+- Ứng viên kém ưu tiên có giá trị khác vẫn bị bỏ tới khi M1 được duyệt.
+- `ENGINE_VERSION` phải tăng tay khi code của engine hoặc normalizer đổi kết quả.
 
 ## Thứ tự đọc code
 

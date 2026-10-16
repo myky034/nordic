@@ -11,8 +11,13 @@ import type { Rule } from "../types";
 // intake pattern does not match such headings.
 
 const SOURCE = "https://www.su.se";
-/** Intake heading: a term and a year first, then the offering details. */
-const INTAKE_HEADING = /^(?<label>(?<term>Autumn|Spring|Summer) (?<year>\d{4}))(?:(?:\s*\|\s*|\s+).*)?$/;
+/**
+ * Intake heading: a term and a year, then — on the real pages — the offering
+ * details separated by " | " (literal text in the source). Only that form is
+ * accepted, so a heading such as "Autumn 2027 selection changes" is not an
+ * intake heading (PR #6 review m1).
+ */
+const INTAKE_HEADING = /^(?<label>(?<term>Autumn|Spring|Summer) (?<year>\d{4}))(?: \| [^|]+)*$/;
 
 export const SU_PAGE_TYPES: PageTypeDef[] = [
   // The query names the intake page, but only the page TYPE is read from it, never the intake.
@@ -26,9 +31,11 @@ export const SU_RULES: Rule[] = [
     strategy: { kind: "pair", labels: ["Language"] }, normalize: { kind: "text" }, intake: { from: "none" }, evidence: "canonical" },
   { ...base, id: "su.tuition_fee.pair", field: "tuition_fee",
     strategy: { kind: "pair", labels: ["Tuition fee"] }, normalize: { kind: "money" }, intake: { from: "none" }, evidence: "value" },
-  { ...base, id: "su.programme_credits.intake_block", field: "programme_credits",
+  // v2 (PR #6 review m1): stricter intake heading pattern.
+  { ...base, version: 2, id: "su.programme_credits.intake_block", field: "programme_credits",
     strategy: { kind: "sentence", heading: INTAKE_HEADING, pattern: /^(?<value>\d+(?:[.,]\d+)? credits)$/ }, normalize: { kind: "credits" }, intake: { from: "none" }, evidence: "text" },
-  { ...base, id: "su.application_period.opens", field: "application_period",
+  // v2 (PR #6 review m1): stricter intake heading pattern.
+  { ...base, version: 2, id: "su.application_period.opens", field: "application_period",
     strategy: { kind: "sentence", heading: INTAKE_HEADING, pattern: /^Application opens \d{1,2} [A-Z][a-z]+ \d{4}$/ }, normalize: { kind: "text" },
     intake: { from: "heading", pattern: INTAKE_HEADING }, evidence: "text" },
   { ...base, id: "su.programme_duration.sentence", field: "programme_duration",

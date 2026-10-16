@@ -37,7 +37,7 @@
       "ref": "h4",
       "domPath": "main>h2:nth-of-type(2)",
       "level": 2,
-      "text": "Autumn 2027 Period 1 Day-time, 50%",
+      "text": "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses",
       "section": [
         "One Year Master’s Programme in Example Planning"
       ]
@@ -80,7 +80,7 @@
       "text": "60 credits",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     },
     {
@@ -90,7 +90,7 @@
       "text": "30/08/2027 - 03/06/2029",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     },
     {
@@ -100,7 +100,7 @@
       "text": "Application opens 16 October 2026",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     },
     {
@@ -110,7 +110,7 @@
       "text": "Programme code: EXIP",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     },
     {
@@ -120,7 +120,7 @@
       "text": "Language English",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     },
     {
@@ -130,7 +130,7 @@
       "text": "Tuition fee Applies to citizens from outside EU, EEA or Switzerland. First instalment: 50000 SEK. The complete course: 100000 SEK.",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ]
     }
   ],
@@ -142,7 +142,7 @@
       "value": "English",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ],
       "from": "label_value",
       "labelPath": "main>div:nth-of-type(1)>span:nth-of-type(1)",
@@ -155,7 +155,7 @@
       "value": "Applies to citizens from outside EU, EEA or Switzerland. First instalment: 50000 SEK. The complete course: 100000 SEK.",
       "section": [
         "One Year Master’s Programme in Example Planning",
-        "Autumn 2027 Period 1 Day-time, 50%"
+        "Autumn 2027 | Period 1 | Day-time, 50% | Only distance courses"
       ],
       "from": "label_value",
       "labelPath": "main>div:nth-of-type(2)>span:nth-of-type(1)",

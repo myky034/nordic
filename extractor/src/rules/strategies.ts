@@ -1,4 +1,5 @@
 import type { DocumentStructure } from "@nordic/db/document-structure";
+import type { JsonPath } from "@nordic/db/rule-output";
 import type { Rule, Strategy } from "./types";
 
 // PR 2b (review §5.2–§5.4): where a value is found in a structure snapshot.
@@ -9,8 +10,10 @@ import type { Rule, Strategy } from "./types";
 
 export type Hit = {
   ref: string;
-  field: "text" | "label" | "value" | "canonical" | "cell";
+  field: "text" | "label" | "value" | "canonical" | "cell" | "json_ld";
   cell?: readonly [number, number];
+  /** For field "json_ld": keys / indexes from the item to the value. */
+  path?: JsonPath;
   /** The verbatim part of the element's string that supports the value. */
   excerpt: string;
   /** What the normalizer reads (a capture group `value`, or the excerpt). */
@@ -66,30 +69,38 @@ export function findHits(s: DocumentStructure, strategy: Strategy, evidence: Rul
         });
       });
     case "json_ld":
-      // JSON-LD items have no element ref in html-structure-v1; "sd<adapter>.<item>"
-      // names the item, and the value is checked against it by verifyHit().
+      // JSON-LD items have no element ref in html-structure-v1: "sd<adapter>.<item>"
+      // names the item and `path` the property (PR #6 review M5), so the
+      // evidence points at exactly one value, which elementString() re-reads.
       return s.structuredData.flatMap((d, a) => d.items.flatMap((item, n) => {
-        const value = jsonLdValue(item, strategy.type, strategy.path);
-        return value === null ? [] : [{ ref: `sd${a}.${n}`, field: "text" as const, excerpt: value, value, section: [], order: [RANK.structuredData, a * 1000 + n] as [number, number] }];
+        if (!hasType(item, strategy.type)) return [];
+        const value = valueAt(item, strategy.path);
+        return value === null ? [] : [{ ref: `sd${a}.${n}`, field: "json_ld" as const, path: [...strategy.path], excerpt: value, value, section: [], order: [RANK.structuredData, a * 1000 + n] as [number, number] }];
       }));
   }
 }
 
-function jsonLdValue(item: unknown, type: string, path: readonly string[]): string | null {
-  if (!item || typeof item !== "object") return null;
-  const t = (item as Record<string, unknown>)["@type"];
-  if (!(t === type || (Array.isArray(t) && t.includes(type)))) return null;
+function hasType(item: unknown, type: string) {
+  const t = item && typeof item === "object" ? (item as Record<string, unknown>)["@type"] : undefined;
+  return t === type || (Array.isArray(t) && t.includes(type));
+}
+
+/** The string or number at `path` inside a JSON value, or null (missing path, wrong kind, empty). */
+function valueAt(item: unknown, path: JsonPath): string | null {
   let v: unknown = item;
-  for (const key of path) v = v && typeof v === "object" ? (v as Record<string, unknown>)[key] : undefined;
-  return typeof v === "string" && v.trim() ? v : typeof v === "number" ? String(v) : null;
+  for (const key of path) {
+    if (typeof key === "number") v = Array.isArray(v) ? v[key] : undefined;
+    else v = v && typeof v === "object" && !Array.isArray(v) && Object.hasOwn(v, key) ? (v as Record<string, unknown>)[key] : undefined;
+  }
+  return typeof v === "string" && v.trim() ? v : typeof v === "number" && Number.isFinite(v) ? String(v) : null;
 }
 
 /** The one string of one element a hit points to (review §3.3), or null if there is none. */
-export function elementString(s: DocumentStructure, hit: Pick<Hit, "ref" | "field" | "cell">): string | null {
-  const sd = /^sd(\d+)\.(\d+)$/.exec(hit.ref);
-  if (sd) {
-    const item = s.structuredData[+sd[1]]?.items[+sd[2]];
-    return item === undefined ? null : JSON.stringify(item);
+export function elementString(s: DocumentStructure, hit: Pick<Hit, "ref" | "field" | "cell" | "path">): string | null {
+  if (hit.field === "json_ld") {
+    const sd = /^sd(\d+)\.(\d+)$/.exec(hit.ref);
+    const item = sd ? s.structuredData[+sd[1]]?.items[+sd[2]] : undefined;
+    return item === undefined || !hit.path?.length ? null : valueAt(item, hit.path);
   }
   if (hit.field === "cell") {
     const t = s.tables.find((x) => x.ref === hit.ref);
