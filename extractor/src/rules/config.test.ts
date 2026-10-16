@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { VALUE_PERIODS as DB_PERIODS, type IntakeRef } from "@nordic/db/rule-output";
 import { VALUE_PERIODS as PROMPT_PERIODS } from "../prompt";
 import { validateRules } from "./config";
-import { checkVersions, ruleFingerprint, rulesetVersion } from "./fingerprint";
+import { checkVersions, compareCodeUnits, ruleFingerprint, rulesetVersion } from "./fingerprint";
 import { RULES, VERSIONS } from "./registry";
 import type { Rule } from "./types";
 
@@ -78,6 +78,40 @@ describe("versions", () => {
     expect(ruleFingerprint({ ...base, version: 7 })).toBe(ruleFingerprint(base));
     const other = { ...deadlines, strategy: { ...deadlines.strategy, line: /^(.+?) - (.+)$/ } } as Rule;
     expect(ruleFingerprint(other)).not.toBe(ruleFingerprint(deadlines));
+  });
+  describe("M3: rollout state is not part of the definition (PR #5 review)", () => {
+    it("mode and enabled do not change the fingerprint, so promotion keeps id + version", () => {
+      expect(ruleFingerprint({ ...base, mode: "propose" })).toBe(ruleFingerprint(base));
+      expect(ruleFingerprint({ ...base, enabled: false })).toBe(ruleFingerprint(base));
+      expect(checkVersions([{ ...base, mode: "propose" }], lock)).toEqual([]);
+    });
+    it.each<[string, Partial<Rule>]>([
+      ["scope", { scope: { source: "https://uni.example.test" } }],
+      ["field", { field: "application_fee" }],
+      ["strategy", { strategy: { kind: "pair", labels: ["Fees"] } }],
+      ["normalize", { normalize: { kind: "money", periods: { "first instalment": "one_off" } } }],
+      ["intake", { intake: { from: "none" } }],
+      ["evidence", { evidence: "canonical" }],
+      ["priority", { priority: 5 }],
+      ["overrides", { overrides: ["example.other"] }],
+    ])("a change of %s changes the fingerprint and needs a new version", (_what, change) => {
+      const changed = { ...base, ...change } as Rule;
+      expect(ruleFingerprint(changed)).not.toBe(ruleFingerprint(base));
+      expect(checkVersions([changed], lock).join("\n")).toMatch(/definition changed but version is still 1/);
+    });
+  });
+  describe("M4: order by code units, not the machine's locale (PR #5 review)", () => {
+    const ids = ["su.a_b", "su.a-b", "su.a.c", "su.aa", "su.B"];
+    it("sorts ids by UTF-16 code units", () => {
+      expect([...ids].sort(compareCodeUnits)).toEqual(["su.B", "su.a-b", "su.a.c", "su.a_b", "su.aa"]);
+    });
+    it("gives the same rule set version for every registry order", () => {
+      const rules = ids.map((id) => ({ ...base, id, field: "tuition_fee", priority: ids.indexOf(id) }) as Rule);
+      const expected = rulesetVersion(rules);
+      for (const order of [[...rules].reverse(), [rules[2], rules[0], rules[4], rules[1], rules[3]], [rules[1], rules[0], ...rules.slice(2)]]) {
+        expect(rulesetVersion(order)).toBe(expected);
+      }
+    });
   });
   it("names a rule set independently of order", () => {
     expect(rulesetVersion([base, deadlines])).toBe(rulesetVersion([deadlines, base]));

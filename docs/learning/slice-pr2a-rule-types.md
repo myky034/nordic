@@ -37,6 +37,22 @@
 - **Luật là dữ liệu có kiểu trong repo (D11).** Không có bảng luật hay trình sửa luật, và không có mã do người
   dùng nhập. Regex có cờ `g`/`y` bị cấm, vì `lastIndex` làm kết quả phụ thuộc vào lần gọi trước.
 
+## Sửa sau review PR #5 (2026-10-16)
+
+| # | Lỗi | Cách sửa |
+|---|---|---|
+| M1 | "Year 1 135 000 SEK" bị đọc thành 1 135 000 | Nếu số dùng khoảng trắng phân nhóm, phần còn lại sau nhóm đầu vẫn là một số tiền hợp lý, và ngay trước nó là một từ hoặc một số → `unresolved` (`amount_boundary_ambiguous`). Ký hiệu tiền đứng trước, đầu câu, hay dấu câu ("Fee: 1 135 000") thì ranh giới rõ |
+| M2 | "2–3 years" bị đọc thành 36 tháng | Khoảng (`-`, `–`, `—`, "to", "between … and …") → `unresolved` (`range`), giữ nguyên biểu thức. "1 year or 2 years" là các lựa chọn, vẫn là `several_values` |
+| M3 | Dấu vân tay tính cả `mode`, `enabled` | Bỏ hai trường đó: chuyển shadow → propose giữ nguyên id + version (D12 S6). Mọi trường ảnh hưởng tới cách trích vẫn nằm trong dấu vân tay |
+| M4 | `localeCompare` phụ thuộc ngôn ngữ của máy | `compareCodeUnits` (so theo mã UTF-16) |
+
+**Hợp đồng:**
+- `EvidenceRef` là union: `cell` chỉ hợp lệ khi `field = "cell"`, và bắt buộc khi đó.
+- `IntakeRef` phải có mùa hoặc tháng. `from: "page"` mang id bản ghi L7b (`programmePageId`, `intakeId`) thay
+  vì bằng chứng trong snapshot, vì bằng chứng của kỳ nằm ở bản ghi kỳ.
+- Chữ về kỳ không giải được thì báo `RuleIssue` `intake_unresolved` kèm `intakeText`.
+- Thêm `evidenceRefProblems()` và `intakeRefProblems()` để kiểm dữ liệu dựng từ JSON.
+
 ## Luồng (khi PR 2b, PR 3 nối vào)
 
 ```
@@ -64,8 +80,9 @@ snapshot cấu trúc → luật (types.ts, đã qua validateRules) → chiến l
 - **Gán chữ của câu sau cho số tiền trước.** "First instalment: 67500 SEK. The complete course: 135000 SEK".
   Nếu phạm vi câu kéo tới số tiền kế tiếp, khoản đầu sẽ nhận nhầm "total". Phạm vi phải dừng ở **ranh giới
   câu**; test đã bắt được lỗi này khi viết.
-- **Dấu phân cách hàng nghìn bằng khoảng trắng** ("135 000") có thể dính với một số đứng trước nó. Xem phần
-  hạn chế bên dưới.
+- **Dấu phân cách hàng nghìn bằng khoảng trắng** ("135 000") có thể dính với một số đứng trước nó (M1).
+- **Coi khoảng là một giá trị** ("2–3 years" → 36 tháng): phải nhận ra khoảng trước (M2).
+- **Đưa trạng thái triển khai vào dấu vân tay** (M3), hay **sắp xếp theo ngôn ngữ của máy** (M4).
 
 ## Cách test
 
@@ -76,8 +93,8 @@ npm run typecheck -w @nordic/extractor
 
 ## Hạn chế đã biết
 
-- Số đứng ngay trước một số tiền viết có khoảng trắng ("Year 1 135 000 SEK") có thể bị đọc thành một số;
-  luật PR 2b sẽ đưa vào normalizer **giá trị của một phần tử**, không đưa cả đoạn văn.
+- Ranh giới số tiền (M1) được xử lý thận trọng: "Tuition 1 500 SEK" cũng thành `unresolved`, vì không
+  phân biệt được với "Year 1 500 SEK" nếu không hiểu ngôn ngữ. An toàn nhưng có thể bỏ sót.
 - Tên tháng: chỉ tiếng Anh và tiếng Thụy Điển.
 - `fact-types.ts` phải được cập nhật tay khi thêm loại fact (D8); PR 3 sẽ kiểm tự động.
 

@@ -14,11 +14,15 @@ const SYMBOLS: Record<string, string> = { "€": "EUR", "£": "GBP" };
 // Signs that name several currencies; reported, never guessed.
 const AMBIGUOUS = ["$", "kr", "kr.", "kronor", "krona"];
 
-const AMOUNT = String.raw`\d{1,3}(?:[   ,.]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?`;
+// Thousands may be grouped by a space, a no-break space (U+00A0), a narrow
+// no-break space (U+202F), a comma or a dot.
+const SPACES = String.raw`   `;
+const AMOUNT = String.raw`\d{1,3}(?:[${SPACES},.]\d{3})+(?:[.,]\d{1,2})?|\d+(?:[.,]\d{1,2})?`;
 const SIGN = String.raw`[A-Z]{3}|€|£|\$|kronor|krona|kr\.?`;
 // Left and right boundaries keep "kr" or "SEK" inside a word, and digits of a
 // longer number, out of a match.
 const MONEY = new RegExp(String.raw`(?<![\p{L}\d.,])(?:(${SIGN})\s?(${AMOUNT})|(${AMOUNT})\s?(${SIGN}))(?![\p{L}\d])`, "gu");
+const SPACE_GROUP = new RegExp(String.raw`^(\d{1,3})[${SPACES}](\d{3})`, "u");
 
 // Generic period phrases; a rule may add site wording through `periods`.
 const PERIOD_PHRASES: [ValuePeriod, RegExp][] = [
@@ -33,8 +37,27 @@ const PERIOD_PHRASES: [ValuePeriod, RegExp][] = [
 /** "135 000" / "135,000" / "1.234,50" → "135000" / "135000" / "1234.50". */
 function amountText(s: string) {
   const decimal = /[.,](\d{1,2})$/.exec(s);
-  const whole = (decimal ? s.slice(0, decimal.index) : s).replace(/[   ,.]/g, "");
+  const whole = (decimal ? s.slice(0, decimal.index) : s).replace(/[   ,.]/gu, "");
   return decimal ? `${whole}.${decimal[1]}` : whole;
+}
+
+/**
+ * M1 (PR #5 review): "Year 1 135 000 SEK" may be "Year 1" + "135 000 SEK"
+ * or a label + "1 135 000 SEK". Space-grouped digits cannot tell these apart,
+ * so the amount is unresolved when ALL of these hold:
+ * - the first group is separated by a space-like character;
+ * - the rest without the first group is itself a plausible amount (it does
+ *   not start with 0: "135 000" minus "135" leaves "000", which is not);
+ * - a word or a number stands right before it (only spaces between), so the
+ *   first group could belong to that word. A currency sign before the amount
+ *   ("SEK 1 135 000"), the start of the text, or punctuation ("Total: 1 135 000")
+ *   settle the boundary.
+ */
+function boundaryAmbiguous(text: string, amountStart: number, amount: string, signFirst: boolean) {
+  if (signFirst) return false;
+  const group = SPACE_GROUP.exec(amount);
+  if (!group || group[2].startsWith("0")) return false;
+  return /[\p{L}\d]\s+$/u.test(text.slice(0, amountStart));
 }
 
 export type MoneyOptions = {
@@ -52,19 +75,24 @@ export function normalizeMoney(text: string, options: MoneyOptions = {}): Normal
   // Sentence ends: . ; ! ? followed by white space, or a line break ("1.234,50" has no space after the dot).
   const boundaries = [...text.matchAll(/[.;!?](?=\s)|\n/g)].map((b) => (b.index ?? 0) + 1);
   const readings: Reading[] = matches.map((m, i) => {
+    const signFirst = m[1] !== undefined;
     const sign = m[1] ?? m[4];
     const amount = m[2] ?? m[3];
+    const at = m.index ?? 0, after = at + m[0].length;
+    if (boundaryAmbiguous(text, signFirst ? at + m[0].indexOf(amount) : at, amount, signFirst)) {
+      return { status: "unresolved", text: m[0],
+        reason: { code: "amount_boundary_ambiguous", detail: `"${m[0]}" may include a number that belongs to the words before it` }, notes: [] };
+    }
+    if (AMBIGUOUS.includes(sign.toLowerCase()) || sign === "$") {
+      return { status: "unresolved", text: m[0], reason: { code: "currency_ambiguous", detail: `"${sign}" names several currencies` }, notes: [] };
+    }
     // The clause an amount belongs to: its sentence, cut at the neighbouring
     // amounts, so "The complete course" never describes the amount before it.
-    const at = m.index ?? 0, after = at + m[0].length;
     const prevEnd = i === 0 ? 0 : (matches[i - 1].index ?? 0) + matches[i - 1][0].length;
     const nextStart = i === matches.length - 1 ? text.length : matches[i + 1].index ?? text.length;
     const start = Math.max(prevEnd, ...boundaries.filter((b) => b <= at));
     const end = Math.min(nextStart, ...boundaries.filter((b) => b >= after));
     const clause = text.slice(start, end);
-    if (AMBIGUOUS.includes(sign.toLowerCase()) || sign === "$") {
-      return { status: "unresolved", text: m[0], reason: { code: "currency_ambiguous", detail: `"${sign}" names several currencies` }, notes: [] };
-    }
     const currency = SYMBOLS[sign] ?? sign;
     const lower = clause.toLowerCase();
     const fromRule = Object.entries(options.periods ?? {}).filter(([phrase]) => lower.includes(phrase.toLowerCase())).map(([, p]) => p);

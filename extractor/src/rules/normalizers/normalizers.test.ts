@@ -40,6 +40,28 @@ describe("duration", () => {
     expect(failure(r)).toBe(code);
     expect(r.readings).toEqual([]);
   });
+  describe("M2: ranges are never reduced to one value (PR #5 review)", () => {
+    it.each([
+      ["2–3 years", "2–3 years"],
+      ["2-3 years", "2-3 years"],
+      ["2 — 3 years", "2 — 3 years"],
+      ["The programme takes 2 to 3 years.", "2 to 3 years"],
+      ["between 1 and 2 years", "between 1 and 2 years"],
+      ["18–24 months", "18–24 months"],
+      ["1.5-2 years full-time", "1.5-2 years"],
+      ["2 years to 3 years", "2 years to 3 years"],
+      ["two to three years", "two to three years"],
+    ])("%s → unresolved range, expression kept", (text, piece) => {
+      const r = normalizeDuration(text);
+      expect(r.failure).toBeNull();
+      expect(r.readings).toEqual([{ status: "unresolved", text: piece, reason: { code: "range", detail: expect.any(String) }, notes: [] }]);
+      expect(ok(r)).toEqual([]);
+    });
+    it("a hyphenated single duration is not a range", () => {
+      expect(ok(normalizeDuration("This is a two-year programme"))[0]).toMatchObject({ number: "24" });
+      expect(ok(normalizeDuration("a 2-year programme"))[0]).toMatchObject({ number: "24" });
+    });
+  });
   it("never derives a duration from credits or pace", () => {
     expect(failure(normalizeDuration("60 credits at 50% pace"))).toBe("no_value");
   });
@@ -108,6 +130,31 @@ describe("money", () => {
     expect(failure(normalizeMoney("Fee: 67500"))).toBe("no_value");
     const r = normalizeMoney("Applies to citizens from outside EU, EEA or Switzerland. The complete course: 135000 SEK");
     expect(Object.keys(r.readings[0].status === "ok" ? r.readings[0].value : {})).toEqual(["number", "currency", "period", "date", "unit"]);
+  });
+  describe("M1: where a space-grouped amount begins (PR #5 review)", () => {
+    it.each([
+      "Year 1 135 000 SEK per year",
+      "Period 2 1 500 SEK per semester",
+      "Tuition 1 135 000 SEK per year",
+      "Year 1\u00a0135\u00a0000 SEK per year",
+    ])("%s → unresolved, original text kept, no amount chosen", (text) => {
+      const r = normalizeMoney(text);
+      expect(ok(r)).toEqual([]);
+      expect(unresolved(r)).toEqual(["amount_boundary_ambiguous"]);
+      expect(r.raw.text).toBe(text);
+    });
+    it.each([
+      ["1 135 000 SEK per year", "1135000"],
+      ["Fee: 1 135 000 SEK per year", "1135000"],
+      ["SEK 1 135 000 per year", "1135000"],
+      ["Total cost 135 000 SEK", "135000"],
+      ["Year 1 fee 135 000 SEK per year", "135000"],
+      ["Fee 2026 135 000 SEK per year", "135000"],
+      ["Year 1: 135,000 SEK per year", "135000"],
+      ["1\u202f135\u202f000 SEK per year", "1135000"],
+    ])("%s → %s (boundary is clear)", (text, number) => {
+      expect(ok(normalizeMoney(text))[0]).toMatchObject({ number, currency: "SEK" });
+    });
   });
   it("does not take digits of a longer number", () => {
     expect(failure(normalizeMoney("Ukr 2026"))).toBe("no_value");

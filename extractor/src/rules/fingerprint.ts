@@ -4,23 +4,35 @@ import type { Rule } from "./types";
 // PR 2a (review §5.3): a rule's version must change whenever its definition
 // changes, so every stored result (rule_id + rule_version, PR 3) points to
 // exactly one definition. The fingerprint is a hash of the definition with
-// keys in a fixed order and patterns written as source + flags; `version`
-// itself is left out, so raising it alone does not change the fingerprint.
+// keys in a fixed order and patterns written as source + flags.
+//
+// Left out (M3, PR #5 review):
+// - `version`, so raising it alone does not change the fingerprint;
+// - `mode` and `enabled`: rollout state, not extraction semantics. Promoting
+//   a rule from shadow to propose (D12 S6) keeps the same id + version, so
+//   the results checked in shadow stay attributable to it. Those switches
+//   are still reviewed, because they change only through a pull request.
+// Everything else (scope, field, strategy, normalize, intake, evidence,
+// priority, overrides, id) is in the fingerprint.
+const OPERATIONAL = ["version", "mode", "enabled"] as const;
 
 function canonical(value: unknown): unknown {
   if (value instanceof RegExp) return { regexp: value.source, flags: value.flags };
   if (Array.isArray(value)) return value.map(canonical);
   if (value && typeof value === "object") {
-    return Object.fromEntries(Object.keys(value).sort().filter((k) => (value as Record<string, unknown>)[k] !== undefined)
+    return Object.fromEntries(Object.keys(value).sort(compareCodeUnits).filter((k) => (value as Record<string, unknown>)[k] !== undefined)
       .map((k) => [k, canonical((value as Record<string, unknown>)[k])]));
   }
   return value;
 }
 
 export function ruleFingerprint(rule: Rule): string {
-  const { version: _version, ...definition } = rule;
+  const definition = Object.fromEntries(Object.entries(rule).filter(([k]) => !(OPERATIONAL as readonly string[]).includes(k)));
   return createHash("sha256").update(JSON.stringify(canonical(definition))).digest("hex");
 }
+
+/** Code-unit order, independent of the machine's locale (M4: localeCompare is not). */
+export const compareCodeUnits = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
 
 export type VersionLock = Readonly<Record<string, { version: number; fingerprint: string }>>;
 
@@ -40,6 +52,6 @@ export function checkVersions(rules: readonly Rule[], lock: VersionLock): string
 
 /** One string for a whole rule set, sorted by id, so outputs can name the exact set that produced them. */
 export function rulesetVersion(rules: readonly Rule[]): string {
-  const parts = [...rules].sort((a, b) => a.id.localeCompare(b.id)).map((r) => `${r.id}@${r.version}:${ruleFingerprint(r)}`);
+  const parts = [...rules].sort((a, b) => compareCodeUnits(a.id, b.id)).map((r) => `${r.id}@${r.version}:${ruleFingerprint(r)}`);
   return `ruleset-${createHash("sha256").update(parts.join("\n")).digest("hex").slice(0, 12)}`;
 }

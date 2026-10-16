@@ -11,8 +11,8 @@ import type { NormalizedValue } from "@nordic/db/rule-output";
 // Normalizers are pure: same text and options, same result.
 
 export type ReasonCode =
-  | "no_value" | "several_values" | "degree_name" | "schedule_not_duration" | "semesters_not_converted"
-  | "multiplied" | "currency_ambiguous" | "currency_missing" | "period_unknown" | "period_ambiguous"
+  | "no_value" | "several_values" | "range" | "degree_name" | "schedule_not_duration" | "semesters_not_converted"
+  | "multiplied" | "currency_ambiguous" | "amount_boundary_ambiguous" | "period_unknown" | "period_ambiguous"
   | "year_missing" | "date_order_ambiguous" | "invalid_date" | "words_not_converted" | "out_of_range";
 
 export type Reason = { code: ReasonCode; detail: string };

@@ -7,14 +7,25 @@ import { COUNT, EMPTY_VALUE, countValue, fail, numberText, type NormalizeResult 
 // - "31/08/2026 - 04/06/2028" is an intake schedule, not a duration
 //   (the SU fact found on 2026-10-16 was exactly this mistake);
 // - semesters are not converted (their length is not stated);
-// - credits and study pace are never used to compute a duration.
+// - credits and study pace are never used to compute a duration;
+// - a range ("2–3 years", "18 to 24 months", "between 1 and 2 years") is
+//   unresolved: no end, minimum or average is chosen (M2, PR #5 review).
 
 const DURATION = new RegExp(String.raw`\b${COUNT}[\s-]*(years?|yrs?|months?)\b`, "gi");
 const SEMESTERS = new RegExp(String.raw`\b${COUNT}[\s-]*semesters?\b`, "i");
 const DEGREE_AFTER = /^[\s-]*(master|master['’]s|masters|bachelor|bachelor['’]s|bachelors|magister|licentiate|msc|mba|ma|ba|bsc)\b/i;
 const NUMERIC_DATE = /\b\d{1,2}[/.]\d{1,2}[/.]\d{4}\b/g;
+const UNIT = String.raw`(?:years?|yrs?|months?)`;
+// Hyphen, en dash, em dash, "to", or "between … and …"; the first end may repeat the unit.
+const RANGE = new RegExp(
+  String.raw`\b(?:between\s+${COUNT}(?:[\s-]*${UNIT})?\s+and\s+${COUNT}|${COUNT}(?:[\s-]*${UNIT})?\s*(?:[-\u2013\u2014]|\bto\b)\s*${COUNT})[\s-]*${UNIT}\b`, "i");
 
 export function normalizeDuration(text: string): NormalizeResult {
+  const range = RANGE.exec(text);
+  if (range) {
+    return { raw: { text, unit: null }, failure: null, readings: [{ status: "unresolved", text: range[0],
+      reason: { code: "range", detail: `"${range[0]}" is a range; no single duration is chosen` }, notes: [] }] };
+  }
   const found: { text: string; months: number; unit: string }[] = [];
   let degreeName: string | null = null;
   for (const m of text.matchAll(DURATION)) {
