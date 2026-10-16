@@ -1,4 +1,4 @@
-import { KNOWN_FACT_TYPES, type ValueKind } from "./fact-types";
+import { INTAKE_SCOPE, KNOWN_FACT_TYPES, type ValueKind } from "./fact-types";
 import type { NormalizeSpec, Rule, RuleScope } from "./types";
 
 // PR 2a (review §5.3): checks every rule definition before it can be used.
@@ -35,7 +35,7 @@ export function validateRules(rules: readonly Rule[], factTypes: Readonly<Record
     if (!Number.isInteger(rule.version) || rule.version < 1) add("version must be a whole number from 1");
     if (!Number.isInteger(rule.priority)) add("priority must be a whole number");
     if (rule.mode !== "shadow" && rule.mode !== "propose") add('mode must be "shadow" or "propose"');
-    if (!["text", "label", "value", "canonical", "cell"].includes(rule.evidence)) add("evidence field is unknown");
+    if (!["text", "label", "value", "canonical", "cell", "json_ld"].includes(rule.evidence)) add("evidence field is unknown");
 
     const kind = factTypes[rule.field];
     if (!kind) add(`field "${rule.field}" is not a known fact type`);
@@ -52,7 +52,8 @@ export function validateRules(rules: readonly Rule[], factTypes: Readonly<Record
     switch (s.kind) {
       case "pair":
         if (!s.labels.length || s.labels.some((l) => !l.trim())) add("pair strategy needs non-empty labels");
-        if (rule.evidence === "text" || rule.evidence === "cell") add('pair strategy takes evidence "label", "value" or "canonical"');
+        // The excerpt must contain the value it supports: "label" alone would not (PR #6 review m2).
+        if (rule.evidence !== "value" && rule.evidence !== "canonical") add('pair strategy takes evidence "value" or "canonical"');
         break;
       case "section_lines":
         add(patternProblem(s.heading, "section_lines.heading", true));
@@ -68,11 +69,12 @@ export function validateRules(rules: readonly Rule[], factTypes: Readonly<Record
         break;
       case "json_ld":
         if (!s.type.trim() || !s.path.length) add("json_ld strategy needs a type and a path");
+        if (rule.evidence !== "json_ld") add('json_ld strategy takes evidence "json_ld"');
         break;
       default:
         add(`strategy "${(s as { kind: string }).kind}" is unknown`);
     }
-    if (s.kind !== "pair" && s.kind !== "table" && rule.evidence !== "text") add(`${s.kind} strategy takes evidence "text"`);
+    if ((s.kind === "section_lines" || s.kind === "sentence") && rule.evidence !== "text") add(`${s.kind} strategy takes evidence "text"`);
 
     const intake = rule.intake as { from: string; pattern?: RegExp };
     if (intake.from === "heading") {
@@ -80,9 +82,14 @@ export function validateRules(rules: readonly Rule[], factTypes: Readonly<Record
       else {
         add(patternProblem(intake.pattern, "intake.pattern", true));
         if (!/\(\?<year>/.test(intake.pattern.source)) add("intake.pattern must capture the year as (?<year>…)");
+        if (!/\(\?<(?:term|month)>/.test(intake.pattern.source)) add("intake.pattern must capture (?<term>…) or (?<month>…): a year alone is not an intake");
       }
     } else if (intake.from !== "page" && intake.from !== "none") {
       add(`intake source "${intake.from}" is not allowed (a URL alone never decides an intake)`);
+    }
+    // D2 / Risk C: only intake-specific fact types may take an intake from context.
+    if (intake.from !== "none" && INTAKE_SCOPE[rule.field] !== "intake") {
+      add(`field "${rule.field}" is not intake-specific; it cannot take an intake from a ${intake.from} (being on an intake page is not evidence)`);
     }
   }
   // Second pass: references and collisions need the full list.

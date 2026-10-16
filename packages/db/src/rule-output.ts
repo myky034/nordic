@@ -18,14 +18,21 @@ export type IntakeTerm = (typeof INTAKE_TERMS)[number];
  * - "text": heading / block / link text;
  * - "label" / "value": one side of a pair;
  * - "canonical": `label + ": " + value` of the same pair;
- * - "cell": one table cell, addressed by `cell` [row, column] (only then).
+ * - "cell": one table cell, addressed by `cell` [row, column] (only then);
+ * - "json_ld" (PR #6 review M5): one property of one JSON-LD item. `ref` is
+ *   "sd<adapter>.<item>" (structuredData[adapter].items[item]) and `path` the
+ *   keys / array indexes from that item to a string or number value. The
+ *   excerpt is checked against THAT value only, never against the whole item,
+ *   so a value found under another property cannot pass.
  * `excerpt` must be a substring of that string (after the database's
  * extraction_norm()). structureId is null until the snapshot is stored (tests).
  */
 type EvidenceBase = { documentId: string; structureId: string | null; structureHash: string; ref: string; excerpt: string };
+export type JsonPath = readonly (string | number)[];
 export type EvidenceRef =
-  | (EvidenceBase & { field: "text" | "label" | "value" | "canonical"; cell?: never })
-  | (EvidenceBase & { field: "cell"; cell: readonly [number, number] });
+  | (EvidenceBase & { field: "text" | "label" | "value" | "canonical"; cell?: never; path?: never })
+  | (EvidenceBase & { field: "cell"; cell: readonly [number, number]; path?: never })
+  | (EvidenceBase & { field: "json_ld"; path: JsonPath; cell?: never });
 
 /**
  * When an intake starts, as the SOURCE states it: a term, a month, or both;
@@ -83,6 +90,20 @@ export type RuleCandidate = {
   applicability: "intake" | "programme" | null;
   evidence: EvidenceRef;
   notes: string[];
+  /**
+   * PR #6 review M1 (approved extension, optional): candidates of the same
+   * fact type and intake that rule precedence set aside although they state
+   * something DIFFERENT. Kept whole (value, rule id/version, evidence, intake)
+   * so the conflict stays visible; never nested (a suppressed candidate has
+   * no `suppressed` of its own). Absent or empty: no conflicting fallback.
+   */
+  suppressed?: SuppressedCandidate[];
+};
+
+/** Why precedence set a conflicting candidate aside: a less specific scope, or a lower priority at the same scope level. */
+export type SuppressedCandidate = {
+  reason: "lower_specificity" | "lower_priority";
+  candidate: Omit<RuleCandidate, "suppressed">;
 };
 
 /** Outcomes that are reported instead of guessed. */
@@ -97,6 +118,17 @@ export type RuleIssue = {
 };
 
 export type RuleOutput = RuleCandidate | RuleIssue;
+
+/**
+ * PR 3 safety rule (M1): only a candidate WITHOUT unresolved suppression
+ * conflicts may ever be proposed automatically. Issues never are, and a
+ * candidate whose `suppressed` list is not empty goes to a person, because
+ * precedence chose a value that another rule contradicts. (Shadow mode and
+ * the database checks in extractor_propose() still apply on top of this.)
+ */
+export function eligibleForAutoProposal(o: RuleOutput): o is RuleCandidate {
+  return o.kind === "candidate" && !(o.suppressed?.length);
+}
 
 // Run-time checks for values that cross a boundary (rules → PR 3 storage).
 // The types above already rule these out in TypeScript; these catch data
@@ -113,7 +145,13 @@ export function evidenceRefProblems(e: EvidenceRef): string[] {
   if (e.field === "cell") {
     if (!Array.isArray(e.cell) || e.cell.length !== 2 || !e.cell.every(isIndex)) p.push("evidence: a cell needs [row, column] as whole numbers from 0");
   } else if ((e as { cell?: unknown }).cell !== undefined) p.push(`evidence: field "${e.field}" cannot have a cell`);
-  if (!["text", "label", "value", "canonical", "cell"].includes(e.field)) p.push(`evidence: field "${e.field}" is unknown`);
+  if (e.field === "json_ld") {
+    if (!/^sd\d+\.\d+$/.test(e.ref)) p.push('evidence: a JSON-LD ref must be "sd<adapter>.<item>"');
+    if (!Array.isArray(e.path) || !e.path.length || !e.path.every((k) => (typeof k === "string" && k.length > 0) || isIndex(k))) {
+      p.push("evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)");
+    }
+  } else if ((e as { path?: unknown }).path !== undefined) p.push(`evidence: field "${e.field}" cannot have a JSON path`);
+  if (!["text", "label", "value", "canonical", "cell", "json_ld"].includes(e.field)) p.push(`evidence: field "${e.field}" is unknown`);
   return p;
 }
 

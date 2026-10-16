@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { evidenceRefProblems, intakeRefProblems, type EvidenceRef, type IntakeRef } from "@nordic/db/rule-output";
+import { eligibleForAutoProposal, evidenceRefProblems, intakeRefProblems, type EvidenceRef, type IntakeRef, type RuleCandidate, type SuppressedCandidate } from "@nordic/db/rule-output";
 
 // Task 5 of the PR #5 review: the shared contracts cannot express evidence
 // with a stray cell, an intake without a term or month, or an intake from a
@@ -22,6 +22,19 @@ describe("EvidenceRef", () => {
     const missing: EvidenceRef = { ...textEvidence, field: "cell" };
     expect(evidenceRefProblems(missing)).toEqual(["evidence: a cell needs [row, column] as whole numbers from 0"]);
     expect(evidenceRefProblems({ ...cellEvidence, cell: [-1, 0.5] })).toEqual(["evidence: a cell needs [row, column] as whole numbers from 0"]);
+  });
+  it("JSON-LD evidence needs an sd<adapter>.<item> ref and a path; other fields cannot carry a path (M5)", () => {
+    const jsonLd: EvidenceRef = { documentId: "d1", structureId: null, structureHash: hash, ref: "sd0.1", field: "json_ld", path: ["offers", 0, "price"], excerpt: "15000" };
+    expect(evidenceRefProblems(jsonLd)).toEqual([]);
+    expect(evidenceRefProblems({ ...jsonLd, ref: "p1" })).toEqual(['evidence: a JSON-LD ref must be "sd<adapter>.<item>"']);
+    expect(evidenceRefProblems({ ...jsonLd, path: [] })).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    expect(evidenceRefProblems({ ...jsonLd, path: ["", -1] })).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    // @ts-expect-error: JSON-LD evidence without a path does not type-check.
+    const noPath: EvidenceRef = { ...textEvidence, ref: "sd0.0", field: "json_ld" };
+    expect(evidenceRefProblems(noPath)).toEqual(["evidence: a JSON-LD path needs keys (non-empty text) or indexes (whole numbers from 0)"]);
+    // @ts-expect-error: a path on text evidence does not type-check.
+    const strayPath: EvidenceRef = { ...textEvidence, path: ["name"] };
+    expect(evidenceRefProblems(strayPath)).toEqual(['evidence: field "text" cannot have a JSON path']);
   });
   it("rejects empty excerpts and malformed hashes", () => {
     expect(evidenceRefProblems({ ...textEvidence, excerpt: " ", structureHash: "x" })).toEqual([
@@ -53,5 +66,24 @@ describe("IntakeRef", () => {
     const fromUrl: IntakeRef = { ...heading, from: "url" };
     expect(intakeRefProblems(fromUrl)).toEqual(['intake: source "url" is not allowed (a URL alone never decides an intake)']);
     expect(intakeRefProblems({ ...month, month: 13, year: 27 })).toEqual(["intake: year must be a whole number 2000–2100", "intake: month must be 1–12"]);
+  });
+});
+
+describe("SuppressedCandidate (M1, PR #6)", () => {
+  const candidate: RuleCandidate = { kind: "candidate", ruleId: "x.site", ruleVersion: 1, rulesetVersion: "ruleset-000000000000", factType: "teaching_language",
+    method: "pair", raw: { text: "Swedish", unit: null }, normalized: null, derivation: null, intake: null, applicability: null, evidence: textEvidence, notes: [] };
+  const { suppressed: _none, ...inner } = { ...candidate, ruleId: "x.global", raw: { text: "English", unit: null } };
+  const entry: SuppressedCandidate = { reason: "lower_specificity", candidate: inner };
+  it("is optional: candidates without it are unchanged and eligible", () => {
+    expect(eligibleForAutoProposal(candidate)).toBe(true);
+    expect(eligibleForAutoProposal({ ...candidate, suppressed: [entry] })).toBe(false);
+  });
+  it("cannot nest: a suppressed candidate has no suppressed list of its own", () => {
+    // @ts-expect-error: a suppressed candidate cannot carry `suppressed` (no recursion).
+    const nested: SuppressedCandidate = { reason: "lower_priority", candidate: { ...inner, suppressed: [entry] } };
+    expect(nested.reason).toBe("lower_priority");
+    // @ts-expect-error: only the two precedence reasons exist.
+    const other: SuppressedCandidate["reason"] = "conflict";
+    expect(other).toBe("conflict");
   });
 });

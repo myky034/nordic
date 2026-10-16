@@ -3,7 +3,8 @@ import { VALUE_PERIODS as DB_PERIODS, type IntakeRef } from "@nordic/db/rule-out
 import { VALUE_PERIODS as PROMPT_PERIODS } from "../prompt";
 import { validateRules } from "./config";
 import { checkVersions, compareCodeUnits, ruleFingerprint, rulesetVersion } from "./fingerprint";
-import { RULES, VERSIONS } from "./registry";
+import { INTAKE_SCOPE } from "./fact-types";
+import { RULES, RULESET_DEPENDENCIES, RULESET_LOCK, VERSIONS } from "./registry";
 import type { Rule } from "./types";
 
 // PR 2a (review §5.3): rule definitions are checked before use, and a
@@ -13,7 +14,7 @@ const base: Rule = {
   id: "example.tuition.pair", version: 1, enabled: true, mode: "shadow", priority: 0,
   scope: { country: "sweden", source: "https://uni.example.test", pageType: "programme_intake" },
   field: "tuition_fee", strategy: { kind: "pair", labels: ["Tuition fee"] },
-  normalize: { kind: "money" }, intake: { from: "page" }, evidence: "value",
+  normalize: { kind: "money" }, intake: { from: "none" }, evidence: "value",
 };
 const deadlines: Rule = {
   id: "example.deadline.section", version: 1, enabled: true, mode: "shadow", priority: 0,
@@ -38,7 +39,9 @@ describe("rule validation", () => {
     ["page without source", { scope: { page: /^https:\/\/x\.test\/a$/ } }, /scope.page needs scope.source/],
     ["page not anchored", { scope: { source: "https://uni.example.test", page: /programme/ } }, /must be anchored/],
     ["empty labels", { strategy: { kind: "pair", labels: [" "] } }, /non-empty labels/],
-    ["pair with text evidence", { evidence: "text" }, /evidence "label", "value" or "canonical"/],
+    ["pair with text evidence", { evidence: "text" }, /pair strategy takes evidence "value" or "canonical"/],
+    ["pair with label-only evidence (m2)", { evidence: "label" }, /pair strategy takes evidence "value" or "canonical"/],
+    ["json_ld without json_ld evidence", { strategy: { kind: "json_ld", type: "Course", path: ["name"] }, evidence: "text" }, /json_ld strategy takes evidence "json_ld"/],
   ])("rejects %s", (_name, change, problem) => {
     expect(check({ ...base, ...change }).join("\n")).toMatch(problem);
   });
@@ -51,6 +54,13 @@ describe("rule validation", () => {
   it("never lets a URL decide the intake, and needs the year from a heading", () => {
     expect(check({ ...base, intake: { from: "url" } as unknown as Rule["intake"] }).join("\n")).toMatch(/a URL alone never decides an intake/);
     expect(check({ ...deadlines, intake: { from: "heading", pattern: /^Autumn \d{4}$/ } }).join("\n")).toMatch(/capture the year/);
+    expect(check({ ...deadlines, intake: { from: "heading", pattern: /^Intake (?<year>\d{4})$/ } }).join("\n")).toMatch(/a year alone is not an intake/);
+  });
+  it("only intake-specific fact types may take an intake from a heading or the page (D2, Risk C)", () => {
+    expect(check({ ...base, intake: { from: "page" } }).join("\n")).toMatch(/"tuition_fee" is not intake-specific/);
+    expect(check({ ...base, field: "teaching_language", normalize: { kind: "text" }, intake: { from: "heading", pattern: /^Autumn (?<year>\d{4})$/ } }).join("\n"))
+      .toMatch(/"teaching_language" is not intake-specific/);
+    expect(check({ ...deadlines, intake: { from: "page" } })).toEqual([]);
   });
   it("checks overrides and collisions across rules", () => {
     expect(check({ ...base, overrides: ["missing.rule"] }).join("\n")).toMatch(/overrides unknown rule/);
@@ -90,7 +100,7 @@ describe("versions", () => {
       ["field", { field: "application_fee" }],
       ["strategy", { strategy: { kind: "pair", labels: ["Fees"] } }],
       ["normalize", { normalize: { kind: "money", periods: { "first instalment": "one_off" } } }],
-      ["intake", { intake: { from: "none" } }],
+      ["intake", { intake: { from: "page" } }],
       ["evidence", { evidence: "canonical" }],
       ["priority", { priority: 5 }],
       ["overrides", { overrides: ["example.other"] }],
@@ -111,6 +121,30 @@ describe("versions", () => {
       for (const order of [[...rules].reverse(), [rules[2], rules[0], rules[4], rules[1], rules[3]], [rules[1], rules[0], ...rules.slice(2)]]) {
         expect(rulesetVersion(order)).toBe(expected);
       }
+    });
+  });
+  describe("M4: the ruleset id covers the shared configuration (PR #6 review)", () => {
+    const pageTypes = [{ source: "https://uni.example.test", type: "programme", url: /^https:\/\/uni\.example\.test\/p\/[a-z]+$/ },
+      { source: "https://uni.example.test", type: "intake", url: /^https:\/\/uni\.example\.test\/i\/[a-z]+$/ }];
+    const deps = { pageTypes, intakeScope: { application_deadline: "intake", tuition_fee: "optional" } };
+    const id = rulesetVersion([base, deadlines], deps);
+    it.each<[string, Parameters<typeof rulesetVersion>[1]]>([
+      ["a page type pattern", { ...deps, pageTypes: [{ ...pageTypes[0], url: /^https:\/\/uni\.example\.test\/p\/.+$/ }, pageTypes[1]] }],
+      ["a page type name", { ...deps, pageTypes: [{ ...pageTypes[0], type: "programme_page" }, pageTypes[1]] }],
+      ["a removed page type", { ...deps, pageTypes: [pageTypes[0]] }],
+      ["the intake scope", { ...deps, intakeScope: { application_deadline: "intake", tuition_fee: "intake" } }],
+    ])("changing %s changes the ruleset id", (_what, changed) => {
+      expect(rulesetVersion([base, deadlines], changed)).not.toBe(id);
+    });
+    it("order of rules, page types and scope keys does not", () => {
+      expect(rulesetVersion([deadlines, base], { pageTypes: [...pageTypes].reverse(), intakeScope: { tuition_fee: "optional", application_deadline: "intake" } })).toBe(id);
+    });
+    it("rollout state (mode, enabled) does not", () => {
+      expect(rulesetVersion([{ ...base, mode: "propose" }, { ...deadlines, enabled: false }], deps)).toBe(id);
+    });
+    it("the registry's ruleset is locked: any change to rules, page types, intake scope or ENGINE_VERSION must update RULESET_LOCK", () => {
+      expect(RULESET_DEPENDENCIES.intakeScope).toBe(INTAKE_SCOPE);
+      expect(rulesetVersion(RULES, RULESET_DEPENDENCIES)).toBe(RULESET_LOCK);
     });
   });
   it("names a rule set independently of order", () => {

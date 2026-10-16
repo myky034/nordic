@@ -57,7 +57,7 @@ export type Rule = {
   normalize: NormalizeSpec;
   intake: IntakeSpec;
   /** Which string of the matched element becomes the excerpt (review §3.3). */
-  evidence: "text" | "label" | "value" | "canonical" | "cell";
+  evidence: "text" | "label" | "value" | "canonical" | "cell" | "json_ld";
   /** Ids of less specific rules this one replaces for the same field. */
   overrides?: readonly string[];
 };

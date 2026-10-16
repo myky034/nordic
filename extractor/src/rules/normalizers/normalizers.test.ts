@@ -156,6 +156,36 @@ describe("money", () => {
       expect(ok(normalizeMoney(text))[0]).toMatchObject({ number, currency: "SEK" });
     });
   });
+  describe("M3: a period qualifies only the amount it belongs to (PR #6 review)", () => {
+    const periodsOf = (text: string) => normalizeMoney(text).readings.map((r) => (r.status === "ok" ? `${r.text}=${r.value.period}` : `${r.text}?${r.reason.code}`));
+    it.each<[string, string[]]>([
+      // Two amounts in one sentence, each with its own wording.
+      ["Fee 30000 SEK per semester, total 120000 SEK for the full programme", ["30000 SEK=semester", "120000 SEK=total"]],
+      ["100 SEK per year and 200 SEK per semester", ["100 SEK=year", "200 SEK=semester"]],
+      ["Tuition: 50 000 SEK/semester (total 200 000 SEK)", ["50 000 SEK=semester", "200 000 SEK=total"]],
+      // A period expression between two amounts belongs to neither "a total of" reading.
+      ["Tuition fee 100000 SEK, of which a total of 20000 SEK is paid at registration", ["100000 SEK?period_unknown", "20000 SEK?period_unknown"]],
+      // "a year" in descriptive text is not a fee period.
+      ["Tuition 100000 SEK for students who spend a year in Sweden", ["100000 SEK?period_unknown"]],
+      ["Tuition 100000 SEK; you may spend a semester abroad", ["100000 SEK?period_unknown"]],
+      // Explicit per-year and total tuition.
+      ["Tuition fee: SEK 145,000 per academic year", ["SEK 145,000=year"]],
+      ["£12,000 a year", ["£12,000=year"]],
+      ["Total tuition fee: 200000 SEK", ["200000 SEK=total"]],
+      ["The complete course: 135000 SEK", ["135000 SEK=total"]],
+      ["Application fee 900 SEK (one-off)", ["900 SEK=one_off"]],
+      // Ambiguous wording stays unresolved.
+      ["135000 SEK per year in total", ["135000 SEK?period_ambiguous"]],
+      ["Tuition 50000 SEK. Total cost of living 12000 SEK per month", ["50000 SEK?period_unknown", "12000 SEK?period_ambiguous"]],
+    ])("%s → %j", (text, expected) => {
+      expect(periodsOf(text)).toEqual(expected);
+    });
+    it("keeps the raw text and never states an applicant group", () => {
+      const r = normalizeMoney("Applies to citizens from outside EU, EEA or Switzerland. The complete course: 135000 SEK.");
+      expect(r.raw.text).toBe("Applies to citizens from outside EU, EEA or Switzerland. The complete course: 135000 SEK.");
+      expect(r.readings).toEqual([{ status: "ok", text: "135000 SEK", value: { number: "135000", currency: "SEK", period: "total", date: null, unit: null }, notes: [] }]);
+    });
+  });
   it("does not take digits of a longer number", () => {
     expect(failure(normalizeMoney("Ukr 2026"))).toBe("no_value");
   });

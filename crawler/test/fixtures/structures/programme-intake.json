@@ -1,0 +1,172 @@
+{
+  "formatVersion": "html-structure-v1",
+  "title": "EXIP - Example University",
+  "lang": "en",
+  "canonicalUrl": null,
+  "root": {
+    "kind": "main",
+    "selector": null
+  },
+  "headings": [
+    {
+      "ref": "h1",
+      "domPath": "main>h1:nth-of-type(1)",
+      "level": 1,
+      "text": "One Year Master’s Programme in Example Planning",
+      "section": []
+    },
+    {
+      "ref": "h2",
+      "domPath": "main>h3:nth-of-type(1)",
+      "level": 3,
+      "text": "Changes to the selection process for autumn 2027",
+      "section": [
+        "One Year Master’s Programme in Example Planning"
+      ]
+    },
+    {
+      "ref": "h3",
+      "domPath": "main>h2:nth-of-type(1)",
+      "level": 2,
+      "text": "How to apply",
+      "section": [
+        "One Year Master’s Programme in Example Planning"
+      ]
+    },
+    {
+      "ref": "h4",
+      "domPath": "main>h2:nth-of-type(2)",
+      "level": 2,
+      "text": "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses",
+      "section": [
+        "One Year Master’s Programme in Example Planning"
+      ]
+    }
+  ],
+  "blocks": [
+    {
+      "ref": "b1",
+      "domPath": "main>p:nth-of-type(1)",
+      "kind": "p",
+      "text": "This is a half-time study pace online programme. The programme takes two years to complete.",
+      "section": [
+        "One Year Master’s Programme in Example Planning"
+      ]
+    },
+    {
+      "ref": "b2",
+      "domPath": "main>p:nth-of-type(2)",
+      "kind": "p",
+      "text": "Please note that the selection process for autumn 2027 requires new supporting documents.",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Changes to the selection process for autumn 2027"
+      ]
+    },
+    {
+      "ref": "b3",
+      "domPath": "main>p:nth-of-type(3)",
+      "kind": "p",
+      "text": "This programme starts each autumn semester.",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "How to apply"
+      ]
+    },
+    {
+      "ref": "b4",
+      "domPath": "main>p:nth-of-type(4)",
+      "kind": "p",
+      "text": "60 credits",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    },
+    {
+      "ref": "b5",
+      "domPath": "main>p:nth-of-type(5)",
+      "kind": "p",
+      "text": "31/08/2026 - 04/06/2028",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    },
+    {
+      "ref": "b6",
+      "domPath": "main>p:nth-of-type(6)",
+      "kind": "p",
+      "text": "Closed for application",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    },
+    {
+      "ref": "b7",
+      "domPath": "main>p:nth-of-type(7)",
+      "kind": "p",
+      "text": "Programme code: EXIP",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    },
+    {
+      "ref": "b8",
+      "domPath": "main>div:nth-of-type(1)",
+      "kind": "text",
+      "text": "Language English",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    },
+    {
+      "ref": "b9",
+      "domPath": "main>div:nth-of-type(2)",
+      "kind": "text",
+      "text": "Tuition fee Applies to citizens from outside EU, EEA or Switzerland. First instalment: 50000 SEK. The complete course: 100000 SEK.",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ]
+    }
+  ],
+  "pairs": [
+    {
+      "ref": "p1",
+      "domPath": "main>div:nth-of-type(1)",
+      "label": "Language",
+      "value": "English",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ],
+      "from": "label_value",
+      "labelPath": "main>div:nth-of-type(1)>span:nth-of-type(1)",
+      "valuePath": "main>div:nth-of-type(1)>span:nth-of-type(2)"
+    },
+    {
+      "ref": "p2",
+      "domPath": "main>div:nth-of-type(2)",
+      "label": "Tuition fee",
+      "value": "Applies to citizens from outside EU, EEA or Switzerland. First instalment: 50000 SEK. The complete course: 100000 SEK.",
+      "section": [
+        "One Year Master’s Programme in Example Planning",
+        "Autumn 2026 | Period 1 | Day-time, 50% | Only distance courses"
+      ],
+      "from": "label_value",
+      "labelPath": "main>div:nth-of-type(2)>span:nth-of-type(1)",
+      "valuePath": "main>div:nth-of-type(2)>span:nth-of-type(2)"
+    }
+  ],
+  "tables": [],
+  "links": [],
+  "structuredData": [],
+  "limits": {
+    "truncated": false,
+    "dropped": {}
+  }
+}
