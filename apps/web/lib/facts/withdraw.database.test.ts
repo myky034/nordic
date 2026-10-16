@@ -54,10 +54,13 @@ const reviews = async (id: string) =>
   (await db.query<{ decision: string; note: string; actor_id: string; related_fact_id: string | null }>("SELECT decision,note,actor_id,related_fact_id FROM fact_reviews WHERE fact_id=$1 ORDER BY created_at", [id])).rows;
 
 describe("authorized withdrawal", () => {
-  it("withdraws a reviewed fact: rejected, no review time, one audited row with the caller and trimmed note", async () => {
+  it("withdraws a reviewed fact: rejected, review time kept, one audited row with the caller and trimmed note", async () => {
     const f = await fact("reviewed");
+    const reviewedAt = (await state(f)).reviewed_at;
+    expect(reviewedAt).not.toBeNull();
     await withdraw("admin", f, "  Source page no longer states this.  ");
-    expect(await state(f)).toEqual({ status: "rejected", reviewed_at: null });
+    // Same as resolve_source_change('superseded'): the original review time stays (PR #7 review M1).
+    expect(await state(f)).toEqual({ status: "rejected", reviewed_at: reviewedAt });
     expect(await reviews(f)).toEqual([{ decision: "withdrawn", note: "Source page no longer states this.", actor_id: U.admin, related_fact_id: null }]);
   });
 
@@ -72,6 +75,26 @@ describe("authorized withdrawal", () => {
   it("accepts a reviewed related fact and a 1000-character note", async () => {
     const f = await fact("reviewed"), kept = await fact("reviewed");
     await withdraw("admin", f, "x".repeat(1000), kept);
+    expect((await reviews(f))[0].related_fact_id).toBe(kept);
+  });
+
+  it("leaves the kept fact's choice to the reviewer: another page, fact type and entity are accepted", async () => {
+    // PR #7 review M2: documented decision. Duplicates exist across pages and sources (shared
+    // university pages, national portals) and between typed and untyped facts, so the database
+    // does not enforce an equivalence rule; it only requires the kept fact to be published.
+    const otherSource = (await db.query<{ id: string }>(`INSERT INTO sources(name,canonical_url,source_tier,status,authority_notes,last_verified_at,country_id)
+      VALUES('Synthetic 2','https://withdraw-2.example.test/','T2','verified','synthetic',now(),$1) RETURNING id`, [sweden])).rows[0].id;
+    const otherDoc = (await db.query<{ id: string }>(`INSERT INTO documents(source_id,canonical_url,content_hash,metadata_hash,retrieved_at,ingestion_method)
+      VALUES($1,'https://withdraw-2.example.test/other',repeat('c',64),repeat('d',64),now(),'manual') RETURNING id`, [otherSource])).rows[0].id;
+    const type = (await db.query<{ id: string }>(`INSERT INTO fact_types(key,label_vi,label_en,definition_vi,definition_en,value_kind,applies_to,category,created_by)
+      VALUES('withdraw_test_type','Loại thử','Test type','Định nghĩa','Definition','text','programme','education',$1) RETURNING id`, [U.admin])).rows[0].id;
+    const kept = (await db.query<{ id: string }>(`INSERT INTO facts(document_id,topic,subject,predicate,value,status,created_by,reviewed_at,fact_type_id,country_id)
+      VALUES($1,'other','Different subject','different','2','reviewed',$2,now(),$3,$4) RETURNING id`, [otherDoc, U.admin, type, sweden])).rows[0].id;
+    const f = await fact("reviewed");
+    await withdraw("admin", f, "Duplicate stated on another page", kept);
+    expect((await reviews(f))[0]).toMatchObject({ decision: "withdrawn", related_fact_id: kept });
+    // Withdrawing the kept fact later is allowed; the earlier link stays as history.
+    await withdraw("admin", kept, "Kept fact withdrawn too");
     expect((await reviews(f))[0].related_fact_id).toBe(kept);
   });
 

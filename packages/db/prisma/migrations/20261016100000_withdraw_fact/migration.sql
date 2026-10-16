@@ -32,11 +32,16 @@ BEGIN
  -- A pending source change has its own decision (resolve_source_change).
  IF f.source_changed_at IS NOT NULL THEN RAISE EXCEPTION 'facts_source_change_pending'; END IF;
  -- "Withdrawn as a duplicate of": the kept fact must exist, be another fact and be published.
+ -- Deliberately reviewer-controlled (PR #7 review M2): a duplicate can sit on another page or
+ -- source, at another entity level, or be untyped, so no equivalence rule is enforced here. The
+ -- link is audit context only; nothing reads related_fact_id to decide visibility or status.
  IF p_related IS NOT NULL AND (p_related = p_fact
      OR NOT EXISTS (SELECT 1 FROM public.facts WHERE id = p_related AND status IN ('reviewed','conflicted'))) THEN
    RAISE EXCEPTION 'facts_invalid';
  END IF;
- UPDATE public.facts SET status = 'rejected', reviewed_at = NULL WHERE id = p_fact;
+ -- reviewed_at is kept, as resolve_source_change() keeps it for 'superseded' / 'rejected':
+ -- the fact WAS reviewed at that time. status and fact_reviews say it is withdrawn now.
+ UPDATE public.facts SET status = 'rejected' WHERE id = p_fact;
  INSERT INTO public.fact_reviews(fact_id, actor_id, decision, note, related_fact_id)
  VALUES (p_fact, auth.uid(), 'withdrawn', v_note, p_related);
 END $$;

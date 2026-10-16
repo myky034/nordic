@@ -40,7 +40,7 @@ withdraw_fact(p_fact, p_note, p_related?)
  │    không phải reviewed/conflicted → facts_not_withdrawable
  │    đang có thay đổi nguồn chờ xử lý → facts_source_change_pending
  ├─ p_related (nếu có): khác fact này, đang reviewed/conflicted?   không → facts_invalid
- ├─ UPDATE facts SET status='rejected', reviewed_at=NULL
+ ├─ UPDATE facts SET status='rejected'           (reviewed_at giữ nguyên, như 'superseded')
  └─ INSERT fact_reviews(decision='withdrawn', actor=auth.uid(), note, related_fact_id)
 ```
 
@@ -72,6 +72,37 @@ Cả hàm chạy trong một giao dịch. Nếu bước ghi `fact_reviews` lỗi
 **TypeScript**
 - `history.test.ts` đọc CHECK trong migration để lấy danh sách decision. Thêm decision mới mà quên nhãn thì
   test fail, không phải đợi tới khi giao diện hiện mã thô.
+
+## Ngữ nghĩa (sau review PR #7)
+
+- **Rút = `rejected` + dòng `withdrawn`.** Không thêm trạng thái mới, đúng theo tiền lệ của L7a:
+  `resolve_source_change('superseded' | 'rejected')` cũng chuyển fact đã duyệt sang `rejected` và ghi quyết định
+  riêng. Mọi nơi đọc `facts.status` đều cần fact đã rút được đối xử như `rejected`:
+  - trang công khai và RLS: ẩn;
+  - `fact_duplicate_of()` và extractor: không chặn đề xuất lại;
+  - crawler: không gắn cờ thay đổi nguồn;
+  - `review_fact('conflicted')`: không dựng lại được.
+
+  Muốn biết fact đã được "rút" hay "từ chối ngay khi duyệt", xem `fact_reviews`.
+- **`reviewed_at` giữ nguyên**, giống `superseded`. Fact đã từng được duyệt, nên thẻ fact không được ghi
+  "Chưa duyệt" (AGENTS.md §15).
+- **`p_related` do người duyệt quyết.** Hai fact trùng có thể nằm ở trang khác hoặc nguồn khác (trang chung của
+  trường, cổng quốc gia), ở cấp thực thể khác, hoặc một bên chưa có loại fact. Vì vậy database chỉ đòi fact giữ
+  lại phải khác fact bị rút và đang công bố. Liên kết này chỉ để ghi vết; không logic nào dựa vào nó.
+
+## Việc để sau (không làm trong PR #7)
+
+- **Ghi chú chỉ có khoảng trắng.** `review_fact()` (`20260923090000_fact_conflict_requires_review`),
+  `resolve_source_change()` (`20261015100000_page_versions`), các hàm duyệt education / immigration / labour và
+  CHECK `length(btrim(note))` của các bảng review vẫn chấp nhận ghi chú chỉ gồm tab hoặc xuống dòng. Cần sửa
+  bằng một migration riêng.
+- **Phía còn lại của một mâu thuẫn.** Rút một fact `conflicted` thì fact kia vẫn `conflicted`. Hiện không có
+  hàm nào đưa `conflicted` về `reviewed`. Điều này an toàn (không khẳng định quá mức) nhưng thiếu chính xác.
+  Cần chủ dự án quyết định.
+- **Giao diện.**
+  - Tab "Từ chối" ở `/facts/workspace` gộp cả fact đã rút. Khi làm nút "Rút", thẻ fact nên hiện quyết định
+    mới nhất của chính fact đó.
+  - `lib/admin/overview.ts` chưa đếm `withdrawn` (và cả `superseded`).
 
 ## Bảo mật
 

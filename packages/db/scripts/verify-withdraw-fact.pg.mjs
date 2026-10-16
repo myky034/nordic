@@ -28,8 +28,18 @@ const dbName = `nordic_verify_${randomBytes(4).toString("hex")}`;
 const U = { admin: "11111111-1111-4111-8111-111111111111", member: "55555555-5555-4555-8555-555555555555" };
 const FN = "public.withdraw_fact(uuid,text,uuid)";
 const results = [];
+// Every check runs isolated: whatever it leaves behind (open transaction, held lock, role, search_path,
+// a second-session query still waiting) is cleaned up before the next one, so one failure cannot make a
+// later check pass or fail for the wrong reason. Any FAIL makes the process exit non-zero.
+let a, b, pendingB = null;
+async function cleanup() {
+  for (const c of [a, b]) await c?.query("ROLLBACK").catch(() => {});
+  if (pendingB) { await pendingB.catch(() => {}); pendingB = null; } // A is rolled back, so B can finish
+  for (const c of [a, b]) await c?.query("ROLLBACK; RESET ROLE; RESET search_path").catch(() => {});
+}
+async function isolated(fn) { try { return await fn(); } finally { await cleanup(); } }
 const check = async (name, fn) => {
-  try { await fn(); results.push(["PASS", name]); } catch (e) { results.push(["FAIL", `${name}: ${e.message}`]); }
+  try { await isolated(fn); results.push(["PASS", name]); } catch (e) { results.push(["FAIL", `${name}: ${e.message}`]); }
 };
 
 const admin = new pg.Client({ connectionString: raw });
@@ -40,8 +50,9 @@ const version = (await admin.query("SELECT version() AS v")).rows[0].v;
 await admin.query(`CREATE DATABASE ${dbName}`);
 
 const url = new URL(raw); url.pathname = `/${dbName}`;
-const connect = async () => { const c = new pg.Client({ connectionString: url.toString() }); await c.connect(); return c; };
-const a = await connect(), b = await connect();
+// lock_timeout: a lock that is never released fails the check instead of hanging the run.
+const connect = async () => { const c = new pg.Client({ connectionString: url.toString() }); await c.connect(); await c.query("SET lock_timeout = '10s'"); return c; };
+a = await connect(); b = await connect();
 /** Acts like a PostgREST request: role authenticated (or anon), JWT subject set for this session. */
 const as = async (c, who) => {
   await c.query("RESET ROLE");
@@ -74,10 +85,22 @@ try {
   const withdrawals = async (id) => (await a.query("SELECT count(*)::int AS n FROM fact_reviews WHERE fact_id=$1 AND decision='withdrawn'", [id])).rows[0].n;
   const rejects = async (promise, pattern) => { await assert.rejects(promise, pattern); };
 
-  await check("authorized withdrawal of a reviewed fact", async () => {
+  await check("harness: a failed check leaves no transaction, lock, role or search_path behind", async () => {
+    await assert.rejects(isolated(async () => {
+      await as(a, "admin"); await a.query("SET search_path = pg_temp"); await a.query("BEGIN");
+      await a.query("SELECT pg_advisory_xact_lock(919202604)");
+      throw new Error("simulated failure");
+    }), /simulated failure/);
+    const after = (await a.query("SELECT current_user AS u, current_setting('search_path') AS p")).rows[0];
+    assert.equal(after.u, "postgres"); assert.notEqual(after.p, "pg_temp");
+    assert.equal((await b.query("SELECT pg_try_advisory_xact_lock(919202604) AS ok")).rows[0].ok, true);
+  });
+  await check("authorized withdrawal of a reviewed fact keeps its review time", async () => {
     const f = await fact("reviewed");
+    const before = (await a.query("SELECT reviewed_at FROM facts WHERE id=$1", [f])).rows[0].reviewed_at;
     await as(a, "admin"); await a.query("SELECT withdraw_fact($1,$2,null)", [f, "Real PG check"]); await reset(a);
     assert.equal(await status(f), "rejected"); assert.equal(await withdrawals(f), 1);
+    assert.deepEqual((await a.query("SELECT reviewed_at FROM facts WHERE id=$1", [f])).rows[0].reviewed_at, before);
   });
   await check("authorized withdrawal of a conflicted fact", async () => {
     const f = await fact("conflicted");
@@ -145,18 +168,20 @@ try {
     const f = await fact("reviewed");
     await as(a, "admin"); await as(b, "admin");
     await a.query("BEGIN"); await a.query("SELECT withdraw_fact($1,'session A',null)", [f]);
-    const second = b.query("SELECT withdraw_fact($1,'session B',null)", [f]).then(() => "ok", (e) => e.message);
+    const second = pendingB = b.query("SELECT withdraw_fact($1,'session B',null)", [f]).then(() => "ok", (e) => e.message);
     await waitUntilBlocked(pidB);
     await a.query("COMMIT");
     assert.equal(await second, "facts_not_withdrawable");
     await reset(a); await reset(b);
     assert.equal(await status(f), "rejected"); assert.equal(await withdrawals(f), 1);
   });
+  // Note (mutation-tested): in this order the row lock plus the foreign-key lock on the kept fact are
+  // enough on their own; the next check is the one that fails without the review advisory lock.
   await check("concurrent cross-withdrawal (each names the other as kept): second is refused", async () => {
     const f1 = await fact("reviewed"), f2 = await fact("reviewed");
     await as(a, "admin"); await as(b, "admin");
     await a.query("BEGIN"); await a.query("SELECT withdraw_fact($1,'dup of f2',$2)", [f1, f2]);
-    const second = b.query("SELECT withdraw_fact($1,'dup of f1',$2)", [f2, f1]).then(() => "ok", (e) => e.message);
+    const second = pendingB = b.query("SELECT withdraw_fact($1,'dup of f1',$2)", [f2, f1]).then(() => "ok", (e) => e.message);
     await waitUntilBlocked(pidB);
     await a.query("COMMIT");
     assert.equal(await second, "facts_invalid"); // f1 is no longer published, so it cannot be the kept fact
@@ -167,7 +192,7 @@ try {
     const f = await fact("reviewed"), p = await fact("proposed");
     await as(a, "admin"); await as(b, "admin");
     await a.query("BEGIN"); await a.query("SELECT withdraw_fact($1,'session A',null)", [f]);
-    const second = b.query("SELECT review_fact($1,'reviewed','session B',null)", [p]).then(() => "ok", (e) => e.message);
+    const second = pendingB = b.query("SELECT review_fact($1,'reviewed','session B',null)", [p]).then(() => "ok", (e) => e.message);
     await waitUntilBlocked(pidB);
     await a.query("COMMIT");
     assert.equal(await second, "ok");
