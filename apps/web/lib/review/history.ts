@@ -10,8 +10,10 @@ export const decisionLabels: Record<string, { label: string; tone: Tone }> = {
   conflicted: { label: "Đánh dấu mâu thuẫn", tone: "critical" },
   revalidated: { label: "Vẫn khớp nguồn mới", tone: "accent" },
   superseded: { label: "Được thay bằng thông tin mới", tone: "neutral" },
+  // withdraw_fact(): a reviewer took back a published fact (L7b-0).
+  withdrawn: { label: "Đã rút lại", tone: "neutral" },
 };
-const decisionLabelsEn: Record<string, string> = { reviewed: "Reviewed", rejected: "Rejected", conflicted: "Marked as conflicting", revalidated: "Still matches the new source", superseded: "Replaced by a newer fact" };
+const decisionLabelsEn: Record<string, string> = { reviewed: "Reviewed", rejected: "Rejected", conflicted: "Marked as conflicting", revalidated: "Still matches the new source", superseded: "Replaced by a newer fact", withdrawn: "Withdrawn" };
 
 export function decisionLabel(decision: string, locale: Locale = defaultLocale) {
   const d = Object.hasOwn(decisionLabels, decision) ? decisionLabels[decision] : null;
